@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@picocss/pico": "^1.4.4",
+    "@rollup/plugin-node-resolve": "^13.1.3",
     "@samatech/onflow-fcl-esm": "^0.4.4",
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/adapter-vercel": "next",
