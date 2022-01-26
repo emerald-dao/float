@@ -1,0 +1,125 @@
+/* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
+@import "@picocss/pico";
+
+/* Green Light scheme (Default) */
+/* Can be forced with data-theme="light" */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+  --primary: #38e8c6;
+  --primary-hover: #12bf9d;
+  --primary-focus: rgba(56, 232, 198, 0.125);
+  --primary-inverse: #fff;
+}
+
+/* Green Dark scheme (Auto) */
+/* Automatically enabled if user has Dark mode enabled */
+@media only screen and (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --primary: #38e8c6;
+    --primary-hover: #12bf9d;
+    --primary-focus: rgba(56, 232, 198, 0.125);
+    --primary-inverse: #fff;
+  }
+}
+
+/* Green Dark scheme (Forced) */
+/* Enabled if forced with data-theme="dark" */
+[data-theme="dark"] {
+  --primary: #00ee8a;
+  --primary-hover: #00ce78;
+  --primary-focus: rgba(56, 232, 198, 0.125);
+  --primary-inverse: #fff;
+}
+
+/* Green (Common styles) */
+:root {
+  --form-element-active-border-color: var(--primary);
+  --form-element-focus-color: var(--primary-focus);
+  --switch-color: var(--primary-inverse);
+  --switch-checked-background-color: var(--primary);
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  display: flex;
+  flex-direction: column;
+}
+main {
+  flex: 1 0 auto;
+  max-width: 800px !important;
+}
+footer {
+  flex-shrink: 0;
+}
+
+button {
+  font-weight: bold;
+}
+
+
+
+h1,
+h2,
+h3 {
+  margin-bottom: 0;
+}
+
+.input-button-group {
+  display: flex;
+}
+
+.input-button-group a,
+.input-button-group button,
+.input-button-group input {
+  margin: 0;
+  margin-bottom: 0 !important;
+}
+
+.input-button-group input {
+  margin-right:10px;
+}
+
+.card {
+  margin: 0;
+  padding: 1em 2em;
+}
+
+.container,
+main {
+  margin-top: 0;
+  padding-top: 0;
+}
+.rounded-circle {
+  border-radius: 50%;
+}
+
+.mb-1 {
+  margin-bottom: 1em;
+}
+.mb-2 {
+  margin-bottom: 2em;
+}
+
+.mt-1 {
+  margin-top: 1em;
+}
+
+.mb-2 {
+  margin-top: 2em;
+}
+
+.mono {
+  font-family: monospace;
+}
+
+.accent-border {
+  border: 1px solid var(--primary);
+}
+
+.small-button {
+  font-size: 0.8rem;
+  font-weight: bold;
+}
