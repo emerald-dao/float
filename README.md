@@ -1,13 +1,5 @@
-# How to use the Flow Client Library (FCL) with SvelteKit
-
-Everything you need to build a SvelteKit project with the Flow Client Library (FCL).
-
-For a NextJS example, see my other repo: https://github.com/muttoni/fcl-nextjs-quickstart
-
-## [Live demo](https://fcl-sveltekit.vercel.app/)
-
-[![image](https://user-images.githubusercontent.com/27052451/146340356-e34f3c47-43bc-4c11-926b-b82b99d561c6.png)](https://fcl-sveltekit.vercel.app/)
-
+# Emerald DAO FLOAT Frontend
+This frontend is the work in progress FLOAT system (POAP equivalent for Flow)
 
 ## Developing
 
