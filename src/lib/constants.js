@@ -1,0 +1,1 @@
+export const PAGE_TITLE_EXTENSION = '| FLOAT by Emerald City DAO'
