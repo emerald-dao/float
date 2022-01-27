@@ -44,7 +44,7 @@
   </div>
   <div class="mt-2 mb-2 text-center">
     <h1>Welcome to FLOAT</h1>
-    <small>A service by <img style="height:20px;width:auto;margin-right:6px;" src="/emeraldcitylogo.png" alt="Emerald Logo" />Emerald City DAO</small>
+    <small>A service by <a href="https://emeraldcity.gitbook.io/emerald-city/"><img style="height:20px;width:auto;margin-right:4px;" src="/emeraldcitylogo.png" alt="Emerald Logo" />Emerald City DAO</a></small>
     <span class="tag-line">Unlock a unique identifier to show that you attended an event.</span>
 
     <div class="grid mt-2 no-break align-center">
