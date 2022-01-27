@@ -9,7 +9,7 @@
 
 </script>
 <svelte:head>
-	<title>Account | Emerald FLOAT</title>
+	<title>Create a new FLOAT | Emerald FLOAT</title>
 </svelte:head>
 
 <div class="container">
