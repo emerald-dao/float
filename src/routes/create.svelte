@@ -42,14 +42,14 @@ Requires Claim Code: Yes vs No (btw so are we going with hash or code after the 
  -->
 <h4>Configure FLOAT</h4>
 
-<div class="grid">
+<div class="grid no-break">
   <button class:secondary={!$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>Claimable</button>
   <button class:secondary={$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>Not Claimable</button>
 </div>
 
 {#if $draftFloat.claimable}
 <!-- QUANTITY -->
-<div class="grid">
+<div class="grid no-break">
   <button class:secondary={$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = !$draftFloat.quantity}>Unlimited Quantity</button>
   <button class:secondary={!$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = !$draftFloat.quantity}>Limited Quantity</button>
 </div>
@@ -61,7 +61,7 @@ Requires Claim Code: Yes vs No (btw so are we going with hash or code after the 
 {/if}
 
 <!-- TIME -->
-<div class="grid">
+<div class="grid no-break">
   <button class:secondary={$draftFloat.timeBound} class="outline" on:click={() => $draftFloat.timeBound = !$draftFloat.timeBound}>No Time Limit</button>
   <button class:secondary={!$draftFloat.timeBound} class="outline" on:click={() => $draftFloat.timeBound = !$draftFloat.timeBound}>Time Limit</button>
 </div>
@@ -81,7 +81,7 @@ Requires Claim Code: Yes vs No (btw so are we going with hash or code after the 
 {/if}
 
 <!-- TIME -->
-<div class="grid">
+<div class="grid no-break">
   <button class:secondary={$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = !$draftFloat.claimCodeEnabled}>Anyone Can Claim</button>
   <button class:secondary={!$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = !$draftFloat.claimCodeEnabled}>Use Claim Code</button>
 </div>
