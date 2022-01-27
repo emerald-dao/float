@@ -5,8 +5,8 @@
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
 :root:not([data-theme="dark"]) {
-  --primary: #38e8c6;
-  --primary-hover: #12bf9d;
+  --primary: #30bda2;
+  --primary-hover: #248f7a;
   --primary-focus: rgba(56, 232, 198, 0.125);
   --primary-inverse: #fff;
 }
@@ -55,8 +55,13 @@ footer {
   flex-shrink: 0;
 }
 
+article {
+  margin: 20px 0;
+}
+
 button {
   font-weight: bold;
+  margin-bottom: 0;
 }
 
 hr {
@@ -109,6 +114,10 @@ main {
   margin-top: 1em;
 }
 
+.mt-2 {
+  margin-top: 2em;
+}
+
 .mb-2 {
   margin-top: 2em;
 }
@@ -129,3 +138,8 @@ main {
 .no-break {
   display:flex;
 }
+
+.text-center {
+  text-align:center;
+}
+

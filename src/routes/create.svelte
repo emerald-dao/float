@@ -50,9 +50,9 @@
       Time: UNLIMITED vs LIMITED (toggles start /end time inputs)
       Requires Claim Code: Yes vs No (btw so are we going with hash or code after the event?) 
     -->
-    <h4>Configure FLOAT</h4>
+    <h4>Configure your FLOAT</h4>
     
-    <div class="grid no-break">
+    <div class="grid no-break mb-1">
       <button class:secondary={!$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>
         Claimable
         <span>Users can mint their own FLOAT based on the parameters defined below.</span>
@@ -65,7 +65,7 @@
     
     {#if $draftFloat.claimable}
     <!-- QUANTITY -->
-    <div class="grid no-break">
+    <div class="grid no-break mb-1">
       <button class:secondary={$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = !$draftFloat.quantity}>
         Unlimited Quantity
         <span>Select this if you don't want your FLOAT to have a limited quantity.</span>
@@ -84,7 +84,7 @@
     {/if}
     
     <!-- TIME -->
-    <div class="grid no-break">
+    <div class="grid no-break mb-1">
       <button class:secondary={$draftFloat.timeBound} class="outline" on:click={() => $draftFloat.timeBound = !$draftFloat.timeBound}>
         No Time Limit
         <span>Can be minted at any point in the future.</span>
@@ -111,7 +111,7 @@
     {/if}
     
     <!-- TIME -->
-    <div class="grid no-break">
+    <div class="grid no-break mb-1">
       <button class:secondary={$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = !$draftFloat.claimCodeEnabled}>
         Anyone Can Claim
         <span>Your FLOAT can be minted freely by anyone that knows its address.</span>

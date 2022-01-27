@@ -15,23 +15,46 @@
   h1 {
     text-align:center;
   }
+
+  .tag-line {
+    font-weight: 300;
+    font-size: 1.2rem;
+    margin-top: 30px;
+    display:block;
+  }
+
+  .island {
+    width: 30vw;
+    max-width: 400px;
+  }
 </style>
 
 <svelte:head>
 <title>Home</title>
 </svelte:head>
 
-<video autoplay muted loop id="myVideo">
+<!-- <video autoplay muted loop id="myVideo">
   <source src="island.mp4" type="video/mp4" />
-</video>
+</video> -->
 
-<h1><a href="/create" role="button">+ Create a FLOAT</a></h1>
+<div class="grid">
+  <div class="text-center">
+    <img  class="island" src="/island.png" alt="FLOAT Logo" />
+  </div>
+  <div class="mt-2 mb-2 text-center">
+    <h1>Welcome to FLOAT</h1>
+    <small>A service by <img style="height:20px;width:auto;margin-right:6px;" src="/emeraldcitylogo.png" alt="Emerald Logo" />Emerald City DAO</small>
+    <span class="tag-line">Unlock a unique identifier to show that you attended an event.</span>
+
+    <div class="grid mt-2">
+      <a role="button" href="/create" class="outline small-button mb-1">Create an event</a>
+      <a role="button" href="/address" class="small-button mb-1">Find your event</a>
+    </div>
+  </div>
+</div>
 
 <article>
   <h2>Check FLOATs for an Address</h2>
   <CheckAddress />
 </article>
 
-<h2>What is a FLOAT?</h2>
-
-A FLOAT is a....
