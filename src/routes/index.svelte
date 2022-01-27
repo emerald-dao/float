@@ -47,7 +47,7 @@
     <small>A service by <img style="height:20px;width:auto;margin-right:6px;" src="/emeraldcitylogo.png" alt="Emerald Logo" />Emerald City DAO</small>
     <span class="tag-line">Unlock a unique identifier to show that you attended an event.</span>
 
-    <div class="grid mt-2">
+    <div class="grid mt-2 no-break align-center">
       <a role="button" href="/create" class="outline small-button mb-1">Create an event</a>
       <a role="button" href="/address" class="small-button mb-1">Find your event</a>
     </div>

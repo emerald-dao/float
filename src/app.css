@@ -143,3 +143,12 @@ main {
   text-align:center;
 }
 
+.align-center {
+  align-items: center;
+  justify-content: center;
+}
+
+.mx-auto {
+  margin-left: auto;
+  margin-right:auto;
+}
