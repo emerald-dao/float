@@ -59,7 +59,9 @@ button {
   font-weight: bold;
 }
 
-
+hr {
+  margin-bottom: var(--spacing);
+}
 
 h1,
 h2,
