@@ -22,7 +22,7 @@
 <nav class="container">
   <ul>
     <li>
-      <h1><a href="/"><img style="width:1.2em; height:1.2em;" src="/floatlogo.png" alt="Emerald City FLOAT" /> FLOAT</a></h1>
+      <h1><a href="/"><img style="width:auto;height:2rem;" src="/floatlogotype.png" alt="Emerald City FLOAT" /></a></h1>
     </li>
   </ul>
   <ul>
