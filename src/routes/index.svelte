@@ -1,16 +1,17 @@
 <script>
   import CheckAddress from '$lib/components/CheckAddress.svelte';
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants';
 </script>
 
 <style>
   
-  video {
+  /* video {
     display:block;
     width:100%;
     max-width: 800px;
     margin: 20px auto;
   }
-  
+   */
   
   h1 {
     text-align:center;
@@ -30,7 +31,7 @@
 </style>
 
 <svelte:head>
-<title>Home</title>
+<title>Home {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
 <!-- <video autoplay muted loop id="myVideo">

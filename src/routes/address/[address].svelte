@@ -1,5 +1,7 @@
 <script>
   import { page } from '$app/stores';
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants'
+
   import CheckAddress from '$lib/components/CheckAddress.svelte';
 </script>
 
@@ -10,11 +12,11 @@
 </style>
 
 <svelte:head>
-	<title>Address</title>
+	<title>FLOATs of {$page.params.address} { PAGE_TITLE_EXTENSION }</title>
 </svelte:head>
 
 <div class="container">
-	<h1>FLOATs of {$page.params.addressId}</h1>
+	<h1>FLOATs of {$page.params.address}</h1>
 
   <div class="grid">
     <article></article>

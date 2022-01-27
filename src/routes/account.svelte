@@ -1,10 +1,12 @@
 <script>
   import { user } from "$lib/flow/stores";
   import { logIn, unauthenticate } from '$lib/flow/actions';
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants'
+  
   import UserAddress from '$lib/components/UserAddress.svelte';
 </script>
 <svelte:head>
-	<title>Account | Emerald FLOAT</title>
+	<title>Account {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
 <div class="container">

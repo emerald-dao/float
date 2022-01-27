@@ -4,6 +4,7 @@
   
   import { draftFloat } from '$lib/stores';
   
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
   
 </script>
@@ -23,7 +24,7 @@
 </style>
 
 <svelte:head>
-<title>Create a new FLOAT | Emerald FLOAT</title>
+<title>Create a new FLOAT {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
 <div class="container">
