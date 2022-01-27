@@ -31,11 +31,6 @@
     
     <h1 class="mb-1">Create a new FLOAT</h1>
     
-    {#if !$user?.loggedIn}
-    <div class="mt-2 mb-2">
-      <button class="contrast small-button" on:click={logIn}>Connect Wallet</button>
-    </div>
-    {:else}
     <label for="name">Event Name
       <input type="text" id="name" name="name" >
     </label>
@@ -133,10 +128,15 @@
     <hr/>
     {/if}
     {/if}
-    {/if}
     
     <footer>
+      {#if !$user?.loggedIn}
+      <div class="mt-2 mb-2">
+        <button class="contrast small-button" on:click={logIn}>Connect Wallet</button>
+      </div>
+      {:else}
       <button>Create FLOAT</button>
+      {/if}
     </footer>
   </article>
 </div>
