@@ -32,6 +32,6 @@
   <CheckAddress />
 </article>
 
-  <h2>What is a FLOAT?</h2>
+<h2>What is a FLOAT?</h2>
 
 A FLOAT is a....

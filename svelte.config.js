@@ -1,5 +1,3 @@
-/** @type {import('@sveltejs/kit').Config} */
-
 import resolve from '@rollup/plugin-node-resolve'
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';

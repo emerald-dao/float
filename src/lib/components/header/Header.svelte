@@ -1,8 +1,6 @@
 <script>
-  import { page } from '$app/stores';
+  // import { page } from '$app/stores';
   import ConnectWallet from '$lib/components/ConnectWallet.svelte';
-
-  
 </script>
 
 <style>
@@ -24,7 +22,7 @@
   <ul>
     
     <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
-    <li class:active={$page.url.pathname === '/about'}><a href="/about" sveltekit:prefetch>About</a></li>
+    <li><a href="/about">About</a></li>
     <li><a href="/account"><ConnectWallet/></a></li>
   </ul>
 </nav>

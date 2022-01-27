@@ -14,7 +14,7 @@
 </svelte:head>
 
 <div class="container">
-	<h1>FLOATs of {$page.params.address}</h1>
+	<h1>FLOATs of {$page.params.addressId}</h1>
 
   <div class="grid">
     <article></article>

@@ -6,7 +6,7 @@
 </script>
 
 {#if !$user?.loggedIn}
-<a role="button" href="#" class="contrast small-button" on:click|preventDefault={logIn}>Connect Wallet</a>
+<a role="button" href="/" class="contrast small-button" on:click|preventDefault={logIn}>Connect Wallet</a>
 {:else}
 <UserAddress address={$user?.addr} abbreviated={true}/>
 {/if}
