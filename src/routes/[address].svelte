@@ -19,7 +19,6 @@
 	<h1>Claimed FLOATs of {$page.params.address}</h1>
 
   <div class="grid">
-    <!-- Populate with FLOATs that this address has claimed -->
     <article></article>
     <article></article>
     <article></article>
@@ -30,8 +29,7 @@
   <h1>Events by {$page.params.address}</h1>
 
   <div class="grid">
-    <!-- Populate with FLOAT events that this address has created-->
-    <article></article> <!-- can be active or expired? -->
+    <article></article>
     <article></article>
     <article></article>
     <article></article>

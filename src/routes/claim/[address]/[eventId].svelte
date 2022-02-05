@@ -12,11 +12,11 @@
 </style>
 
 <svelte:head>
-	<title>FLOATs of {$page.params.address} { PAGE_TITLE_EXTENSION }</title>
+	<title>Claim {$page.params.address}'s Event FLOAT #{$page.params.eventId}</title>
 </svelte:head>
 
 <div class="container">
-	<h1>Claimed FLOATs of {$page.params.address}</h1>
+	<h1>Claim {$page.params.address}'s Event FLOAT #{$page.params.eventId}</h1>
 
   <div class="grid">
     <!-- Populate with FLOATs that this address has claimed -->

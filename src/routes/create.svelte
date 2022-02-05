@@ -1,9 +1,8 @@
 <script>
   import { user } from "$lib/flow/stores";
-  import { logIn } from '$lib/flow/actions';
+  import { logIn, createFloat } from '$lib/flow/actions';
   
   import { draftFloat } from '$lib/stores';
-  
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
   
@@ -31,17 +30,21 @@
   <article>
     
     <h1 class="mb-1">Create a new FLOAT</h1>
-    
+
     <label for="name">Event Name
-      <input type="text" id="name" name="name" >
+      <input type="text" id="name" name="name" bind:value={$draftFloat.name} >
+    </label>
+
+    <label for="name">Event URL
+      <input type="text" id="name" name="name" bind:value={$draftFloat.url} >
     </label>
     
     <label for="description">Event Description
-      <textarea id="description" name="description"></textarea>
+      <textarea id="description" name="description" bind:value={$draftFloat.description}></textarea>
     </label>
     
     <label for="image">Event Image
-      <input type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg" >
+      <input type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
     </label>
     
     <!-- 
@@ -52,6 +55,18 @@
       Requires Claim Code: Yes vs No (btw so are we going with hash or code after the event?) 
     -->
     <h4>Configure your FLOAT</h4>
+
+    <!-- TRANSFERRABLE -->
+    <div class="grid no-break mb-1">
+      <button class:secondary={!$draftFloat.transferrable} class="outline" on:click={() => $draftFloat.transferrable = true}>
+        Transferrable
+        <span>This FLOAT can be transferred to other accounts.</span>
+      </button>
+      <button class:secondary={$draftFloat.transferrable} class="outline" on:click={() => $draftFloat.transferrable = false}>
+        Non-Transferrable
+        <span>This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).</span>
+      </button>
+    </div>
     
     <div class="grid no-break mb-1">
       <button class:secondary={!$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>
@@ -136,7 +151,7 @@
         <button class="contrast small-button" on:click={logIn}>Connect Wallet</button>
       </div>
       {:else}
-      <button>Create FLOAT</button>
+      <button on:click={() => createFloat($draftFloat)}>Create FLOAT</button>
       {/if}
     </footer>
   </article>

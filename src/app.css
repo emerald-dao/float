@@ -90,9 +90,20 @@ h3 {
 }
 
 .card {
-  margin: 0;
-  padding: 1em 2em;
+  border: 1px solid var(--primary);
+  border-radius:5px;
+  margin: 10px 0px;
 }
+
+.tx {
+  margin-bottom: 2em;
+
+}
+.txId {
+  font-family:monospace;
+  margin-right:10px;
+}
+
 
 .container,
 main {

@@ -1,12 +1,15 @@
 <script>
   import Header from "$lib/components/header/Header.svelte";
+  import Transaction from "$lib/components/common/Transaction.svelte";
   import "../app.css";
 </script>
 
 <Header />
 
+
 <main class="container">
   <slot />
+  <Transaction />
 </main>
 
 <footer>
