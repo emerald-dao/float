@@ -17,12 +17,17 @@
   .outline {
     padding: 6px 14px;
   }
+
+  img {
+    height: 5rem;
+    width: auto;
+  }
 </style>
 
 <nav class="container">
   <ul>
     <li>
-      <h1><a href="/"><img style="width:auto;height:2rem;" src="/floatlogotype.png" alt="Emerald City FLOAT" /></a></h1>
+      <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1>
     </li>
   </ul>
   <ul>

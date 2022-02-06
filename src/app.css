@@ -39,6 +39,17 @@
   --switch-checked-background-color: var(--primary);
 }
 
+/* Hide scrollbar for Chrome, Safari and Opera */
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+body {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 html,
 body {
   height: 100%;
@@ -114,16 +125,16 @@ h3 {
 
 .card h1 {
   margin-top: 10px;
+  margin-bottom: 10px;
   font-size: 1.3rem;
   flex-grow:1;
   align-items:center;
 }
 
 .card img {
-
     display:block;
     width: 100px;
-    height: auto;
+    height: 100px;
     margin: 0 auto;
 }
 
