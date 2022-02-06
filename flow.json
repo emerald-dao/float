@@ -1,0 +1,43 @@
+{
+	"emulators": {
+		"default": {
+			"port": 3569,
+			"serviceAccount": "emulator-account"
+		}
+	},
+	"contracts": {
+		"NonFungibleToken": "./src/cadence/NonFungibleToken.cdc",
+		"MetadataViews": "./src/cadence/MetadataViews.cdc",
+		"FLOAT": "./src/cadence/FLOAT.cdc"
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "b6b890fe8d3c632f0b7980baebdd8b87f0bcae846cc869c53c28434d733ebc81"
+		},
+		"testnet-account": {
+			"address": "0x15aeea7aae3c92e6",
+			"key": {
+				"type": "hex",
+				"index": 0,
+				"signatureAlgorithm": "ECDSA_secp256k1",
+				"hashAlgorithm": "SHA3_256",
+				"privateKey": "887fc1cc9e778524230df05c73e9e072090f262e98b8bc5bf9a7c9ee0edb211b"
+			}
+		}
+	},
+	"deployments": {
+		"testnet": {
+			"testnet-account": [
+				"NonFungibleToken",
+				"MetadataViews",
+				"FLOAT"
+			]
+		}
+	}
+}
