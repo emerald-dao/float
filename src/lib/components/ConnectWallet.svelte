@@ -1,5 +1,5 @@
 <script>
-  import { logIn } from '$lib/flow/actions';
+  import { authenticate } from '$lib/flow/actions';
 </script>
 
 <style>
@@ -8,4 +8,4 @@
   }
 </style>
 
-<a role="button" href="/" class="contrast small-button" on:click|preventDefault={logIn}>Connect Wallet</a>
+<a role="button" href="/" class="contrast small-button" on:click|preventDefault={authenticate}>Connect Wallet</a>

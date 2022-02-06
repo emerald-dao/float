@@ -1,6 +1,6 @@
 <script>
   import { user } from "$lib/flow/stores";
-  import { logIn, unauthenticate } from '$lib/flow/actions';
+  import { authenticate, unauthenticate } from '$lib/flow/actions';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   
   import UserAddress from '$lib/components/UserAddress.svelte';
@@ -14,7 +14,7 @@
 
   <div class="mt-2 mb-2">
   {#if !$user?.loggedIn}
-  <button class="contrast small-button" on:click={logIn}>Connect Wallet</button>
+  <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
   {:else}
   You are currently logged in as:
     <UserAddress address={$user?.addr}/>
