@@ -6,13 +6,15 @@ export const draftFloat = writable({
   url: '',
   ipfsHash: '',
   claimable: true,
-  timeBound: false,
+  timelock: false,
+  startTime: false,
+  endTime: false,
   quantity: false,
   claimCodeEnabled: false,
   claimCode: '',
   transferrable: true,
 });
 
-draftFloat.subscribe((value) => {
-  console.log(value)
-})
+// draftFloat.subscribe((value) => {
+//   console.log(value)
+// })

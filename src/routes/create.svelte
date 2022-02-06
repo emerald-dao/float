@@ -1,11 +1,21 @@
 <script>
   import { user } from "$lib/flow/stores";
-  import { logIn, createFloat } from '$lib/flow/actions';
+  import { authenticate, createFloat } from '$lib/flow/actions';
   
   import { draftFloat } from '$lib/stores';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
+  import { create } from 'ipfs-http-client';
+
+  var client = create('https://ipfs.infura.io:5001/api/v0');
+
   let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
   
+  const uploadToIPFS = async (e) => {
+    let file = e.target.files[0];
+    const added = await client.add(file);
+    const hash = added.path;
+    $draftFloat.ipfsHash = hash;
+  }
 </script>
 
 <style>
@@ -44,7 +54,7 @@
     </label>
     
     <label for="image">Event Image
-      <input type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
+      <input on:change={(e) => uploadToIPFS(e)} type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
     </label>
     
     <!-- 
@@ -69,11 +79,11 @@
     </div>
     
     <div class="grid no-break mb-1">
-      <button class:secondary={!$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>
+      <button class:secondary={!$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = true}>
         Claimable
         <span>Users can mint their own FLOAT based on the parameters defined below.</span>
       </button>
-      <button class:secondary={$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = !$draftFloat.claimable}>
+      <button class:secondary={$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = false}>
         Not Claimable
         <span>You will be responsible for distributing the FLOAT to addresses.</span>
       </button>
@@ -82,11 +92,11 @@
     {#if $draftFloat.claimable}
     <!-- QUANTITY -->
     <div class="grid no-break mb-1">
-      <button class:secondary={$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = !$draftFloat.quantity}>
+      <button class:secondary={$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = false}>
         Unlimited Quantity
         <span>Select this if you don't want your FLOAT to have a limited quantity.</span>
       </button>
-      <button class:secondary={!$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = !$draftFloat.quantity}>
+      <button class:secondary={!$draftFloat.quantity} class="outline" on:click={() => $draftFloat.quantity = true}>
         Limited Quantity
         <span>You can set the maximum number of times the FLOAT can be minted.</span>
         
@@ -101,17 +111,17 @@
     
     <!-- TIME -->
     <div class="grid no-break mb-1">
-      <button class:secondary={$draftFloat.timeBound} class="outline" on:click={() => $draftFloat.timeBound = !$draftFloat.timeBound}>
+      <button class:secondary={$draftFloat.timelock} class="outline" on:click={() => $draftFloat.timelock = false}>
         No Time Limit
         <span>Can be minted at any point in the future.</span>
       </button>
-      <button class:secondary={!$draftFloat.timeBound} class="outline" on:click={() => $draftFloat.timeBound = !$draftFloat.timeBound}>
+      <button class:secondary={!$draftFloat.timelock} class="outline" on:click={() => $draftFloat.timelock = true}>
         Time Limit
         <span>Can only be minted between a specific time interval.</span>
         
       </button>
     </div>
-    {#if $draftFloat.timeBound}
+    {#if $draftFloat.timelock}
     <div class="grid">
       <!-- Date -->
       <label for="start">Start ({timezone})
@@ -128,11 +138,11 @@
     
     <!-- TIME -->
     <div class="grid no-break mb-1">
-      <button class:secondary={$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = !$draftFloat.claimCodeEnabled}>
+      <button class:secondary={$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = false}>
         Anyone Can Claim
         <span>Your FLOAT can be minted freely by anyone that knows its address.</span>
       </button>
-      <button class:secondary={!$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = !$draftFloat.claimCodeEnabled}>
+      <button class:secondary={!$draftFloat.claimCodeEnabled} class="outline" on:click={() => $draftFloat.claimCodeEnabled = true}>
         Use Claim Code
         <span>Your FLOAT can only be minted if people know the claim code.</span>
       </button>
@@ -148,7 +158,7 @@
     <footer>
       {#if !$user?.loggedIn}
       <div class="mt-2 mb-2">
-        <button class="contrast small-button" on:click={logIn}>Connect Wallet</button>
+        <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
       </div>
       {:else}
       <button on:click={() => createFloat($draftFloat)}>Create FLOAT</button>

@@ -30,15 +30,18 @@ const config = {
       enabled: false
     },
     router: true,
-    vite: () => ({
+    vite: {
       plugins: [
         builtins(),
         resolve({
           browser: true,
         }),
-        globals(),
+        globals()
       ],
-    }),
+      optimizeDeps: {
+        exclude: ['electron-fetch']
+      }
+    },
   },
   
   // SvelteKit uses vite-plugin-svelte. Its options can be provided directly here.
