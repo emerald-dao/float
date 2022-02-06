@@ -39,7 +39,7 @@ const config = {
         globals()
       ],
       optimizeDeps: {
-        exclude: ['electron-fetch']
+        exclude: ['electron', 'electron-fetch']
       }
     },
   },
