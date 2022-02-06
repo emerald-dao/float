@@ -3,19 +3,27 @@
   import { authenticate, createFloat } from '$lib/flow/actions';
   
   import { draftFloat } from '$lib/stores';
-  import { PAGE_TITLE_EXTENSION } from '$lib/constants'
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants';
+  import { browser } from '$app/env';
+
   import { create } from 'ipfs-http-client';
 
-  var client = create('https://ipfs.infura.io:5001/api/v0');
+  let client;
+  let timezone;
+  let uploadToIPFS;
 
-  let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
-  
-  const uploadToIPFS = async (e) => {
-    let file = e.target.files[0];
-    const added = await client.add(file);
-    const hash = added.path;
-    $draftFloat.ipfsHash = hash;
+  if(browser) {
+    client = create('https://ipfs.infura.io:5001/api/v0');
+    timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
+    
+    uploadToIPFS = async (e) => {
+      let file = e.target.files[0];
+      const added = await client.add(file);
+      const hash = added.path;
+      $draftFloat.ipfsHash = hash;
+    }
   }
+
 </script>
 
 <style>
