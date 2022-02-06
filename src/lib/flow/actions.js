@@ -219,7 +219,7 @@ export const getFLOATEvent = async (addr, id) => {
       ]
     })
     console.log(queryResult)
-    return queryResult;
+    return queryResult || {};
   } catch(e) {
     console.log(e);
   }
@@ -254,7 +254,7 @@ export const getFLOATEvents = async (addr) => {
       ]
     })
     console.log(queryResult)
-    return queryResult;
+    return queryResult || {};
   } catch(e) {
     console.log(e);
   }
@@ -291,7 +291,7 @@ export const getFLOATs = async (addr) => {
       ]
     })
     console.log(queryResult)
-    return queryResult;
+    return queryResult || [];
   } catch(e) {
     console.log(e);
   }

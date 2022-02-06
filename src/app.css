@@ -89,21 +89,61 @@ h3 {
   margin-right:10px;
 }
 
+.card-container {
+  display:inline-flex;
+  flex-wrap: wrap;
+  justify-content: center; 
+}
+
 .card {
+  width: 250px;
+  padding: 1.5rem 1rem;
+  text-align:center;
+  margin-right: 10px;
+  margin-bottom: 10px;
+  display:inline-flex;
+  flex-direction:column;
+  justify-content:center;
+  box-sizing:border-box;
+  align-items:center;
+  border:1px solid transparent;
+  align-self:stretch;
+  height:90%;
+  
+}
+
+.card h1 {
+  margin-top: 10px;
+  font-size: 1.3rem;
+  flex-grow:1;
+  align-items:center;
+}
+
+.card img {
+
+    display:block;
+    width: 100px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.card:hover {
   border: 1px solid var(--primary);
-  border-radius:5px;
-  margin: 10px 0px;
 }
 
 .tx {
   margin-bottom: 2em;
-
+  
 }
 .txId {
   font-family:monospace;
   margin-right:10px;
 }
 
+.no-style {
+  color:inherit;
+  text-decoration:inherit;
+}
 
 .container,
 main {
@@ -162,4 +202,8 @@ main {
 .mx-auto {
   margin-left: auto;
   margin-right:auto;
+}
+
+.cards {
+  
 }

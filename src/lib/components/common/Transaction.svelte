@@ -13,7 +13,7 @@ import { slide } from 'svelte/transition';
   }
 </style>
 {#if $transactionInProgress}
-<article class="card accent-border" transition:slide>
+<article class="accent-border" transition:slide>
   Transaction status:
   {#if $transactionStatus < 0}
   <span><kbd>Initializing</kbd><br/><small>Waiting for transaction approval.</small></span>

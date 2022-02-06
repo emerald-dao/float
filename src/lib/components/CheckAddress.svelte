@@ -2,7 +2,7 @@
   let address;
 
   const onKeyPress = e => {
-    if (e.charCode === 13) window.location = "/address/"+address;
+    if (e.charCode === 13) window.location = "/"+address;
   };
 </script>
 

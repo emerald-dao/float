@@ -49,13 +49,13 @@
 
     <div class="grid mt-2 no-break align-center">
       <a role="button" href="/create" class="outline small-button mb-1">Create an event</a>
-      <a role="button" href="/address" class="small-button mb-1">Find your event</a>
+      <a role="button" href="#findAddress" class="small-button mb-1">Find your event</a>
     </div>
   </div>
 </div>
 
 <article>
-  <h2>Check FLOATs for an Address</h2>
+  <h2 id="findAddress">View FLOATs from an Address</h2>
   <CheckAddress />
 </article>
 
