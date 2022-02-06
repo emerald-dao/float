@@ -39,7 +39,7 @@ const config = {
         globals()
       ],
       optimizeDeps: {
-        exclude: ['electron', 'electron-fetch', 'ipfs-http-client']
+        exclude: ['electron-fetch', 'ipfs-http-client']
       }
     },
   },
