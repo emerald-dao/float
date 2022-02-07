@@ -18,32 +18,42 @@ pub contract MetadataViews {
     }
 
     pub struct FLOATMetadataView {
-        // The original recipient
-        pub let recipient: Address
+        pub let dateReceived: UFix64
+        pub let description: String
+        // The ID of the event this FLOAT is from.
+        pub let eventId: UInt64
         // The address of the host who created the event this
         // FLOAT came from.
         pub let host: Address
+        pub let image: String
         // The name of the event this FLOAT came from.
         pub let name: String 
-        // The ID of the event this FLOAT is from.
-        pub let eventID: UInt64
-        pub let description: String
-        pub let dateReceived: UFix64
-        pub let image: String
+        // The original recipient
+        pub let recipient: Address
         // The serial # of this FLOAT (incremented from 0
         // per FLOATEvent)
         pub let serial: UInt64
         pub let transferrable: Bool
 
-        init(_recipient: Address,  _serial: UInt64, _host: Address, _name: String, _eventID: UInt64, _description: String, _image: String, _transferrable: Bool) {
+        init(
+            _dateReceived: UFix64, 
+            _description: String, 
+            _eventId: UInt64,
+            _host: Address, 
+            _image: String, 
+            _name: String,
+            _recipient: Address, 
+            _serial: UInt64,
+            _transferrable: Bool
+        ) {
+            self.dateReceived = _dateReceived
+            self.description = _description
+            self.eventId = _eventId
+            self.host = _host
+            self.image = _image
+            self.name = _name
             self.recipient = _recipient
             self.serial = _serial
-            self.host = _host
-            self.name = _name
-            self.eventID = _eventID
-            self.description = _description
-            self.dateReceived = getCurrentBlock().timestamp
-            self.image = _image
             self.transferrable = _transferrable
         }
     }

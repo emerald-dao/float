@@ -16,7 +16,7 @@ pub contract FLOAT: NonFungibleToken {
     // Events
     //
     pub event ContractInitialized()
-    pub event FLOATMinted(id: UInt64, metadata: MetadataViews.FLOATMetadataView)
+    pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, recipient: Address)
     pub event FLOATDeposited(to: Address, id: UInt64, metadata: MetadataViews.FLOATMetadataView)
     pub event FLOATWithdrawn(from: Address, id: UInt64, metadata: MetadataViews.FLOATMetadataView)
     pub event FLOATEventCreated(host: Address, id: UInt64, name: String)
@@ -37,7 +37,19 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         pub let id: UInt64
-        pub let metadata: MetadataViews.FLOATMetadataView
+
+        pub let dateReceived: UFix64
+        pub let eventHost: Address
+        pub let eventId: UInt64
+        pub let recipient: Address
+        pub let serial: UInt64
+
+        access(account) fun getFLOATEvent(): &FLOATEvent {
+            let floatEvents: &FLOATEvents{FLOATEventsPublic} = getAccount(self.eventHost).getCapability(FLOAT.FLOATEventsPublicPath)
+                                                .borrow<&FLOATEvents{FLOATEventsPublic}>()
+                                                ?? panic("This host must have deleted their FLOAT Events resource.")
+            return floatEvents.getEvent(id: self.eventId)
+        }
 
         pub fun getViews(): [Type] {
              return [
@@ -50,7 +62,9 @@ pub contract FLOAT: NonFungibleToken {
         pub fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.FLOATMetadataView>():
-                    return self.metadata
+                    return MetadataViews.FLOATMetadataView(
+
+                    )
                 case Type<MetadataViews.Identifier>():
                     return MetadataViews.Identifier(id: self.id, address: self.owner!.address) 
                 case Type<MetadataViews.Display>():
@@ -64,14 +78,21 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
 
-        init(_metadata: MetadataViews.FLOATMetadataView) {
+        init(_eventHost: Address, _eventId: UInt64, _serial: UInt64, _recipient: Address) {
             self.id = self.uuid
-            self.metadata = _metadata
-
-            let dateReceived = getCurrentBlock().timestamp
-            emit FLOATMinted(id: self.id, metadata: self.metadata)
+            self.dateReceived = getCurrentBlock().timestamp
+            self.eventHost = _eventHost
+            self.eventId = _eventId
+            self.recipient = _recipient
+            self.serial = _serial
+            
+            emit FLOATMinted(id: self.id, eventHost: self.eventHost, eventId: self.eventId, serial: self.serial, recipient: self.recipient)
 
             FLOAT.totalSupply = FLOAT.totalSupply + 1
+        }
+
+        destroy() {
+            self.getFLOATEvent().decreaseTotalSupply()
         }
     }
 
@@ -91,7 +112,7 @@ pub contract FLOAT: NonFungibleToken {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
             
-            assert(nft.metadata.transferrable, message: "This FLOAT is not transferrable.")
+            assert(nft.getFLOATEvent().transferrable, message: "This FLOAT is not transferrable.")
             emit FLOATWithdrawn(from: self.owner!.address, id: nft.uuid, metadata: nft.metadata)
             return <- nft
         }
@@ -133,7 +154,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let name: String
         access(account) let metadata: {String: String}
         pub var totalSupply: UInt64
-        pub let transferrable: Bool
+        pub var transferrable: Bool
         pub let url: String
         
         // Event options
@@ -166,6 +187,15 @@ pub contract FLOAT: NonFungibleToken {
             return self.active
         }
 
+        access(account) fun toggleTransferrable(): Bool {
+            self.transferrable = !self.transferrable
+            return self.transferrable
+        }
+
+        access(account) fun decreaseTotalSupply() {
+            self.totalSupply = self.totalSupply - 1
+        }
+
         // Helper function to mint FLOATs.
         access(account) fun mint(recipient: &Collection{NonFungibleToken.CollectionPublic}) {
             pre {
@@ -182,8 +212,7 @@ pub contract FLOAT: NonFungibleToken {
                                             _name: self.name, 
                                             _eventID: self.id,
                                             _description: self.description, 
-                                            _image: self.image,
-                                            _transferrable: self.transferrable
+                                            _image: self.image
                                         )
             let token <- create NFT(_metadata: metadata) 
             recipient.deposit(token: <- token)
@@ -339,8 +368,10 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub resource interface FLOATEventsPublic {
         pub fun getAllEvents(): {String: UInt64}
+        pub fun getOtherHosts(): [Address]
         pub fun addCreationCapability(minter: Capability<&FLOATEvents>) 
         pub fun claim(id: UInt64, recipient: &Collection, secret: String?)
+        access(account) fun getEvent(id: UInt64): &FLOATEvent
     }
 
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
@@ -407,8 +438,19 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         // Get the Capability to do stuff with this FLOATEvents resource.
-        pub fun getCreationCapability(host: Address): Capability<&FLOATEvents> {
-            return self.otherHosts[host]!
+        pub fun getCreationCapability(host: Address): &FLOATEvents? {
+            let cap: Capability<&FLOATEvents> = self.otherHosts[host] 
+                        ?? panic("You don't have access to this account's FLOATEvents.")
+
+            if cap.borrow() == nil {
+                self.otherHosts.remove(key: host)
+            }
+
+            return cap.borrow()
+        }
+
+        pub fun getOtherHosts(): [Address] {
+            return self.otherHosts.keys
         }
 
         // Get a view of the FLOATEvent.
