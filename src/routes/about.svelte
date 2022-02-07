@@ -28,9 +28,36 @@
 		community. Want to give people proof that they participated in your token
 		drop? Give them a FLOAT in your transaction.
 	</p>
-	<h2>Cherish your favourite memories #onFlow.</h2>
+	<h2>Cherish your favorite memories #onFlow.</h2>
 	<p>
 		Claim FLOATs and show them off as proof that <strong>you</strong> were there.
+	</p>
+
+	<h2>FLOAT == "Flow Attendance"</h2>
+	<p>
+		Developed by your <i>best</i> friends at
+		<a href="https://discord.gg/emeraldcity" target="_blank"
+			><img
+				style="height:20px;width:auto;margin-right:4px;"
+				src="/emeraldcitylogo.png"
+				alt="Emerald City logo"
+			/>Emerald City</a
+		>, the first DAO on Flow. You may have seen us develop other fun stuff like
+		the
+		<a
+			href="https://emeraldcity.gitbook.io/emerald-city/building-guild/emerald-bot"
+			target="_blank"
+			><img
+				style="height:20px;width:auto;margin-right:4px;"
+				src="/emeraldboticon.png"
+				alt="Emerald bot icon"
+			/>Emerald bot
+		</a>. If you have, hellooooooooo again!
+	</p>
+	<p>
+		Our goal is to educate the Flow community, build really cool things for the
+		Flow ecosystem (like FLOAT), and pave the way for DAOs on Flow. We'd love to
+		have you!
 	</p>
 </div>
 
