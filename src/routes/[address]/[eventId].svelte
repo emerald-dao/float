@@ -6,7 +6,13 @@
     user,
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
-  import { getFLOATEvent, claimFLOAT } from "$lib/flow/actions.js";
+  import {
+    getFLOATEvent,
+    claimFLOAT,
+    toggleActive,
+    toggleTransferrable,
+    deleteEvent,
+  } from "$lib/flow/actions.js";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import Countdown from "$lib/components/common/Countdown.svelte";
@@ -77,9 +83,9 @@
       -->
 
         {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
-          <button class="secondary" disabled
-            >You have already claimed this FLOAT.</button
-          >
+          <button class="secondary" disabled>
+            You have already claimed this FLOAT.
+          </button>
         {:else if floatEvent?.claimable}
           {#if floatEvent?.isOpen && !floatEvent?.requiresSecret}
             {#if !$floatClaimedSuccessfully}
@@ -95,12 +101,13 @@
                 role="button"
                 class="d-block"
                 href="/account"
-                style="display:block">FLOAT claimed successfully!</a
-              >
+                style="display:block"
+                >FLOAT claimed successfully!
+              </a>
             {/if}
           {:else if floatEvent?.isOpen}
-            <label for="claimCode"
-              >Enter the claim code below.
+            <label for="claimCode">
+              Enter the claim code below.
               <input
                 type="text"
                 name="claimCode"
@@ -109,9 +116,9 @@
               />
             </label>
             {#if claimCode === ""}
-              <button class="secondary outline" disabled
-                >You must enter a secret code.</button
-              >
+              <button class="secondary outline" disabled>
+                You must enter a secret code.
+              </button>
             {:else if !$floatClaimedSuccessfully}
               <button
                 aria-busy={$floatClaimingInProgress}
@@ -128,35 +135,61 @@
                 style="display:block">FLOAT claimed successfully!</a
               >
             {/if}
+          {:else if !floatEvent?.active}
+            <button class="secondary outline" disabled>
+              This FLOAT has been manually closed by the host.
+            </button>
           {:else if floatEvent?.capacity && floatEvent?.capacity <= floatEvent?.currentCapacity}
-            <button class="secondary outline" disabled
-              >This FLOAT is no longer available.<br /> All
-              <span class="emphasis"
-                >{floatEvent?.currentCapacity}/{floatEvent?.capacity}</span
-              > have been claimed.</button
-            >
+            <button class="secondary outline" disabled>
+              This FLOAT is no longer available.<br /> All
+              <span class="emphasis">
+                {floatEvent?.currentCapacity}/{floatEvent?.capacity}
+              </span> have been claimed.
+            </button>
           {:else if floatEvent?.startTime > currentUnixTime}
             <button class="secondary outline" disabled>
               This FLOAT Event has not started yet.<br />
               Starting in
-              <span class="emphasis"
-                ><Countdown unix={floatEvent?.startTime} /></span
-              >
+              <span class="emphasis">
+                <Countdown unix={floatEvent?.startTime} />
+              </span>
             </button>
           {:else if floatEvent?.endTime < currentUnixTime}
-            <button class="secondary outline" disabled
-              >This FLOAT is no longer available.<br />This event has ended.</button
-            >
+            <button class="secondary outline" disabled>
+              This FLOAT is no longer available.<br />This event has ended.
+            </button>
           {:else}
-            <button class="secondary outline" disabled
-              >This FLOAT is not claimable.<br />Unknown reason.</button
-            >
+            <button class="secondary outline" disabled>
+              This FLOAT is not claimable.<br />Unknown reason.
+            </button>
           {/if}
         {:else}
-          <button class="secondary outline" disabled
-            >This FLOAT is not claimable.<br />The host opted to distribute it
-            manually.</button
-          >
+          <button class="secondary outline" disabled>
+            This FLOAT is not claimable.<br />The host opted to distribute it
+            manually.
+          </button>
+        {/if}
+        {#if $user?.addr == floatEvent?.host}
+          <div class="toggle">
+            <button
+              class="outline"
+              on:click={() => toggleActive(floatEvent?.id)}
+            >
+              Make {floatEvent?.active ? "inactive" : "active"}
+            </button>
+            <button
+              class="outline"
+              on:click={() => toggleTransferrable(floatEvent?.id)}
+            >
+              {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
+            </button>
+            <button
+              class="outline red"
+              on:click={() => deleteEvent(floatEvent?.id)}
+            >
+              Delete this event
+            </button>
+          </div>
         {/if}
       </footer>
     </article>
@@ -182,5 +215,23 @@
   .muted {
     font-size: 0.7rem;
     opacity: 0.7;
+  }
+
+  .toggle {
+    margin-top: 15px;
+    margin-bottom: 0px;
+    position: relative;
+    display: flex;
+    justify-content: space-around;
+    height: auto;
+  }
+
+  .toggle button {
+    width: 30%;
+  }
+
+  .red {
+    border-color: red;
+    color: red;
   }
 </style>

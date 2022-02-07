@@ -328,6 +328,161 @@ export const getFLOATs = async (addr) => {
   }
 }
 
+export const toggleActive = async (id) => {
+  let transactionId = false;
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvent: &FLOAT.FLOATEvent
+
+        prepare(acct: AuthAccount) {
+          let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+        }
+
+        execute {
+          self.FLOATEvent.toggleActive()
+          log("Toggled the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(id, t.UInt64),
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const toggleTransferrable = async (id) => {
+  let transactionId = false;
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvent: &FLOAT.FLOATEvent
+
+        prepare(acct: AuthAccount) {
+          let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+        }
+
+        execute {
+          self.FLOATEvent.toggleTransferrable()
+          log("Toggled the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(id, t.UInt64),
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const deleteEvent = async (id) => {
+  let transactionId = false;
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+        }
+
+        execute {
+          self.FLOATEvents.deleteEvent(id: id)
+          log("Removed the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(id, t.UInt64),
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
 function initTransactionState() {
   transactionInProgress.set(true);
   transactionStatus.set(-1);

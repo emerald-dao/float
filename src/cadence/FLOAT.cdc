@@ -269,7 +269,8 @@ pub contract FLOAT: NonFungibleToken {
                         _endTime: self.Timelock?.dateEnding,
                         _requiresSecret: self.Secret?.secretPhrase != nil,
                         _capacity: self.Limited?.capacity,
-                        _isOpen: self.isOpen()
+                        _isOpen: self.isOpen(),
+                        _active: self.active
                     )
             }
 
@@ -313,6 +314,9 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         destroy() {
+            if self.totalSupply != 0 {
+                panic("You cannot delete this event because the total supply is not 0.")
+            }
             emit FLOATEventDestroyed(host: self.host, id: self.id, name: self.name)
         }
     }
@@ -442,7 +446,7 @@ pub contract FLOAT: NonFungibleToken {
             let name: String = self.getEvent(id: id).name
 
             self.nameToId[name] == nil
-            let event <- self.events.remove(key: id)
+            let event <- self.events.remove(key: id) ?? panic("This event does not exist")
             destroy event
         }
 
@@ -565,10 +569,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath002
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath002
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath002
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath002
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath002
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath003
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath003
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath003
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath003
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath003
     }
 }

@@ -55,6 +55,7 @@ pub contract FLOATMetadataViews {
         pub let capacity: UInt64?
         
         pub let isOpen: Bool
+        pub let active: Bool
 
         init(
             _claimable: Bool,
@@ -73,7 +74,8 @@ pub contract FLOATMetadataViews {
             _endTime: UFix64?,
             _requiresSecret: Bool,
             _capacity: UInt64?,
-            _isOpen: Bool
+            _isOpen: Bool,
+            _active: Bool
         ) {
             self.claimable = _claimable
             self.id = _id
@@ -93,6 +95,7 @@ pub contract FLOATMetadataViews {
             self.requiresSecret = _requiresSecret
             self.capacity = _capacity
             self.isOpen = _isOpen
+            self.active = _active
         }
     }
 
