@@ -104,6 +104,7 @@ h3 {
   display:inline-flex;
   flex-wrap: wrap;
   justify-content: center; 
+  align-items:stretch;
 }
 
 .card {
@@ -115,11 +116,9 @@ h3 {
   display:inline-flex;
   flex-direction:column;
   justify-content:end;
-  box-sizing:border-box;
   align-items:center;
   border:1px solid transparent;
-  align-self:stretch;
-  height:90%;
+  height:95%;
   
 }
 
