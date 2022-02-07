@@ -4,10 +4,10 @@
   
   import { draftFloat } from '$lib/stores';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants';
-
+  
   import LibLoader from '$lib/components/LibLoader.svelte';
-import { onMount } from 'svelte';
-
+  import { onMount } from 'svelte';
+  
   let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
   
   /* States related to image upload */
@@ -15,46 +15,46 @@ import { onMount } from 'svelte';
   let uploading = false;
   let uploadingPercent = 0;
   let uploadedSuccessfully = false;
-
+  
   let imagePreview;
   let imagePreviewSrc = null;
-
+  
   onMount(() => {
     ipfsIsReady = window?.IpfsHttpClient ?? false;
   })
   
   let uploadToIPFS = async (e) => {
-      uploading = true;
-      uploadingPercent = 0;
-
-      // imagePreviewSrc = e.target.files[0]
-      let file = e.target.files[0];
-
-      function progress(len) {
-        uploadingPercent = len / file.size;
-      }
-      console.log('uploading')
-
-      const client =  window.IpfsHttpClient.create({
-        host: 'ipfs.infura.io',
-        port: 5001,
-        protocol: 'https'
-      });
-
-      console.log(file)
-      const added = await client.add(file, { progress });
-      uploadedSuccessfully = true;
-      uploading = false
-      const hash = added.path;
-      $draftFloat.ipfsHash = hash;
+    uploading = true;
+    uploadingPercent = 0;
+    
+    // imagePreviewSrc = e.target.files[0]
+    let file = e.target.files[0];
+    
+    function progress(len) {
+      uploadingPercent = len / file.size;
+    }
+    console.log('uploading')
+    
+    const client =  window.IpfsHttpClient.create({
+      host: 'ipfs.infura.io',
+      port: 5001,
+      protocol: 'https'
+    });
+    
+    console.log(file)
+    const added = await client.add(file, { progress });
+    uploadedSuccessfully = true;
+    uploading = false
+    const hash = added.path;
+    $draftFloat.ipfsHash = hash;
   };
-
-
+  
+  
   function ipfsReady() {
     console.log('ipfs is ready')
     ipfsIsReady = true;
   }
-
+  
 </script>
 
 <style>
@@ -69,7 +69,7 @@ import { onMount } from 'svelte';
     font-weight: 400;
     opacity: 0.6;
   }
-
+  
   .image-preview {
     max-width: 150px;
     height: auto;
@@ -86,11 +86,11 @@ import { onMount } from 'svelte';
   <article>
     
     <h1 class="mb-1">Create a new FLOAT</h1>
-
+    
     <label for="name">Event Name
       <input type="text" id="name" name="name" bind:value={$draftFloat.name} >
     </label>
-
+    
     <label for="name">Event URL
       <input type="text" id="name" name="name" bind:value={$draftFloat.url} >
     </label>
@@ -103,20 +103,20 @@ import { onMount } from 'svelte';
     <label for="image">Event Image
       <input aria-busy="{!!uploading}" on:change={(e) => uploadToIPFS(e)} type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
       {#if uploading}
-        <progress value="{uploadingPercent * 100}" max="100"></progress>
+      <progress value="{uploadingPercent * 100}" max="100"></progress>
       {/if}
-  
+      
       {#if uploadedSuccessfully}
-        <small>✓ Image uploaded successfully to IPFS!</small>
+      <small>✓ Image uploaded successfully to IPFS!</small>
       {/if}
     </label>
     {:else}
     <p>IPFS not loaded</p>
     {/if}
-
-
+    
+    
     {#if imagePreviewSrc}
-      <img class="image-preview" bind:this={imagePreview} src="{URL.createObjectURL(imagePreviewSrc)}" alt="Preview" />
+    <img class="image-preview" bind:this={imagePreview} src="{URL.createObjectURL(imagePreviewSrc)}" alt="Preview" />
     {/if}
     
     <!-- 
@@ -127,7 +127,7 @@ import { onMount } from 'svelte';
       Requires Claim Code: Yes vs No (btw so are we going with hash or code after the event?) 
     -->
     <h4>Configure your FLOAT</h4>
-
+    
     <!-- TRANSFERRABLE -->
     <div class="grid no-break mb-1">
       <button class:secondary={!$draftFloat.transferrable} class="outline" on:click={() => $draftFloat.transferrable = true}>

@@ -18,8 +18,6 @@
     "@sveltejs/adapter-vercel": "1.0.0-next.32",
     "@sveltejs/kit": "1.0.0-next.202",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.32",
-    "countdown": "^2.6.0",
-    "debug": "2.6.9",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "svelte": "^3.44.3"
