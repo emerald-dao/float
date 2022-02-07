@@ -26,6 +26,6 @@
   
   {#if $user?.addr}
   <AccountContents address={$user.addr} />
-  {/if}
+  {/if} 
 </div>
 
