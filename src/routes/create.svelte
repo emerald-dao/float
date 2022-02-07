@@ -4,24 +4,55 @@
   
   import { draftFloat } from '$lib/stores';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants';
-  import { browser } from '$app/env';
 
-  import { create } from 'ipfs-http-client';
+  import LibLoader from '$lib/components/LibLoader.svelte';
+import { onMount } from 'svelte';
 
-  let client;
-  let timezone;
-  let uploadToIPFS;
+  let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
+  
+  /* States related to image upload */
+  let ipfsIsReady = false;
+  let uploading = false;
+  let uploadingPercent = 0;
+  let uploadedSuccessfully = false;
 
-  if(browser) {
-    client = create('https://ipfs.infura.io:5001/api/v0');
-    timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
-    
-    uploadToIPFS = async (e) => {
+  let imagePreview;
+  let imagePreviewSrc = null;
+
+  onMount(() => {
+    ipfsIsReady = window?.IpfsHttpClient ?? false;
+  })
+  
+  let uploadToIPFS = async (e) => {
+      uploading = true;
+      uploadingPercent = 0;
+
+      // imagePreviewSrc = e.target.files[0]
       let file = e.target.files[0];
-      const added = await client.add(file);
+
+      function progress(len) {
+        uploadingPercent = len / file.size;
+      }
+      console.log('uploading')
+
+      const client =  window.IpfsHttpClient.create({
+        host: 'ipfs.infura.io',
+        port: 5001,
+        protocol: 'https'
+      });
+
+      console.log(file)
+      const added = await client.add(file, { progress });
+      uploadedSuccessfully = true;
+      uploading = false
       const hash = added.path;
       $draftFloat.ipfsHash = hash;
-    }
+  };
+
+
+  function ipfsReady() {
+    console.log('ipfs is ready')
+    ipfsIsReady = true;
   }
 
 </script>
@@ -38,11 +69,18 @@
     font-weight: 400;
     opacity: 0.6;
   }
+
+  .image-preview {
+    max-width: 150px;
+    height: auto;
+  }
 </style>
 
 <svelte:head>
 <title>Create a new FLOAT {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
+
+<LibLoader url="https://cdn.jsdelivr.net/npm/ipfs-http-client@56.0.0/index.min.js" on:loaded={ipfsReady} uniqueId={+new Date()} />
 
 <div class="container">
   <article>
@@ -61,9 +99,25 @@
       <textarea id="description" name="description" bind:value={$draftFloat.description}></textarea>
     </label>
     
+    {#if ipfsIsReady}
     <label for="image">Event Image
-      <input on:change={(e) => uploadToIPFS(e)} type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
+      <input aria-busy="{!!uploading}" on:change={(e) => uploadToIPFS(e)} type="file" id="image" name="image" accept="image/png, image/gif, image/jpeg">
+      {#if uploading}
+        <progress value="{uploadingPercent * 100}" max="100"></progress>
+      {/if}
+  
+      {#if uploadedSuccessfully}
+        <small>✓ Image uploaded successfully to IPFS!</small>
+      {/if}
     </label>
+    {:else}
+    <p>IPFS not loaded</p>
+    {/if}
+
+
+    {#if imagePreviewSrc}
+      <img class="image-preview" bind:this={imagePreview} src="{URL.createObjectURL(imagePreviewSrc)}" alt="Preview" />
+    {/if}
     
     <!-- 
       
