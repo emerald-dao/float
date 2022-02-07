@@ -31,7 +31,7 @@
       <a href="/{float?.host}" class="host">{float?.host}</a>
     </small>
   </p>
-  <code>{float?.totalSupply}</code>
+  <code>#{float?.totalSupply}</code>
 </article>
 
 {:else}

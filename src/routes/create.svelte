@@ -1,5 +1,5 @@
 <script>
-  import { user } from "$lib/flow/stores";
+  import { user, eventCreationInProgress, eventCreatedSuccessfully } from "$lib/flow/stores";
   import { authenticate, createFloat } from '$lib/flow/actions';
   
   import { draftFloat } from '$lib/stores';
@@ -7,9 +7,9 @@
   
   import LibLoader from '$lib/components/LibLoader.svelte';
   import { onMount } from 'svelte';
+import Float from '$lib/components/Float.svelte';
   
   let timezone = new Date().toLocaleTimeString('en-us',{timeZoneName:'short'}).split(' ')[2];
-  
   /* States related to image upload */
   let ipfsIsReady = false;
   let uploading = false;
@@ -47,12 +47,18 @@
     uploading = false
     const hash = added.path;
     $draftFloat.ipfsHash = hash;
+    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`
   };
   
   
   function ipfsReady() {
     console.log('ipfs is ready')
     ipfsIsReady = true;
+  }
+
+  function initCreateFloat() {
+    // TODO: check if all fields are correctly filled out
+    createFloat($draftFloat)
   }
   
 </script>
@@ -116,7 +122,15 @@
     
     
     {#if imagePreviewSrc}
-    <img class="image-preview" bind:this={imagePreview} src="{URL.createObjectURL(imagePreviewSrc)}" alt="Preview" />
+    <h3>Preview</h3>
+    <Float float={{
+      id: 'XXXXX',
+      name: $draftFloat.name,
+      host: $user?.addr || '0x0000000000',
+      image: $draftFloat.ipfsHash,
+      totalSupply: $draftFloat.quantity || 0,
+    }} preview={true} />
+    <div class="mb-2"></div>
     {/if}
     
     <!-- 
@@ -126,7 +140,7 @@
       Time: UNLIMITED vs LIMITED (toggles start /end time inputs)
       Requires Claim Code: Yes vs No (btw so are we going with hash or code after the event?) 
     -->
-    <h4>Configure your FLOAT</h4>
+    <h3 class="mb-1">Configure your FLOAT</h3>
     
     <!-- TRANSFERRABLE -->
     <div class="grid no-break mb-1">
@@ -222,8 +236,10 @@
       <div class="mt-2 mb-2">
         <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
       </div>
+      {:else if $eventCreatedSuccessfully}
+      <a role="button" class="d-block" href="/account" style="display:block">Event created successfully!</a>
       {:else}
-      <button on:click={() => createFloat($draftFloat)}>Create FLOAT</button>
+      <button on:click={initCreateFloat} aria-busy={$eventCreationInProgress} disabled={$eventCreationInProgress}>{ $eventCreationInProgress ? "Creating" : "Create"} FLOAT</button>
       {/if}
     </footer>
   </article>

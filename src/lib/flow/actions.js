@@ -3,7 +3,17 @@ import { get } from 'svelte/store';
 
 import * as fcl from "@samatech/onflow-fcl-esm";
 import "./config";
-import { user, txId, transactionStatus, transactionInProgress } from './stores.js';
+import { 
+  user, 
+  txId, 
+  transactionStatus, 
+  transactionInProgress, 
+  eventCreationInProgress, 
+  eventCreatedSuccessfully,
+  floatClaimingInProgress,
+  floatClaimedSuccessfully
+} from './stores.js';
+import { draftFloat } from '$lib/stores';
 
 if (browser) {
   // set Svelte $user store to currentUser, 
@@ -16,6 +26,7 @@ export const unauthenticate = () => fcl.unauthenticate();
 export const authenticate = () => fcl.authenticate();
 
 export const createFloat = async (draftFloat) => {
+
 
   /**
    * WE NEED TO VALIDATE THE DRAFT FLOAT
@@ -38,6 +49,8 @@ export const createFloat = async (draftFloat) => {
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
   };
+
+  eventCreationInProgress.set(true);
 
   let transactionId = false;
   initTransactionState()
@@ -119,11 +132,16 @@ export const createFloat = async (draftFloat) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if(res.status === 4) {
-        setTimeout(() => transactionInProgress.set(false),2000)
+        eventCreatedSuccessfully.set(true);
+        setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
   } catch (e) {
+    eventCreatedSuccessfully.set(false);
     transactionStatus.set(99)
     console.log(e)
   }
@@ -133,6 +151,8 @@ export const claimFLOAT = async (host, id, secret) => {
 
   let transactionId = false;
   initTransactionState()
+
+  floatClaimingInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -183,12 +203,22 @@ export const claimFLOAT = async (host, id, secret) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if(res.status === 4) {
+        floatClaimedSuccessfully.set(true);
+        floatClaimingInProgress.set(false);
+        draftFloat.set({
+          claimable: true,
+          transferrable: true,
+        })
+
         setTimeout(() => transactionInProgress.set(false),2000)
       }
     })
 
   } catch (e) {
     transactionStatus.set(99)
+    floatClaimedSuccessfully.set(false);
+    floatClaimingInProgress.set(false);
+
     console.log(e)
   }
 }
@@ -300,4 +330,6 @@ export const getFLOATs = async (addr) => {
 function initTransactionState() {
   transactionInProgress.set(true);
   transactionStatus.set(-1);
+  floatClaimedSuccessfully.set(false);
+  eventCreatedSuccessfully.set(false);
 }

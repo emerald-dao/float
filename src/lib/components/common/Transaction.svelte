@@ -4,6 +4,10 @@ import { slide } from 'svelte/transition';
 </script>
 
 <style>
+  article {
+    padding: 1rem;
+  }
+  
   progress {
     margin-top:1em;
   }
@@ -60,6 +64,6 @@ import { slide } from 'svelte/transition';
   {:else}
   <span data-theme="invalid">Error!</span>
   {/if}
-  <small><a href="https://docs.onflow.org/access-api/">More info</a></small>
+  <!-- <small><a href="https://docs.onflow.org/access-api/">More info</a></small> -->
 </article>
 {/if}

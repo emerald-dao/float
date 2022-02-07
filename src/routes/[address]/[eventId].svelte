@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores';
-  import { user } from "$lib/flow/stores";
+  import { floatClaimedSuccessfully, floatClaimingInProgress, user } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   import { getFLOATEvent, claimFLOAT } from '$lib/flow/actions.js';
   import Loading from '$lib/components/common/Loading.svelte';
@@ -8,7 +8,6 @@
   import Countdown from '$lib/components/common/Countdown.svelte';
   
   let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
-  console.log(floatEvent);
   
   let claimCode = '';
 
@@ -39,6 +38,11 @@
   p {
     margin-bottom: 0px;
   }
+
+  .muted {
+    font-size:0.7rem;
+    opacity:0.7;
+  }
 </style>
 <div class="container">
   
@@ -50,12 +54,13 @@
   {:then floatEvent}
   <article>
     <header>
-      <a href="{floatEvent?.url}" target="_blank"><h1>FLOAT Event #{$page.params.eventId}</h1></a>
-      <p>Created on {new Date(floatEvent?.dateCreated * 1000).toLocaleString()}</p>
+      <a href="{floatEvent?.url}" target="_blank"><h1>{floatEvent?.name}</h1></a>
+      <p>FLOAT Event #{$page.params.eventId}</p>
+      <p><small class="muted">Created on {new Date(floatEvent?.dateCreated * 1000).toLocaleString()}</small></p>
     </header>
     <Float float={floatEvent} preview={true} />
     
-    <blockquote>{floatEvent?.description}</blockquote>
+    <blockquote><strong><small class="muted">DESCRIPTION</small></strong><br/>{floatEvent?.description}</blockquote>
     <p><span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.</p>
     {#if floatEvent?.capacity}
       <p>Only <span class="emphasis">{floatEvent.capacity}</span> will ever exist.</p>
@@ -78,16 +83,22 @@
         <button class="secondary" disabled>You have already claimed this FLOAT.</button>
       {:else if floatEvent?.claimable}
         {#if floatEvent?.isOpen && !floatEvent?.requiresSecret}
-          <button on:click={() => claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}>Claim this FLOAT</button>
+        {#if !$floatClaimedSuccessfully}
+        <button aria-busy={$floatClaimingInProgress} disabled={$floatClaimingInProgress} on:click={() => claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}>{ $floatClaimingInProgress ? "Claiming" : "Claim this"} FLOAT</button>
+        {:else}
+        <a role="button" class="d-block" href="/account" style="display:block">FLOAT claimed successfully!</a>
+        {/if}
         {:else if floatEvent?.isOpen}
           <label for="claimCode">Enter the claim code below.
             <input type="text" name="claimCode" bind:value={claimCode} placeholder="secret code" />
           </label>
           {#if claimCode === ''}
             <button class="secondary outline" disabled>You must enter a secret code.</button>
+          {:else if !$floatClaimedSuccessfully}
+            <button aria-busy={$floatClaimingInProgress} disabled={$floatClaimingInProgress} on:click={() => claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}>{ $floatClaimingInProgress ? "Claiming" : "Claim this"} FLOAT</button>
           {:else}
-            <button on:click={() => claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}>Claim this FLOAT</button>
-          {/if}
+            <a role="button" class="d-block" href="/account" style="display:block">FLOAT claimed successfully!</a>
+            {/if}
         {:else if floatEvent?.capacity && floatEvent?.capacity <= floatEvent?.currentCapacity}
         <button class="secondary outline" disabled>This FLOAT is no longer available.<br/> All <span class="emphasis">{ floatEvent?.currentCapacity}/{floatEvent?.capacity}</span> have been claimed.</button>
         {:else if floatEvent?.startTime > currentUnixTime}
