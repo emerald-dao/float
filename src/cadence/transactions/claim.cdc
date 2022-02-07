@@ -1,6 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../NonFungibleToken.cdc"
-import MetadataViews from "../MetadataViews.cdc"
+import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
 transaction(id: UInt64, host: Address, secret: String) {
  

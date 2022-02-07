@@ -21,16 +21,21 @@
 		create a FLOAT Event so participants can remember and have proof that they
 		were there.
 	</p>
-	<h2>Reward users for taking certain actions.</h2>
-	<p>
-		FLOATs can be configured to only be distributed by the creator. This means
-		the creator can send FLOATs in their own custom transactions to reward their
-		community. Want to give people proof that they participated in your token
-		drop? Give them a FLOAT in your transaction.
-	</p>
+
 	<h2>Cherish your favorite memories #onFlow.</h2>
 	<p>
 		Claim FLOATs and show them off as proof that <strong>you</strong> were there.
+	</p>
+
+	<h2 id="distribute-directly">Reward users for taking certain actions.</h2>
+	<p>
+		FLOATs can be configured to only be distributed by the creator. You can do
+		this by selecting <span class="emphasis">Not Claimable</span> on the
+		<code>/create</code>
+		page. This means the creator can send FLOATs in their own custom transactions
+		to reward their community. Want to give people proof that they participated in
+		your token drop? Give them a FLOAT automatically in your transaction code when
+		the user purchases the NFT.
 	</p>
 
 	<h2>FLOAT == "Flow Attendance"</h2>

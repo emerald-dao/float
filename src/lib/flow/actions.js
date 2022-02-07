@@ -3,12 +3,12 @@ import { get } from 'svelte/store';
 
 import * as fcl from "@samatech/onflow-fcl-esm";
 import "./config";
-import { 
-  user, 
-  txId, 
-  transactionStatus, 
-  transactionInProgress, 
-  eventCreationInProgress, 
+import {
+  user,
+  txId,
+  transactionStatus,
+  transactionInProgress,
+  eventCreationInProgress,
   eventCreatedSuccessfully,
   floatClaimingInProgress,
   floatClaimedSuccessfully
@@ -33,7 +33,7 @@ export const createFloat = async (draftFloat) => {
    * AND PARSE THE FIELDS AND GET THEM 
    * READY FOR THE TRANSACTION (i.e. turn them into the right arguments)
    */
-  
+
   let floatObject = {
     claimable: draftFloat.claimable,
     name: draftFloat.name,
@@ -131,7 +131,7 @@ export const createFloat = async (draftFloat) => {
 
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
-      if(res.status === 4) {
+      if (res.status === 4) {
         eventCreatedSuccessfully.set(true);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
@@ -202,7 +202,7 @@ export const claimFLOAT = async (host, id, secret) => {
 
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
-      if(res.status === 4) {
+      if (res.status === 4) {
         floatClaimedSuccessfully.set(true);
         floatClaimingInProgress.set(false);
         draftFloat.set({
@@ -210,7 +210,7 @@ export const claimFLOAT = async (host, id, secret) => {
           transferrable: true,
         })
 
-        setTimeout(() => transactionInProgress.set(false),2000)
+        setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
@@ -229,19 +229,19 @@ export const getFLOATEvent = async (addr, id) => {
       cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address, id: UInt64): MetadataViews.FLOATEventMetadataView? {
+      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventMetadataView? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvent =  floatEventCollection.borrowViewResolver(id: id)
-      
-        if let metadata = floatEvent.resolveView(Type<MetadataViews.FLOATEventMetadataView>()) {
-          return metadata as! MetadataViews.FLOATEventMetadataView
+        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
+
+        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
+          return metadata as! FLOATMetadataViews.FLOATEventMetadataView
         }
         return nil
       }
-      
       `,
       args: (arg, t) => [
         arg(addr, t.Address),
@@ -250,7 +250,7 @@ export const getFLOATEvent = async (addr, id) => {
     })
     console.log(queryResult)
     return queryResult || {};
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }
@@ -261,18 +261,19 @@ export const getFLOATEvents = async (addr) => {
       cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address): {String: MetadataViews.FLOATEventMetadataView} {
+      pub fun main(account: Address): {String: FLOATMetadataViews.FLOATEventMetadataView} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
-        let returnVal: {String: MetadataViews.FLOATEventMetadataView} = {}
-      
+        let returnVal: {String: FLOATMetadataViews.FLOATEventMetadataView} = {}
+
         for id in floatEvents {
           let view = floatEventCollection.borrowViewResolver(id: id)
-          if var metadata = view.resolveView(Type<MetadataViews.FLOATEventMetadataView>()) {
-            var floatEvent = metadata as! MetadataViews.FLOATEventMetadataView
+          if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
+            var floatEvent = metadata as! FLOATMetadataViews.FLOATEventMetadataView
             returnVal[floatEvent.name] = floatEvent
           }
         }
@@ -285,7 +286,7 @@ export const getFLOATEvents = async (addr) => {
     })
     console.log(queryResult)
     return queryResult || {};
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }
@@ -297,24 +298,24 @@ export const getFLOATs = async (addr) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
       import NonFungibleToken from 0xNFT
+      import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address): [MetadataViews.FLOATMetadataView] {
+      pub fun main(account: Address): [FLOATMetadataViews.FLOATMetadataView] {
         let nftCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
                               .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the Collection from the account.")
         let floats = nftCollection.getIDs()
-        var returnVal: [MetadataViews.FLOATMetadataView] = []
+        var returnVal: [FLOATMetadataViews.FLOATMetadataView] = []
         for id in floats {
           let view = nftCollection.borrowViewResolver(id: id)
-          if var metadata = view.resolveView(Type<MetadataViews.FLOATMetadataView>()) {
-            var float = metadata as! MetadataViews.FLOATMetadataView
+          if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATMetadataView>()) {
+            var float = metadata as! FLOATMetadataViews.FLOATMetadataView
             returnVal.append(float)
           }
         }
-      
+
         return returnVal
       }
-      
       `,
       args: (arg, t) => [
         arg(addr, t.Address)
@@ -322,7 +323,7 @@ export const getFLOATs = async (addr) => {
     })
     console.log(queryResult)
     return queryResult || [];
-  } catch(e) {
+  } catch (e) {
     console.log(e);
   }
 }
