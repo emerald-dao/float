@@ -17,11 +17,11 @@
     <small>
       Created by 
       <a href="https://discord.gg/emeraldcity" target="_blank">Emerald City DAO</a>
-      |
+      | Contribute on
       <a href="https://github.com/muttoni/float" target="_blank">
         <svg
-        width="32"
-        height="32"
+        width="24"
+        height="24"
         viewBox="0 0 1024 1024"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
@@ -34,6 +34,8 @@
         fill="currentColor"
         />
       </svg>
+
+      Github
     </a>
   </small>
 </p>

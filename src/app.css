@@ -114,7 +114,7 @@ h3 {
   margin-bottom: 10px;
   display:inline-flex;
   flex-direction:column;
-  justify-content:center;
+  justify-content:end;
   box-sizing:border-box;
   align-items:center;
   border:1px solid transparent;
