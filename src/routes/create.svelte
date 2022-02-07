@@ -128,7 +128,7 @@ import Float from '$lib/components/Float.svelte';
       name: $draftFloat.name,
       host: $user?.addr || '0x0000000000',
       image: $draftFloat.ipfsHash,
-      totalSupply: $draftFloat.quantity || 0,
+      totalSupply: 'SERIAL_NUM'
     }} preview={true} />
     <div class="mb-2"></div>
     {/if}
@@ -161,7 +161,7 @@ import Float from '$lib/components/Float.svelte';
       </button>
       <button class:secondary={$draftFloat.claimable} class="outline" on:click={() => $draftFloat.claimable = false}>
         Not Claimable
-        <span>You will be responsible for distributing the FLOAT to addresses.</span>
+        <span>You will be responsible for distributing the FLOAT to accounts in your own custom transactions.</span>
       </button>
     </div>
     
