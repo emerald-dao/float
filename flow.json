@@ -6,8 +6,19 @@
 		}
 	},
 	"contracts": {
-		"NonFungibleToken": "./src/cadence/NonFungibleToken.cdc",
-		"MetadataViews": "./src/cadence/MetadataViews.cdc",
+		"NonFungibleToken": {
+			"source": "./src/cadence/core-contracts/NonFungibleToken.cdc",
+			"aliases": {
+				"testnet": "0x631e88ae7f1d7c20"
+			}
+		},
+		"MetadataViews": {
+			"source": "./src/cadence/core-contracts/MetadataViews.cdc",
+			"aliases": {
+				"testnet": "0x631e88ae7f1d7c20"
+			}
+		},
+		"FLOATMetadataViews": "./src/cadence/FLOATMetadataViews.cdc",
 		"FLOAT": "./src/cadence/FLOAT.cdc"
 	},
 	"networks": {
@@ -21,21 +32,20 @@
 			"key": "b6b890fe8d3c632f0b7980baebdd8b87f0bcae846cc869c53c28434d733ebc81"
 		},
 		"testnet-account": {
-			"address": "0x15aeea7aae3c92e6",
+			"address": "0x39f0e47b8acdcbc6",
 			"key": {
 				"type": "hex",
 				"index": 0,
-				"signatureAlgorithm": "ECDSA_secp256k1",
+				"signatureAlgorithm": "ECDSA_P256",
 				"hashAlgorithm": "SHA3_256",
-				"privateKey": "887fc1cc9e778524230df05c73e9e072090f262e98b8bc5bf9a7c9ee0edb211b"
+				"privateKey": "a26596dab2277a4b83cc3fdc847b04347f22cf31d733c3a0b0a11d8786ef2686"
 			}
 		}
 	},
 	"deployments": {
 		"testnet": {
 			"testnet-account": [
-				"NonFungibleToken",
-				"MetadataViews",
+				"FLOATMetadataViews",
 				"FLOAT"
 			]
 		}
