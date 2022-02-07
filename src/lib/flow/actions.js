@@ -297,51 +297,6 @@ export const getFLOATs = async (addr) => {
   }
 }
 
-// export const executeTransaction = async () => {
-//   initTransactionState()
-//   try {
-//     const transactionId = await fcl.mutate({
-//       cadence: `
-//         import Profile from 0xProfile
-  
-//         transaction(name: String, color: String, info: String) {
-//           prepare(account: AuthAccount) {
-//             account
-//               .borrow<&Profile.Base{Profile.Owner}>(from: Profile.privatePath)!
-//               .setName(name)
-
-//             account
-//               .borrow<&Profile.Base{Profile.Owner}>(from: Profile.privatePath)!
-//               .setInfo(info)
-
-//             account
-//               .borrow<&Profile.Base{Profile.Owner}>(from: Profile.privatePath)!
-//               .setColor(color)
-//           }
-//         }
-//       `,
-//       args: (arg, t) => [
-//         arg(get(profile).name, t.String),
-//         arg(get(profile).color, t.String),
-//         arg(get(profile).info, t.String),
-//       ],
-//       payer: fcl.authz,
-//       proposer: fcl.authz,
-//       authorizations: [fcl.authz],
-//       limit: 50
-//     })
-//     fcl.tx(transactionId).subscribe(res => {
-//       transactionStatus.set(res.status)
-//       if(res.status === 4) {
-//         setTimeout(() => transactionInProgress.set(false),2000)
-//       }
-//     })
-//   } catch(e) {
-//     console.log(e);
-//     transactionStatus.set(99)
-//   }
-// }
-
 function initTransactionState() {
   transactionInProgress.set(true);
   transactionStatus.set(-1);
