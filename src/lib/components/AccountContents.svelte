@@ -26,7 +26,7 @@
   {#await floats}
   <Loading />
   {:then floats} 
-    {#if floats.length > 0}
+    {#if floats?.length > 0}
       {#each floats as float}
       <Float {float} />
       {/each}
