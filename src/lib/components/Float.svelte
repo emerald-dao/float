@@ -31,11 +31,11 @@
       <a href="/{float?.host}" class="host">{float?.host}</a>
     </small>
   </p>
-  <code>#XXXXX</code>
+  <code>{float?.totalSupply}</code>
 </article>
 
 {:else}
-<a class="no-style" href="/{float?.host}/{float?.id}">
+<a class="no-style" href="/{float?.host}/{float?.eventID}">
   <article class="card">
     <img src="https://ipfs.infura.io/ipfs/{float?.image}" alt="{float.name} Image" />
     <h1>{float?.name}</h1>

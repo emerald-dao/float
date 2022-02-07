@@ -16,9 +16,9 @@
   <p>
     <small>
       Created by 
-      <a href="https://emeraldcity.gitbook.io/emerald-city/">Emerald City DAO</a>
+      <a href="https://discord.gg/emeraldcity" target="_blank">Emerald City DAO</a>
       |
-      <a href="https://github.com/muttoni/float">
+      <a href="https://github.com/muttoni/float" target="_blank">
         <svg
         width="32"
         height="32"

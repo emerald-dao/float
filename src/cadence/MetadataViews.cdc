@@ -67,7 +67,6 @@ pub contract MetadataViews {
         pub let endTime: UFix64?
         pub let requiresSecret: Bool
         pub let capacity: UInt64?
-        pub let currentCapacity: UInt64?
         
         pub let isOpen: Bool
 
@@ -82,11 +81,12 @@ pub contract MetadataViews {
             _transferrable: Bool,
             _metadata: {String: String},
             _dateCreated: UFix64,
+            _totalSupply: UInt64,
+            _claimed: {Address: UInt64},
             _startTime: UFix64?,
             _endTime: UFix64?,
             _requiresSecret: Bool,
             _capacity: UInt64?,
-            _currentCapacity: UInt64?,
             _isOpen: Bool
         ) {
             self.claimable = _claimable
@@ -100,13 +100,12 @@ pub contract MetadataViews {
             self.metadata = _metadata
 
             self.dateCreated = _dateCreated
-            self.totalSupply = 0
-            self.claimed = {}
+            self.totalSupply = _totalSupply
+            self.claimed = _claimed
             self.startTime = _startTime
             self.endTime = _endTime
             self.requiresSecret = _requiresSecret
             self.capacity = _capacity
-            self.currentCapacity = _currentCapacity
             self.isOpen = _isOpen
         }
     }

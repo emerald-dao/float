@@ -153,7 +153,7 @@ pub contract FLOAT: NonFungibleToken {
             }
 
             if let Limited = self.Limited {
-                if Limited.currentCapacity >= Limited.capacity {
+                if self.totalSupply >= Limited.capacity {
                     open = false
                 }
             }
@@ -212,11 +212,12 @@ pub contract FLOAT: NonFungibleToken {
                         _transferrable: self.transferrable,
                         _metadata: self.metadata,
                         _dateCreated: self.dateCreated,
+                        _totalSupply: self.totalSupply,
+                        _claimed: self.claimed,
                         _startTime: self.Timelock?.dateStart,
                         _endTime: self.Timelock?.dateEnding,
                         _requiresSecret: self.Secret?.secretPhrase != nil,
                         _capacity: self.Limited?.capacity,
-                        _currentCapacity: self.Limited?.currentCapacity,
                         _isOpen: self.isOpen()
                     )
             }
@@ -319,25 +320,16 @@ pub contract FLOAT: NonFungibleToken {
     //
     // If the maximum capacity is reached, this is no longer active.
     pub struct Limited {
-        // A list of accounts to get track on who is here first
-        // Maps the position of who come first to their address.
-        access(account) var accounts: {UInt64: Address}
-        pub var currentCapacity: UInt64
         pub var capacity: UInt64
 
-        access(account) fun verify(accountAddr: Address) {
+        access(account) fun verify(accountAddr: Address, currentCapacity: UInt64) {
             assert(
-                self.currentCapacity < self.capacity,
+                currentCapacity < self.capacity,
                 message: "This FLOAT Event is at capacity."
             )
-            
-            self.accounts[self.currentCapacity] = accountAddr
-            self.currentCapacity = self.currentCapacity + 1
         }
 
         init(_capacity: UInt64) {
-            self.accounts = {}
-            self.currentCapacity = 0
             self.capacity = _capacity
         }
     }
@@ -481,7 +473,7 @@ pub contract FLOAT: NonFungibleToken {
             // If the FLOATEvent has the `Limited` Prop
             if FLOATEvent.Limited != nil {
                 let Limited: &Limited = &FLOATEvent.Limited! as &Limited
-                Limited.verify(accountAddr: recipient.owner!.address)
+                Limited.verify(accountAddr: recipient.owner!.address, currentCapacity: FLOATEvent.totalSupply)
             }
 
             // You have passed all the props (which act as restrictions).
