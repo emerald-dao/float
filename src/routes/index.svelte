@@ -55,7 +55,7 @@
 </div>
 
 <article>
-  <h3 id="findAddress">View FLOATs from an Address / .Find / Flowns name</h3>
+  <h2 id="findAddress">View FLOATs from an Address</h2>
   <CheckAddress />
 </article>
 

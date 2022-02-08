@@ -1,7 +1,6 @@
 <script>
-  import UserAddress from '$lib/components/UserAddress.svelte'
-  export let float = {}
-  export let preview = false
+  export let float = {};
+  export let preview = false;
 </script>
 
 {#if preview}
@@ -14,9 +13,7 @@
     <p>
       <small>
         <span class="credit">Created by</span>
-        <!-- <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a> -->
-        <UserAddress address={float?.eventHost} simplify />
-
+        <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
       </small>
     </p>
     <code>#{float?.eventMetadata.totalSupply}</code>
@@ -32,9 +29,7 @@
       <p>
         <small>
           <span class="credit">Created by</span>
-          <!-- <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a> -->
-          <UserAddress address={float?.eventHost} simplify />
-
+          <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
         </small>
       </p>
       <code>#{float?.serial}</code>
@@ -48,7 +43,6 @@
   }
 
   .credit {
-    display: block;
     font-size: 0.7rem;
     display: block;
     line-height: 1;
