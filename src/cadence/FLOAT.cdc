@@ -518,8 +518,6 @@ pub contract FLOAT: NonFungibleToken {
             pre {
                 self.events[id] != nil:
                     "This event does not exist."
-                !self.getEvent(id: id).claimable:
-                    "This event is Claimable."
             }
             let FLOATEvent = self.getEvent(id: id)
             FLOATEvent.mint(recipient: recipient)

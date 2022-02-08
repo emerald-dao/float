@@ -72,7 +72,7 @@
 import FLOAT from ${import.meta.env.VITE_FLOAT_ADDRESS}
 import NonFungibleToken from ${import.meta.env.VITE_CORE_CONTRACTS_ADDRESS}
 
-transaction(id: UInt64, recipient: Address) {
+transaction(eventId: UInt64, recipient: Address) {
 
 	let FLOATEvents: &FLOAT.FLOATEvents
 	let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
@@ -92,7 +92,7 @@ transaction(id: UInt64, recipient: Address) {
 		// Give the "recipient" a FLOAT from the event with "id"
 		//
 
-		self.FLOATEvents.distributeDirectly(id: id, recipient: self.RecipientCollection)
+		self.FLOATEvents.distributeDirectly(id: eventId, recipient: self.RecipientCollection)
 		log("Distributed the FLOAT.")
 
 		//
