@@ -33,18 +33,22 @@
   }
 
   img {
-    height: 5rem;
-    width: auto;
+    height: auto;
+    max-width: 160px;
   }
 
   .theme-toggle {
-    padding:0.3rem 0.5rem;
+    padding: 0;
     height: 45px;
     width: 45px;
     background-color: var(--primary-focus);
     border-radius: 50%;
     display: inline-block;
-    text-align:center;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
   }
 </style>
 
