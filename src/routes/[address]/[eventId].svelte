@@ -16,6 +16,7 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import Countdown from "$lib/components/common/Countdown.svelte";
+import Meta from '$lib/components/common/Meta.svelte';
 
   let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
 
@@ -25,12 +26,19 @@
 </script>
 
 <svelte:head>
-  <title>Claim {PAGE_TITLE_EXTENSION}</title>
+  <title>FLOAT #{$page.params.eventId} {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
+
 <div class="container">
   {#await floatEvent}
     <Loading />
   {:then floatEvent}
+    <Meta
+      title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
+      author="{floatEvent?.host}"
+      description="{floatEvent?.description}"
+    />
+
     <article>
       <header>
         <a href={floatEvent?.url} target="_blank"><h1>{floatEvent?.name}</h1></a
