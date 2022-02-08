@@ -9,7 +9,8 @@
     "getEvents": "flow scripts execute ./src/cadence/scripts/get_float_event_ids.cdc 0x958526fe01b782a0 --network=testnet",
     "removeF": "flow accounts remove-contract FLOAT --network=testnet --signer=testnet-account",
     "removeFM": "flow accounts remove-contract FLOATMetadataViews --network=testnet --signer=testnet-account",
-    "removeMDV": "flow accounts remove-contract MetadataViews --network=testnet --signer=testnet-account"
+    "removeMDV": "flow accounts remove-contract MetadataViews --network=testnet --signer=testnet-account",
+    "deploy": "flow project deploy --network=testnet"
   },
   "devDependencies": {
     "@picocss/pico": "^1.4.4",

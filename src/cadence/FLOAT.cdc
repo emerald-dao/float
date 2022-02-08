@@ -19,6 +19,7 @@ pub contract FLOAT: NonFungibleToken {
     pub event ContractInitialized()
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, recipient: Address)
     pub event FLOATDeposited(to: Address, id: UInt64)
+    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATWithdrawn(from: Address, id: UInt64)
     pub event FLOATEventCreated(host: Address, id: UInt64, name: String)
     pub event FLOATEventDestroyed(host: Address, id: UInt64, name: String)
@@ -117,8 +118,14 @@ pub contract FLOAT: NonFungibleToken {
                 getAccount(self.eventHost).getCapability(FLOAT.FLOATEventsPublicPath)
                     .borrow<&FLOATEvents{FLOATEventsPublic}>()
                     ?? panic("Could not get the FLOAT Events from the eventHost.")
-            let floatEvent = floatEvents.getEvent(id: self.eventId)
-            floatEvent.decreaseTotalSupply()
+            let floatEvent: &FLOATEvent = floatEvents.getEvent(id: self.eventId)
+            floatEvent.accountDeletedFLOAT(account: self.originalRecipient)
+            emit FLOATDestroyed(
+                id: self.id, 
+                eventHost: self.eventHost, 
+                eventId: self.eventId, 
+                serial: self.serial
+            )
         }
     }
 
@@ -130,8 +137,8 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun deposit(token: @NonFungibleToken.NFT) {
             let nft <- token as! @NFT
-            emit FLOATDeposited(to: self.owner!.address, id: nft.uuid)
-            self.ownedNFTs[nft.uuid] <-! nft
+            emit FLOATDeposited(to: self.owner!.address, id: nft.id)
+            self.ownedNFTs[nft.id] <-! nft
         }
 
         pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
@@ -156,6 +163,12 @@ pub contract FLOAT: NonFungibleToken {
             let tokenRef = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
             let nftRef = tokenRef as! &NFT
             return nftRef as &{MetadataViews.Resolver}
+        }
+
+        pub fun destroyFLOAT(id: UInt64) {
+            let token <- self.ownedNFTs.remove(key: id) ?? panic("You do not own this FLOAT in your collection")
+            let nft <- token as! @NFT
+            destroy nft
         }
 
         init() {
@@ -219,7 +232,8 @@ pub contract FLOAT: NonFungibleToken {
             return self.transferrable
         }
 
-        access(account) fun decreaseTotalSupply() {
+        access(account) fun accountDeletedFLOAT(account: Address) {
+            self.claimed.remove(key: account)
             self.totalSupply = self.totalSupply - 1
         }
 
@@ -441,7 +455,7 @@ pub contract FLOAT: NonFungibleToken {
                 _transferrable: transferrable,
                 _metadata: metadata
             )
-            self.nameToId[name] = FLOATEvent.id
+            self.nameToId[FLOATEvent.name] = FLOATEvent.id
             self.events[FLOATEvent.id] <-! FLOATEvent
         }
 
@@ -449,7 +463,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun deleteEvent(id: UInt64) {
             let name: String = self.getEvent(id: id).name
 
-            self.nameToId[name] == nil
+            self.nameToId.remove(key: name)
             let event <- self.events.remove(key: id) ?? panic("This event does not exist")
             destroy event
         }
@@ -573,10 +587,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath004
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath004
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath004
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath004
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath004
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath006
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath006
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath006
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath006
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath006
     }
 }

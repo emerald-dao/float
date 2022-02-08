@@ -12,6 +12,8 @@
     toggleActive,
     toggleTransferrable,
     deleteEvent,
+    deleteFLOAT,
+transferFLOAT,
   } from "$lib/flow/actions.js";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
@@ -66,6 +68,9 @@
           }}
           preview={true}
         />
+        <button class="outline red small" on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}>
+          Delete this FLOAT
+        </button>
       {:else}
         <Float
           float={{
@@ -258,5 +263,14 @@
   .red {
     border-color: red;
     color: red;
+  }
+
+  .small {
+    position: relative;
+    width: 20%;
+    font-size: 13px;
+    padding: 5px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 </style>

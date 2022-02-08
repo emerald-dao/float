@@ -223,6 +223,122 @@ export const claimFLOAT = async (host, id, secret) => {
   }
 }
 
+export const deleteFLOAT = async (id) => {
+
+  let transactionId = false;
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let Collection: &FLOAT.Collection
+
+        prepare(acct: AuthAccount) {
+          self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+                              ?? panic("Could not get the Collection from the signer.")
+        }
+
+        execute {
+          self.Collection.destroyFLOAT(id: id)
+          log("Destroyed the FLOAT.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(id, t.UInt64)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        draftFloat.set({
+          claimable: true,
+          transferrable: true,
+        })
+
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+  } catch (e) {
+    transactionStatus.set(99)
+
+    console.log(e)
+  }
+}
+
+export const transferFLOAT = async (id, recipient) => {
+
+  let transactionId = false;
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import NonFungibleToken from 0xNFT
+
+      transaction(id: UInt64, recipient: Address) {
+
+        let Collection: &FLOAT.Collection
+        let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
+
+        prepare(acct: AuthAccount) {
+          self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+                              ?? panic("Could not get the Collection from the signer.")
+          self.RecipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
+                                    .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
+                                    ?? panic("Could not borrow the recipient's public FLOAT Collection.")
+        }
+
+        execute {
+          self.RecipientCollection.deposit(token: <- self.Collection.withdraw(withdrawID: id))
+          log("Transferred the FLOAT.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(id, t.UInt64),
+        arg(recipient, t.Address)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        draftFloat.set({
+          claimable: true,
+          transferrable: true,
+        })
+
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+  } catch (e) {
+    transactionStatus.set(99)
+
+    console.log(e)
+  }
+}
+
 export const getFLOATEvent = async (addr, id) => {
   try {
     let queryResult = await fcl.query({
@@ -319,6 +435,7 @@ export const getFLOATs = async (addr) => {
         arg(addr, t.Address)
       ]
     })
+    console.log(queryResult);
     return queryResult || [];
   } catch (e) {
     console.log(e);
