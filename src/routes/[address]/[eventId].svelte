@@ -199,7 +199,7 @@
               class="outline"
               on:click={() => toggleActive(floatEvent?.id)}
             >
-              Make {floatEvent?.active ? "inactive" : "active"}
+              {floatEvent?.active ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
               class="outline"
@@ -209,6 +209,7 @@
             </button>
             <button
               class="outline red"
+              disabled={floatEvent?.totalSupply !== 0}
               on:click={() => deleteEvent(floatEvent?.id)}
             >
               Delete this event
