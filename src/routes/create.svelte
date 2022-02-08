@@ -333,9 +333,7 @@ transaction(id: UInt64, recipient: Address) {
           on:click={() => ($draftFloat.claimCodeEnabled = true)}
         >
           Use Claim Code
-          <span
-            >Your FLOAT can only be minted if people know the claim code.</span
-          >
+          <span>Your FLOAT can only be minted if people know the claim code.</span>
         </button>
       </div>
       {#if $draftFloat.claimCodeEnabled}
@@ -385,7 +383,7 @@ transaction(id: UInt64, recipient: Address) {
 
   .outline span {
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     line-height: 1.2;
     font-weight: 400;
     opacity: 0.6;

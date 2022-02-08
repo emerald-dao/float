@@ -9,8 +9,10 @@
   let toggleTheme;
 
   onMount(() => {
+    let html = document.querySelector('html')
+    let currentTheme = html.getAttribute('data-theme');
+    $theme = currentTheme;
     toggleTheme = () => {
-      let html = document.querySelector('html')
       let newTheme = $theme === 'light' ? 'dark' : 'light';
       html.setAttribute('data-theme', newTheme);
       $theme = newTheme;
