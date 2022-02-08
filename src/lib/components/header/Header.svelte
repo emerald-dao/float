@@ -4,15 +4,16 @@
   import ConnectWallet from '$lib/components/ConnectWallet.svelte';
   import UserAddress from '../UserAddress.svelte';
   import { onMount } from 'svelte';
+  import { theme } from '$lib/stores.js';
 
   let toggleTheme;
 
   onMount(() => {
     toggleTheme = () => {
       let html = document.querySelector('html')
-      let currentTheme = html.getAttribute('data-theme');
-      let newTheme = currentTheme === 'light' ? 'dark' : 'light';
+      let newTheme = $theme === 'light' ? 'dark' : 'light';
       html.setAttribute('data-theme', newTheme);
+      $theme = newTheme;
       localStorage.setItem('theme', newTheme);
     }
   })

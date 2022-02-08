@@ -15,6 +15,10 @@ export const draftFloat = writable({
   transferrable: true,
 });
 
+let html = document.querySelector('html')
+let currentTheme = html.getAttribute('data-theme');
+export const theme = writable(currentTheme);
+
 // draftFloat.subscribe((value) => {
 //   console.log(value)
 // })

@@ -6,7 +6,7 @@
   } from "$lib/flow/stores";
   import { authenticate, createFloat } from "$lib/flow/actions";
 
-  import { draftFloat } from "$lib/stores";
+  import { draftFloat, theme } from "$lib/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
 
   import LibLoader from "$lib/components/LibLoader.svelte";
@@ -24,6 +24,8 @@
 
   let imagePreview;
   let imagePreviewSrc = null;
+
+  console.log($theme)
 
   onMount(() => {
     ipfsIsReady = window?.IpfsHttpClient ?? false;
@@ -350,7 +352,7 @@ transaction(id: UInt64, recipient: Address) {
       {/if}
     {:else}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
-      <xmp>{distributeCode}</xmp>
+      <xmp class={$theme === 'light' ? 'xmp-light' : 'xmp-dark'}>{distributeCode}</xmp>
     {/if}
 
     <footer>
@@ -398,11 +400,18 @@ transaction(id: UInt64, recipient: Address) {
     position: relative;
     width: 100%;
     font-size: 12px;
-    background: rgb(56, 232, 198, 0.25);
-    color: white;
     padding: 10px;
     overflow: scroll;
     border-radius: 5px;
+    color: white;
+  }
+
+  .xmp-dark {
+    background: rgb(56, 232, 198, 0.25);
+  }
+
+  .xmp-light {
+    background: rgb(27, 40, 50);
   }
 
   h5 {
