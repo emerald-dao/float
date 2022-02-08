@@ -234,7 +234,6 @@ pub contract FLOAT: NonFungibleToken {
 
         access(account) fun accountDeletedFLOAT(account: Address) {
             self.claimed.remove(key: account)
-            self.totalSupply = self.totalSupply - 1
         }
 
         // Helper function to mint FLOATs.

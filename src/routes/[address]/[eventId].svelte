@@ -267,7 +267,7 @@ transferFLOAT,
 
   .small {
     position: relative;
-    width: 20%;
+    width: 125px;
     font-size: 13px;
     padding: 5px;
     left: 50%;
