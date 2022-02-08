@@ -12,7 +12,6 @@
     toggleActive,
     toggleTransferrable,
     deleteEvent,
-    getFLOAT,
   } from "$lib/flow/actions.js";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
@@ -54,6 +53,7 @@
         </p>
       </header>
       {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
+        <p>You claimed this FLOAT</p>
         <Float
           float={{
             eventHost: floatEvent?.host,
@@ -61,7 +61,7 @@
             eventMetadata: {
               name: floatEvent?.name,
               image: floatEvent?.image,
-              totalSupply: floatEvent?.claimed[$user.addr],
+              totalSupply: floatEvent?.claimed[$user.addr].serial,
             },
           }}
           preview={true}

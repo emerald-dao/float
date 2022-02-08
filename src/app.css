@@ -119,7 +119,10 @@ h3 {
   align-items:center;
   border:1px solid transparent;
   height:95%;
-  
+}
+
+.card-preview {
+  margin-right: 0px;
 }
 
 .card h1 {

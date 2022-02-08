@@ -4,7 +4,7 @@
 </script>
 
 {#if preview}
-  <article class="card">
+  <article class="card card-preview">
     <img
       src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
       alt="{float?.eventMetadata.name} Image"

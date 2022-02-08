@@ -248,6 +248,7 @@ export const getFLOATEvent = async (addr, id) => {
         arg(parseInt(id), t.UInt64)
       ]
     })
+    console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
