@@ -2,6 +2,16 @@
   import Header from "$lib/components/header/Header.svelte";
   import Transaction from "$lib/components/common/Transaction.svelte";
   import "../app.css";
+  import { onMount } from 'svelte';
+  
+  onMount(() => {
+    let savedTheme = localStorage.getItem('theme');
+    if(savedTheme) {
+      console.log('retrieving saved theme preference');
+      let html = document.querySelector('html')
+      html.setAttribute('data-theme', savedTheme);
+    }
+  })
 </script>
 
 <Header />
@@ -34,7 +44,7 @@
         fill="currentColor"
         />
       </svg>
-
+      
       Github
     </a>
   </small>
