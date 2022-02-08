@@ -71,6 +71,7 @@ pub contract FLOAT: NonFungibleToken {
             switch view {
                 case Type<FLOATMetadataViews.FLOATMetadataView>():
                     return FLOATMetadataViews.FLOATMetadataView(
+                        _id: self.id,
                         _dateReceived: self.dateReceived,
                         _eventId: self.eventId,
                         _eventHost: self.eventHost,
@@ -79,7 +80,7 @@ pub contract FLOAT: NonFungibleToken {
                         _eventMetadata: self.getFLOATEvent()
                     )
                 case Type<FLOATMetadataViews.Identifier>():
-                    return FLOATMetadataViews.Identifier(id: self.id, address: self.owner!.address) 
+                    return FLOATMetadataViews.Identifier(id: self.id, serial: self.serial, address: self.owner!.address) 
                 case Type<MetadataViews.Display>():
                     let FLOATEventMetadata = self.getFLOATEvent() ?? panic("FLOAT Event must have been deleted.")
                     return MetadataViews.Display(
@@ -171,7 +172,7 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub resource FLOATEvent: MetadataViews.Resolver {
         pub var active: Bool
-        access(account) var claimed: {Address: UInt64}
+        access(account) var claimed: {Address: FLOATMetadataViews.Identifier}
         pub let dateCreated: UFix64
         pub let description: String 
         pub let host: Address
@@ -237,10 +238,13 @@ pub contract FLOAT: NonFungibleToken {
                 _serial: serial, 
                 _recipient: recipientAddr
             ) 
-            recipient.deposit(token: <- token)
-
-            self.claimed[recipientAddr] = serial
+            self.claimed[recipientAddr] = FLOATMetadataViews.Identifier(
+                _id: token.id,
+                _serial: token.serial,
+                _address: recipientAddr
+            )
             self.totalSupply = serial + 1
+            recipient.deposit(token: <- token)
         }
 
         pub fun getViews(): [Type] {
@@ -569,10 +573,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath003
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath003
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath003
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath003
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath003
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath004
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath004
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath004
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath004
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath004
     }
 }

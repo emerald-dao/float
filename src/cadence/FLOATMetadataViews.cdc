@@ -1,6 +1,7 @@
 pub contract FLOATMetadataViews {
 
     pub struct FLOATMetadataView {
+        pub let id: UInt64
         // The unix time this FLOAT was receieved by the ORIGINAL recipient
         pub let dateReceived: UFix64
         // The ID of the event this FLOAT is from.
@@ -18,6 +19,7 @@ pub contract FLOATMetadataViews {
         pub let eventMetadata: FLOATEventMetadataView?
 
         init(
+            _id: UInt64,
             _dateReceived: UFix64, 
             _eventId: UInt64,
             _eventHost: Address, 
@@ -25,6 +27,7 @@ pub contract FLOATMetadataViews {
             _serial: UInt64,
             _eventMetadata: FLOATEventMetadataView?
         ) {
+            self.id = _id
             self.dateReceived = _dateReceived
             self.eventId = _eventId
             self.eventHost = _eventHost
@@ -35,7 +38,7 @@ pub contract FLOATMetadataViews {
     }
 
     pub struct FLOATEventMetadataView {
-        pub let claimed: {Address: UInt64}
+        pub let claimed: {Address: Identifier}
         pub let dateCreated: UFix64
         pub let description: String 
         pub let host: Address
@@ -69,7 +72,7 @@ pub contract FLOATMetadataViews {
             _metadata: {String: String},
             _dateCreated: UFix64,
             _totalSupply: UInt64,
-            _claimed: {Address: UInt64},
+            _claimed: {Address: Identifier},
             _startTime: UFix64?,
             _endTime: UFix64?,
             _requiresSecret: Bool,
@@ -101,10 +104,12 @@ pub contract FLOATMetadataViews {
 
     pub struct Identifier {
         pub let id: UInt64
+        pub let serial: UInt64
         pub let address: Address
 
-        init(_id: UInt64, _address: Address) {
+        init(_id: UInt64, _serial: UInt64, _address: Address) {
             self.id = _id
+            self.serial = _serial
             self.address = _address
         }
     }

@@ -248,7 +248,6 @@ export const getFLOATEvent = async (addr, id) => {
         arg(parseInt(id), t.UInt64)
       ]
     })
-    console.log(queryResult)
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -284,7 +283,6 @@ export const getFLOATEvents = async (addr) => {
         arg(addr, t.Address)
       ]
     })
-    console.log(queryResult)
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -297,12 +295,11 @@ export const getFLOATs = async (addr) => {
       cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
-      import NonFungibleToken from 0xNFT
       import FLOATMetadataViews from 0xFMDV
 
       pub fun main(account: Address): [FLOATMetadataViews.FLOATMetadataView] {
         let nftCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                              .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>()
+                              .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the Collection from the account.")
         let floats = nftCollection.getIDs()
         var returnVal: [FLOATMetadataViews.FLOATMetadataView] = []
@@ -319,6 +316,37 @@ export const getFLOATs = async (addr) => {
       `,
       args: (arg, t) => [
         arg(addr, t.Address)
+      ]
+    })
+    return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getFLOAT = async (addr, id) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
+
+      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATMetadataView? {
+        let nftCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
+                              .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
+                              ?? panic("Could not borrow the Collection from the account.")
+        let nft = nftCollection.borrowViewResolver(id: id)
+        if let metadata = nft.resolveView(Type<FLOATMetadataViews.FLOATMetadataView>()) {
+          return metadata as! FLOATMetadataViews.FLOATMetadataView
+        }
+
+        return nil
+      }
+      `,
+      args: (arg, t) => [
+        arg(addr, t.Address),
+        arg(id, t.UInt64)
       ]
     })
     console.log(queryResult)

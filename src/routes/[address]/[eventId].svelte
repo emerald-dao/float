@@ -12,11 +12,12 @@
     toggleActive,
     toggleTransferrable,
     deleteEvent,
+    getFLOAT,
   } from "$lib/flow/actions.js";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import Countdown from "$lib/components/common/Countdown.svelte";
-import Meta from '$lib/components/common/Meta.svelte';
+  import Meta from "$lib/components/common/Meta.svelte";
 
   let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
 
@@ -35,8 +36,8 @@ import Meta from '$lib/components/common/Meta.svelte';
   {:then floatEvent}
     <Meta
       title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
-      author="{floatEvent?.host}"
-      description="{floatEvent?.description}"
+      author={floatEvent?.host}
+      description={floatEvent?.description}
     />
 
     <article>
@@ -52,18 +53,33 @@ import Meta from '$lib/components/common/Meta.svelte';
           >
         </p>
       </header>
-      <Float
-        float={{
-          eventHost: floatEvent?.host,
-          eventId: floatEvent?.id,
-          eventMetadata: {
-            name: floatEvent?.name,
-            image: floatEvent?.image,
-            totalSupply: floatEvent?.totalSupply,
-          },
-        }}
-        preview={true}
-      />
+      {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
+        <Float
+          float={{
+            eventHost: floatEvent?.host,
+            eventId: floatEvent?.id,
+            eventMetadata: {
+              name: floatEvent?.name,
+              image: floatEvent?.image,
+              totalSupply: floatEvent?.claimed[$user.addr],
+            },
+          }}
+          preview={true}
+        />
+      {:else}
+        <Float
+          float={{
+            eventHost: floatEvent?.host,
+            eventId: floatEvent?.id,
+            eventMetadata: {
+              name: floatEvent?.name,
+              image: floatEvent?.image,
+              totalSupply: floatEvent?.totalSupply,
+            },
+          }}
+          preview={true}
+        />
+      {/if}
 
       <blockquote>
         <strong><small class="muted">DESCRIPTION</small></strong><br
