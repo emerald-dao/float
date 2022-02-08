@@ -453,11 +453,12 @@ export const queryEmeraldId = async (address) => {
 }
 
 export const reverseLookupNames = async (address) => {
-  const names = await Promise.all([
+  let names = await Promise.all([
     reverseLookupFindName(address),
     reverseLookupFlownsName(address),
     queryEmeraldId(address),
   ])
+  names = names.filter((name) => name)
   return names
 }
 

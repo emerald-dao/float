@@ -59,7 +59,7 @@
         errorTips = 'Canont resolve domain name'
       }
     } else {
-      errorTips = 'Search param is not valid'
+      window.location = `${search}`
     }
   }
 

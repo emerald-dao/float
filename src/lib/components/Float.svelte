@@ -11,7 +11,8 @@
     <p>
       <small>
         <span class="credit">Created by</span>
-        <a href="/{float?.host}" class="host">{float?.host}</a>
+        <!-- <a href="/{float?.host}" class="host">{float?.host}</a> -->
+        <UserAddress address={float?.host} simplify />
       </small>
     </p>
     <code>#{float?.totalSupply}</code>

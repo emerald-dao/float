@@ -15,13 +15,12 @@
   let defaultAddr = abbreviated ? ellipseStr(address) : address
 
   const renderName = (nameStr = '') => {
-    console.log(nameStr)
     const nameArr = nameStr.split('.')
-    const userName = nameArr[0]
+    // const userName = nameArr[0]
     const idName = nameArr[1]
 
     if (idName === 'eid') {
-      return ''
+      return simplify ? address : ''
     }
 
     return nameStr ? (nameStr.length > 15 && abbreviated ? ellipseStr(nameStr) : nameStr) : ''
