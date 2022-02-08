@@ -1,6 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../NonFungibleToken.cdc"
-import MetadataViews from "../MetadataViews.cdc"
+import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
 transaction(claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secretPhrase: String, limited: Bool, capacity: UInt64) {
 

@@ -6,28 +6,35 @@
 
 {#if preview}
   <article class="card">
-    <img src="https://ipfs.infura.io/ipfs/{float?.image}" alt="{float.name} Image" />
-    <h1>{float?.name}</h1>
+    <img
+      src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
+      alt="{float?.eventMetadata.name} Image"
+    />
+    <h1>{float?.eventMetadata.name}</h1>
     <p>
       <small>
         <span class="credit">Created by</span>
-        <!-- <a href="/{float?.host}" class="host">{float?.host}</a> -->
-        <UserAddress address={float?.host} simplify />
+        <!-- <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a> -->
+        <UserAddress address={float?.eventHost} simplify />
+
       </small>
     </p>
-    <code>#{float?.totalSupply}</code>
+    <code>#{float?.eventMetadata.totalSupply}</code>
   </article>
 {:else}
-  <a class="no-style" href="/{float?.host}/{float?.eventID}">
+  <a class="no-style" href="/{float?.eventHost}/{float?.eventId}">
     <article class="card">
-      <img src="https://ipfs.infura.io/ipfs/{float?.image}" alt="{float.name} Image" />
-      <h1>{float?.name}</h1>
+      <img
+        src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
+        alt="{float?.eventMetadata.name} Image"
+      />
+      <h1>{float?.eventMetadata.name}</h1>
       <p>
         <small>
           <span class="credit">Created by</span>
-          <a href="/{float?.host}" class="host">
-            <UserAddress address={float?.host} simplify />
-          </a>
+          <!-- <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a> -->
+          <UserAddress address={float?.eventHost} simplify />
+
         </small>
       </p>
       <code>#{float?.serial}</code>
@@ -43,6 +50,7 @@
   .credit {
     display: block;
     font-size: 0.7rem;
+    display: block;
     line-height: 1;
   }
 

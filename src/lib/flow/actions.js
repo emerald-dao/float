@@ -5,7 +5,6 @@ import * as fcl from '@samatech/onflow-fcl-esm'
 import './config'
 import {
   user,
-  userNames,
   txId,
   transactionStatus,
   transactionInProgress,
@@ -223,19 +222,19 @@ export const getFLOATEvent = async (addr, id) => {
       cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address, id: UInt64): MetadataViews.FLOATEventMetadataView? {
+      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventMetadataView? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvent =  floatEventCollection.borrowViewResolver(id: id)
-      
-        if let metadata = floatEvent.resolveView(Type<MetadataViews.FLOATEventMetadataView>()) {
-          return metadata as! MetadataViews.FLOATEventMetadataView
+        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
+
+        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
+          return metadata as! FLOATMetadataViews.FLOATEventMetadataView
         }
         return nil
       }
-      
       `,
       args: (arg, t) => [arg(addr, t.Address), arg(parseInt(id), t.UInt64)],
     })
@@ -252,18 +251,17 @@ export const getFLOATEvents = async (addr) => {
       cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
-
-      pub fun main(account: Address): {String: MetadataViews.FLOATEventMetadataView} {
+      import FLOATMetadataViews from 0xFMDV
+      pub fun main(account: Address): {String: FLOATMetadataViews.FLOATEventMetadataView} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
-        let returnVal: {String: MetadataViews.FLOATEventMetadataView} = {}
-      
+        let returnVal: {String: FLOATMetadataViews.FLOATEventMetadataView} = {}
         for id in floatEvents {
           let view = floatEventCollection.borrowViewResolver(id: id)
-          if var metadata = view.resolveView(Type<MetadataViews.FLOATEventMetadataView>()) {
-            var floatEvent = metadata as! MetadataViews.FLOATEventMetadataView
+          if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
+            var floatEvent = metadata as! FLOATMetadataViews.FLOATEventMetadataView
             returnVal[floatEvent.name] = floatEvent
           }
         }
@@ -286,24 +284,24 @@ export const getFLOATs = async (addr) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
       import NonFungibleToken from 0xNFT
+      import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address): [MetadataViews.FLOATMetadataView] {
+      pub fun main(account: Address): [FLOATMetadataViews.FLOATMetadataView] {
         let nftCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
                               .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the Collection from the account.")
         let floats = nftCollection.getIDs()
-        var returnVal: [MetadataViews.FLOATMetadataView] = []
+        var returnVal: [FLOATMetadataViews.FLOATMetadataView] = []
         for id in floats {
           let view = nftCollection.borrowViewResolver(id: id)
-          if var metadata = view.resolveView(Type<MetadataViews.FLOATMetadataView>()) {
-            var float = metadata as! MetadataViews.FLOATMetadataView
+          if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATMetadataView>()) {
+            var float = metadata as! FLOATMetadataViews.FLOATMetadataView
             returnVal.append(float)
           }
         }
-      
+
         return returnVal
       }
-      
       `,
       args: (arg, t) => [arg(addr, t.Address)],
     })
@@ -453,13 +451,163 @@ export const queryEmeraldId = async (address) => {
 }
 
 export const reverseLookupNames = async (address) => {
-  let names = await Promise.all([
-    reverseLookupFindName(address),
-    reverseLookupFlownsName(address),
-    queryEmeraldId(address),
-  ])
-  names = names.filter((name) => name)
-  return names
+  try {
+    let names = await Promise.all([
+      reverseLookupFindName(address),
+      reverseLookupFlownsName(address),
+      // queryEmeraldId(address),
+    ])
+    names = names.filter((name) => name)
+    return names
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const toggleActive = async (id) => {
+  let transactionId = false
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvent: &FLOAT.FLOATEvent
+
+        prepare(acct: AuthAccount) {
+          let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+        }
+
+        execute {
+          self.FLOATEvent.toggleActive()
+          log("Toggled the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [arg(id, t.UInt64)],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999,
+    })
+
+    txId.set(transactionId)
+
+    fcl.tx(transactionId).subscribe((res) => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const toggleTransferrable = async (id) => {
+  let transactionId = false
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvent: &FLOAT.FLOATEvent
+
+        prepare(acct: AuthAccount) {
+          let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+        }
+
+        execute {
+          self.FLOATEvent.toggleTransferrable()
+          log("Toggled the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [arg(id, t.UInt64)],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999,
+    })
+
+    txId.set(transactionId)
+
+    fcl.tx(transactionId).subscribe((res) => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const deleteEvent = async (id) => {
+  let transactionId = false
+  initTransactionState()
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(id: UInt64) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+        }
+
+        execute {
+          self.FLOATEvents.deleteEvent(id: id)
+          log("Removed the FLOAT Event.")
+        }
+      }
+      `,
+      args: (arg, t) => [arg(id, t.UInt64)],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999,
+    })
+
+    txId.set(transactionId)
+
+    fcl.tx(transactionId).subscribe((res) => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
 }
 
 function initTransactionState() {

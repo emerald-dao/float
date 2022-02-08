@@ -7,9 +7,10 @@
     "package": "svelte-kit package",
     "preview": "svelte-kit preview",
     "getEvents": "flow scripts execute ./src/cadence/scripts/get_float_event_ids.cdc 0x958526fe01b782a0 --network=testnet",
-    "removeFLOAT": "flow accounts remove-contract FLOAT --network=testnet --signer=testnet-account",
+    "removeF": "flow accounts remove-contract FLOAT --network=testnet --signer=testnet-account",
+    "removeFM": "flow accounts remove-contract FLOATMetadataViews --network=testnet --signer=testnet-account",
     "removeMDV": "flow accounts remove-contract MetadataViews --network=testnet --signer=testnet-account"
-  }, 
+  },
   "devDependencies": {
     "@picocss/pico": "^1.4.4",
     "@rollup/plugin-node-resolve": "^13.1.1",
