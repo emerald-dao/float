@@ -1,8 +1,8 @@
-import { browser } from '$app/env';
-import { get } from 'svelte/store';
+import { browser } from '$app/env'
+import { get } from 'svelte/store'
 
-import * as fcl from "@samatech/onflow-fcl-esm";
-import "./config";
+import * as fcl from '@samatech/onflow-fcl-esm'
+import './config'
 import {
   user,
   txId,
@@ -11,26 +11,26 @@ import {
   eventCreationInProgress,
   eventCreatedSuccessfully,
   floatClaimingInProgress,
-  floatClaimedSuccessfully
-} from './stores.js';
-import { draftFloat } from '$lib/stores';
+  floatClaimedSuccessfully,
+} from './stores.js'
+import { draftFloat } from '$lib/stores'
 
 if (browser) {
-  // set Svelte $user store to currentUser, 
+  // set Svelte $user store to currentUser,
   // so other components can access it
-  fcl.currentUser.subscribe(user.set, [])
+  fcl.currentUser.subscribe(async (userInfo) => {
+    user.set(userInfo)
+  }, [])
 }
 
 // Lifecycle FCL Auth functions
-export const unauthenticate = () => fcl.unauthenticate();
-export const authenticate = () => fcl.authenticate();
+export const unauthenticate = () => fcl.unauthenticate()
+export const authenticate = () => fcl.authenticate()
 
 export const createFloat = async (draftFloat) => {
-
-
   /**
    * WE NEED TO VALIDATE THE DRAFT FLOAT
-   * AND PARSE THE FIELDS AND GET THEM 
+   * AND PARSE THE FIELDS AND GET THEM
    * READY FOR THE TRANSACTION (i.e. turn them into the right arguments)
    */
 
@@ -43,16 +43,16 @@ export const createFloat = async (draftFloat) => {
     transferrable: draftFloat.transferrable,
     timelock: draftFloat.timelock,
     dateStart: +new Date(draftFloat.startTime) / 1000,
-    timePeriod: (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000),
+    timePeriod: +new Date(draftFloat.endTime) / 1000 - +new Date(draftFloat.startTime) / 1000,
     secret: draftFloat.claimCodeEnabled,
     secretPhrase: draftFloat.claimCode,
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
-  };
+  }
 
-  eventCreationInProgress.set(true);
+  eventCreationInProgress.set(true)
 
-  let transactionId = false;
+  let transactionId = false
   initTransactionState()
 
   try {
@@ -124,35 +124,33 @@ export const createFloat = async (draftFloat) => {
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 999,
     })
 
-    txId.set(transactionId);
+    txId.set(transactionId)
 
-    fcl.tx(transactionId).subscribe(res => {
+    fcl.tx(transactionId).subscribe((res) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        eventCreatedSuccessfully.set(true);
+        eventCreatedSuccessfully.set(true)
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
     let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
+    return res
   } catch (e) {
-    eventCreatedSuccessfully.set(false);
+    eventCreatedSuccessfully.set(false)
     transactionStatus.set(99)
     console.log(e)
   }
 }
 
 export const claimFLOAT = async (host, id, secret) => {
-
-  let transactionId = false;
+  let transactionId = false
   initTransactionState()
 
-  floatClaimingInProgress.set(true);
+  floatClaimingInProgress.set(true)
 
   try {
     transactionId = await fcl.mutate({
@@ -187,24 +185,20 @@ export const claimFLOAT = async (host, id, secret) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(id, t.UInt64),
-        arg(host, t.Address),
-        arg(secret, t.String),
-      ],
+      args: (arg, t) => [arg(id, t.UInt64), arg(host, t.Address), arg(secret, t.String)],
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 999,
     })
 
-    txId.set(transactionId);
+    txId.set(transactionId)
 
-    fcl.tx(transactionId).subscribe(res => {
+    fcl.tx(transactionId).subscribe((res) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        floatClaimedSuccessfully.set(true);
-        floatClaimingInProgress.set(false);
+        floatClaimedSuccessfully.set(true)
+        floatClaimingInProgress.set(false)
         draftFloat.set({
           claimable: true,
           transferrable: true,
@@ -213,11 +207,10 @@ export const claimFLOAT = async (host, id, secret) => {
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
-
   } catch (e) {
     transactionStatus.set(99)
-    floatClaimedSuccessfully.set(false);
-    floatClaimingInProgress.set(false);
+    floatClaimedSuccessfully.set(false)
+    floatClaimingInProgress.set(false)
 
     console.log(e)
   }
@@ -243,15 +236,12 @@ export const getFLOATEvent = async (addr, id) => {
         return nil
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address),
-        arg(parseInt(id), t.UInt64)
-      ]
+      args: (arg, t) => [arg(addr, t.Address), arg(parseInt(id), t.UInt64)],
     })
     console.log(queryResult)
-    return queryResult || {};
+    return queryResult || {}
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
 }
 
@@ -262,14 +252,12 @@ export const getFLOATEvents = async (addr) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xMDV
       import FLOATMetadataViews from 0xFMDV
-
       pub fun main(account: Address): {String: FLOATMetadataViews.FLOATEventMetadataView} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
         let returnVal: {String: FLOATMetadataViews.FLOATEventMetadataView} = {}
-
         for id in floatEvents {
           let view = floatEventCollection.borrowViewResolver(id: id)
           if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
@@ -280,14 +268,12 @@ export const getFLOATEvents = async (addr) => {
         return returnVal
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address)
-      ]
+      args: (arg, t) => [arg(addr, t.Address)],
     })
     console.log(queryResult)
-    return queryResult || {};
+    return queryResult || {}
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
 }
 
@@ -317,19 +303,169 @@ export const getFLOATs = async (addr) => {
         return returnVal
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address)
-      ]
+      args: (arg, t) => [arg(addr, t.Address)],
     })
     console.log(queryResult)
-    return queryResult || [];
+    return queryResult || []
   } catch (e) {
-    console.log(e);
+    console.log(e)
+  }
+}
+
+export const resolveFindOwnerAddrByName = async (name) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FIND from 0xFIND
+
+      pub fun main(name: String): Address? {
+        let status = FIND.status(name)
+        if status == nil {
+          return nil
+        }
+        if status.owner != nil {
+          return status.owner
+        }
+        return nil
+      }
+      
+      `,
+      args: (arg, t) => [arg(name, t.String)],
+    })
+    console.log(queryResult)
+    return queryResult || undefined
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const resolveFlownsOwnerAddrByName = async (name) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import Flowns from 0xFLOWNS
+      import Domains from 0xDOMAINS
+
+      pub fun main(name: String): Address? {
+        
+        let prefix = "0x"
+        let rootHash = Flowns.hash(node: "", lable: "fn")
+        let nameHash = prefix.concat(Flowns.hash(node: rootHash, lable: name))
+        let address = Domains.getRecords(nameHash)
+      
+        return address
+      }
+      
+      `,
+      args: (arg, t) => [arg(name, t.String)],
+    })
+    console.log(queryResult)
+    return queryResult || undefined
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const reverseLookupFindName = async (address) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FIND from 0xFIND
+     
+      pub fun main(address: Address) : String? {
+        return FIND.reverseLookup(address)
+      }
+      `,
+      args: (arg, t) => [arg(address, t.Address)],
+    })
+    console.log(queryResult)
+    if (queryResult && queryResult.length > 0) {
+      queryResult = `${queryResult}.find`
+    }
+    return queryResult || undefined
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const reverseLookupFlownsName = async (address) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import Domains from 0xFLOWNS
+      
+      pub fun main(address: Address): String? {
+   
+        let account = getAccount(address)
+        let collectionCap = account.getCapability<&{Domains.CollectionPublic}>(Domains.CollectionPublicPath) 
+     
+        if collectionCap.check() != true {
+          return nil
+        }
+     
+        var flownsName = ""
+        let collection = collectionCap.borrow()!
+        let ids = collection.getIDs()
+        
+        for id in ids {
+          let domain = collection.borrowDomain(id: id)!
+          let isDefault = domain.getText(key: "isDefault")
+          flownsName = domain.getDomainName()
+          if isDefault == "true" {
+            break
+          }
+        }
+     
+        return flownsName
+      }
+      `,
+      args: (arg, t) => [arg(address, t.Address)],
+    })
+    console.log(queryResult)
+    return queryResult || undefined
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const queryEmeraldId = async (address) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import EmeraldIdentity from 0xEID
+
+      pub fun main(account: Address): String? {    
+          return EmeraldIdentity.getDiscordFromAccount(account: account)
+      }
+      `,
+      args: (arg, t) => [arg('0x987dfcd7b8f2441e', t.Address)],
+    })
+    console.log(queryResult)
+    if (queryResult && queryResult.length > 0) {
+      queryResult = `${queryResult}.eid`
+    }
+    return queryResult || undefined
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const reverseLookupNames = async (address) => {
+  try {
+    let names = await Promise.all([
+      reverseLookupFindName(address),
+      reverseLookupFlownsName(address),
+      // queryEmeraldId(address),
+    ])
+    names = names.filter((name) => name)
+    return names
+  } catch (e) {
+    console.log(e)
   }
 }
 
 export const toggleActive = async (id) => {
-  let transactionId = false;
+  let transactionId = false
   initTransactionState()
 
   try {
@@ -353,18 +489,16 @@ export const toggleActive = async (id) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(id, t.UInt64),
-      ],
+      args: (arg, t) => [arg(id, t.UInt64)],
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 999,
     })
 
-    txId.set(transactionId);
+    txId.set(transactionId)
 
-    fcl.tx(transactionId).subscribe(res => {
+    fcl.tx(transactionId).subscribe((res) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         setTimeout(() => transactionInProgress.set(false), 2000)
@@ -372,8 +506,7 @@ export const toggleActive = async (id) => {
     })
 
     let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
+    return res
   } catch (e) {
     transactionStatus.set(99)
     console.log(e)
@@ -381,7 +514,7 @@ export const toggleActive = async (id) => {
 }
 
 export const toggleTransferrable = async (id) => {
-  let transactionId = false;
+  let transactionId = false
   initTransactionState()
 
   try {
@@ -405,18 +538,16 @@ export const toggleTransferrable = async (id) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(id, t.UInt64),
-      ],
+      args: (arg, t) => [arg(id, t.UInt64)],
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 999,
     })
 
-    txId.set(transactionId);
+    txId.set(transactionId)
 
-    fcl.tx(transactionId).subscribe(res => {
+    fcl.tx(transactionId).subscribe((res) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         setTimeout(() => transactionInProgress.set(false), 2000)
@@ -424,8 +555,7 @@ export const toggleTransferrable = async (id) => {
     })
 
     let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
+    return res
   } catch (e) {
     transactionStatus.set(99)
     console.log(e)
@@ -433,7 +563,7 @@ export const toggleTransferrable = async (id) => {
 }
 
 export const deleteEvent = async (id) => {
-  let transactionId = false;
+  let transactionId = false
   initTransactionState()
 
   try {
@@ -456,18 +586,16 @@ export const deleteEvent = async (id) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(id, t.UInt64),
-      ],
+      args: (arg, t) => [arg(id, t.UInt64)],
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 999,
     })
 
-    txId.set(transactionId);
+    txId.set(transactionId)
 
-    fcl.tx(transactionId).subscribe(res => {
+    fcl.tx(transactionId).subscribe((res) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         setTimeout(() => transactionInProgress.set(false), 2000)
@@ -475,8 +603,7 @@ export const deleteEvent = async (id) => {
     })
 
     let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
+    return res
   } catch (e) {
     transactionStatus.set(99)
     console.log(e)
@@ -484,8 +611,8 @@ export const deleteEvent = async (id) => {
 }
 
 function initTransactionState() {
-  transactionInProgress.set(true);
-  transactionStatus.set(-1);
-  floatClaimedSuccessfully.set(false);
-  eventCreatedSuccessfully.set(false);
+  transactionInProgress.set(true)
+  transactionStatus.set(-1)
+  floatClaimedSuccessfully.set(false)
+  eventCreatedSuccessfully.set(false)
 }

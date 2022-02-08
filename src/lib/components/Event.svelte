@@ -1,25 +1,7 @@
 <script>
-  export let floatEvent = {};
+  import UserAddress from '$lib/components/UserAddress.svelte'
+  export let floatEvent = {}
 </script>
-
-<style>
-
-  .host {
-    font-family: monospace;
-  }
-
-  .credit {
-    font-size: 0.7rem;
-    display:block;
-    line-height: 1;
-  }
-
-  p {
-    margin-top: 10px;
-    margin-bottom: 10px;
-  }
-</style>
-
 
 <a class="no-style" href="/{floatEvent?.host}/{floatEvent?.id}">
   <article class="card">
@@ -28,10 +10,29 @@
     <p>
       <small>
         <span class="credit">Created by</span>
-        <a href="/{floatEvent?.host}" class="host">{floatEvent?.host}</a>
+        <a href="/{floatEvent?.host}" class="host">
+          <UserAddress address={floatEvent?.host} simplify />
+        </a>
       </small>
     </p>
     <code class="mb-1">ID:{floatEvent?.id}</code>
     <button>Visit</button>
   </article>
 </a>
+
+<style>
+  .host {
+    font-family: monospace;
+  }
+
+  .credit {
+    display: block;
+    font-size: 0.7rem;
+    line-height: 1;
+  }
+
+  p {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+</style>
