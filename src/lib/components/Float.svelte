@@ -1,9 +1,30 @@
 <script>
   export let float = {};
   export let preview = false;
+  export let individual = false;
 </script>
 
-{#if preview}
+{#if individual}
+  <a
+    class="no-style"
+    href="/{float?.eventHost}/{float?.eventId}/{float?.serial}"
+  >
+    <article class="card">
+      <img
+        src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
+        alt="{float?.eventMetadata.name} Image"
+      />
+      <h1>{float?.eventMetadata.name}</h1>
+      <p>
+        <small>
+          <span class="credit">Created by</span>
+          <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
+        </small>
+      </p>
+      <code>#{float?.serial}</code>
+    </article>
+  </a>
+{:else if preview}
   <article class="card card-preview">
     <img
       src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"

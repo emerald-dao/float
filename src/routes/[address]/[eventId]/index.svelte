@@ -63,10 +63,10 @@
             eventMetadata: {
               name: floatEvent?.name,
               image: floatEvent?.image,
-              totalSupply: floatEvent?.claimed[$user.addr].serial,
             },
+            serial: floatEvent?.claimed[$user.addr].serial,
           }}
-          preview={true}
+          individual={true}
         />
         <button
           class="outline red small"
