@@ -53,6 +53,12 @@
     vertical-align: middle;
     align-items: center;
   }
+
+  @media screen and (max-width: 500px) {
+    img {
+      max-width: 100px;
+    }
+  }
 </style>
 
 <nav class="container">
