@@ -286,4 +286,11 @@
     left: 50%;
     transform: translateX(-50%);
   }
+
+  .error {
+    background-color: red;
+    border-color: white;
+    color: white;
+    opacity: 1;
+  }
 </style>

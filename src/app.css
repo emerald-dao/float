@@ -226,10 +226,3 @@ main {
   font-weight: 400;
   color: var(--primary);
 }
-
-.error {
-  background-color: red;
-  border-color: white;
-  color: white;
-  opacity: 1;
-}

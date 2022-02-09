@@ -340,7 +340,7 @@ transaction(eventId: UInt64, recipient: Address) {
       </div>
       {#if $draftFloat.claimCodeEnabled}
         <label for="claimCode"
-          >Enter a claim code
+          >Enter a claim code (Note: it is case-sensitive)
           <input
             type="text"
             name="claimCode"
@@ -419,5 +419,12 @@ transaction(eventId: UInt64, recipient: Address) {
 
   h5 {
     margin-bottom: 5px;
+  }
+
+  .error {
+    background-color: red;
+    border-color: white;
+    color: white;
+    opacity: 1;
   }
 </style>
