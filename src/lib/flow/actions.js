@@ -9,11 +9,12 @@ import {
   transactionStatus,
   transactionInProgress,
   eventCreationInProgress,
-  eventCreatedSuccessfully,
+  eventCreatedStatus,
   floatClaimingInProgress,
-  floatClaimedSuccessfully
+  floatClaimedStatus
 } from './stores.js';
 import { draftFloat } from '$lib/stores';
+import { respondWithError, respondWithSuccess } from '$lib/response';
 
 if (browser) {
   // set Svelte $user store to currentUser, 
@@ -132,7 +133,12 @@ export const createFloat = async (draftFloat) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        eventCreatedSuccessfully.set(true);
+        if (res.statusCode === 0) {
+          eventCreatedStatus.set(respondWithSuccess());
+        } else {
+          eventCreatedStatus.set(respondWithError(res.errorMessage, res.statusCode));
+        }
+        eventCreationInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
@@ -141,9 +147,11 @@ export const createFloat = async (draftFloat) => {
     return res;
 
   } catch (e) {
-    eventCreatedSuccessfully.set(false);
+    eventCreatedStatus.set(false);
     transactionStatus.set(99)
     console.log(e)
+
+    setTimeout(() => transactionInProgress.set(false), 10000)
   }
 }
 
@@ -203,7 +211,12 @@ export const claimFLOAT = async (host, id, secret) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        floatClaimedSuccessfully.set(true);
+        console.log(res);
+        if (res.statusCode === 0) {
+          floatClaimedStatus.set(respondWithSuccess());
+        } else {
+          floatClaimedStatus.set(respondWithError(res.errorMessage, res.statusCode));
+        }
         floatClaimingInProgress.set(false);
         draftFloat.set({
           claimable: true,
@@ -216,7 +229,7 @@ export const claimFLOAT = async (host, id, secret) => {
 
   } catch (e) {
     transactionStatus.set(99)
-    floatClaimedSuccessfully.set(false);
+    floatClaimedStatus.set(respondWithError(e));
     floatClaimingInProgress.set(false);
 
     console.log(e)
@@ -632,6 +645,6 @@ export const deleteEvent = async (id) => {
 function initTransactionState() {
   transactionInProgress.set(true);
   transactionStatus.set(-1);
-  floatClaimedSuccessfully.set(false);
-  eventCreatedSuccessfully.set(false);
+  floatClaimedStatus.set(false);
+  eventCreatedStatus.set(false);
 }

@@ -6,7 +6,11 @@ export const txId = writable(null);
 export const transactionInProgress = writable(false);
 
 export const eventCreationInProgress = writable(false);
-export const eventCreatedSuccessfully = writable(false);
+export const eventCreatedStatus = writable(false);
 
 export const floatClaimingInProgress = writable(false);
-export const floatClaimedSuccessfully = writable(false);
+export const floatClaimedStatus = writable(false);
+
+floatClaimedStatus.subscribe((e) => {
+  console.log(e);
+})

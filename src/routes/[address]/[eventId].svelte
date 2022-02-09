@@ -1,7 +1,7 @@
 <script>
   import { page } from "$app/stores";
   import {
-    floatClaimedSuccessfully,
+    floatClaimedStatus,
     floatClaimingInProgress,
     user,
   } from "$lib/flow/stores";
@@ -13,7 +13,7 @@
     toggleTransferrable,
     deleteEvent,
     deleteFLOAT,
-transferFLOAT,
+    transferFLOAT,
   } from "$lib/flow/actions.js";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
@@ -68,7 +68,10 @@ transferFLOAT,
           }}
           preview={true}
         />
-        <button class="outline red small" on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}>
+        <button
+          class="outline red small"
+          on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}
+        >
           Delete this FLOAT
         </button>
       {:else}
@@ -117,15 +120,9 @@ transferFLOAT,
           </button>
         {:else if floatEvent?.claimable}
           {#if floatEvent?.isOpen && !floatEvent?.requiresSecret}
-            {#if !$floatClaimedSuccessfully}
-              <button
-                aria-busy={$floatClaimingInProgress}
-                disabled={$floatClaimingInProgress}
-                on:click={() =>
-                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
-                >{$floatClaimingInProgress ? "Claiming" : "Claim this"} FLOAT</button
-              >
-            {:else}
+            {#if $floatClaimingInProgress}
+              <button aria-busy="true" disabled> Claiming FLOAT </button>
+            {:else if $floatClaimedStatus.success}
               <a
                 role="button"
                 class="d-block"
@@ -133,6 +130,16 @@ transferFLOAT,
                 style="display:block"
                 >FLOAT claimed successfully!
               </a>
+            {:else if !$floatClaimedStatus.success && $floatClaimedStatus.error}
+              <button class="error" disabled>
+                {$floatClaimedStatus.error}
+              </button>
+            {:else}
+              <button
+                on:click={() =>
+                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
+                >Claim this FLOAT
+              </button>
             {/if}
           {:else if floatEvent?.isOpen}
             <label for="claimCode">
@@ -148,21 +155,27 @@ transferFLOAT,
               <button class="secondary outline" disabled>
                 You must enter a secret code.
               </button>
-            {:else if !$floatClaimedSuccessfully}
-              <button
-                aria-busy={$floatClaimingInProgress}
-                disabled={$floatClaimingInProgress}
-                on:click={() =>
-                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
-                >{$floatClaimingInProgress ? "Claiming" : "Claim this"} FLOAT</button
-              >
-            {:else}
+            {:else if $floatClaimingInProgress}
+              <button aria-busy="true" disabled>Claiming FLOAT</button>
+            {:else if $floatClaimedStatus.success}
               <a
                 role="button"
                 class="d-block"
                 href="/account"
-                style="display:block">FLOAT claimed successfully!</a
-              >
+                style="display:block"
+                >FLOAT claimed successfully!
+              </a>
+            {:else if !$floatClaimedStatus.success && $floatClaimedStatus.error}
+              <button class="error" disabled>
+                {$floatClaimedStatus.error}
+              </button>
+            {:else}
+              <button
+                disabled={$floatClaimingInProgress}
+                on:click={() =>
+                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
+                >Claim this FLOAT
+              </button>
             {/if}
           {:else if !floatEvent?.active}
             <button class="secondary outline" disabled>

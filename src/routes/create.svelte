@@ -2,7 +2,7 @@
   import {
     user,
     eventCreationInProgress,
-    eventCreatedSuccessfully,
+    eventCreatedStatus,
   } from "$lib/flow/stores";
   import { authenticate, createFloat } from "$lib/flow/actions";
 
@@ -25,7 +25,7 @@
   let imagePreview;
   let imagePreviewSrc = null;
 
-  console.log($theme)
+  console.log($theme);
 
   onMount(() => {
     ipfsIsReady = window?.IpfsHttpClient ?? false;
@@ -263,7 +263,7 @@ transaction(eventId: UInt64, recipient: Address) {
             name="quantity"
             bind:value={$draftFloat.quantity}
             min="1"
-            placeholder="100"
+            placeholder="ex. 100"
           />
         </label>
         <hr />
@@ -333,7 +333,9 @@ transaction(eventId: UInt64, recipient: Address) {
           on:click={() => ($draftFloat.claimCodeEnabled = true)}
         >
           Use Claim Code
-          <span>Your FLOAT can only be minted if people know the claim code.</span>
+          <span
+            >Your FLOAT can only be minted if people know the claim code.</span
+          >
         </button>
       </div>
       {#if $draftFloat.claimCodeEnabled}
@@ -343,14 +345,16 @@ transaction(eventId: UInt64, recipient: Address) {
             type="text"
             name="claimCode"
             bind:value={$draftFloat.claimCode}
-            placeholder="mySecretCode"
+            placeholder="ex. mySecretCode"
           />
         </label>
         <hr />
       {/if}
     {:else}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
-      <xmp class={$theme === 'light' ? 'xmp-light' : 'xmp-dark'}>{distributeCode}</xmp>
+      <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}
+        >{distributeCode}</xmp
+      >
     {/if}
 
     <footer>
@@ -360,17 +364,18 @@ transaction(eventId: UInt64, recipient: Address) {
             >Connect Wallet</button
           >
         </div>
-      {:else if $eventCreatedSuccessfully}
-        <a role="button" class="d-block" href="/account" style="display:block"
-          >Event created successfully!</a
-        >
+      {:else if $eventCreationInProgress}
+        <button aria-busy="true" disabled>Creating FLOAT</button>
+      {:else if $eventCreatedStatus.success}
+        <a role="button" class="d-block" href="/account" style="display:block">
+          Event created successfully!
+        </a>
+      {:else if !$eventCreatedStatus.success && $eventCreatedStatus.error}
+        <button class="error" disabled>
+          {$eventCreatedStatus.error}
+        </button>
       {:else}
-        <button
-          on:click={initCreateFloat}
-          aria-busy={$eventCreationInProgress}
-          disabled={$eventCreationInProgress}
-          >{$eventCreationInProgress ? "Creating" : "Create"} FLOAT</button
-        >
+        <button on:click={initCreateFloat}>Create FLOAT</button>
       {/if}
     </footer>
   </article>
