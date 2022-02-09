@@ -18,6 +18,7 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub event ContractInitialized()
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, recipient: Address)
+    pub event FLOATClaimed(eventHost: Address, eventId: UInt64, eventName: String, eventImage: String, serial: UInt64, recipient: Address)
     pub event FLOATDeposited(to: Address, id: UInt64)
     pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATWithdrawn(from: Address, id: UInt64)
@@ -554,6 +555,15 @@ pub contract FLOAT: NonFungibleToken {
                 Limited.verify(accountAddr: recipient.owner!.address, currentCapacity: FLOATEvent.totalSupply)
             }
 
+            emit FLOATClaimed(
+                eventHost: FLOATEvent.host, 
+                eventId: FLOATEvent.id, 
+                eventName: FLOATEvent.name,
+                eventImage: FLOATEvent.image,
+                serial: FLOATEvent.totalSupply, 
+                recipient: recipient.owner!.address
+            )
+            
             // You have passed all the props (which act as restrictions).
             FLOATEvent.mint(recipient: recipient)
         }
