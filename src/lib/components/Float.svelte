@@ -26,10 +26,12 @@
   </a>
 {:else if preview}
   <article class="card card-preview">
+    {#if float?.eventMetadata.image}
     <img
       src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
       alt="{float?.eventMetadata.name} Image"
     />
+    {/if}
     <h1>{float?.eventMetadata.name}</h1>
     <p>
       <small>
@@ -37,15 +39,17 @@
         <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
       </small>
     </p>
-    <code>#{float?.eventMetadata.totalSupply}</code>
+    <code data-tooltip="This is how many have been minted so far">#{float?.eventMetadata.totalSupply}</code>
   </article>
 {:else}
   <a class="no-style" href="/{float?.eventHost}/{float?.eventId}">
     <article class="card">
+      {#if float?.eventMetadata.image}
       <img
         src="https://ipfs.infura.io/ipfs/{float?.eventMetadata.image}"
         alt="{float?.eventMetadata.name} Image"
       />
+      {/if}
       <h1>{float?.eventMetadata.name}</h1>
       <p>
         <small>
@@ -53,7 +57,7 @@
           <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
         </small>
       </p>
-      <code>#{float?.serial}</code>
+      <code data-tooltip="{float?.serial} of {float?.eventMetadata.totalSupply}">#{float?.serial}</code>
     </article>
   </a>
 {/if}

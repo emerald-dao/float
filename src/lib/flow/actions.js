@@ -15,6 +15,7 @@ import {
 } from './stores.js';
 import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
+import { parseErrorMessageFromFCL } from './utils';
 
 if (browser) {
   // set Svelte $user store to currentUser, 
@@ -136,7 +137,7 @@ export const createFloat = async (draftFloat) => {
         if (res.statusCode === 0) {
           eventCreatedStatus.set(respondWithSuccess());
         } else {
-          eventCreatedStatus.set(respondWithError(res.errorMessage, res.statusCode));
+          eventCreatedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
         eventCreationInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
@@ -215,7 +216,7 @@ export const claimFLOAT = async (host, id, secret) => {
         if (res.statusCode === 0) {
           floatClaimedStatus.set(respondWithSuccess());
         } else {
-          floatClaimedStatus.set(respondWithError(res.errorMessage, res.statusCode));
+          floatClaimedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
         floatClaimingInProgress.set(false);
         draftFloat.set({

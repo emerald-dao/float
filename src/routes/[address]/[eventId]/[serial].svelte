@@ -23,8 +23,10 @@
 {#await floatEvent}
   <Loading />
 {:then floatEvent}
-  <article class="container">
-    <h3>Owned by {owner}</h3>
+  <article>
+    <header>
+      <h3>Owned by {owner}</h3>
+    </header>
     <Float
       float={{
         eventHost: floatEvent?.host,
@@ -32,6 +34,7 @@
         eventMetadata: {
           name: floatEvent?.name,
           image: floatEvent?.image,
+          totalSupply: floatEvent?.totalSupply
         },
         serial: serial,
       }}
@@ -41,13 +44,10 @@
 {/await}
 
 <style>
-  .container {
+  article {
     text-align: center;
     align-items: center;
-    padding: 0;
+  
   }
 
-  h3 {
-    margin-top: 10px;
-  }
 </style>

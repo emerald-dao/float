@@ -1,6 +1,10 @@
 /* Write your global styles here, in SCSS syntax. Variables and mixins from the src/variables.scss file are available here without importing */
 @import "@picocss/pico";
 
+:root {
+  --green: #00cf00;
+}
+
 /* Green Light scheme (Default) */
 /* Can be forced with data-theme="light" */
 [data-theme="light"],

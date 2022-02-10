@@ -23,7 +23,9 @@
 
 <a class="no-style" href="/{floatEvent?.host}/{floatEvent?.id}">
   <article class="card">
+    {#if floatEvent?.image}
     <img src="https://ipfs.infura.io/ipfs/{floatEvent?.image}" alt="{floatEvent.name} Image" />
+    {/if}
     <h1>{floatEvent?.name}</h1>
     <p>
       <small>

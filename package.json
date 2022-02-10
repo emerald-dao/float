@@ -24,5 +24,8 @@
     "rollup-plugin-node-globals": "^1.4.0",
     "svelte": "^3.44.3"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "canvas-confetti": "^1.5.1"
+  }
 }

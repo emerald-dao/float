@@ -55,7 +55,7 @@
         </p>
       </header>
       {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
-        <p>You claimed this FLOAT</p>
+        <div class="claimed-badge">✓ You claimed this FLOAT</div>
         <Float
           float={{
             eventHost: floatEvent?.host,
@@ -115,8 +115,8 @@
       -->
 
         {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
-          <button class="secondary" disabled>
-            You have already claimed this FLOAT.
+          <button class="secondary outline" disabled>
+            ✓ You already claimed this FLOAT.
           </button>
         {:else if floatEvent?.claimable}
           {#if floatEvent?.isOpen && !floatEvent?.requiresSecret}
@@ -292,5 +292,15 @@
     border-color: white;
     color: white;
     opacity: 1;
+  }
+
+  .claimed-badge {
+    width:250px;
+    margin: 0 auto;
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--green);
+    border-radius: 100px;
+    color: var(--green);
+    font-size: 0.7rem;
   }
 </style>
