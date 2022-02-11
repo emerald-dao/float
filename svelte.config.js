@@ -38,7 +38,6 @@ const config = {
           browser: true,
         }),
         globals(),
-        viteCommonjs(),
       ],
       optimizeDeps: {
         exclude: ['electron-fetch'],
