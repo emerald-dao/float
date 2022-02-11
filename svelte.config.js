@@ -2,7 +2,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import builtins from 'rollup-plugin-node-builtins';
 import globals from 'rollup-plugin-node-globals';
 import vercel from '@sveltejs/adapter-vercel';
-import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
+import { viteCommonjs, esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
 
 const config = {
   // options passed to svelte.compile (https://svelte.dev/docs#svelte_compile)
@@ -38,12 +38,13 @@ const config = {
           browser: true,
         }),
         globals(),
+        viteCommonjs(),
       ],
       optimizeDeps: {
         exclude: ['electron-fetch'],
         esbuildOptions:{
           plugins:[
-            esbuildCommonjs() 
+            esbuildCommonjs(['@samatech/onflow-fcl-esm']) 
           ]
         }
       }
