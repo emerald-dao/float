@@ -1,4 +1,5 @@
-import { HubConnectionBuilder } from "$lib/signalr";
+import * as signalr from "@microsoft/signalr";
+const { HubConnectionBuilder } = signalr;
 import axios from "axios";
 
 export default function GraffleSDK() {

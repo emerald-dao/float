@@ -13,6 +13,7 @@
     "deploy": "flow project deploy --network=testnet"
   },
   "devDependencies": {
+    "@microsoft/signalr": "^6.0.2",
     "@picocss/pico": "^1.4.4",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@samatech/onflow-fcl-esm": "^0.4.4",
@@ -21,10 +22,10 @@
     "@sveltejs/kit": "1.0.0-next.202",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.32",
     "axios": "^0.25.0",
+    "canvas-confetti": "^1.5.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "svelte": "^3.44.3",
-    "canvas-confetti": "^1.5.1"
+    "svelte": "^3.44.3"
   },
   "type": "module"
 }

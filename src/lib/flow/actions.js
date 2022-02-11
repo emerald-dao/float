@@ -16,7 +16,7 @@ import {
 
 import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
-import { parseErrorMessageFromFCL } from './utils';
+import { parseErrorMessageFromFCL } from './utils.js';
 
 if (browser) {
   // set Svelte $user store to currentUser, 
