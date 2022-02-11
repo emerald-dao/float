@@ -13,7 +13,7 @@
     "deploy": "flow project deploy --network=testnet"
   },
   "devDependencies": {
-    "@microsoft/signalr": "^6.0.2",
+    "@microsoft/signalr": "github:muttoni/signalr",
     "@picocss/pico": "^1.4.4",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@samatech/onflow-fcl-esm": "^0.4.4",
