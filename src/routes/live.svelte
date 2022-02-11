@@ -49,31 +49,31 @@
 
   @keyframes float {
     0% {
-      top: 0px;
+      transform: translateY(0);
     }
     23% {
-      top: 19px;
+      transform: translateY(19px);
     }
     25% {
-      top: 20px;
+      transform: translateY(20px);
     }
     28% {
-      top: 20px;
+      transform: translateY(20px);
     }
     50% {
-      top: 0px;
+      transform: translateY(0);
     }
     73% {
-      top: -19px;
+      transform: translateY(-19px);
     }
     75% {
-      top: -20px;
+      transform: translateY(-20px);
     }
     78% {
-      top: -20px;
+      transform: translateY(-20px);
     }
     100% {
-      top: 0px;
+      transform: translateY(0);
     }
   }
 </style>
