@@ -14,7 +14,6 @@
   },
   "devDependencies": {
     "@microsoft/signalr": "github:muttoni/signalr",
-    "@originjs/vite-plugin-commonjs": "^1.0.2",
     "@picocss/pico": "^1.4.4",
     "@rollup/plugin-node-resolve": "^13.1.1",
     "@samatech/onflow-fcl-esm": "^0.6.0",
