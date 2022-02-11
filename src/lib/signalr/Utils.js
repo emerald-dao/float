@@ -253,4 +253,3 @@ export function getGlobalThis() {
     }
     throw new Error("could not find global");
 }
-//# sourceMappingURL=Utils.js.map

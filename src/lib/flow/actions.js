@@ -1,8 +1,8 @@
 import { browser } from '$app/env';
-import { get } from 'svelte/store';
 
 import * as fcl from "@samatech/onflow-fcl-esm";
-import "./config";
+
+import "./config.js";
 import {
   user,
   txId,
@@ -13,6 +13,7 @@ import {
   floatClaimingInProgress,
   floatClaimedStatus
 } from './stores.js';
+
 import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils';
