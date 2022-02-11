@@ -1,10 +1,9 @@
-import { HubConnectionBuilder } from "$lib/signalr";
-import axios from "axios";
-
+import { HubConnectionBuilder } from '@microsoft/signalr'
 export default function GraffleSDK() {
 
   let negotiateResult;
   const projectID = import.meta.env.VITE_GRAFFLE_TESTNET_PROJECT_ID;
+
   const negotiate = async () => {
 
     const authHeader = {
@@ -13,14 +12,16 @@ export default function GraffleSDK() {
     }
     const url = import.meta.env.VITE_GRAFFLE_TESTNET_API_URL;
 
-    negotiateResult = await axios.post(url, {}, { headers: authHeader });
+    negotiateResult = await fetch(url, { headers: authHeader, method: 'POST', body: {}});
+    negotiateResult = await negotiateResult.json(); 
+    return negotiateResult
   };
 
   this.stream = async (streamCallback) => {
-    await negotiate();
+    let res = await negotiate();
     const connection = new HubConnectionBuilder()
-      .withUrl(negotiateResult.data.url, {
-        accessTokenFactory: () => negotiateResult.data.accessToken,
+      .withUrl(res.url, {
+        accessTokenFactory: () => res.accessToken,
       })
       .withAutomaticReconnect()
       .build();
@@ -28,11 +29,11 @@ export default function GraffleSDK() {
     if (connection) {
       connection.start()
         .then((result) => {
-          //console.log("1st Parse: "+projectID)
+          console.log("1st Parse: "+projectID)
           connection.on(projectID, (message) => {
             var parsedMessage = JSON.parse(message);
             //console.log("Parsing Message for: "+projectID)
-            streamCallback(parsedMessage);
+            streamCallback(parsedMessage); 
           });
         });
     }

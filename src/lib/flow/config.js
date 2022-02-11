@@ -1,4 +1,4 @@
-import { config } from "@samatech/onflow-fcl-esm";
+import {config} from "@samatech/onflow-fcl-esm";
 
 config({
   "accessNode.api": import.meta.env.VITE_ACCESS_NODE_API,

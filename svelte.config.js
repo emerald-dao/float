@@ -36,10 +36,10 @@ const config = {
         resolve({
           browser: true,
         }),
-        globals()
+        globals(),
       ],
       optimizeDeps: {
-        exclude: ['electron-fetch']
+        exclude: ['electron-fetch'],
       }
     },
   },
