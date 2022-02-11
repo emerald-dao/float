@@ -1,5 +1,3 @@
-import * as signalr from "@microsoft/signalr";
-const { HubConnectionBuilder } = signalr;
 import axios from "axios";
 
 export default function GraffleSDK() {
@@ -19,7 +17,8 @@ export default function GraffleSDK() {
 
   this.stream = async (streamCallback) => {
     await negotiate();
-    const connection = new HubConnectionBuilder()
+    console.log('negotiated')
+    const connection = new signalR.HubConnectionBuilder()
       .withUrl(negotiateResult.data.url, {
         accessTokenFactory: () => negotiateResult.data.accessToken,
       })
@@ -29,7 +28,7 @@ export default function GraffleSDK() {
     if (connection) {
       connection.start()
         .then((result) => {
-          //console.log("1st Parse: "+projectID)
+          console.log("1st Parse: "+projectID)
           connection.on(projectID, (message) => {
             var parsedMessage = JSON.parse(message);
             //console.log("Parsing Message for: "+projectID)
