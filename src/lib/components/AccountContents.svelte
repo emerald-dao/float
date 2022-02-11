@@ -28,7 +28,7 @@
   {:then floats} 
     {#if floats?.length > 0}
       {#each floats as float}
-      <Float {float} />
+      <Float {float} individual={true} />
       {/each}
     {:else}
     <p>This account doesn't have any FLOATs yet.</p>
