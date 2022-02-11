@@ -87,6 +87,7 @@
             },
           }}
           preview={true}
+          individual={false}
         />
       {/if}
 
