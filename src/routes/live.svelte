@@ -35,30 +35,8 @@
     <Lantern ipfsHash={claimedEvents[id]} />
   {/each}
 </div>
-<div class="graffle">
-  Live feed powered by <img
-    class="graffle"
-    src="/graffle-logo.png"
-    alt="Graffle logo" />
-</div>
 
 <style>
-  .graffle {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    top: 200px;
-  }
-
-  img.graffle {
-    position: relative;
-    top: -5px;
-    width: 100px;
-    height: auto;
-    margin-left: 5px;
-  }
-
   div {
     text-align: center;
   }
