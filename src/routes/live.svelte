@@ -3,27 +3,27 @@
   import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
 
-  const streamSDK = new GraffleSDK();
-
+  
   let claimedEvents = {};
-
+  
   const renderImage = (id, ipfsHash) => {
     claimedEvents[id] = ipfsHash;
-
+    
     // Remove the component after 5 seconds
     setTimeout(() => {
       delete claimedEvents[id];
       claimedEvents = claimedEvents;
     }, 5000);
   };
-
+  
   const receiveEvent = (message) => {
     // `message` is the event
     console.log(message);
     renderImage(message.id, message.blockEventData.eventImage);
   };
-
+  
   onMount(async () => {
+    const streamSDK = new GraffleSDK();
     console.log("Creating the stream");
     await streamSDK.stream(receiveEvent);
   });
