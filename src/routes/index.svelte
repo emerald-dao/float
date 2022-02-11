@@ -39,9 +39,11 @@
 </video> -->
 
 <div class="grid">
-  <div class="text-center">
-    <img  class="island" src="/island.png" alt="FLOAT Logo" />
-  </div>
+  <a href="/live">
+    <div class="text-center">
+      <img  class="island" src="/island.png" alt="FLOAT Logo" />
+    </div>
+  </a>
   <div class="mt-2 mb-2 text-center">
     <h1>Welcome to FLOAT</h1>
     <small>A service by <a href="https://discord.gg/emeraldcity" target="_blank"><img style="height:20px;width:auto;margin-right:4px;" src="/emeraldcitylogo.png" alt="Emerald Logo" />Emerald City DAO</a></small>

@@ -26,7 +26,7 @@
 <footer>
   {#if $page.path === "/live"}
     <small class="graffle">
-      Live feed powered by
+      Live claiming feed powered by
       <a href="https://graffle.io" target="_blank">
         <img class="graffle" src="/graffle-logo.png" alt="Graffle logo" />
       </a>
