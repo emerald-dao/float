@@ -21,7 +21,7 @@
           <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
         </small>
       </p>
-      <code>#{float?.serial}</code>
+      <code data-tooltip="{float?.serial} of {float?.eventMetadata.totalSupply}">#{float?.serial}</code>
     </article>
   </a>
 {:else if preview}
@@ -39,7 +39,7 @@
         <a href="/{float?.eventHost}" class="host">{float?.eventHost}</a>
       </small>
     </p>
-    <code data-tooltip="This is how many have been minted so far">#{float?.eventMetadata.totalSupply}</code>
+    <code data-tooltip="Minted so far">#{float?.eventMetadata.totalSupply}</code>
   </article>
 {:else}
   <a class="no-style" href="/{float?.eventHost}/{float?.eventId}">

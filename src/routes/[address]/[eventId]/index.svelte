@@ -63,6 +63,7 @@
             eventMetadata: {
               name: floatEvent?.name,
               image: floatEvent?.image,
+              totalSupply: floatEvent?.totalSupply,
             },
             serial: floatEvent?.claimed[$user.addr].serial,
           }}
