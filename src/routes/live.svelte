@@ -22,8 +22,8 @@
     renderImage(message.id, message.blockEventData.eventImage);
   };
   
+  const streamSDK = new GraffleSDK();
   onMount(async () => {
-    const streamSDK = new GraffleSDK();
     console.log("Creating the stream");
     await streamSDK.stream(receiveEvent);
   });
