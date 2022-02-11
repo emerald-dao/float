@@ -1,6 +1,6 @@
 <script>
   import Lantern from "$lib/components/Lantern.svelte";
-  import GraffleSDK from "$lib/graffle.js";
+  //import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
 
   
@@ -22,10 +22,10 @@
     renderImage(message.id, message.blockEventData.eventImage);
   };
   
-  const streamSDK = new GraffleSDK();
+  //const streamSDK = new GraffleSDK();
   onMount(async () => {
     console.log("Creating the stream");
-    await streamSDK.stream(receiveEvent);
+    // await streamSDK.stream(receiveEvent);
   });
 </script>
 
