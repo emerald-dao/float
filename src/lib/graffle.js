@@ -1,3 +1,4 @@
+import { HubConnectionBuilder } from '@microsoft/signalr'
 export default function GraffleSDK() {
 
   let negotiateResult;
@@ -18,7 +19,7 @@ export default function GraffleSDK() {
 
   this.stream = async (streamCallback) => {
     let res = await negotiate();
-    const connection = new signalR.HubConnectionBuilder()
+    const connection = new HubConnectionBuilder()
       .withUrl(res.url, {
         accessTokenFactory: () => res.accessToken,
       })
