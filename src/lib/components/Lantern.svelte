@@ -23,8 +23,8 @@
   }
 
   img.lantern {
-    width: 50px;
-    height: 50px;
+    width: 60px;
+    height: 60px;
     object-fit: cover;
     border-radius: 100%;
     box-shadow: 0px 0px 5px 5px #38e8c6;
