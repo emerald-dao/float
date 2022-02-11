@@ -10,7 +10,3 @@ export const eventCreatedStatus = writable(false);
 
 export const floatClaimingInProgress = writable(false);
 export const floatClaimedStatus = writable(false);
-
-floatClaimedStatus.subscribe((e) => {
-  console.log(e);
-})
