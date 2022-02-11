@@ -26,7 +26,6 @@
   onMount(async () => {
     console.log("Creating the stream");
     await streamSDK.stream(receiveEvent);
-    renderImage("fewf33f3", "QmewohgeFVNREs9JRUhgrCUeiTPQ95ZAoU9ktKfZcZr6UN");
   });
 </script>
 
@@ -37,7 +36,10 @@
   {/each}
 </div>
 <div class="graffle">
-  Live feed powered by <img class="graffle" src="/graffle-logo.png" />
+  Live feed powered by <img
+    class="graffle"
+    src="/graffle-logo.png"
+    alt="Graffle logo" />
 </div>
 
 <style>
