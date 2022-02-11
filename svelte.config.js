@@ -41,10 +41,10 @@ const config = {
         viteCommonjs(),
       ],
       optimizeDeps: {
-        exclude: ['electron-fetch'],
+        exclude: ['electron-fetch', 'axios'],
         esbuildOptions:{
           plugins:[
-            esbuildCommonjs(['@samatech/onflow-fcl-esm']) 
+            esbuildCommonjs(['axios']) 
           ]
         }
       }
