@@ -35,12 +35,15 @@
       top: 100vh;
       opacity: 1;
     }
-    99% {
-      top: -9vh;
+    85% {
       opacity: 1;
     }
+    99% {
+      transform: translateY(-109vh);
+      opacity: 0.1;
+    }
     100% {
-      top: -10vh;
+      transform: translateY(-110vh);
       opacity: 0;
     }
   }
@@ -50,14 +53,16 @@
       top: 100vh;
       opacity: 1;
     }
-    99% {
-      top: -9vh;
+    85% {
       opacity: 1;
     }
+    99% {
+      transform: translateY(-109vh);
+      opacity: 0.1;
+    }
     100% {
-      top: -10vh;
+      transform: translateY(-110vh);
       opacity: 0;
-      display: none;
     }
   }
 </style>
