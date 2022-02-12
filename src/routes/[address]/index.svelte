@@ -14,7 +14,7 @@
 title="FLOATs owned by {$page.params.address}"
 author={$page.params.address}
 description="FLOATs owned by {$page.params.address}"
-url={window.location}
+url={$page.url}
 />
 
 <div class="container">

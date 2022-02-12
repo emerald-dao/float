@@ -29,7 +29,7 @@
   title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
   author={floatEvent?.host}
   description={floatEvent?.description}
-  url={window.location}
+  url={$page.url}
   />
 
   <article>
