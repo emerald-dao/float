@@ -11,7 +11,7 @@
 :root:not([data-theme="dark"]) {
   --primary: #35d9ba;
   --primary-hover: #248f7a;
-  --primary-focus: rgba(56, 232, 198, 0.125);
+  --primary-focus: transparent;
   --primary-inverse: #fff;
 }
 
@@ -21,7 +21,7 @@
   :root:not([data-theme="light"]) {
     --primary: #38e8c6;
     --primary-hover: #12bf9d;
-    --primary-focus: rgba(56, 232, 198, 0.125);
+    --primary-focus: transparent;
     --primary-inverse: #111;
   }
 }
@@ -31,7 +31,7 @@
 [data-theme="dark"] {
   --primary: #38e8c6;
   --primary-hover: #12bf9d;
-  --primary-focus: rgba(56, 232, 198, 0.125);
+  --primary-focus: transparent;
   --primary-inverse: #111;
 }
 
