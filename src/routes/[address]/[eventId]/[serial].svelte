@@ -3,6 +3,7 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import { getFLOATEvent } from "$lib/flow/actions.js";
+  import Meta from '$lib/components/common/Meta.svelte';
 
   let owner = null;
   let serial = $page.params.serial;
@@ -23,6 +24,14 @@
 {#await floatEvent}
   <Loading />
 {:then floatEvent}
+
+  <Meta
+  title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
+  author={floatEvent?.host}
+  description={floatEvent?.description}
+  url={window.location}
+  />
+
   <article>
     <header>
       <h3>Owned by {owner}</h3>

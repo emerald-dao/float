@@ -1,6 +1,6 @@
 <script>
   import { page } from '$app/stores';
-  import { PAGE_TITLE_EXTENSION } from '$lib/constants'
+  import Meta from '$lib/components/common/Meta.svelte';
 
   import AccountContents from '$lib/components/AccountContents.svelte';
   import CheckAddress from '$lib/components/CheckAddress.svelte';
@@ -10,9 +10,12 @@
 
 </style>
 
-<svelte:head>
-	<title>FLOATs of {$page.params.address} { PAGE_TITLE_EXTENSION }</title>
-</svelte:head>
+<Meta
+title="FLOATs owned by {$page.params.address}"
+author={$page.params.address}
+description="FLOATs owned by {$page.params.address}"
+url={window.location}
+/>
 
 <div class="container">
 	
