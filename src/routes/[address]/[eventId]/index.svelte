@@ -15,10 +15,13 @@
     deleteFLOAT,
     transferFLOAT,
   } from "$lib/flow/actions.js";
+
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import Countdown from "$lib/components/common/Countdown.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
+
+  import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
 
   let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
 
@@ -238,7 +241,15 @@
         {/if}
       </footer>
     </article>
+
+    <article>
+      <header>
+        <h3>Claimed by</h3>
+      </header>
+      <ClaimsTable rows={Object.values(floatEvent?.claimed).sort((a,b) => a.serial-b.serial)} />
+    </article>
   {/await}
+
 </div>
 
 <style>
@@ -305,4 +316,9 @@
     color: var(--green);
     font-size: 0.7rem;
   }
+
+  .claims {
+    text-align:left;
+  }
+
 </style>
