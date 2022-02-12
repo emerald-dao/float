@@ -4,23 +4,23 @@
   export let author;
   export let description;
   export let url;
-
+  
 </script>
 <svelte:head>
-  <title>{title} {PAGE_TITLE_EXTENSION}</title>
-  <meta name="author" content="{author}">
-  <meta name="description" content="{description}">
+<title>{title} {PAGE_TITLE_EXTENSION}</title>
+<meta name="author" content="{author}">
+<meta name="description" content="{description}">
 
-  <!--  Essential META Tags -->
-  <meta property="og:title" content="{title} {PAGE_TITLE_EXTENSION}">
-  <meta property="og:type" content="article" />
-  <meta property="og:url" content="{url}">
+<!--  Essential META Tags -->
+<meta property="og:title" content="{title} {PAGE_TITLE_EXTENSION}">
+<meta property="og:type" content="article" />
+<meta property="og:url" content="{url}">
 
-  <!--  Non-Essential, But Recommended -->
-  <meta property="og:description" content="{description}">
-  <meta property="og:site_name" content="FLOATs.city">
-  <meta name="twitter:image:alt" content="FLOATs.city">
+<!--  Non-Essential, But Recommended -->
+<meta property="og:description" content="{description}">
 
-  <!--  Non-Essential, But Required for Analytics -->
-  <meta name="twitter:site" content="@emerald_dao">
+<meta name="twitter:title" content="{title} {PAGE_TITLE_EXTENSION}" />
+<meta name="twitter:description" content="{description}" />
+<meta name="twitter:description" content="{description}" />
+
 </svelte:head>
