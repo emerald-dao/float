@@ -64,7 +64,9 @@
 <nav class="container">
   <ul>
     <li>
-      <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1>
+      <!-- when on mainnnet, replace this line with the one below-->
+      <h1><a href="/"><img src="/logo-testnet.png" alt="Emerald City FLOAT" /></a></h1>
+      <!-- <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1> -->
     </li>
   </ul>
   <ul>
