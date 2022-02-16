@@ -89,16 +89,18 @@
           }}
           individual={true}
         />
-        <!-- Checks to see if the user deleted their FLOAT -->
-        {#if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial]}
+        <!-- Checks to see if the user deleted their FLOAT (this is so messy) -->
+        {#if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial].address === $user.addr}
           <button
             class="outline red small"
             on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}
           >
             Delete this FLOAT
           </button>
+        {:else if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial].address}
+          <p class="outline red small">This FLOAT was transferred.</p>
         {:else}
-          <p class="outline red small">You deleted this FLOAT.</p>
+          <p class="outline red small">This FLOAT is deleted.</p>
         {/if}
       {:else}
         <Float
