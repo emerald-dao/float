@@ -15,8 +15,7 @@ transaction(id: UInt64, recipient: Address) {
   }
 
   execute {
-    self.RecipientCollection.deposit(token: <- self.Collection.withdraw(withdrawID: id))
+    self.Collection.transfer(withdrawID: id, recipient: self.RecipientCollection)
     log("Transferred the FLOAT.")
   }
 }
- 

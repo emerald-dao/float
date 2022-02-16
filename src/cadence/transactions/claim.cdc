@@ -2,7 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
-transaction(id: UInt64, host: Address, secret: String) {
+transaction(id: UInt64, host: Address, secret: String?) {
  
   let FLOATEvents: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}
   let Collection: &FLOAT.Collection
@@ -14,7 +14,7 @@ transaction(id: UInt64, host: Address, secret: String) {
         acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
     }
-    
+
     self.FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                         .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                         ?? panic("Could not borrow the public FLOATEvents from the host.")

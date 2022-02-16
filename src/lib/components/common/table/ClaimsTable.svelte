@@ -4,10 +4,12 @@
 
   import Table, { Row, Sort } from "./Table.svelte";
   import { sortNumber } from "./sorting.js";
+  import { page } from "$app/stores";
 
   export let rows = [];
-  let page = 0; //first page
+  let pageCount = 0; //first page
   let pageSize = 25; 
+  console.log($page.path)
 
   function onCellClick(row) {
     window.location = `/${row.address}`
@@ -22,7 +24,7 @@
   }
 </script>
 
-<Table {page} {pageSize} {rows} let:rows={rows2}>
+<Table {pageCount} {pageSize} {rows} let:rows={rows2}>
   <thead slot="head">
     <tr>
       <th>
@@ -37,7 +39,7 @@
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Serial"><code>#{row.serial}</code></td>
+        <td data-label="Serial"><a href="{$page.path}/{row.serial}"><code>#{row.serial}</code></a></td>
         <td data-label="Address"><span class="mono"><a href="/{row.address}">{row.address}</a></span></td>
       </Row>
     {/each}

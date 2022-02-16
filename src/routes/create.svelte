@@ -89,7 +89,7 @@ transaction(eventId: UInt64, recipient: Address) {
 
 	execute {
 		//
-		// Give the "recipient" a FLOAT from the event with "id"
+		// Give the "recipient" a FLOAT from the event with "eventId"
 		//
 
 		self.FLOATEvents.distributeDirectly(id: eventId, recipient: self.RecipientCollection)

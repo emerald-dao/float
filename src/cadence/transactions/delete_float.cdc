@@ -14,4 +14,3 @@ transaction(id: UInt64) {
     log("Destroyed the FLOAT.")
   }
 }
- 

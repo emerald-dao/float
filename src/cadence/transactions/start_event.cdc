@@ -14,10 +14,10 @@ transaction(claimable: Bool, name: String, description: String, image: String, u
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
     }
 
+    // set up the FLOAT Events where users will store all their created events
     if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
-      // set up the FLOAT Events where users will store all their created events
       acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-      acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+      acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsContract, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
     }
 
     self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -41,7 +41,7 @@ transaction(claimable: Bool, name: String, description: String, image: String, u
       Limited = FLOAT.Limited(_capacity: capacity)
     }
     
-    self.FLOATEvents.createEvent(claimable: claimable, timelock: Timelock, secret: Secret, limited: Limited, name: name, description: description, image: image, url: url, transferrable: transferrable, {})
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, limited: Limited, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
     log("Started a new event.")
   }
-}
+}  

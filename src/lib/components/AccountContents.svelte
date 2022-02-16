@@ -2,11 +2,11 @@
   import Loading from '$lib/components/common/Loading.svelte';
   import Float from '$lib/components/Float.svelte';
   import Event from '$lib/components/Event.svelte';
-  import { getFLOATEvents, getFLOATs } from '$lib/flow/actions.js'
+  import { getEvents, getFLOATs } from '$lib/flow/actions.js'
   
   export let address;
   
-  let floatEvents = getFLOATEvents(address);
+  let floatEvents = getEvents(address);
   
   let floats = getFLOATs(address);
   

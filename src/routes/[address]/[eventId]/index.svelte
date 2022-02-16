@@ -7,13 +7,15 @@
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
-    getFLOATEvent,
+    getEvent,
     claimFLOAT,
-    toggleActive,
+    toggleClaimable,
     toggleTransferrable,
     deleteEvent,
     deleteFLOAT,
     transferFLOAT,
+    getClaimedInEvent,
+    getHoldersInEvent
   } from "$lib/flow/actions.js";
 
   import Loading from "$lib/components/common/Loading.svelte";
@@ -23,7 +25,20 @@
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
 
-  let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
+
+  const floatEventCallback = async () => {
+    return new Promise(async (resolve, reject) => {
+      let data = await getEvent($page.params.address, $page.params.eventId);
+      let claimed = await getClaimedInEvent($page.params.address, $page.params.eventId);
+      let holders = await getHoldersInEvent($page.params.address, $page.params.eventId);
+      console.log({...claimed, ...holders, ...data})
+      resolve({...claimed, ...holders, ...data});
+    })
+  }
+
+  let floatEvent = floatEventCallback();
+
+  console.log(floatEvent)
 
   let claimCode = "";
 
@@ -47,8 +62,9 @@
 
     <article>
       <header>
-        <a href={floatEvent?.url} target="_blank"><h1>{floatEvent?.name}</h1></a
-        >
+        <a href={floatEvent?.url} target="_blank">
+          <h1>{floatEvent?.name}</h1>
+        </a>
         <p>FLOAT Event #{$page.params.eventId}</p>
         <p>
           <small class="muted"
@@ -73,12 +89,17 @@
           }}
           individual={true}
         />
-        <button
-          class="outline red small"
-          on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}
-        >
-          Delete this FLOAT
-        </button>
+        <!-- Checks to see if the user deleted their FLOAT -->
+        {#if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial]}
+          <button
+            class="outline red small"
+            on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}
+          >
+            Delete this FLOAT
+          </button>
+        {:else}
+          <p class="outline red small">You deleted this FLOAT.</p>
+        {/if}
       {:else}
         <Float
           float={{
@@ -149,7 +170,7 @@
             {/if}
           {:else if floatEvent?.isOpen}
             <label for="claimCode">
-              Enter the claim code below.
+              Enter the claim code below (<i>case sensitive</i>).
               <input
                 type="text"
                 name="claimCode"
@@ -183,7 +204,7 @@
                 >Claim this FLOAT
               </button>
             {/if}
-          {:else if !floatEvent?.active}
+          {:else if !floatEvent?.claimable}
             <button class="secondary outline" disabled>
               This FLOAT has been manually closed by the host.
             </button>
@@ -221,9 +242,9 @@
           <div class="toggle">
             <button
               class="outline"
-              on:click={() => toggleActive(floatEvent?.id)}
+              on:click={() => toggleClaimable(floatEvent?.id)}
             >
-              {floatEvent?.active ? "Pause claiming" : "Resume claiming"}
+              {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
               class="outline"

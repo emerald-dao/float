@@ -77,10 +77,10 @@ export const createFloat = async (draftFloat) => {
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
+          // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
-            // set up the FLOAT Events where users will store all their created events
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsContract, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -104,7 +104,7 @@ export const createFloat = async (draftFloat) => {
             Limited = FLOAT.Limited(_capacity: capacity)
           }
           
-          self.FLOATEvents.createEvent(claimable: claimable, timelock: Timelock, secret: Secret, limited: Limited, name: name, description: description, image: image, url: url, transferrable: transferrable, {})
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, limited: Limited, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
           log("Started a new event.")
         }
       }  
@@ -171,7 +171,7 @@ export const claimFLOAT = async (host, id, secret) => {
       import NonFungibleToken from 0xNFT
       import MetadataViews from 0xMDV
       
-      transaction(id: UInt64, host: Address, secret: String) {
+      transaction(id: UInt64, host: Address, secret: String?) {
  
         let FLOATEvents: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}
         let Collection: &FLOAT.Collection
@@ -183,7 +183,7 @@ export const claimFLOAT = async (host, id, secret) => {
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
-          
+      
           self.FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                               .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                               ?? panic("Could not borrow the public FLOATEvents from the host.")
@@ -200,7 +200,7 @@ export const claimFLOAT = async (host, id, secret) => {
       args: (arg, t) => [
         arg(id, t.UInt64),
         arg(host, t.Address),
-        arg(secret, t.String),
+        arg(secret, t.Optional(t.String)),
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -251,12 +251,12 @@ export const deleteFLOAT = async (id) => {
       transaction(id: UInt64) {
 
         let Collection: &FLOAT.Collection
-
+      
         prepare(acct: AuthAccount) {
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
         }
-
+      
         execute {
           self.Collection.destroyFLOAT(id: id)
           log("Destroyed the FLOAT.")
@@ -318,7 +318,7 @@ export const transferFLOAT = async (id, recipient) => {
         }
 
         execute {
-          self.RecipientCollection.deposit(token: <- self.Collection.withdraw(withdrawID: id))
+          self.Collection.transfer(withdrawID: id, recipient: self.RecipientCollection)
           log("Transferred the FLOAT.")
         }
       }
@@ -354,7 +354,7 @@ export const transferFLOAT = async (id, recipient) => {
   }
 }
 
-export const getFLOATEvent = async (addr, id) => {
+export const getEvent = async (addr, id) => {
   try {
     let queryResult = await fcl.query({
       cadence: `
@@ -367,7 +367,7 @@ export const getFLOATEvent = async (addr, id) => {
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvent = floatEventCollection.borrowViewResolver(id: id)
-
+      
         if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
           return metadata as! FLOATMetadataViews.FLOATEventMetadataView
         }
@@ -379,14 +379,14 @@ export const getFLOATEvent = async (addr, id) => {
         arg(parseInt(id), t.UInt64)
       ]
     })
-    console.log(queryResult);
+    // console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
   }
 }
 
-export const getFLOATEvents = async (addr) => {
+export const getEvents = async (addr) => {
   try {
     let queryResult = await fcl.query({
       cadence: `
@@ -400,7 +400,7 @@ export const getFLOATEvents = async (addr) => {
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
         let returnVal: {String: FLOATMetadataViews.FLOATEventMetadataView} = {}
-
+      
         for id in floatEvents {
           let view = floatEventCollection.borrowViewResolver(id: id)
           if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATEventMetadataView>()) {
@@ -442,7 +442,7 @@ export const getFLOATs = async (addr) => {
             returnVal.append(float)
           }
         }
-
+      
         return returnVal
       }
       `,
@@ -473,7 +473,7 @@ export const getFLOAT = async (addr, id) => {
         if let metadata = nft.resolveView(Type<FLOATMetadataViews.FLOATMetadataView>()) {
           return metadata as! FLOATMetadataViews.FLOATMetadataView
         }
-
+      
         return nil
       }
       `,
@@ -489,7 +489,7 @@ export const getFLOAT = async (addr, id) => {
   }
 }
 
-export const toggleActive = async (id) => {
+export const toggleClaimable = async (id) => {
   let transactionId = false;
   initTransactionState()
 
@@ -501,15 +501,15 @@ export const toggleActive = async (id) => {
       transaction(id: UInt64) {
 
         let FLOATEvent: &FLOAT.FLOATEvent
-
+      
         prepare(acct: AuthAccount) {
           let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+          self.FLOATEvent = FLOATEvents.getEventRef(id: id)
         }
-
+      
         execute {
-          self.FLOATEvent.toggleActive()
+          self.FLOATEvent.toggleClaimable()
           log("Toggled the FLOAT Event.")
         }
       }
@@ -553,13 +553,13 @@ export const toggleTransferrable = async (id) => {
       transaction(id: UInt64) {
 
         let FLOATEvent: &FLOAT.FLOATEvent
-
+      
         prepare(acct: AuthAccount) {
           let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          self.FLOATEvent = FLOATEvents.getEvent(id: id)
+          self.FLOATEvent = FLOATEvents.getEventRef(id: id)
         }
-
+      
         execute {
           self.FLOATEvent.toggleTransferrable()
           log("Toggled the FLOAT Event.")
@@ -605,12 +605,12 @@ export const deleteEvent = async (id) => {
       transaction(id: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-
+      
         prepare(acct: AuthAccount) {
           self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
         }
-
+      
         execute {
           self.FLOATEvents.deleteEvent(id: id)
           log("Removed the FLOAT Event.")
@@ -641,6 +641,70 @@ export const deleteEvent = async (id) => {
   } catch (e) {
     transactionStatus.set(99)
     console.log(e)
+  }
+}
+
+export const getHoldersInEvent = async (addr, id) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
+
+      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventHolders? {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
+      
+        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventHolders>()) {
+          return metadata as! FLOATMetadataViews.FLOATEventHolders
+        }
+        return nil
+      }
+      `,
+      args: (arg, t) => [
+        arg(addr, t.Address),
+        arg(parseInt(id), t.UInt64)
+      ]
+    })
+    // console.log(queryResult);
+    return queryResult || {};
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getClaimedInEvent = async (addr, id) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
+
+      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventClaimed? {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
+      
+        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventClaimed>()) {
+          return metadata as! FLOATMetadataViews.FLOATEventClaimed
+        }
+        return nil
+      }
+      `,
+      args: (arg, t) => [
+        arg(addr, t.Address),
+        arg(parseInt(id), t.UInt64)
+      ]
+    })
+    // console.log(queryResult);
+    return queryResult || {};
+  } catch (e) {
+    console.log(e);
   }
 }
 

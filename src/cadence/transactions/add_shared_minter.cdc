@@ -30,7 +30,7 @@ transaction (receiver: Address) {
   }
 
   execute {
-    self.ReceiverFLOATEvents.addCreationCapability(minter: self.FLOATEventsCapability)
+    self.ReceiverFLOATEvents.addSharedMinter(minter: self.FLOATEventsCapability)
     log("The Receiver now has access to the signer's FLOATEvents.")
   }
 }
