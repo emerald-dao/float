@@ -12,7 +12,7 @@
   console.log($page.path)
 
   function onCellClick(row) {
-    window.location = `/${row.address}`
+    return; // window.location = `/${row.address}`
   }
 
   function onSortNumber(event) {
