@@ -13,10 +13,9 @@
     toggleTransferrable,
     deleteEvent,
     deleteFLOAT,
-    transferFLOAT,
-    getClaimedInEvent,
-    getHoldersInEvent
   } from "$lib/flow/actions.js";
+
+  import IntersectionObserver from 'svelte-intersection-observer';
 
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
@@ -24,16 +23,15 @@
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
-
+  let claimsTableInView;
 
   const floatEventCallback = async () => {
-    return new Promise(async (resolve, reject) => {
-      let data = await getEvent($page.params.address, $page.params.eventId);
-      let claimed = await getClaimedInEvent($page.params.address, $page.params.eventId);
-      let holders = await getHoldersInEvent($page.params.address, $page.params.eventId);
-      console.log({...claimed, ...holders, ...data})
-      resolve({...claimed, ...holders, ...data});
-    })
+    let eventData = await getEvent($page.params.address, $page.params.eventId);
+    let hasClaimed = false;
+    // let hasClaimed = await ...
+    // todo: also have transaction just to get current user's claim status
+    console.log(eventData)
+    return {...eventData, hasClaimed};
   }
 
   let floatEvent = floatEventCallback();
@@ -74,7 +72,7 @@
           >
         </p>
       </header>
-      {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
+      {#if floatEvent?.hasClaimed}
         <div class="claimed-badge">✓ You claimed this FLOAT</div>
         <Float
           float={{
@@ -89,7 +87,7 @@
           }}
           individual={true}
         />
-        <!-- Checks to see if the user deleted their FLOAT (this is so messy) -->
+        <!-- Checks to see if the user deleted their FLOAT (this is so messy)
         {#if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial].address === $user.addr}
           <button
             class="outline red small"
@@ -102,6 +100,7 @@
         {:else}
           <p class="outline red small">This FLOAT is deleted.</p>
         {/if}
+         -->
       {:else}
         <Float
           float={{
@@ -143,7 +142,7 @@
           - capacity reached -> "This FLOAT is closed. All 1000/1000 have been claimed"
       -->
 
-        {#if Object.keys(floatEvent?.claimed).includes($user?.addr)}
+        {#if floatEvent?.hasClaimed}
           <button class="secondary outline" disabled>
             ✓ You already claimed this FLOAT.
           </button>
@@ -268,9 +267,20 @@
 
     <article>
       <header>
-        <h3>Claimed by</h3>
+        <h3>Owned by</h3>
       </header>
-      <ClaimsTable rows={Object.values(floatEvent?.claimed).sort((a,b) => a.serial-b.serial)} />
+      <IntersectionObserver
+        once
+        element={claimsTableInView}
+        let:intersecting
+        
+      >
+      <div bind:this={claimsTableInView}>
+        {#if intersecting}
+        <ClaimsTable address={floatEvent?.eventHost} eventId={floatEvent?.eventId} />
+        {/if}
+      </div>
+      </IntersectionObserver>
     </article>
   {/await}
 

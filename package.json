@@ -24,7 +24,8 @@
     "canvas-confetti": "^1.5.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "svelte": "^3.44.3"
+    "svelte": "^3.44.3",
+    "svelte-intersection-observer": "^0.10.0"
   },
   "type": "module"
 }

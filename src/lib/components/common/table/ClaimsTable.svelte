@@ -6,7 +6,22 @@
   import { sortNumber } from "./sorting.js";
   import { page } from "$app/stores";
 
-  export let rows = [];
+  import {
+    getHoldersInEvent
+  } from "$lib/flow/actions.js";
+
+  export let address = "0xe37a242dfff69bbc";
+  export let eventId = "33925026";
+
+  let getRows = async () => {
+    console.log("potato");
+    let event = await getHoldersInEvent(address, eventId)
+    console.log(event);
+    return Object.values(event.currentHolders);
+  };
+
+  let promise = getRows();
+
   let pageCount = 0; //first page
   let pageSize = 25; 
   console.log($page.path)
@@ -24,6 +39,9 @@
   }
 </script>
 
+{#await promise}
+<article aria-busy=true></article>
+{:then rows}
 <Table {pageCount} {pageSize} {rows} let:rows={rows2}>
   <thead slot="head">
     <tr>
@@ -45,3 +63,4 @@
     {/each}
   </tbody>
 </Table>
+{/await}
