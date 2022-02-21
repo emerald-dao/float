@@ -13,7 +13,6 @@
       html.setAttribute("data-theme", savedTheme);
     }
   });
-  console.log($page.path);
 </script>
 
 <Header />

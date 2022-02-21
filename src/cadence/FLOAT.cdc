@@ -49,7 +49,7 @@ pub contract FLOAT: NonFungibleToken {
 
         // A capability that points to metadata about the FLOAT event
         // this FLOAT is from.
-        pub let eventCap: Capability<&FLOATEvents{FLOATEventsContract, MetadataViews.ResolverCollection}>
+        pub let eventCap: Capability<&FLOATEvents{FLOATEventsPublic, MetadataViews.ResolverCollection}>
         
         // Helper function to get the metadata of the event 
         // this FLOAT is from
@@ -108,7 +108,7 @@ pub contract FLOAT: NonFungibleToken {
             self.serial = _serial
 
             self.eventCap = getAccount(_eventHost)
-                            .getCapability<&FLOATEvents{FLOATEventsContract, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath)
+                            .getCapability<&FLOATEvents{FLOATEventsPublic, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath)
             
             emit FLOATMinted(
                 id: self.id, 
@@ -124,7 +124,7 @@ pub contract FLOAT: NonFungibleToken {
         // When destroyed, we make sure to update the FLOAT Event metadata
         // (specifically to remove this user as a current holder of this FLOAT)
         destroy() {
-            let floatEvents: &FLOATEvents{FLOATEventsContract} = self.eventCap.borrow() 
+            let floatEvents: &FLOATEvents{FLOATEventsPublic} = self.eventCap.borrow() 
                 ?? panic("This Event Collection this FLOAT came from has been deleted.")
             let floatEvent: &FLOATEvent = floatEvents.getEventRef(id: self.eventId)
             floatEvent.accountDeletedFLOAT(serial: self.serial)
@@ -162,7 +162,7 @@ pub contract FLOAT: NonFungibleToken {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
             
-            let floatEvents: &FLOATEvents{FLOATEventsContract} = nft.eventCap.borrow() ?? panic("This Event Collection this FLOAT came from has been deleted.")
+            let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventCap.borrow() ?? panic("This Event Collection this FLOAT came from has been deleted.")
             let floatEvent: &FLOATEvent = floatEvents.getEventRef(id: nft.eventId)
             floatEvent.transferred(id: nft.id, serial: nft.serial, to: recipient.owner!.address)
             assert(floatEvent.transferrable, message: "This FLOAT is not transferrable.")
@@ -214,10 +214,16 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    pub resource interface FLOATEventPublic {
+        pub fun hasClaimed(account: Address): FLOATMetadataViews.Identifier?
+        pub fun getCurrentHolder(serial: UInt64): FLOATMetadataViews.Identifier?
+        pub fun isOpen(): Bool
+    }
+
     //
     // FLOATEvent
     //
-    pub resource FLOATEvent: MetadataViews.Resolver {
+    pub resource FLOATEvent: FLOATEventPublic, MetadataViews.Resolver {
         // A manual toggle the event host can turn
         // on and off to stop claiming
         pub var claimable: Bool
@@ -254,6 +260,14 @@ pub contract FLOAT: NonFungibleToken {
         pub let Timelock: Timelock?
         pub let Secret: Secret?
         pub let Limited: Limited?
+
+        pub fun hasClaimed(account: Address): FLOATMetadataViews.Identifier? {
+            return self.claimed[account]
+        }
+
+        pub fun getCurrentHolder(serial: UInt64): FLOATMetadataViews.Identifier? {
+            return self.currentHolders[serial]
+        }
 
         // It is "open" if:
         // 1. the event host didn't manually turn it off
@@ -512,22 +526,33 @@ pub contract FLOAT: NonFungibleToken {
     // FLOATEvents
     //
     pub resource interface FLOATEventsPublic {
-        pub fun getAllEvents(): {String: UInt64}
-        pub fun getSharedMinters(): [Address]
-        pub fun addSharedMinter(minter: Capability<&FLOATEvents>) 
+        // Setters
         pub fun claim(id: UInt64, recipient: &Collection, secret: String?)
-    }
-
-    pub resource interface FLOATEventsContract {
-        access(account) fun revokeSelfAccessToSharedMinter(host: Address)
+        access(account) fun receiveSharing(fromHost: &FLOATEvents) 
+        access(account) fun removeSharing(ofHost: &FLOATEvents)
         access(account) fun getEventRef(id: UInt64): &FLOATEvent
+        // Getters
+        pub fun getAllEvents(): {String: UInt64}
+        pub fun getAddressWhoICanMintFor(): [Address]
+        pub fun getAddressWhoCanMintForMe(): [Address]
+        pub fun getPublicEventRef(id: UInt64): &FLOATEvent{FLOATEventPublic}
     }
 
-    pub resource FLOATEvents: FLOATEventsPublic, FLOATEventsContract, MetadataViews.ResolverCollection {
+    // Separating this into a separate interface
+    // allows the FLOATEvent owner to completely
+    // halt all shared minters from having control.
+    pub resource interface FLOATEventsSharedMinter {
+        access(account) fun getRef(): &FLOATEvents
+    }
+
+    pub resource FLOATEvents: FLOATEventsPublic, FLOATEventsSharedMinter, MetadataViews.ResolverCollection {
         // Makes sure a name is only being used once for every account.
         access(account) var nameToId: {String: UInt64}
         access(account) var events: @{UInt64: FLOATEvent}
-        access(account) var sharedMinters: {Address: Capability<&FLOATEvents>}
+        // A list of accounts you can mint for
+        access(account) var canMintForThem: {Address: Bool}
+        // A list of accounts you are allowing to mint for you
+        access(account) var canMintForMe: {Address: Bool}
 
         // Create a new FLOAT Event.
         pub fun createEvent(
@@ -581,6 +606,12 @@ pub contract FLOAT: NonFungibleToken {
             return &self.events[id] as &FLOATEvent
         }
 
+        // Get a public reference to the FLOATEvent
+        // so you can call some helpful getters
+        pub fun getPublicEventRef(id: UInt64): &FLOATEvent{FLOATEventPublic} {
+            return &self.events[id] as &FLOATEvent{FLOATEventPublic}
+        }
+
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
             let floatRef = self.getEventRef(id: id)
             return floatRef as &{MetadataViews.Resolver}
@@ -601,59 +632,70 @@ pub contract FLOAT: NonFungibleToken {
         // a different account wants you to be able to handle their FLOAT Events
         // for them, so imagine if you're on a team of people and you all handle
         // one account.
-        pub fun addSharedMinter(minter: Capability<&FLOATEvents>) {
-            self.sharedMinters[minter.borrow()!.owner!.address] = minter
-        }
-
-        // TWO USE CASES:
-        // 1. The owner of this FLOATEvents can remove their own
-        // access to others minter whenever they want. So if I
-        // just really don't like my team and don't want to mint
-        // for them anymore, I can remove myself.
         //
-        // 2. Can be called by `revokeOthersAccessToMySharedMinter`
-        // to remove your minter from someone else's FLOATEvents
-        // resource. So this basically stops a team member
-        // from minting for you.
-        pub fun revokeSelfAccessToSharedMinter(host: Address) {
-            self.sharedMinters.remove(key: host)
+        // Will only be called by `giveSharing` below.
+        access(account) fun receiveSharing(fromHost: &FLOATEvents) {
+            // Allows you to mint for them
+            self.canMintForThem.insert(key: fromHost.owner!.address, true)
         }
 
-        // Used for #2 in the above use cases. Call this function
-        // to remove your minter from `otherHost`'s FLOATEvents
-        pub fun revokeOthersAccessToMySharedMinter(otherHost: Address) {
-            let otherHostEvents = getAccount(otherHost).getCapability(FLOAT.FLOATEventsPublicPath)
-                                    .borrow<&FLOATEvents{FLOATEventsContract}>()
-                                    ?? panic("Could not get the other host's public FLOATEvents.")
-            otherHostEvents.revokeSelfAccessToSharedMinter(host: self.owner!.address)
+        // A method for giving a shared minter to somebody else.
+        pub fun giveSharing(toHost: &FLOATEvents{FLOATEventsPublic}) {
+            // Gives `toHost` the ability to mint for you
+            toHost.receiveSharing(fromHost: self.getRef())
+            self.canMintForMe.insert(key: toHost.owner!.address, true)
         }
 
-        // Get a reference to do stuff with a shared minter.
-        // If for some reason the Capability was unlinked, it will
-        // automatically remove it.
+        // A helper function, exposed to the public, but only callable
+        // in the code defined here. Helps to handle the other host's
+        // records so they know they can't mint for you anymore.
+        access(account) fun removeSharing(ofHost: &FLOATEvents) {
+            self.canMintForThem.remove(key: ofHost.owner!.address)
+        }
+
+        // Removes someone else from being able to handle your FLOAT Events.
+        pub fun takeSharing(fromHost: Address) {
+            // If for some reason they unlink their Collection from the public,
+            // we can still remove them from ours.
+            if let fromHostEvents = getAccount(fromHost).getCapability(FLOAT.FLOATEventsPublicPath).borrow<&FLOATEvents{FLOATEventsPublic}>() {
+                fromHostEvents.removeSharing(ofHost: self.getRef())
+            }
+            self.canMintForMe.remove(key: fromHost)
+        }
+
+        // If you don't like them for some reason... lol
+        pub fun removeHostFromMintForThem(host: Address) {
+            self.canMintForThem.remove(key: host)
+        }
+
+        // Return a reference to someone elses FLOAT Events.
+        // This will only ever work if you are in THEIR
+        // `canMintForMe` dictionary.
         pub fun getSharedMinterRef(host: Address): &FLOATEvents? {
-            let cap: Capability<&FLOATEvents> = self.sharedMinters[host] 
-                        ?? panic("You don't have access to this account's FLOATEvents.")
+            let floatEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
+                                .borrow<&FLOATEvents{FLOATEventsPublic, FLOATEventsSharedMinter}>()
+                                ?? panic("Could not borrow the public FLOAT Events.")
 
-            if !cap.check() {
-                self.revokeSelfAccessToSharedMinter(host: host)
+            if floatEvents.getAddressWhoCanMintForMe().contains(self.owner!.address) {
+                return floatEvents.getRef()
             }
-
-            return cap.borrow()
+            return nil
         }
 
-        // Get a list of shared minters you have
+        access(account) fun getRef(): &FLOATEvents {
+            return &self as &FLOATEvents
+        }
+
+        // Get a list of accounts you have
         // access to.
-        pub fun getSharedMinters(): [Address] {
-            let answer: [Address] = []
-            for otherHost in self.sharedMinters.keys {
-                if self.sharedMinters[otherHost]!.check() {
-                    answer.append(otherHost)
-                } else {
-                    self.revokeSelfAccessToSharedMinter(host: otherHost)
-                }
-            }
-            return answer
+        pub fun getAddressWhoICanMintFor(): [Address] {
+            return self.canMintForThem.keys
+        }
+
+        // Get a list of accounts you have allowed
+        // to mint for you.
+        pub fun getAddressWhoCanMintForMe(): [Address] {
+            return self.canMintForMe.keys
         }
 
         /*************************************** CLAIMING ***************************************/
@@ -715,7 +757,8 @@ pub contract FLOAT: NonFungibleToken {
         init() {
             self.nameToId = {}
             self.events <- {}
-            self.sharedMinters = {}
+            self.canMintForThem = {}
+            self.canMintForMe = {}
         }
 
         destroy() {
@@ -736,10 +779,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath010
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath010
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath010
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath010
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath010
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath018
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath018
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath018
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath018
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath018
     }
 }

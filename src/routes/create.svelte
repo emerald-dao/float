@@ -4,7 +4,7 @@
     eventCreationInProgress,
     eventCreatedStatus,
   } from "$lib/flow/stores";
-  import { authenticate, createFloat } from "$lib/flow/actions";
+  import { authenticate, createFloat, createFloatForHost, getAddressesWhoICanMintFor } from "$lib/flow/actions";
 
   import { draftFloat, theme } from "$lib/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
@@ -63,10 +63,17 @@
     ipfsIsReady = true;
   }
 
+  let minter = $user?.addr;
   function initCreateFloat() {
     // TODO: check if all fields are correctly filled out
-    createFloat($draftFloat);
+    if (minter === $user?.addr) {
+      createFloat($draftFloat);
+    } else {
+      createFloatForHost(minter, $draftFloat);
+    }
   }
+
+  let sharedMinters = getAddressesWhoICanMintFor($user?.addr);
 
   let distributeCode = `
 import FLOAT from ${import.meta.env.VITE_FLOAT_ADDRESS}
@@ -375,7 +382,18 @@ transaction(eventId: UInt64, recipient: Address) {
           {$eventCreatedStatus.error}
         </button>
       {:else}
-        <button on:click={initCreateFloat}>Create FLOAT</button>
+        {#await sharedMinters then sharedMinters}
+          {#if sharedMinters?.length > 0}
+            <label for="minters">Select who you'd like to mint from.</label>
+            <select bind:value={minter} id="minters" required>
+              <option value={$user?.addr} selected>You</option>
+                {#each sharedMinters as minter}
+                  <option value={minter}>{minter}</option>
+                {/each}
+            </select>
+          {/if}
+        {/await}
+        <button on:click|preventDefault={initCreateFloat}>Create FLOAT</button>
       {/if}
     </footer>
   </article>

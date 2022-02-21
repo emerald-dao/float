@@ -10,13 +10,12 @@
     getHoldersInEvent
   } from "$lib/flow/actions.js";
 
-  export let address = "0xe37a242dfff69bbc";
-  export let eventId = "33925026";
+  export let address = "";
+  export let eventId = "";
 
   let getRows = async () => {
     console.log("potato");
-    let event = await getHoldersInEvent(address, eventId)
-    console.log(event);
+    let event = await getHoldersInEvent(address, eventId);
     return Object.values(event.currentHolders);
   };
 
@@ -24,7 +23,6 @@
 
   let pageCount = 0; //first page
   let pageSize = 25; 
-  console.log($page.path)
 
   function onCellClick(row) {
     return; // window.location = `/${row.address}`

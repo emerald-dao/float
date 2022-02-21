@@ -2,48 +2,42 @@
   import { page } from "$app/stores";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
-  import { getEvent, getHoldersInEvent, getFLOAT, transferFLOAT } from "$lib/flow/actions.js";
+  import { getEvent, getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { user } from "$lib/flow/stores";
 
-  let owner = null;
-  let serial = $page.params.serial;
-  let id = null;
-  let float = null;
   const floatEventCallback = async () => {
     return new Promise(async (resolve, reject) => {
-      let data = await getEvent($page.params.address, $page.params.eventId);
+      let event = await getEvent($page.params.address, $page.params.eventId);
       
-      let holders = await getHoldersInEvent($page.params.address, $page.params.eventId);
-      owner = holders?.currentHolders[serial]?.address;
-      id = holders?.currentHolders[serial]?.id;
-      float = await getFLOAT(owner, id);
-      console.log("FLOAT Data:", float);
-      console.log("Event Data:", {...holders, ...data})
-      resolve({...holders, ...data});
+      let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
+      let float = await getFLOAT(holder.address, holder.id);
+      
+      console.log({event, float})
+      resolve({event, float});
     })
   }
   let recipientAddr = "";
 
-  let floatEvent = floatEventCallback();
+  let data = floatEventCallback();
 </script>
 
-{#await floatEvent}
+{#await data}
   <Loading />
-{:then floatEvent}
+{:then data}
 
   <Meta
-    title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
-    author={floatEvent?.host}
-    description={floatEvent?.description}
+    title="{data?.event.name} | FLOAT #{$page.params.eventId}"
+    author={data?.event.host}
+    description={data?.event.description}
     url={$page.url}
   />
 
   <article>
     <header>
-      {#if owner}
-        <h3>Owned by {owner}</h3>
-        <small class="muted">Original Recipient: {float?.originalRecipient}</small>
+      {#if data?.float.owner}
+        <h3>Owned by {data?.float.owner === $user.addr ? "you" : data?.float.owner}</h3>
+        <small class="muted">Originally received by {data?.float.originalRecipient}</small>
       {:else}
         <h3>This FLOAT was deleted.</h3>
         <small class="muted">Original Recipient: Unknown</small>
@@ -51,19 +45,35 @@
     </header>
     <Float
       float={{
-        eventHost: floatEvent?.host,
-        eventId: floatEvent?.id,
+        eventHost: data?.event.host,
+        eventId: data?.event.id,
         eventMetadata: {
-          name: floatEvent?.name,
-          image: floatEvent?.image,
-          totalSupply: floatEvent?.totalSupply
+          name: data?.event.name,
+          image: data?.event.image,
+          totalSupply: data?.event.totalSupply
         },
-        serial: serial,
+        serial: data?.float.serial,
       }}
       preview={false}
     />
+    <blockquote>
+      <strong><small class="muted">DESCRIPTION</small></strong><br
+      />{data?.event.description}
+    </blockquote>
+    <footer>
+      {#if $user?.addr == data?.float.owner}
+          <div class="toggle">
+            <button
+              class="outline red"
+              on:click={() => deleteFLOAT(data?.float.id)}
+            >
+              Delete this FLOAT
+            </button>
+          </div>
+        {/if}
+    </footer>
   </article>
-  {#if owner === $user.addr}
+  {#if data?.float.owner === $user.addr}
     <article>
       <label for="recipientAddr">
         Copy the recipient's address below.
@@ -71,10 +81,10 @@
           type="text"
           name="recipientAddr"
           bind:value={recipientAddr}
-          placeholder="recipient's address"
+          placeholder="0x00000000000"
         />
       </label>
-      <button on:click={transferFLOAT(float?.id, recipientAddr)}>Transfer this FLOAT</button>
+      <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>Transfer this FLOAT</button>
     </article>
   {/if}
 {/await}
@@ -84,6 +94,15 @@
     text-align: center;
     align-items: center;
   
+  }
+
+  .muted {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+
+  blockquote {
+    text-align: left;
   }
 
 </style>

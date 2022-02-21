@@ -15,6 +15,12 @@ transaction(id: UInt64, host: Address, secret: String?) {
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
     }
 
+    // set up the FLOAT Events where users will store all their created events
+    if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+      acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+      acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsSharedMinter, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+    }
+
     self.FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                         .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                         ?? panic("Could not borrow the public FLOATEvents from the host.")

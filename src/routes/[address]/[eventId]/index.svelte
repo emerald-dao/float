@@ -12,7 +12,7 @@
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
-    deleteFLOAT,
+    hasClaimedEvent,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from 'svelte-intersection-observer';
@@ -27,16 +27,13 @@
 
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
-    let hasClaimed = false;
-    // let hasClaimed = await ...
-    // todo: also have transaction just to get current user's claim status
-    console.log(eventData)
+    let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
+
+    console.log({...eventData, hasClaimed});
     return {...eventData, hasClaimed};
   }
 
   let floatEvent = floatEventCallback();
-
-  console.log(floatEvent)
 
   let claimCode = "";
 
@@ -83,24 +80,11 @@
               image: floatEvent?.image,
               totalSupply: floatEvent?.totalSupply,
             },
-            serial: floatEvent?.claimed[$user.addr].serial,
+            serial: floatEvent?.hasClaimed.serial,
           }}
           individual={true}
         />
-        <!-- Checks to see if the user deleted their FLOAT (this is so messy)
-        {#if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial].address === $user.addr}
-          <button
-            class="outline red small"
-            on:click={() => deleteFLOAT(floatEvent?.claimed[$user.addr].id)}
-          >
-            Delete this FLOAT
-          </button>
-        {:else if floatEvent?.currentHolders[floatEvent?.claimed[$user.addr].serial].address}
-          <p class="outline red small">This FLOAT was transferred.</p>
-        {:else}
-          <p class="outline red small">This FLOAT is deleted.</p>
-        {/if}
-         -->
+    
       {:else}
         <Float
           float={{
@@ -147,39 +131,19 @@
             ✓ You already claimed this FLOAT.
           </button>
         {:else if floatEvent?.claimable}
-          {#if floatEvent?.isOpen && !floatEvent?.requiresSecret}
-            {#if $floatClaimingInProgress}
-              <button aria-busy="true" disabled> Claiming FLOAT </button>
-            {:else if $floatClaimedStatus.success}
-              <a
-                role="button"
-                class="d-block"
-                href="/account"
-                style="display:block"
-                >FLOAT claimed successfully!
-              </a>
-            {:else if !$floatClaimedStatus.success && $floatClaimedStatus.error}
-              <button class="error" disabled>
-                {$floatClaimedStatus.error}
-              </button>
-            {:else}
-              <button
-                on:click={() =>
-                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
-                >Claim this FLOAT
-              </button>
+          {#if floatEvent?.isOpen}
+            {#if floatEvent?.requiresSecret}
+              <label for="claimCode">
+                Enter the claim code below (<i>case sensitive</i>).
+                <input
+                  type="text"
+                  name="claimCode"
+                  bind:value={claimCode}
+                  placeholder="secret code"
+                />
+              </label>
             {/if}
-          {:else if floatEvent?.isOpen}
-            <label for="claimCode">
-              Enter the claim code below (<i>case sensitive</i>).
-              <input
-                type="text"
-                name="claimCode"
-                bind:value={claimCode}
-                placeholder="secret code"
-              />
-            </label>
-            {#if claimCode === ""}
+            {#if floatEvent?.requiresSecret && claimCode === ""}
               <button class="secondary outline" disabled>
                 You must enter a secret code.
               </button>
@@ -205,10 +169,6 @@
                 >Claim this FLOAT
               </button>
             {/if}
-          {:else if !floatEvent?.claimable}
-            <button class="secondary outline" disabled>
-              This FLOAT has been manually closed by the host.
-            </button>
           {:else if floatEvent?.capacity && floatEvent?.capacity <= floatEvent?.currentCapacity}
             <button class="secondary outline" disabled>
               This FLOAT is no longer available.<br /> All
@@ -230,13 +190,12 @@
             </button>
           {:else}
             <button class="secondary outline" disabled>
-              This FLOAT is not claimable.<br />Unknown reason.
+              This FLOAT is closed.<br />Unknown reason.
             </button>
           {/if}
         {:else}
           <button class="secondary outline" disabled>
-            This FLOAT is not claimable.<br />The host opted to distribute it
-            manually.
+            This FLOAT is not claimable.<br />The host has done this either to distribute it manually or halt claiming.
           </button>
         {/if}
         {#if $user?.addr == floatEvent?.host}
@@ -277,7 +236,7 @@
       >
       <div bind:this={claimsTableInView}>
         {#if intersecting}
-        <ClaimsTable address={floatEvent?.eventHost} eventId={floatEvent?.eventId} />
+          <ClaimsTable address={floatEvent?.host} eventId={floatEvent?.id} />
         {/if}
       </div>
       </IntersectionObserver>
@@ -318,11 +277,6 @@
 
   .toggle button {
     width: 30%;
-  }
-
-  .red {
-    border-color: red;
-    color: red;
   }
 
   .small {
