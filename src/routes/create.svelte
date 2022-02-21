@@ -8,6 +8,8 @@
 
   import { draftFloat, theme } from "$lib/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
+  import { notifications } from '$lib/notifications';
+
 
   import LibLoader from "$lib/components/LibLoader.svelte";
   import { onMount } from "svelte";
@@ -65,11 +67,33 @@
 
   let minter = $user?.addr;
   function initCreateFloat() {
-    // TODO: check if all fields are correctly filled out
+    // check if all required inputs are correct
+    let canCreateFloat = checkInputs();
+
+    if(!canCreateFloat) {
+      return;
+    }
+
+    // otherwise, continue with creation
     if (minter === $user?.addr) {
       createFloat($draftFloat);
     } else {
       createFloatForHost(minter, $draftFloat);
+    }
+  }
+
+  function checkInputs() {
+    let errorArray = [];
+    let messageString = 'The following mandatory fields are missing'; 
+
+    // add conditions here
+    if(!$draftFloat.name) { errorArray.push("Event name") }
+
+    if(errorArray.length > 0) {
+      notifications.info(`${messageString}: ${errorArray.join(",")}`)
+      return false;
+    } else {
+      return true
     }
   }
 

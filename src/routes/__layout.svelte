@@ -1,6 +1,8 @@
 <script>
   import Header from "$lib/components/header/Header.svelte";
   import Transaction from "$lib/components/common/Transaction.svelte";
+  import Notifications from '$lib/components/common/Notifications.svelte';
+
   import "../app.css";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
@@ -18,6 +20,7 @@
 <Header />
 
 <main class="container">
+  <Notifications />
   <slot />
   <Transaction />
 </main>
