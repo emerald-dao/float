@@ -399,7 +399,7 @@ transaction(eventId: UInt64, recipient: Address) {
             type="text"
             name="claimCode"
             bind:value={$draftFloat.claimCode}
-            placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code2, code4" : "mySecretCode"}
+            placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code3, code4" : "mySecretCode"}
           />
         </label>
         <hr />
