@@ -31,6 +31,12 @@ export const unauthenticate = () => fcl.unauthenticate();
 export const authenticate = () => fcl.authenticate();
 
 const convertDraftFloat = (draftFloat) => {
+  let secrets = []
+  if (draftFloat.multipleSecretsEnabled) {
+    secrets = draftFloat.claimCode.split(', ');
+  } else {
+    secrets = [draftFloat.claimCode];
+  }
   return {
     claimable: draftFloat.claimable,
     name: draftFloat.name,
@@ -42,7 +48,7 @@ const convertDraftFloat = (draftFloat) => {
     dateStart: +new Date(draftFloat.startTime) / 1000,
     timePeriod: (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000),
     secret: draftFloat.claimCodeEnabled,
-    secretPhrase: draftFloat.claimCode,
+    secrets: secrets,
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
   };
@@ -66,7 +72,7 @@ export const createFloat = async (draftFloat) => {
       import NonFungibleToken from 0xNFT
       import MetadataViews from 0xMDV
 
-      transaction(claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secretPhrase: String, limited: Bool, capacity: UInt64) {
+      transaction(claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
@@ -92,20 +98,26 @@ export const createFloat = async (draftFloat) => {
           var Timelock: FLOAT.Timelock? = nil
           var Secret: FLOAT.Secret? = nil
           var Limited: FLOAT.Limited? = nil
+          var MultipleSecret: FLOAT.MultipleSecret? = nil
           
           if timelock {
             Timelock = FLOAT.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
           }
           
           if secret {
-            Secret = FLOAT.Secret(_secretPhrase: secretPhrase)
+            if secrets.length == 1 {
+              Secret = FLOAT.Secret(_secretPhrase: secrets[0])
+            } else {
+              MultipleSecret = FLOAT.MultipleSecret(_secrets: secrets)
+            }
+            
           }
       
-          if limited  {
+          if limited {
             Limited = FLOAT.Limited(_capacity: capacity)
           }
           
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, limited: Limited, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, limited: Limited, multipleSecret: MultipleSecret, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
           log("Started a new event.")
         }
       }  
@@ -121,7 +133,7 @@ export const createFloat = async (draftFloat) => {
         arg(floatObject.dateStart.toFixed(1), t.UFix64),
         arg(floatObject.timePeriod.toFixed(1), t.UFix64),
         arg(floatObject.secret, t.Bool),
-        arg(floatObject.secretPhrase, t.String),
+        arg(floatObject.secrets, t.Array(t.String)),
         arg(floatObject.limited, t.Bool),
         arg(floatObject.capacity, t.UInt64),
       ],
@@ -174,7 +186,7 @@ export const createFloatForHost = async (forHost, draftFloat) => {
       import NonFungibleToken from 0xNFT
       import MetadataViews from 0xMDV
 
-      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secretPhrase: String, limited: Bool, capacity: UInt64) {
+      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
         let SharedMinter: &FLOAT.FLOATEvents
       
@@ -189,21 +201,26 @@ export const createFloatForHost = async (forHost, draftFloat) => {
           var Timelock: FLOAT.Timelock? = nil
           var Secret: FLOAT.Secret? = nil
           var Limited: FLOAT.Limited? = nil
+          var MultipleSecret: FLOAT.MultipleSecret? = nil
           
           if timelock {
             Timelock = FLOAT.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
           }
           
           if secret {
-            Secret = FLOAT.Secret(_secretPhrase: secretPhrase)
+            if secrets.length == 1 {
+              Secret = FLOAT.Secret(_secretPhrase: secrets[0])
+            } else {
+              MultipleSecret = FLOAT.MultipleSecret(_secrets: secrets)
+            }
           }
       
           if limited  {
             Limited = FLOAT.Limited(_capacity: capacity)
           }
           
-          self.SharedMinter.createEvent(claimable: claimable, description: description, image: image, limited: Limited, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
-          log("Started a new event.")
+          self.SharedMinter.createEvent(claimable: claimable, description: description, image: image, limited: Limited, multipleSecret: MultipleSecret, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
+          log("Started a new event for host.")
         }
       }  
       `,
@@ -219,7 +236,7 @@ export const createFloatForHost = async (forHost, draftFloat) => {
         arg(floatObject.dateStart.toFixed(1), t.UFix64),
         arg(floatObject.timePeriod.toFixed(1), t.UFix64),
         arg(floatObject.secret, t.Bool),
-        arg(floatObject.secretPhrase, t.String),
+        arg(floatObject.secrets, t.Array(t.String)),
         arg(floatObject.limited, t.Bool),
         arg(floatObject.capacity, t.UInt64),
       ],

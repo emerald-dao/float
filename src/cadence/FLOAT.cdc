@@ -260,6 +260,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let Timelock: Timelock?
         pub let Secret: Secret?
         pub let Limited: Limited?
+        pub let MultipleSecret: MultipleSecret?
 
         pub fun hasClaimed(account: Address): FLOATMetadataViews.Identifier? {
             return self.claimed[account]
@@ -376,7 +377,7 @@ pub contract FLOAT: NonFungibleToken {
                         _image: self.image, 
                         _isOpen: self.isOpen(),
                         _name: self.name,
-                        _requiresSecret: self.Secret?.secretPhrase != nil,
+                        _requiresSecret: self.Secret != nil || self.MultipleSecret != nil,
                         _startTime: self.Timelock?.dateStart,
                         _totalSupply: self.totalSupply,
                         _transferrable: self.transferrable,
@@ -406,6 +407,7 @@ pub contract FLOAT: NonFungibleToken {
             _host: Address, 
             _image: String, 
             _limited: Limited?,
+            _multipleSecret: MultipleSecret?,
             _name: String,
             _secret: Secret?,
             _timelock: Timelock?,
@@ -429,6 +431,7 @@ pub contract FLOAT: NonFungibleToken {
             self.Timelock = _timelock
             self.Secret = _secret
             self.Limited = _limited
+            self.MultipleSecret = _multipleSecret
 
             FLOAT.totalFLOATEvents = FLOAT.totalFLOATEvents + 1
             emit FLOATEventCreated(id: self.id, host: self.host, name: self.name)
@@ -482,7 +485,7 @@ pub contract FLOAT: NonFungibleToken {
     // to claim a FLOAT (not very secure, but cool feature)
     pub struct Secret {
         // The secret code, set by the owner of this event.
-        access(account) var secretPhrase: String
+        pub let secretPhrase: String
 
         access(account) fun verify(secretPhrase: String?) {
             assert(
@@ -521,6 +524,33 @@ pub contract FLOAT: NonFungibleToken {
             self.capacity = _capacity
         }
     }
+
+    pub struct MultipleSecret {
+        access(account) let secrets: {String: Bool}
+
+        access(account) fun verify(secretPhrase: String?) {
+            assert(
+                secretPhrase != nil,
+                message: "You must input a secret phrase."
+            )
+            assert(
+                self.secrets[secretPhrase!] != nil, 
+                message: "You did not input a correct secret phrase."
+            )
+            self.secrets.remove(key: secretPhrase!)
+        }
+
+        pub fun getSecrets(): [String] {
+            return self.secrets.keys
+        }
+
+        init(_secrets: [String]) {
+            self.secrets = {}
+            for secret in _secrets {
+                self.secrets[secret] = true
+            }
+        }
+    }
  
     // 
     // FLOATEvents
@@ -528,14 +558,15 @@ pub contract FLOAT: NonFungibleToken {
     pub resource interface FLOATEventsPublic {
         // Setters
         pub fun claim(id: UInt64, recipient: &Collection, secret: String?)
-        access(account) fun receiveSharing(fromHost: &FLOATEvents) 
-        access(account) fun removeSharing(ofHost: &FLOATEvents)
-        access(account) fun getEventRef(id: UInt64): &FLOATEvent
         // Getters
         pub fun getAllEvents(): {String: UInt64}
         pub fun getAddressWhoICanMintFor(): [Address]
         pub fun getAddressWhoCanMintForMe(): [Address]
         pub fun getPublicEventRef(id: UInt64): &FLOATEvent{FLOATEventPublic}
+        // For this contract
+        access(account) fun receiveSharing(fromHost: &FLOATEvents) 
+        access(account) fun removeSharing(ofHost: &FLOATEvents)
+        access(account) fun getEventRef(id: UInt64): &FLOATEvent
     }
 
     // Separating this into a separate interface
@@ -560,6 +591,7 @@ pub contract FLOAT: NonFungibleToken {
             description: String,
             image: String, 
             limited: Limited?, 
+            multipleSecret: MultipleSecret?,
             name: String, 
             secret: Secret?, 
             timelock: Timelock?, 
@@ -579,6 +611,7 @@ pub contract FLOAT: NonFungibleToken {
                 _host: self.owner!.address, 
                 _image: image, 
                 _limited: limited,
+                _multipleSecret: multipleSecret,
                 _name: name, 
                 _secret: secret,
                 _timelock: timelock,
@@ -739,6 +772,11 @@ pub contract FLOAT: NonFungibleToken {
                 Limited.verify(currentCapacity: FLOATEvent.totalSupply)
             }
 
+            if FLOATEvent.MultipleSecret != nil {
+                let MultipleSecret: &MultipleSecret = &FLOATEvent.MultipleSecret! as &MultipleSecret
+                MultipleSecret.verify(secretPhrase: secret)
+            }
+
             emit FLOATClaimed(
                 eventHost: FLOATEvent.host, 
                 eventId: FLOATEvent.id, 
@@ -779,10 +817,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath018
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath018
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath018
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath018
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath018
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath019
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath019
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath019
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath019
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath019
     }
 }

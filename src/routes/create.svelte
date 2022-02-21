@@ -215,6 +215,7 @@ transaction(eventId: UInt64, recipient: Address) {
     -->
     <h3 class="mb-1">Configure your FLOAT</h3>
 
+    <h5>Can be changed later.</h5>
     <!-- TRANSFERRABLE -->
     <div class="grid no-break mb-1">
       <button
@@ -262,6 +263,7 @@ transaction(eventId: UInt64, recipient: Address) {
     </div>
 
     {#if $draftFloat.claimable}
+      <h5>Cannot be changed later.</h5>
       <!-- QUANTITY -->
       <div class="grid no-break mb-1">
         <button
@@ -346,7 +348,7 @@ transaction(eventId: UInt64, recipient: Address) {
         <hr />
       {/if}
 
-      <!-- TIME -->
+      <!-- SECRET -->
       <div class="grid no-break mb-1">
         <button
           class:secondary={$draftFloat.claimCodeEnabled}
@@ -355,7 +357,7 @@ transaction(eventId: UInt64, recipient: Address) {
         >
           Anyone Can Claim
           <span
-            >Your FLOAT can be minted freely by anyone that knows its address.</span
+            >Your FLOAT can be minted freely by anyone.</span
           >
         </button>
         <button
@@ -363,20 +365,41 @@ transaction(eventId: UInt64, recipient: Address) {
           class="outline"
           on:click={() => ($draftFloat.claimCodeEnabled = true)}
         >
-          Use Claim Code
+          Use Secret Code(s)
           <span
-            >Your FLOAT can only be minted if people know the claim code.</span
+            >Your FLOAT can only be minted if people know the secret code(s).</span
           >
         </button>
       </div>
+
+      <!-- ONE SECRET OR MULTIPLE -->
       {#if $draftFloat.claimCodeEnabled}
-        <label for="claimCode"
-          >Enter a claim code (Note: it is case-sensitive)
+        <div class="grid no-break mb-1">
+          <button
+            class:secondary={$draftFloat.multipleSecretsEnabled}
+            class="outline"
+            on:click={() => ($draftFloat.multipleSecretsEnabled = false)}
+          >
+            One Code for All
+            <span>Use the same secret code for everyone.</span>
+          </button>
+          <button
+            class:secondary={!$draftFloat.multipleSecretsEnabled}
+            class="outline"
+            on:click={() => ($draftFloat.multipleSecretsEnabled = true)}
+          >
+            Multiple Secret Codes
+            <span>Specify a bunch of secret codes, each of which can only be used once.</span>
+          </button>
+        </div>
+      {/if}
+      {#if $draftFloat.claimCodeEnabled}
+        <label for="claimCode">{@html $draftFloat.multipleSecretsEnabled ? "Enter your codes, separated by a comma ( , )" : "Enter a claim code"} (<i>case-sensitive</i>)
           <input
             type="text"
             name="claimCode"
             bind:value={$draftFloat.claimCode}
-            placeholder="ex. mySecretCode"
+            placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code2, code4" : "mySecretCode"}
           />
         </label>
         <hr />
