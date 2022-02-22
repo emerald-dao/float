@@ -54,7 +54,6 @@ pub contract FLOATMetadataViews {
         pub let transferrable: Bool
         pub let url: String
         pub let verifierActivatedModules: [Type]
-        pub let verifierViews: [Type]
 
         init(
             _canAttemptClaim: Bool,
@@ -69,8 +68,7 @@ pub contract FLOATMetadataViews {
             _totalSupply: UInt64,
             _transferrable: Bool,
             _url: String,
-            _verifierActivatedModules: [Type],
-            _verifierViews: [Type]
+            _verifierActivatedModules: [Type]
         ) {
             self.canAttemptClaim = _canAttemptClaim
             self.claimable = _claimable
@@ -85,7 +83,6 @@ pub contract FLOATMetadataViews {
              self.transferrable = _transferrable
             self.url = _url
             self.verifierActivatedModules = _verifierActivatedModules
-            self.verifierViews = _verifierViews
         }
     }
 

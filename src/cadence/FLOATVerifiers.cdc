@@ -5,9 +5,9 @@ pub contract FLOATVerifiers {
     pub struct Verifier: FLOAT.IVerifier {
       // They are nil if they are not in effect.
       pub var timelock: Timelock?
-      pub var secret: Secret?
+      access(self) var secret: Secret?
       pub var limited: Limited?
-      pub var multipleSecret: MultipleSecret?
+      access(self) var multipleSecret: MultipleSecret?
 
       pub fun verify(event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}, _ params: {String: AnyStruct}): Bool {
         if let timelock = self.timelock {
@@ -58,27 +58,6 @@ pub contract FLOATVerifiers {
           modules.append(Type<MultipleSecret>())
         }
         return modules
-      }
-
-      pub fun getViews(): [Type] {
-        let views: [Type] = []
-        if self.timelock != nil {
-          views.append(Type<Timelock>())
-        }
-        if self.limited != nil {
-          views.append(Type<Limited>())
-        }
-        return views
-      }
-
-      pub fun resolveView(_ view: Type): AnyStruct? {
-        switch view {
-          case Type<Timelock>():
-            return self.timelock
-          case Type<Limited>():
-            return self.limited
-        }
-        return nil
       }
 
       init(_timelock: Bool, _dateStart: UFix64, _timePeriod: UFix64, _limited: Bool, _capacity: UInt64, _secret: Bool, _secrets: [String]) {
@@ -185,10 +164,6 @@ pub contract FLOATVerifiers {
                 message: "You did not input a correct secret phrase."
             )
             self.secrets.remove(key: secretPhrase)
-        }
-
-        pub fun getSecrets(): {String: Bool} {
-          return self.secrets
         }
 
         init(_secrets: [String]) {
