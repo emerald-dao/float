@@ -16,7 +16,7 @@
   let getRows = async () => {
     console.log("potato");
     let event = await getHoldersInEvent(address, eventId);
-    return Object.values(event.currentHolders);
+    return Object.values(event);
   };
 
   let promise = getRows();

@@ -29,7 +29,11 @@ transaction(id: UInt64, host: Address, secret: String?) {
   }
 
   execute {
-    self.FLOATEvents.claim(id: id, recipient: self.Collection, secret: secret)
+    let params: {String: AnyStruct} = {}
+    if let unwrappedSecret = secret {
+      params["secretPhrase"] = unwrappedSecret
+    }
+    self.FLOATEvents.claim(id: id, recipient: self.Collection, params: params)
     log("Claimed the FLOAT.")
   }
 }

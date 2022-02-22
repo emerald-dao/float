@@ -13,6 +13,7 @@
     toggleTransferrable,
     deleteEvent,
     hasClaimedEvent,
+    resolveVerifierViews,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from 'svelte-intersection-observer';
@@ -23,14 +24,17 @@
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
+import { viewsConverter } from "$lib/flow/utils";
   let claimsTableInView;
 
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
 
-    console.log({...eventData, hasClaimed});
-    return {...eventData, hasClaimed};
+    let resolvedVerifierViews = await resolveVerifierViews($page.params.address, $page.params.eventId);
+    resolvedVerifierViews['requiresSecret'] = eventData.verifierActivatedModules.includes("A.0afe396ebc8eee65.FLOATVerifiers.Secret") || eventData.verifierActivatedModules.includes("A.0afe396ebc8eee65.FLOATVerifiers.MultipleSecret")
+    console.log({...eventData, hasClaimed, resolvedVerifierViews});
+    return {...eventData, hasClaimed, resolvedVerifierViews};
   }
 
   let floatEvent = floatEventCallback();
@@ -108,9 +112,9 @@
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
       </p>
-      {#if floatEvent?.capacity}
+      {#if floatEvent?.resolvedVerifierViews.capacity}
         <p>
-          Only <span class="emphasis">{floatEvent.capacity}</span> will ever exist.
+          Only <span class="emphasis">{floatEvent.resolvedVerifierViews.capacity}</span> will ever exist.
         </p>
       {/if}
       <footer>
@@ -131,8 +135,8 @@
             ✓ You already claimed this FLOAT.
           </button>
         {:else if floatEvent?.claimable}
-          {#if floatEvent?.isOpen}
-            {#if floatEvent?.requiresSecret}
+          {#if floatEvent?.canAttemptClaim}
+            {#if floatEvent?.resolvedVerifierViews.requiresSecret}
               <label for="claimCode">
                 Enter the claim code below (<i>case sensitive</i>).
                 <input
@@ -143,7 +147,7 @@
                 />
               </label>
             {/if}
-            {#if floatEvent?.requiresSecret && claimCode === ""}
+            {#if floatEvent?.resolvedVerifierViews.requiresSecret && claimCode === ""}
               <button class="secondary outline" disabled>
                 You must enter a secret code.
               </button>
@@ -169,22 +173,22 @@
                 >Claim this FLOAT
               </button>
             {/if}
-          {:else if floatEvent?.capacity && floatEvent?.capacity <= floatEvent?.currentCapacity}
+          {:else if floatEvent?.resolvedVerifierViews.capacity && floatEvent?.resolvedVerifierViews.capacity <= floatEvent?.totalSupply}
             <button class="secondary outline" disabled>
               This FLOAT is no longer available.<br /> All
               <span class="emphasis">
-                {floatEvent?.currentCapacity}/{floatEvent?.capacity}
+                {floatEvent?.totalSupply}/{floatEvent?.resolvedVerifierViews.capacity}
               </span> have been claimed.
             </button>
-          {:else if floatEvent?.startTime > currentUnixTime}
+          {:else if floatEvent?.resolvedVerifierViews.dateStart > currentUnixTime}
             <button class="secondary outline" disabled>
               This FLOAT Event has not started yet.<br />
               Starting in
               <span class="emphasis">
-                <Countdown unix={floatEvent?.startTime} />
+                <Countdown unix={floatEvent?.resolvedVerifierViews.dateStart} />
               </span>
             </button>
-          {:else if floatEvent?.endTime < currentUnixTime}
+          {:else if floatEvent?.resolvedVerifierViews.dateEnding < currentUnixTime}
             <button class="secondary outline" disabled>
               This FLOAT is no longer available.<br />This event has ended.
             </button>

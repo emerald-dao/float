@@ -41,6 +41,7 @@ pub contract FLOATMetadataViews {
     }
 
     pub struct FLOATEventMetadataView {
+        pub let canAttemptClaim: Bool
         pub let claimable: Bool
         pub let dateCreated: UFix64
         pub let description: String 
@@ -50,35 +51,28 @@ pub contract FLOATMetadataViews {
         pub let image: String 
         pub let name: String
         pub var totalSupply: UInt64
-        pub let url: String
-
-        // Event options
-        pub let capacity: UInt64?
-        pub let startTime: UFix64?
-        pub let endTime: UFix64?
-        pub let requiresSecret: Bool
         pub let transferrable: Bool
-        
-        pub let isOpen: Bool
+        pub let url: String
+        pub let verifierActivatedModules: [Type]
+        pub let verifierViews: [Type]
 
         init(
+            _canAttemptClaim: Bool,
             _claimable: Bool,
-            _capacity: UInt64?,
             _dateCreated: UFix64,
             _description: String, 
-            _endTime: UFix64?,
             _extraMetadata: {String: String},
             _host: Address, 
             _id: UInt64,
             _image: String, 
-            _isOpen: Bool,
             _name: String,
-            _requiresSecret: Bool,
-            _startTime: UFix64?,
             _totalSupply: UInt64,
             _transferrable: Bool,
-            _url: String
+            _url: String,
+            _verifierActivatedModules: [Type],
+            _verifierViews: [Type]
         ) {
+            self.canAttemptClaim = _canAttemptClaim
             self.claimable = _claimable
             self.dateCreated = _dateCreated
             self.description = _description
@@ -88,38 +82,10 @@ pub contract FLOATMetadataViews {
             self.image = _image
             self.name = _name
             self.totalSupply = _totalSupply
+             self.transferrable = _transferrable
             self.url = _url
-
-            self.capacity = _capacity
-            self.startTime = _startTime
-            self.endTime = _endTime
-            self.requiresSecret = _requiresSecret
-            self.transferrable = _transferrable
-            self.isOpen = _isOpen
-        }
-    }
-
-    pub struct FLOATEventClaimed {
-        pub let id: UInt64
-        pub let host: Address
-        pub let claimed: {Address: Identifier}
-
-        init(_id: UInt64, _host: Address, _claimed: {Address: Identifier}) {
-            self.id = _id 
-            self.host = _host 
-            self.claimed = _claimed
-        }
-    }
-
-    pub struct FLOATEventHolders {
-        pub let id: UInt64
-        pub let host: Address
-        pub let currentHolders: {UInt64: Identifier}
-
-        init(_id: UInt64, _host: Address, _currentHolders: {UInt64: Identifier}) {
-            self.id = _id 
-            self.host = _host 
-            self.currentHolders = _currentHolders
+            self.verifierActivatedModules = _verifierActivatedModules
+            self.verifierViews = _verifierViews
         }
     }
 

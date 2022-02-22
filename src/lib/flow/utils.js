@@ -16,3 +16,9 @@ export function convertAddress(address) {
   }
   return address;
 }
+
+export function viewsConverter(views) {
+  return views.map(view => {
+    return view.split('.')[3];
+  });
+}

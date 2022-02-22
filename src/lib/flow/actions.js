@@ -71,6 +71,7 @@ export const createFloat = async (draftFloat) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xNFT
       import MetadataViews from 0xMDV
+      import FLOATVerifiers from 0xFLOAT
 
       transaction(claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
@@ -95,32 +96,12 @@ export const createFloat = async (draftFloat) => {
         }
       
         execute {
-          var Timelock: FLOAT.Timelock? = nil
-          var Secret: FLOAT.Secret? = nil
-          var Limited: FLOAT.Limited? = nil
-          var MultipleSecret: FLOAT.MultipleSecret? = nil
-          
-          if timelock {
-            Timelock = FLOAT.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
-          }
-          
-          if secret {
-            if secrets.length == 1 {
-              Secret = FLOAT.Secret(_secretPhrase: secrets[0])
-            } else {
-              MultipleSecret = FLOAT.MultipleSecret(_secrets: secrets)
-            }
-            
-          }
-      
-          if limited {
-            Limited = FLOAT.Limited(_capacity: capacity)
-          }
-          
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, limited: Limited, multipleSecret: MultipleSecret, name: name, secret: Secret, timelock: Timelock, transferrable: transferrable, url: url, {})
+          let verifier = FLOATVerifiers.Verifier(_timelock: timelock, _dateStart: dateStart, _timePeriod: timePeriod, _limited: limited, _capacity: capacity, _secret: secret, _secrets: secrets)
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {})
           log("Started a new event.")
         }
-      }  
+      }
+      
       `,
       args: (arg, t) => [
         arg(floatObject.claimable, t.Bool),
@@ -299,7 +280,7 @@ export const claimFLOAT = async (host, eventId, secret) => {
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
-
+      
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
@@ -314,10 +295,15 @@ export const claimFLOAT = async (host, eventId, secret) => {
         }
       
         execute {
-          self.FLOATEvents.claim(id: id, recipient: self.Collection, secret: secret)
+          let params: {String: AnyStruct} = {}
+          if let unwrappedSecret = secret {
+            params["secretPhrase"] = unwrappedSecret
+          }
+          self.FLOATEvents.claim(id: id, recipient: self.Collection, params: params)
           log("Claimed the FLOAT.")
         }
       }
+       
       `,
       args: (arg, t) => [
         arg(eventId, t.UInt64),
@@ -907,16 +893,11 @@ export const getHoldersInEvent = async (addr, eventId) => {
       import MetadataViews from 0xMDV
       import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventHolders? {
+      pub fun main(account: Address, id: UInt64): {UInt64: FLOATMetadataViews.Identifier} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
-      
-        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventHolders>()) {
-          return metadata as! FLOATMetadataViews.FLOATEventHolders
-        }
-        return nil
+        return floatEventCollection.getPublicEventRef(id: id).getCurrentHolders()
       }
       `,
       args: (arg, t) => [
@@ -939,16 +920,11 @@ export const getClaimedInEvent = async (addr, eventId) => {
       import MetadataViews from 0xMDV
       import FLOATMetadataViews from 0xFMDV
 
-      pub fun main(account: Address, id: UInt64): FLOATMetadataViews.FLOATEventClaimed? {
+      pub fun main(account: Address, id: UInt64): {Address: FLOATMetadataViews.Identifier} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvent = floatEventCollection.borrowViewResolver(id: id)
-      
-        if let metadata = floatEvent.resolveView(Type<FLOATMetadataViews.FLOATEventClaimed>()) {
-          return metadata as! FLOATMetadataViews.FLOATEventClaimed
-        }
-        return nil
+        return floatEventCollection.getPublicEventRef(id: id).getClaimed()
       }
       `,
       args: (arg, t) => [
@@ -1067,6 +1043,47 @@ export const getAddressesWhoCanMintForMe = async (address) => {
     })
     // console.log(queryResult);
     return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const resolveVerifierViews = async (address, eventId) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import MetadataViews from 0xMDV
+      import FLOATMetadataViews from 0xFMDV
+      import FLOATVerifiers from 0xFLOAT
+
+      pub fun main(account: Address, id: UInt64): {String: AnyStruct} {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let verifier = floatEventCollection.getPublicEventRef(id: id).verifier
+        let answers: {String: AnyStruct} = {}
+
+        if let timelockView = verifier.resolveView(Type<FLOATVerifiers.Timelock>()) {
+          let timelock = timelockView as! FLOATVerifiers.Timelock
+          answers["dateStart"] = timelock.dateStart
+          answers["dateEnding"] = timelock.dateEnding
+        }
+
+        if let limitedView = verifier.resolveView(Type<FLOATVerifiers.Limited>()) {
+          let limited = limitedView as! FLOATVerifiers.Limited
+          answers["capacity"] = limited.capacity
+        }
+        return answers
+      }
+      `,
+      args: (arg, t) => [
+        arg(address, t.Address),
+        arg(parseInt(eventId), t.UInt64)
+      ]
+    })
+    // console.log(queryResult);
+    return queryResult || {};
   } catch (e) {
     console.log(e);
   }

@@ -214,10 +214,38 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    pub struct interface IVerifier {
+        // Modules that are currently activated,
+        // meaning acting as walls for the user
+        // to be able to claim
+        pub fun activatedModules(): [Type]
+        // True if the user is somehow able to
+        // get to claiming the FLOAT at this moment.
+        pub fun canAttemptClaim(event: &FLOATEvent{FLOATEventPublic}): Bool
+        access(account) fun verify(event: &FLOATEvent{FLOATEventPublic}, _ params: {String: AnyStruct}): Bool
+        // Get a bunch of views we can use to get information
+        // about our modular verifiers
+        pub fun getViews(): [Type]
+        // Get information about our modular verifiers
+        pub fun resolveView(_ view: Type): AnyStruct?
+    }
+
     pub resource interface FLOATEventPublic {
+        pub var claimable: Bool
+        pub let dateCreated: UFix64
+        pub let description: String 
+        pub let host: Address
+        pub let id: UInt64
+        pub let image: String 
+        pub let name: String
+        pub var totalSupply: UInt64
+        pub var transferrable: Bool
+        pub let url: String
+        pub fun getClaimed(): {Address: FLOATMetadataViews.Identifier}
+        pub fun getCurrentHolders(): {UInt64: FLOATMetadataViews.Identifier}
         pub fun hasClaimed(account: Address): FLOATMetadataViews.Identifier?
         pub fun getCurrentHolder(serial: UInt64): FLOATMetadataViews.Identifier?
-        pub fun isOpen(): Bool
+        pub fun verifierResolveView(view: Type): AnyStruct?
     }
 
     //
@@ -257,10 +285,16 @@ pub contract FLOAT: NonFungibleToken {
         pub let url: String
         
         // Event options
-        pub let Timelock: Timelock?
-        pub let Secret: Secret?
-        pub let Limited: Limited?
-        pub let MultipleSecret: MultipleSecret?
+        pub let verifier: {IVerifier}
+
+        // Only exposed to the host owner
+        pub fun getVerifier(): {IVerifier} {
+            return self.verifier
+        }
+
+        pub fun verifierResolveView(view: Type): AnyStruct? {
+            return self.verifier.resolveView(view)
+        }
 
         pub fun hasClaimed(account: Address): FLOATMetadataViews.Identifier? {
             return self.claimed[account]
@@ -268,29 +302,6 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun getCurrentHolder(serial: UInt64): FLOATMetadataViews.Identifier? {
             return self.currentHolders[serial]
-        }
-
-        // It is "open" if:
-        // 1. the event host didn't manually turn it off
-        // 2. it is within a time period (only if Timelock is selected)
-        // 3. it is not at capacity yet (only if Limited is selected)
-        pub fun isOpen(): Bool {
-            var open: Bool = true
-
-            if let Timelock = self.Timelock {
-                if getCurrentBlock().timestamp < Timelock.dateStart || 
-                   getCurrentBlock().timestamp > Timelock.dateEnding {
-                    open = false
-                }
-            }
-
-            if let Limited = self.Limited {
-                if self.totalSupply >= Limited.capacity {
-                    open = false
-                }
-            }
-
-            return self.claimable && open
         }
 
         // Manually pauses claiming
@@ -307,6 +318,14 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun updateMetadata(newExtraMetadata: {String: String}) {
             self.extraMetadata = newExtraMetadata
+        }
+
+        pub fun getClaimed(): {Address: FLOATMetadataViews.Identifier} {
+            return self.claimed
+        }
+
+        pub fun getCurrentHolders(): {UInt64: FLOATMetadataViews.Identifier} {
+            return self.currentHolders
         }
 
         // Called if a user transfers their FLOAT to another user.
@@ -356,9 +375,7 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun getViews(): [Type] {
              return [
-                Type<FLOATMetadataViews.FLOATEventMetadataView>(),
-                Type<FLOATMetadataViews.FLOATEventClaimed>(),
-                Type<FLOATMetadataViews.FLOATEventHolders>()
+                Type<FLOATMetadataViews.FLOATEventMetadataView>()
             ]
         }
 
@@ -366,34 +383,20 @@ pub contract FLOAT: NonFungibleToken {
             switch view {
                 case Type<FLOATMetadataViews.FLOATEventMetadataView>():
                     return FLOATMetadataViews.FLOATEventMetadataView(
+                        _canAttemptClaim: self.verifier.canAttemptClaim(event: &self as &FLOATEvent{FLOATEventPublic}),
                         _claimable: self.claimable,
-                        _capacity: self.Limited?.capacity,
                         _dateCreated: self.dateCreated,
                         _description: self.description, 
-                        _endTime: self.Timelock?.dateEnding,
                         _extraMetadata: self.extraMetadata,
                         _host: self.host, 
                         _id: self.id,
-                        _image: self.image, 
-                        _isOpen: self.isOpen(),
+                        _image: self.image,
                         _name: self.name,
-                        _requiresSecret: self.Secret != nil || self.MultipleSecret != nil,
-                        _startTime: self.Timelock?.dateStart,
                         _totalSupply: self.totalSupply,
                         _transferrable: self.transferrable,
-                        _url: self.url
-                    ) 
-                case Type<FLOATMetadataViews.FLOATEventClaimed>():
-                    return FLOATMetadataViews.FLOATEventClaimed(
-                        _id: self.id,
-                        _host: self.host,
-                        _claimed: self.claimed
-                    )
-                case Type<FLOATMetadataViews.FLOATEventHolders>():
-                    return FLOATMetadataViews.FLOATEventHolders(
-                        _id: self.id,
-                        _host: self.host,
-                        _currentHolders: self.currentHolders
+                        _url: self.url,
+                        _verifierActivatedModules: self.verifier.activatedModules(),
+                        _verifierViews: self.verifier.getViews()
                     )
             }
 
@@ -406,13 +409,10 @@ pub contract FLOAT: NonFungibleToken {
             _extraMetadata: {String: String},
             _host: Address, 
             _image: String, 
-            _limited: Limited?,
-            _multipleSecret: MultipleSecret?,
             _name: String,
-            _secret: Secret?,
-            _timelock: Timelock?,
             _transferrable: Bool,
-            _url: String
+            _url: String,
+            _verifier: {IVerifier},
         ) {
             self.claimable = _claimable
             self.claimed = {}
@@ -428,10 +428,7 @@ pub contract FLOAT: NonFungibleToken {
             self.totalSupply = 0
             self.url = _url
             
-            self.Timelock = _timelock
-            self.Secret = _secret
-            self.Limited = _limited
-            self.MultipleSecret = _multipleSecret
+            self.verifier = _verifier
 
             FLOAT.totalFLOATEvents = FLOAT.totalFLOATEvents + 1
             emit FLOATEventCreated(id: self.id, host: self.host, name: self.name)
@@ -449,115 +446,13 @@ pub contract FLOAT: NonFungibleToken {
             emit FLOATEventDestroyed(id: self.id, host: self.host, name: self.name)
         }
     }
-
-    // 
-    // Timelock
-    //
-    // Specifies a time range in which the 
-    // FLOAT from an event can be claimed
-    pub struct Timelock {
-        // An automatic switch handled by the contract
-        // to stop people from claiming after a certain time.
-        pub let dateStart: UFix64
-        pub let dateEnding: UFix64
-
-        access(account) fun verify() {
-            assert(
-                getCurrentBlock().timestamp >= self.dateStart,
-                message: "This FLOAT Event has not started yet."
-            )
-            assert(
-                getCurrentBlock().timestamp <= self.dateEnding,
-                message: "Sorry! The time has run out to mint this FLOAT."
-            )
-        }
-
-        init(_dateStart: UFix64, _timePeriod: UFix64) {
-            self.dateStart = _dateStart
-            self.dateEnding = self.dateStart + _timePeriod
-        }
-    }
-
-    //
-    // Secret
-    //
-    // Specifies a secret code in order
-    // to claim a FLOAT (not very secure, but cool feature)
-    pub struct Secret {
-        // The secret code, set by the owner of this event.
-        pub let secretPhrase: String
-
-        access(account) fun verify(secretPhrase: String?) {
-            assert(
-                secretPhrase != nil,
-                message: "You must input a secret phrase."
-            )
-            assert(
-                self.secretPhrase == secretPhrase, 
-                message: "You did not input the correct secret phrase."
-            )
-        }
-
-        init(_secretPhrase: String) {
-            self.secretPhrase = _secretPhrase
-        }
-    }
-
-    //
-    // Limited
-    //
-    // Specifies a limit for the amount of people
-    // who can CLAIM. Not to be confused with how many currently
-    // hold a FLOAT from this event, since users can
-    // delete their FLOATs.
-    pub struct Limited {
-        pub var capacity: UInt64
-
-        access(account) fun verify(currentCapacity: UInt64) {
-            assert(
-                currentCapacity < self.capacity,
-                message: "This FLOAT Event is at capacity."
-            )
-        }
-
-        init(_capacity: UInt64) {
-            self.capacity = _capacity
-        }
-    }
-
-    pub struct MultipleSecret {
-        access(account) let secrets: {String: Bool}
-
-        access(account) fun verify(secretPhrase: String?) {
-            assert(
-                secretPhrase != nil,
-                message: "You must input a secret phrase."
-            )
-            assert(
-                self.secrets[secretPhrase!] != nil, 
-                message: "You did not input a correct secret phrase."
-            )
-            self.secrets.remove(key: secretPhrase!)
-        }
-
-        pub fun getSecrets(): [String] {
-            return self.secrets.keys
-        }
-
-        init(_secrets: [String]) {
-            self.secrets = {}
-            for secret in _secrets {
-                self.secrets[secret] = true
-            }
-        }
-    }
  
     // 
     // FLOATEvents
     //
     pub resource interface FLOATEventsPublic {
         // Setters
-        pub fun claim(id: UInt64, recipient: &Collection, secret: String?)
+        pub fun claim(id: UInt64, recipient: &Collection, params: {String: AnyStruct})
         // Getters
         pub fun getAllEvents(): {String: UInt64}
         pub fun getAddressWhoICanMintFor(): [Address]
@@ -590,13 +485,10 @@ pub contract FLOAT: NonFungibleToken {
             claimable: Bool,
             description: String,
             image: String, 
-            limited: Limited?, 
-            multipleSecret: MultipleSecret?,
             name: String, 
-            secret: Secret?, 
-            timelock: Timelock?, 
             transferrable: Bool,
             url: String,
+            verifier: {IVerifier},
             _ extraMetadata: {String: String}
         ) {
             pre {
@@ -610,13 +502,10 @@ pub contract FLOAT: NonFungibleToken {
                 _extraMetadata: extraMetadata,
                 _host: self.owner!.address, 
                 _image: image, 
-                _limited: limited,
-                _multipleSecret: multipleSecret,
                 _name: name, 
-                _secret: secret,
-                _timelock: timelock,
                 _transferrable: transferrable,
-                _url: url
+                _url: url,
+                _verifier: verifier
             )
             self.nameToId[FLOATEvent.name] = FLOATEvent.id
             self.events[FLOATEvent.id] <-! FLOATEvent
@@ -747,43 +636,25 @@ pub contract FLOAT: NonFungibleToken {
         // For the public to claim FLOATs. Must be claimable to do so.
         // The `secret` parameter is only necessary if you're claiming a `Secret` FLOAT.
         // Available to the public.
-        pub fun claim(id: UInt64, recipient: &Collection, secret: String?) {
+        pub fun claim(id: UInt64, recipient: &Collection, params: {String: AnyStruct}) {
             pre {
                 self.getEventRef(id: id).claimable: 
                     "This FLOATEvent is not claimable."
             }
             let FLOATEvent: &FLOATEvent = self.getEventRef(id: id)
+            let FLOATEventPublic: &FLOATEvent{FLOATEventPublic} = FLOATEvent as &FLOATEvent{FLOATEventPublic}
             
-            // If the FLOATEvent has the `Timelock` Prop
-            if FLOATEvent.Timelock != nil {
-                let Timelock: &Timelock = &FLOATEvent.Timelock! as &Timelock
-                Timelock.verify()
-            } 
-
-            // If the FLOATEvent has the `Secret` Prop
-            if FLOATEvent.Secret != nil {
-                let Secret: &Secret = &FLOATEvent.Secret! as &Secret
-                Secret.verify(secretPhrase: secret)
-            }
-
-            // If the FLOATEvent has the `Limited` Prop
-            if FLOATEvent.Limited != nil {
-                let Limited: &Limited = &FLOATEvent.Limited! as &Limited
-                Limited.verify(currentCapacity: FLOATEvent.totalSupply)
-            }
-
-            if FLOATEvent.MultipleSecret != nil {
-                let MultipleSecret: &MultipleSecret = &FLOATEvent.MultipleSecret! as &MultipleSecret
-                MultipleSecret.verify(secretPhrase: secret)
+            if !FLOATEvent.verifier.verify(event: FLOATEventPublic, params) {
+                panic("You did not meet some requirement in order to claim.")
             }
 
             emit FLOATClaimed(
-                eventHost: FLOATEvent.host, 
-                eventId: FLOATEvent.id, 
-                eventImage: FLOATEvent.image,
-                eventName: FLOATEvent.name,
+                eventHost: FLOATEventPublic.host, 
+                eventId: FLOATEventPublic.id, 
+                eventImage: FLOATEventPublic.image,
+                eventName: FLOATEventPublic.name,
                 recipient: recipient.owner!.address,
-                serial: FLOATEvent.totalSupply
+                serial: FLOATEventPublic.totalSupply
             )
 
             // You have passed all the props (which act as restrictions).
@@ -817,10 +688,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath019
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath019
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath019
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath019
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath019
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath022
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath022
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath022
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath022
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath022
     }
 }

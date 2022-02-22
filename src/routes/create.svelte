@@ -406,17 +406,13 @@ transaction(eventId: UInt64, recipient: Address) {
       {/if}
     {:else}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
-      <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}
-        >{distributeCode}</xmp
-      >
+      <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}>{distributeCode}</xmp>
     {/if}
 
     <footer>
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
-          <button class="contrast small-button" on:click={authenticate}
-            >Connect Wallet</button
-          >
+          <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
         </div>
       {:else if $eventCreationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
