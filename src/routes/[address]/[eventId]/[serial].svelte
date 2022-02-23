@@ -12,7 +12,7 @@
       let event = await getEvent($page.params.address, $page.params.eventId);
       let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
       let float = await getFLOAT(holder?.address, holder?.id);
-      // console.log(event)
+      console.log(event)
       resolve({event, float});
     })
   }
@@ -94,8 +94,6 @@
 </div>
 
 {#await data then data}
-
-  {#if $user?.addr == data?.float.owner}
     <article class="toggle">
       <header>
         {#if data?.float.owner}
@@ -106,10 +104,18 @@
           <small class="muted">Original Recipient: Unknown</small>
         {/if}
       </header>
-      <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
-        Delete this FLOAT
-      </button>
-      <footer>
+      <blockquote>
+        <strong><small class="muted">DESCRIPTION</small></strong><br/>
+        {data?.event.description}
+      </blockquote>
+      {#if $user?.addr == data?.float.owner}
+        <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
+          Delete this FLOAT
+        </button>
+      {/if}
+    </article>
+    {#if $user?.addr == data?.float.owner}
+      <article>
         <label for="recipientAddr">
           Copy the recipient's address below.
           <input
@@ -120,10 +126,8 @@
           />
         </label>
         <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>Transfer this FLOAT</button>
-      </footer>
-    </article>
-  {/if}
-
+      </article>
+    {/if}
 {/await}
 
 <style>
@@ -191,6 +195,14 @@
     text-align: center;
     align-items: center;
   
+  }
+
+  .muted {
+    font-size: 0.7rem;
+    opacity: 0.7;
+  }
+  blockquote {
+    text-align: left;
   }
 
 </style>
