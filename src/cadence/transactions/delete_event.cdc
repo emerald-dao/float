@@ -1,6 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
 
-transaction(id: UInt64) {
+transaction(eventId: UInt64) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
 
@@ -10,7 +10,7 @@ transaction(id: UInt64) {
   }
 
   execute {
-    self.FLOATEvents.deleteEvent(id: id)
+    self.FLOATEvents.deleteEvent(eventId: eventId)
     log("Removed the FLOAT Event.")
   }
 }

@@ -1,19 +1,13 @@
 import FLOAT from "../FLOAT.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
-import FLOATMetadataViews from "../FLOATMetadataViews.cdc"
 
-pub fun main(account: Address): [FLOATMetadataViews.FLOATMetadataView] {
-  let nftCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                        .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
+pub fun main(account: Address): {UInt64: &FLOAT.NFT} {
+  let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
+                        .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
                         ?? panic("Could not borrow the Collection from the account.")
-  let floats = nftCollection.getIDs()
-  var returnVal: [FLOATMetadataViews.FLOATMetadataView] = []
+  let floats = floatCollection.getIDs()
+  var returnVal: {UInt64: &FLOAT.NFT} = {}
   for id in floats {
-    let view = nftCollection.borrowViewResolver(id: id)
-    if var metadata = view.resolveView(Type<FLOATMetadataViews.FLOATMetadataView>()) {
-      var float = metadata as! FLOATMetadataViews.FLOATMetadataView
-      returnVal.append(float)
-    }
+    returnVal[id] = floatCollection.borrowFLOAT(id: id)
   }
 
   return returnVal

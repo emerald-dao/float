@@ -1,4 +1,5 @@
 import FLOAT from "./FLOAT.cdc"
+import MetadataViews from "./core-contracts/MetadataViews.cdc"
 
 pub contract FLOATVerifiers {
     // Example Verifier that is being used for the FLOAT Platform
