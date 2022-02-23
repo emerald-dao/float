@@ -11,7 +11,7 @@
       let event = await getEvent($page.params.address, $page.params.eventId);
       
       let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
-      let float = await getFLOAT(holder.address, holder.id);
+      let float = await getFLOAT(holder?.address, holder?.id);
       
       console.log({event, float})
       resolve({event, float});

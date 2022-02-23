@@ -12,8 +12,7 @@
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
-    hasClaimedEvent,
-    resolveVerifierViews,
+    hasClaimedEvent
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from 'svelte-intersection-observer';
@@ -24,17 +23,16 @@
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
-import { viewsConverter } from "$lib/flow/utils";
+  import { viewsConverter } from "$lib/flow/utils";
+
   let claimsTableInView;
 
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
-
-    let resolvedVerifierViews = await resolveVerifierViews($page.params.address, $page.params.eventId);
-    resolvedVerifierViews['requiresSecret'] = eventData.verifierActivatedModules.includes("A.0afe396ebc8eee65.FLOATVerifiers.Secret") || eventData.verifierActivatedModules.includes("A.0afe396ebc8eee65.FLOATVerifiers.MultipleSecret")
-    console.log({...eventData, hasClaimed, resolvedVerifierViews});
-    return {...eventData, hasClaimed, resolvedVerifierViews};
+    let data = {...eventData, hasClaimed};
+    console.log(data);
+    return data;
   }
 
   let floatEvent = floatEventCallback();
@@ -78,7 +76,7 @@ import { viewsConverter } from "$lib/flow/utils";
         <Float
           float={{
             eventHost: floatEvent?.host,
-            eventId: floatEvent?.id,
+            eventId: floatEvent?.eventId,
             eventMetadata: {
               name: floatEvent?.name,
               image: floatEvent?.image,
@@ -93,7 +91,7 @@ import { viewsConverter } from "$lib/flow/utils";
         <Float
           float={{
             eventHost: floatEvent?.host,
-            eventId: floatEvent?.id,
+            eventId: floatEvent?.eventId,
             eventMetadata: {
               name: floatEvent?.name,
               image: floatEvent?.image,
@@ -112,9 +110,9 @@ import { viewsConverter } from "$lib/flow/utils";
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
       </p>
-      {#if floatEvent?.resolvedVerifierViews.capacity}
+      {#if floatEvent?.verifier.limited}
         <p>
-          Only <span class="emphasis">{floatEvent.resolvedVerifierViews.capacity}</span> will ever exist.
+          Only <span class="emphasis">{floatEvent.verifier.limited.capacity}</span> will ever exist.
         </p>
       {/if}
       <footer>
@@ -136,7 +134,7 @@ import { viewsConverter } from "$lib/flow/utils";
           </button>
         {:else if floatEvent?.claimable}
           {#if floatEvent?.canAttemptClaim}
-            {#if floatEvent?.resolvedVerifierViews.requiresSecret}
+            {#if floatEvent?.requiresSecret}
               <label for="claimCode">
                 Enter the claim code below (<i>case sensitive</i>).
                 <input
@@ -147,7 +145,7 @@ import { viewsConverter } from "$lib/flow/utils";
                 />
               </label>
             {/if}
-            {#if floatEvent?.resolvedVerifierViews.requiresSecret && claimCode === ""}
+            {#if floatEvent?.requiresSecret && claimCode === ""}
               <button class="secondary outline" disabled>
                 You must enter a secret code.
               </button>
@@ -169,26 +167,26 @@ import { viewsConverter } from "$lib/flow/utils";
               <button
                 disabled={$floatClaimingInProgress}
                 on:click={() =>
-                  claimFLOAT(floatEvent?.host, floatEvent?.id, claimCode)}
+                  claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)}
                 >Claim this FLOAT
               </button>
             {/if}
-          {:else if floatEvent?.resolvedVerifierViews.capacity && floatEvent?.resolvedVerifierViews.capacity <= floatEvent?.totalSupply}
+          {:else if floatEvent?.verifier.limited && floatEvent?.verifier.limited.capacity <= floatEvent?.totalSupply}
             <button class="secondary outline" disabled>
               This FLOAT is no longer available.<br /> All
               <span class="emphasis">
-                {floatEvent?.totalSupply}/{floatEvent?.resolvedVerifierViews.capacity}
+                {floatEvent?.totalSupply}/{floatEvent?.verifier.limited.capacity}
               </span> have been claimed.
             </button>
-          {:else if floatEvent?.resolvedVerifierViews.dateStart > currentUnixTime}
+          {:else if floatEvent?.verifier.timelock && floatEvent?.verifier.timelock.dateStart > currentUnixTime}
             <button class="secondary outline" disabled>
               This FLOAT Event has not started yet.<br />
               Starting in
               <span class="emphasis">
-                <Countdown unix={floatEvent?.resolvedVerifierViews.dateStart} />
+                <Countdown unix={floatEvent?.verifier.timelock.dateStart} />
               </span>
             </button>
-          {:else if floatEvent?.resolvedVerifierViews.dateEnding < currentUnixTime}
+          {:else if floatEvent?.verifier.timelock && floatEvent?.verifier.timelock.dateEnding < currentUnixTime}
             <button class="secondary outline" disabled>
               This FLOAT is no longer available.<br />This event has ended.
             </button>
@@ -206,20 +204,20 @@ import { viewsConverter } from "$lib/flow/utils";
           <div class="toggle">
             <button
               class="outline"
-              on:click={() => toggleClaimable(floatEvent?.id)}
+              on:click={() => toggleClaimable(floatEvent?.eventId)}
             >
               {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
               class="outline"
-              on:click={() => toggleTransferrable(floatEvent?.id)}
+              on:click={() => toggleTransferrable(floatEvent?.eventId)}
             >
               {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
             </button>
             <button
               class="outline red"
               disabled={floatEvent?.totalSupply !== 0}
-              on:click={() => deleteEvent(floatEvent?.id)}
+              on:click={() => deleteEvent(floatEvent?.eventId)}
             >
               Delete this event
             </button>
@@ -240,7 +238,7 @@ import { viewsConverter } from "$lib/flow/utils";
       >
       <div bind:this={claimsTableInView}>
         {#if intersecting}
-          <ClaimsTable address={floatEvent?.host} eventId={floatEvent?.id} />
+          <ClaimsTable address={floatEvent?.host} eventId={floatEvent?.eventId} />
         {/if}
       </div>
       </IntersectionObserver>

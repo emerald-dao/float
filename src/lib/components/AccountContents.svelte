@@ -19,7 +19,6 @@
   }
 </script>
 
-
 <h3>Claimed FLOATs</h3>
 
 <div class="card-container">
