@@ -35,41 +35,42 @@
         <UserAddress address={$user?.addr}/>
         <br/>
         <a href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
+        <br />
+        <br />
+
+        <label for="removeMinter">Accounts who can mint for you:</label>
+        
+          {#await sharedMinters then sharedMinters}
+            {#if sharedMinters?.length > 0}
+              <select bind:value={removeMinter} id="removeMinter" required>
+                {#each sharedMinters as minter}
+                  <option value={minter}>{minter}</option>
+                {/each}
+              </select>
+              <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
+            {:else}
+              <p>None</p>
+            {/if}
+          {/await}
       {/if}
-
-      <br />
-      <br />
-
-      <label for="removeMinter">Accounts who can mint for you:</label>
-      
-        {#await sharedMinters then sharedMinters}
-          {#if sharedMinters?.length > 0}
-            <select bind:value={removeMinter} id="removeMinter" required>
-              {#each sharedMinters as minter}
-                <option value={minter}>{minter}</option>
-              {/each}
-            </select>
-            <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
-          {:else}
-            <p>None</p>
-          {/if}
-        {/await}
     </article>
   
-    <!-- Add minters to your account so they can create FLOAT Events for you -->
-    <article>
-      <label for="receiver">
-        Add a shared minter by copying the receiver's address below.<br /><br />
-        <strong>BEWARE</strong>: This will allow this user to create FLOAT Events for you.
-        <input
-          type="text"
-          name="receiver"
-          bind:value={newSharedMinter}
-          placeholder="0x00000000000"
-        />
-      </label>
-      <button aria-busy={$addSharedMinterInProgress} disabled={$addSharedMinterInProgress} on:click={addSharedMinter(newSharedMinter)}>Add Shared Minter</button>
-    </article>
+    {#if $user?.loggedIn}
+      <!-- Add minters to your account so they can create FLOAT Events for you -->
+      <article>
+        <label for="receiver">
+          Add a shared minter by copying the receiver's address below.<br /><br />
+          <strong>BEWARE</strong>: This will allow this user to create FLOAT Events for you.
+          <input
+            type="text"
+            name="receiver"
+            bind:value={newSharedMinter}
+            placeholder="0x00000000000"
+          />
+        </label>
+        <button aria-busy={$addSharedMinterInProgress} disabled={$addSharedMinterInProgress} on:click={addSharedMinter(newSharedMinter)}>Add Shared Minter</button>
+      </article>
+    {/if}
   </div>
   
   {#if $user?.addr}

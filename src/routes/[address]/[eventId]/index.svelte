@@ -23,7 +23,6 @@
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
-  import { viewsConverter } from "$lib/flow/utils";
 
   let claimsTableInView;
 
@@ -77,9 +76,9 @@
           float={{
             eventHost: floatEvent?.host,
             eventId: floatEvent?.eventId,
+            eventImage: floatEvent?.image,
+            eventName: floatEvent?.name,
             eventMetadata: {
-              name: floatEvent?.name,
-              image: floatEvent?.image,
               totalSupply: floatEvent?.totalSupply,
             },
             serial: floatEvent?.hasClaimed.serial,
@@ -92,9 +91,9 @@
           float={{
             eventHost: floatEvent?.host,
             eventId: floatEvent?.eventId,
+            eventImage: floatEvent?.image,
+            eventName: floatEvent?.name,
             eventMetadata: {
-              name: floatEvent?.name,
-              image: floatEvent?.image,
               totalSupply: floatEvent?.totalSupply,
             },
           }}

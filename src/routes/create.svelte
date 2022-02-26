@@ -194,10 +194,10 @@ transaction(eventId: UInt64, recipient: Address) {
       <h3>Preview</h3>
       <Float
         float={{
+          eventName: $draftFloat.name,
+          eventImage: $draftFloat.ipfsHash,
           eventMetadata: {
-            name: $draftFloat.name,
             totalSupply: "SERIAL_NUM",
-            image: $draftFloat.ipfsHash,
           },
           eventHost: $user?.addr || "0x0000000000",
         }}

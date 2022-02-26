@@ -1,19 +1,15 @@
 <script>
   import { page } from "$app/stores";
-  import { browser } from '$app/env';
-  import Loading from "$lib/components/common/Loading.svelte";
-  import Float from "$lib/components/Float.svelte";
   import { getEvent, getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { user } from "$lib/flow/stores";
-  import { onMount } from "svelte";
+import { convertAddress } from "$lib/flow/utils";
   
   const floatEventCallback = async () => {
     return new Promise(async (resolve, reject) => {
       let event = await getEvent($page.params.address, $page.params.eventId);
       let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
       let float = await getFLOAT(holder?.address, holder?.id);
-      console.log(event)
       resolve({event, float});
     })
   }
@@ -84,8 +80,8 @@ url={$page.url}
 <article class="toggle">
   <header>
     {#if data?.float.owner}
-    <h3>Owned by {data?.float.owner === $user.addr ? "you" : data?.float.owner}</h3>
-    <small class="muted">Originally claimed by {data?.float.originalRecipient}</small>
+    <h3>Owned by {convertAddress(data?.float.owner)}</h3>
+    <small class="muted">Originally claimed by {convertAddress(data?.float.originalRecipient)}</small>
     {:else}
     <h3>This FLOAT was deleted.</h3>
     <small class="muted">Original Recipient: Unknown</small>
@@ -93,7 +89,7 @@ url={$page.url}
   </header>
   
   <div class="whole">
-    <div class="wrap" bind:this={container}>
+    <a href="/{data.event.host}/{data.event.eventId}" class="wrap" bind:this={container}>
       <div class="float transition" bind:this={card}>
         <div class="image transition" bind:this={image}>
           <img src={`https://ipfs.infura.io/ipfs/${data.event.image}`} alt="float">
@@ -109,7 +105,7 @@ url={$page.url}
           <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.float.serial}</code>
         </div>
       </div>
-    </div>
+    </a>
   </div>
   
   <blockquote>
@@ -162,6 +158,7 @@ url={$page.url}
     justify-content: center;
     align-items: center;
     perspective: 1000px;
+    text-decoration: none;
   }
   
   .float {

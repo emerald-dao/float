@@ -88,7 +88,7 @@ export const createFloat = async (draftFloat) => {
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsSharedMinter}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -167,18 +167,20 @@ export const createFloatForHost = async (forHost, draftFloat) => {
 
       transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
-        let SharedMinter: &FLOAT.FLOATEvents
-
+        let FLOATEvents: &FLOAT.FLOATEvents
+        let SharedMinter: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}
+      
         prepare(acct: AuthAccount) {
-          let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+          self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          self.SharedMinter = FLOATEvents.getSharedMinterRef(host: forHost) 
-                                ?? panic("You do not have access to this host's minting rights.")
+          self.SharedMinter = getAccount(forHost).getCapability(FLOAT.FLOATEventsPublicPath)
+                                .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                ?? panic("Could not borrow the public FLOATEvents from forHost")
         }
-
+      
         execute {
           let verifier = FLOATVerifiers.Verifier(_timelock: timelock, _dateStart: dateStart, _timePeriod: timePeriod, _limited: limited, _capacity: capacity, _secret: secret, _secrets: secrets)
-          self.SharedMinter.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {})
+          self.SharedMinter.createEventSharedMinter(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {}, sharedMinter: self.FLOATEvents)
           log("Started a new event for host.")
         }
       }  
@@ -247,10 +249,10 @@ export const claimFLOAT = async (eventId, host, secret) => {
       import MetadataViews from 0xCORE
 
       transaction(eventId: UInt64, host: Address, secret: String?) {
-      
+ 
         let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
         let Collection: &FLOAT.Collection
-
+      
         prepare(acct: AuthAccount) {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
@@ -258,22 +260,22 @@ export const claimFLOAT = async (eventId, host, secret) => {
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
-
+      
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsSharedMinter}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
-
+      
           let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                               .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                               ?? panic("Could not borrow the public FLOATEvents from the host.")
           self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId)
-
+      
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
         }
-
+      
         execute {
           let params: {String: AnyStruct} = {}
           if let unwrappedSecret = secret {
@@ -283,7 +285,6 @@ export const claimFLOAT = async (eventId, host, secret) => {
           log("Claimed the FLOAT.")
         }
       }
-      
       `,
       args: (arg, t) => [
         arg(parseInt(eventId), t.UInt64),
@@ -626,7 +627,7 @@ export const addSharedMinter = async (receiver) => {
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, FLOAT.FLOATEventsSharedMinter}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           self.ReceiverFLOATEvents = getAccount(receiver).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -640,7 +641,7 @@ export const addSharedMinter = async (receiver) => {
           self.GiverFLOATEvents.giveSharing(toHost: self.ReceiverFLOATEvents)
           log("The Receiver now has access to the signer's FLOATEvents.")
         }
-      }
+      }      
       `,
       args: (arg, t) => [
         arg(receiver, t.Address),
@@ -845,7 +846,6 @@ export const getEvents = async (addr) => {
     })
     return queryResult || {};
   } catch (e) {
-    console.log(e);
   }
 }
 
@@ -855,12 +855,12 @@ export const getFLOATs = async (addr) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      pub fun main(account: Address): [FLOATMetadataView] {
+      pub fun main(account: Address): {UFix64: FLOATMetadataView} {
         let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
                               .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
                               ?? panic("Could not borrow the Collection from the account.")
         let floats = floatCollection.getIDs()
-        var returnVal: [FLOATMetadataView] = []
+        var returnVal: {UFix64: FLOATMetadataView} = {}
         for id in floats {
           let float = floatCollection.borrowFLOAT(id: id)
           let event = float.getEventMetadata()
@@ -868,21 +868,19 @@ export const getFLOATs = async (addr) => {
             _id: float.id, 
             _dateReceived: float.dateReceived, 
             _eventId: float.eventId, 
+            _eventImage: float.eventImage,
             _eventHost: float.eventHost, 
+            _eventName: float.eventName,
             _originalRecipient: float.originalRecipient, 
             _owner: account, 
             _serial: float.serial,
             _eventMetadata: FLOATEventMetadataView(
-              _dateCreated: event.dateCreated, 
-              _description: event.description, 
-              _host: event.host, 
-              _eventId: event.eventId, 
-              _image: event.image, 
-              _name: event.name, 
-              _url: event.url
+              _dateCreated: event?.dateCreated, 
+              _description: event?.description,
+              _url: event?.url
             )
           )
-          returnVal.append(floatMetadata)
+          returnVal[float.dateReceived] = floatMetadata
         }
       
         return returnVal
@@ -892,7 +890,9 @@ export const getFLOATs = async (addr) => {
         pub let id: UInt64
         pub let dateReceived: UFix64
         pub let eventId: UInt64
+        pub let eventImage: String
         pub let eventHost: Address
+        pub let eventName: String
         pub let originalRecipient: Address
         pub let owner: Address
         pub let serial: UInt64
@@ -902,7 +902,9 @@ export const getFLOATs = async (addr) => {
             _id: UInt64,
             _dateReceived: UFix64, 
             _eventId: UInt64,
+            _eventImage: String,
             _eventHost: Address, 
+            _eventName: String,
             _originalRecipient: Address, 
             _owner: Address,
             _serial: UInt64,
@@ -911,7 +913,9 @@ export const getFLOATs = async (addr) => {
             self.id = _id
             self.dateReceived = _dateReceived
             self.eventId = _eventId
+            self.eventImage = _eventImage
             self.eventHost = _eventHost
+            self.eventName = _eventName
             self.originalRecipient = _originalRecipient
             self.owner = _owner
             self.serial = _serial
@@ -920,29 +924,17 @@ export const getFLOATs = async (addr) => {
       }
       
       pub struct FLOATEventMetadataView {
-          pub let dateCreated: UFix64
-          pub let description: String
-          pub let host: Address
-          pub let eventId: UInt64
-          pub let image: String 
-          pub let name: String
-          pub let url: String
+          pub let dateCreated: UFix64?
+          pub let description: String?
+          pub let url: String?
       
           init(
-              _dateCreated: UFix64,
-              _description: String, 
-              _host: Address, 
-              _eventId: UInt64,
-              _image: String, 
-              _name: String,
-              _url: String,
+              _dateCreated: UFix64?,
+              _description: String?, 
+              _url: String?,
           ) {
               self.dateCreated = _dateCreated
               self.description = _description
-              self.host = _host
-              self.eventId = _eventId
-              self.image = _image
-              self.name = _name
               self.url = _url
           }
       }
@@ -951,10 +943,9 @@ export const getFLOATs = async (addr) => {
         arg(addr, t.Address)
       ]
     })
-    // console.log(queryResult);
-    return queryResult || [];
+    return Object.values(queryResult) || {};
   } catch (e) {
-    console.log(e);
+    console.log(e)
   }
 }
 
