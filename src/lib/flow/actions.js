@@ -632,7 +632,7 @@ export const addSharedMinter = async (receiver) => {
       
           self.ReceiverFLOATEvents = getAccount(receiver).getCapability(FLOAT.FLOATEventsPublicPath)
                                       .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>() 
-                                      ?? panic("This Capability does not exist")
+                                      ?? panic("Cannot borrow the public FLOAT Events from forHost")
           self.GiverFLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                                     ?? panic("The signer does not have a FLOAT Events.")
         }
@@ -751,14 +751,14 @@ export const getEvent = async (addr, eventId) => {
           _eventId: event.eventId, 
           _image: event.image, 
           _name: event.name, 
-          _requiresSecret: event.verifier.activatedModules().contains(Type<FLOATVerifiers.Secret>()) || event.verifier.activatedModules().contains(FLOATVerifiers.MultipleSecret.getType()), 
+          _requiresSecret: event.verifier.activatedModules().contains(Type<FLOATVerifiers.Secret>()) || event.verifier.activatedModules().contains(Type<FLOATVerifiers.MultipleSecret>()), 
           _totalSupply: event.totalSupply, 
           _transferrable: event.transferrable, 
           _url: event.url, 
           _verifier: event.verifier
         )
       }
-
+      
       pub struct FLOATEventMetadataView {
           pub let canAttemptClaim: Bool
           pub let claimable: Bool
@@ -774,7 +774,7 @@ export const getEvent = async (addr, eventId) => {
           pub let transferrable: Bool
           pub let url: String
           pub let verifier: {FLOAT.IVerifier}
-
+      
           init(
               _canAttemptClaim: Bool,
               _claimable: Bool,
@@ -1115,7 +1115,7 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
       ]
     })
     // console.log(queryResult);
-    return queryResult || {};
+    return queryResult;
   } catch (e) {
     console.log(e);
   }

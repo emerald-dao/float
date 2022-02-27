@@ -11,17 +11,17 @@ pub contract FLOATVerifiers {
       access(self) var multipleSecret: MultipleSecret?
 
       pub fun verify(event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}, _ params: {String: AnyStruct}): Bool {
-        if let timelock = self.timelock {
-          timelock.verify()
+        if self.timelock != nil {
+          self.timelock!.verify()
         }
-        if let secret = self.secret {
-          secret.verify(secretPhrase: params["secretPhrase"]! as! String)
+        if self.secret != nil {
+          self.secret!.verify(secretPhrase: params["secretPhrase"]! as! String)
         }
-        if let limited = self.limited {
-          limited.verify(currentCapacity: event.totalSupply)
+        if self.limited != nil {
+          self.limited!.verify(currentCapacity: event.totalSupply)
         }
-        if let multipleSecret = self.multipleSecret {
-          multipleSecret.verify(secretPhrase: params["secretPhrase"]! as! String)
+        if self.multipleSecret != nil {
+          self.multipleSecret!.verify(secretPhrase: params["secretPhrase"]! as! String)
         }
         return true
       }

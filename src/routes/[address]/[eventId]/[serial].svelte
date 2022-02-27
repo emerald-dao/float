@@ -9,8 +9,12 @@ import { convertAddress } from "$lib/flow/utils";
     return new Promise(async (resolve, reject) => {
       let event = await getEvent($page.params.address, $page.params.eventId);
       let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
-      let float = await getFLOAT(holder?.address, holder?.id);
-      resolve({event, float});
+      if (!holder) {
+        resolve({event, float: 'deleted'})
+      } else {
+        let float = await getFLOAT(holder?.address, holder?.id);
+        resolve({event, float});
+      }
     })
   }
   let recipientAddr = "";
@@ -77,62 +81,61 @@ url={$page.url}
 {/await}
 
 {#await data then data}
-<article class="toggle">
-  <header>
-    {#if data?.float.owner}
-    <h3>Owned by {convertAddress(data?.float.owner)}</h3>
-    <small class="muted">Originally claimed by {convertAddress(data?.float.originalRecipient)}</small>
-    {:else}
-    <h3>This FLOAT was deleted.</h3>
-    <small class="muted">Original Recipient: Unknown</small>
-    {/if}
-  </header>
-  
-  <div class="whole">
-    <a href="/{data.event.host}/{data.event.eventId}" class="wrap" bind:this={container}>
-      <div class="float transition" bind:this={card}>
-        <div class="image transition" bind:this={image}>
-          <img src={`https://ipfs.infura.io/ipfs/${data.event.image}`} alt="float">
-        </div>
-        <div class="info">
-          <h1 class="transition" bind:this={title}>{data.event.name}</h1>
-          <p class="transition" bind:this={createdBy}>
-            <small>
-              <span class="credit">Created by</span>
-              <a href="/{data.event.host}" class="host">{data.event.host}</a>
-            </small>
-          </p>
-          <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.float.serial}</code>
-        </div>
+  {#if data?.float == 'deleted'}
+    <article>This FLOAT has been deleted.</article>
+  {:else}
+    <article class="toggle">
+      <header>
+        <h3>Owned by {convertAddress(data?.float.owner)}</h3>
+        <small class="muted">Originally claimed by {convertAddress(data?.float.originalRecipient)}</small>
+      </header>
+      
+      <div class="whole">
+        <a href="/{data.event.host}/{data.event.eventId}" class="wrap" bind:this={container}>
+          <div class="float transition" bind:this={card}>
+            <div class="image transition" bind:this={image}>
+              <img src={`https://ipfs.infura.io/ipfs/${data.event.image}`} alt="float">
+            </div>
+            <div class="info">
+              <h1 class="transition" bind:this={title}>{data.event.name}</h1>
+              <p class="transition" bind:this={createdBy}>
+                <small>
+                  <span class="credit">Created by</span>
+                  <a href="/{data.event.host}" class="host">{data.event.host}</a>
+                </small>
+              </p>
+              <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.float.serial}</code>
+            </div>
+          </div>
+        </a>
       </div>
-    </a>
-  </div>
-  
-  <blockquote>
-    <strong><small class="muted">DESCRIPTION</small></strong><br/>
-    {data?.event.description}
-  </blockquote>
-  {#if $user?.addr == data?.float.owner}
-  <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
-    Delete this FLOAT
-  </button>
-  {/if}
-</article>
+      
+      <blockquote>
+        <strong><small class="muted">DESCRIPTION</small></strong><br/>
+        {data?.event.description}
+      </blockquote>
+      {#if $user?.addr == data?.float.owner}
+        <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
+          Delete this FLOAT
+        </button>
+      {/if}
+    </article>
 
-{#if $user?.addr == data?.float.owner}
-<article>
-  <label for="recipientAddr">
-    Copy the recipient's address below.
-    <input
-    type="text"
-    name="recipientAddr"
-    bind:value={recipientAddr}
-    placeholder="0x00000000000"
-    />
-  </label>
-  <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>Transfer this FLOAT</button>
-</article>
-{/if}
+    {#if $user?.addr == data?.float.owner}
+      <article>
+        <label for="recipientAddr">
+          Copy the recipient's address below.
+          <input
+          type="text"
+          name="recipientAddr"
+          bind:value={recipientAddr}
+          placeholder="0x00000000000"
+          />
+        </label>
+        <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>Transfer this FLOAT</button>
+      </article>
+    {/if}
+  {/if}
 {/await}
 
 <style>
