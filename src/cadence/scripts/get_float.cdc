@@ -1,45 +1,13 @@
 import FLOAT from "../FLOAT.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
-pub fun main(account: Address, id: UInt64): FLOATMetadataView {
+pub fun main(account: Address, id: UInt64): FLOAT.FLOATMetadata? {
   let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                        .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+                        .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
                         ?? panic("Could not borrow the Collection from the account.")
-  let float = floatCollection.borrowFLOAT(id: id)
-  return FLOATMetadataView(
-    _id: float.id, 
-    _dateReceived: float.dateReceived, 
-    _eventId: float.eventId, 
-    _eventHost: float.eventHost, 
-    _originalRecipient: float.originalRecipient, 
-    _owner: account, 
-    _serial: float.serial
-  )
-}
-
-pub struct FLOATMetadataView {
-  pub let id: UInt64
-  pub let dateReceived: UFix64
-  pub let eventId: UInt64
-  pub let eventHost: Address
-  pub let originalRecipient: Address
-  pub let owner: Address
-  pub let serial: UInt64
-
-  init(
-      _id: UInt64,
-      _dateReceived: UFix64, 
-      _eventId: UInt64,
-      _eventHost: Address, 
-      _originalRecipient: Address, 
-      _owner: Address,
-      _serial: UInt64,
-  ) {
-      self.id = _id
-      self.dateReceived = _dateReceived
-      self.eventId = _eventId
-      self.eventHost = _eventHost
-      self.originalRecipient = _originalRecipient
-      self.owner = _owner
-      self.serial = _serial
+  let resolved = floatCollection.borrowViewResolver(id: id)
+  if let view = resolved.resolveView(Type<FLOAT.FLOATMetadata>()) {
+    return view as! FLOAT.FLOATMetadata
   }
+  return nil
 }
