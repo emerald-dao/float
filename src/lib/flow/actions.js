@@ -81,14 +81,15 @@ export const createFloat = async (draftFloat) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -121,7 +122,7 @@ export const createFloat = async (draftFloat) => {
           self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {})
           log("Started a new event.")
         }
-      }          
+      }
       `,
       args: (arg, t) => [
         arg(floatObject.claimable, t.Bool),
@@ -295,14 +296,15 @@ export const claimFLOAT = async (eventId, host, secret) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -322,7 +324,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
           self.FLOATEvent.claim(recipient: self.Collection, params: params)
           log("Claimed the FLOAT.")
         }
-      }
+      }      
       `,
       args: (arg, t) => [
         arg(parseInt(eventId), t.UInt64),
@@ -658,14 +660,15 @@ export const addSharedMinter = async (receiver) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
           // set up the FLOAT Events where users will store all their created events
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>(FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
           self.ReceiverFLOATEvents = getAccount(receiver).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -679,7 +682,7 @@ export const addSharedMinter = async (receiver) => {
           self.GiverFLOATEvents.giveSharing(toHost: self.ReceiverFLOATEvents)
           log("The Receiver now has access to the signer's FLOATEvents.")
         }
-      }      
+      }    
       `,
       args: (arg, t) => [
         arg(receiver, t.Address),
@@ -772,73 +775,17 @@ export const getEvent = async (addr, eventId) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATVerifiers from 0xFLOAT
+      import MetadataViews from 0xCORE
 
-      pub fun main(account: Address, eventId: UInt64): FLOATEventMetadataView {
+      pub fun main(account: Address, eventId: UInt64): FLOAT.FLOATEventMetadata? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                    .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)
-        return FLOATEventMetadataView(
-          _claimable: event.claimable, 
-          _dateCreated: event.dateCreated, 
-          _description: event.description, 
-          _extraMetadata: event.getExtraMetadata(), 
-          _host: event.host, 
-          _eventId: event.eventId, 
-          _image: event.image, 
-          _name: event.name, 
-          _totalSupply: event.totalSupply, 
-          _transferrable: event.transferrable, 
-          _url: event.url, 
-          _verifiers: event.getVerifiers()
-        )
-      }
-      
-      pub struct FLOATEventMetadataView {
-          pub let claimable: Bool
-          pub let dateCreated: UFix64
-          pub let description: String 
-          pub let extraMetadata: {String: String}
-          pub let host: Address
-          pub let eventId: UInt64
-          pub let image: String 
-          pub let name: String
-          pub var totalSupply: UInt64
-          pub let transferrable: Bool
-          pub let url: String
-          pub let verifiers: {String: {FLOAT.IVerifier}}
-
-          init(
-              _claimable: Bool,
-              _dateCreated: UFix64,
-              _description: String, 
-              _extraMetadata: {String: String},
-              _host: Address, 
-              _eventId: UInt64,
-              _image: String, 
-              _name: String,
-              _totalSupply: UInt64,
-              _transferrable: Bool,
-              _url: String,
-              _verifiers: [{FLOAT.IVerifier}]
-          ) {
-              self.claimable = _claimable
-              self.dateCreated = _dateCreated
-              self.description = _description
-              self.extraMetadata = _extraMetadata
-              self.host = _host
-              self.eventId = _eventId
-              self.image = _image
-              self.name = _name
-              self.totalSupply = _totalSupply
-              self.transferrable = _transferrable
-              self.url = _url
-              self.verifiers = {}
-              for verifier in _verifiers {
-                self.verifiers[verifier.getType().identifier] = verifier
-              }
-          }
+        let resolved = floatEventCollection.borrowViewResolver(id: eventId)
+        if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
+          return view as! FLOAT.FLOATEventMetadata
+        }
+        return nil
       }
       `,
       args: (arg, t) => [
@@ -858,17 +805,21 @@ export const getEvents = async (addr) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
+      import MetadataViews from 0xCORE
 
-      pub fun main(account: Address): {String: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}} {
+      pub fun main(account: Address): {String: FLOAT.FLOATEventMetadata} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                    .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
-        let returnVal: {String: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}} = {}
+        let returnVal: {String: FLOAT.FLOATEventMetadata} = {}
       
         for eventId in floatEvents {
-          let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)
-          returnVal[event.name] = event
+          let resolved = floatEventCollection.borrowViewResolver(id: eventId)
+          if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
+            let metadata = view as! FLOAT.FLOATEventMetadata
+            returnVal[metadata.name] = metadata
+          }
         }
         return returnVal
       }
@@ -887,88 +838,38 @@ export const getFLOATs = async (addr) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
+      import MetadataViews from 0xCORE
 
-      pub fun main(account: Address): {UFix64: FLOATMetadataView} {
+      pub fun main(account: Address): {UFix64: CombinedMetadata} {
         let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                              .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+                              .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the Collection from the account.")
-        let floats = floatCollection.getIDs()
-        var returnVal: {UFix64: FLOATMetadataView} = {}
-        for id in floats {
-          let float = floatCollection.borrowFLOAT(id: id)
-          let event = float.getEventMetadata()
-          let floatMetadata = FLOATMetadataView(
-            _id: float.id, 
-            _dateReceived: float.dateReceived, 
-            _eventId: float.eventId, 
-            _eventImage: float.eventImage,
-            _eventHost: float.eventHost, 
-            _eventName: float.eventName,
-            _originalRecipient: float.originalRecipient, 
-            _owner: account, 
-            _serial: float.serial,
-            _eventMetadata: FLOATEventMetadataView(
-              _dateCreated: event?.dateCreated, 
-              _description: event?.description,
-              _url: event?.url
-            )
-          )
-          returnVal[float.dateReceived] = floatMetadata
+        let ids = floatCollection.getIDs()
+        var returnVal: {UFix64: CombinedMetadata} = {}
+        for id in ids {
+          let resolver = floatCollection.borrowViewResolver(id: id)
+          if let floatView = resolver.resolveView(Type<FLOAT.FLOATMetadata>()) {
+            let float = floatView as! FLOAT.FLOATMetadata
+
+            let eventView = resolver.resolveView(Type<FLOAT.FLOATEventMetadata>()) 
+            let event = eventView as! FLOAT.FLOATEventMetadata?
+            returnVal[float.dateReceived] = CombinedMetadata(_float: float, _event: event)
+          }
         }
-      
+
         return returnVal
       }
-      
-      pub struct FLOATMetadataView {
-        pub let id: UInt64
-        pub let dateReceived: UFix64
-        pub let eventId: UInt64
-        pub let eventImage: String
-        pub let eventHost: Address
-        pub let eventName: String
-        pub let originalRecipient: Address
-        pub let owner: Address
-        pub let serial: UInt64
-        pub let eventMetadata: FLOATEventMetadataView
-      
-        init(
-            _id: UInt64,
-            _dateReceived: UFix64, 
-            _eventId: UInt64,
-            _eventImage: String,
-            _eventHost: Address, 
-            _eventName: String,
-            _originalRecipient: Address, 
-            _owner: Address,
-            _serial: UInt64,
-            _eventMetadata: FLOATEventMetadataView
-        ) {
-            self.id = _id
-            self.dateReceived = _dateReceived
-            self.eventId = _eventId
-            self.eventImage = _eventImage
-            self.eventHost = _eventHost
-            self.eventName = _eventName
-            self.originalRecipient = _originalRecipient
-            self.owner = _owner
-            self.serial = _serial
-            self.eventMetadata = _eventMetadata
-        }
-      }
-      
-      pub struct FLOATEventMetadataView {
-          pub let dateCreated: UFix64?
-          pub let description: String?
-          pub let url: String?
-      
+
+      pub struct CombinedMetadata {
+          pub let float: FLOAT.FLOATMetadata
+          pub let event: FLOAT.FLOATEventMetadata?
+
           init(
-              _dateCreated: UFix64?,
-              _description: String?, 
-              _url: String?,
+              _float: FLOAT.FLOATMetadata,
+              _event:FLOAT.FLOATEventMetadata?
           ) {
-              self.dateCreated = _dateCreated
-              self.description = _description
-              self.url = _url
+              self.float = _float
+              self.event = _event
           }
       }
       `,
@@ -987,49 +888,17 @@ export const getFLOAT = async (addr, id) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
+      import MetadataViews from 0xCORE
 
-      pub fun main(account: Address, id: UInt64): FLOATMetadataView {
+      pub fun main(account: Address, id: UInt64): FLOAT.FLOATMetadata? {
         let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                              .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+                              .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the Collection from the account.")
-        let float = floatCollection.borrowFLOAT(id: id)
-        return FLOATMetadataView(
-          _id: float.id, 
-          _dateReceived: float.dateReceived, 
-          _eventId: float.eventId, 
-          _eventHost: float.eventHost, 
-          _originalRecipient: float.originalRecipient, 
-          _owner: account, 
-          _serial: float.serial
-        )
-      }
-
-      pub struct FLOATMetadataView {
-          pub let id: UInt64
-          pub let dateReceived: UFix64
-          pub let eventId: UInt64
-          pub let eventHost: Address
-          pub let originalRecipient: Address
-          pub let owner: Address
-          pub let serial: UInt64
-
-          init(
-              _id: UInt64,
-              _dateReceived: UFix64, 
-              _eventId: UInt64,
-              _eventHost: Address, 
-              _originalRecipient: Address, 
-              _owner: Address,
-              _serial: UInt64,
-          ) {
-              self.id = _id
-              self.dateReceived = _dateReceived
-              self.eventId = _eventId
-              self.eventHost = _eventHost
-              self.originalRecipient = _originalRecipient
-              self.owner = _owner
-              self.serial = _serial
-          }
+        let resolved = floatCollection.borrowViewResolver(id: id)
+        if let view = resolved.resolveView(Type<FLOAT.FLOATMetadata>()) {
+          return view as! FLOAT.FLOATMetadata
+        }
+        return nil
       }
       `,
       args: (arg, t) => [
@@ -1049,9 +918,8 @@ export const getHoldersInEvent = async (addr, eventId) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATMetadataViews from 0xFLOAT
 
-      pub fun main(account: Address, eventId: UInt64): {UInt64: FLOATMetadataViews.TokenIdentifier} {
+      pub fun main(account: Address, eventId: UInt64): {UInt64: FLOAT.TokenIdentifier} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
@@ -1075,9 +943,8 @@ export const getClaimedInEvent = async (addr, eventId) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATMetadataViews from 0xFLOAT
 
-      pub fun main(account: Address, eventId: UInt64): {Address: FLOATMetadataViews.TokenIdentifier} {
+      pub fun main(account: Address, eventId: UInt64): {Address: FLOAT.TokenIdentifier} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
@@ -1101,9 +968,8 @@ export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATMetadataViews from 0xFLOAT
 
-      pub fun main(hostAddress: Address, eventId: UInt64, accountAddress: Address): FLOATMetadataViews.TokenIdentifier? {
+      pub fun main(hostAddress: Address, eventId: UInt64, accountAddress: Address): FLOAT.TokenIdentifier? {
         let floatEventCollection = getAccount(hostAddress).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
@@ -1130,9 +996,8 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATMetadataViews from 0xFLOAT
 
-      pub fun main(hostAddress: Address, eventId: UInt64, serial: UInt64): FLOATMetadataViews.TokenIdentifier? {
+      pub fun main(hostAddress: Address, eventId: UInt64, serial: UInt64): FLOAT.TokenIdentifier? {
         let floatEventCollection = getAccount(hostAddress).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
@@ -1207,20 +1072,21 @@ export const resolveVerifier = async (address, eventId) => {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import FLOATVerifiers from 0xFLOAT
+      import MetadataViews from 0xCORE
 
       pub fun main(account: Address, eventId: UInt64): [String] {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                    .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} = floatEventCollection.borrowPublicEventRef(eventId: eventId)
-        let verifiers = floatEvent.getVerifiers()
-        let answers: [String] = []
-      
-        for verifier in verifiers {
-          answers.append(verifier.getType().identifier)
+        let resolved = floatEventCollection.borrowViewResolver(id: eventId)
+        if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
+          let metadata = view as! FLOAT.FLOATEventMetadata
+          let answer: [String] = []
+          for verifier in metadata.verifiers {
+            answer.append(verifier.getType().identifier)
+          }
         }
-        return answers
+        return []
       }
       `,
       args: (arg, t) => [
