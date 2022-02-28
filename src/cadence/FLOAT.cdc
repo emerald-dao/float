@@ -310,8 +310,6 @@ pub contract FLOAT: NonFungibleToken {
 
     pub struct FLOATEventMetadata {
         pub let claimable: Bool
-        pub let claimed: {Address: TokenIdentifier}
-        pub let currentHolders: {UInt64: TokenIdentifier}
         pub let dateCreated: UFix64
         pub let description: String 
         pub let eventId: UInt64
@@ -326,8 +324,6 @@ pub contract FLOAT: NonFungibleToken {
 
         init(
             _claimable: Bool,
-            _claimed: {Address: TokenIdentifier},
-            _currentHolders: {UInt64: TokenIdentifier},
             _description: String, 
             _eventId: UInt64,
             _extraMetadata: {String: String},
@@ -340,8 +336,6 @@ pub contract FLOAT: NonFungibleToken {
             _verifiers: {String: {IVerifier}}
         ) {
             self.claimable = _claimable
-            self.claimed = _claimed
-            self.currentHolders = _currentHolders
             self.dateCreated = getCurrentBlock().timestamp
             self.description = _description
             self.eventId = _eventId
@@ -353,6 +347,22 @@ pub contract FLOAT: NonFungibleToken {
             self.totalSupply = _totalSupply
             self.url = _url
             self.verifiers = _verifiers
+        }
+    }
+
+    pub struct FLOATEventHeavyMetadata {
+        pub let claimed: {Address: TokenIdentifier}
+        pub let currentHolders: {UInt64: TokenIdentifier}
+        pub let metdata: FLOATEventMetadata
+
+        init(
+            _claimed: {Address: TokenIdentifier},
+            _currentHolders: {UInt64: TokenIdentifier},
+            _metadata: FLOATEventMetadata
+        ) {
+            self.claimed = _claimed
+            self.currentHolders = _currentHolders
+            self.metdata = _metadata
         }
     }
 
@@ -436,7 +446,8 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getViews(): [Type] {
              return [
                 Type<MetadataViews.Display>(),
-                Type<FLOATEventMetadata>()
+                Type<FLOATEventMetadata>(),
+                Type<FLOATEventHeavyMetadata>()
             ]
         }
 
@@ -451,8 +462,6 @@ pub contract FLOAT: NonFungibleToken {
                 case Type<FLOATEventMetadata>():
                     return FLOATEventMetadata(
                         _claimable: self.claimable,
-                        _claimed: self.claimed,
-                        _currentHolders: self.currentHolders,
                         _description: self.description, 
                         _eventId: self.eventId,
                         _extraMetadata: self.extraMetadata,
@@ -463,6 +472,12 @@ pub contract FLOAT: NonFungibleToken {
                         _transferrable: self.transferrable,
                         _url: self.url,
                         _verifiers: self.verifiers
+                    )
+                case Type<FLOATEventHeavyMetadata>():
+                    return FLOATEventHeavyMetadata(
+                        _claimed: self.claimed,
+                        _currentHolders: self.currentHolders,
+                        _metadata: self.resolveView(Type<FLOATEventMetadata>())! as! FLOATEventMetadata
                     )
             }
 
@@ -809,10 +824,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath028
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath028
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath028
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath028
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath028
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath029
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath029
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath029
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath029
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath029
     }
 }

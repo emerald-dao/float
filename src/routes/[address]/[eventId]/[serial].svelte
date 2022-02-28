@@ -1,24 +1,24 @@
 <script>
   import { page } from "$app/stores";
-  import { getEvent, getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
+  import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { user } from "$lib/flow/stores";
 import { convertAddress } from "$lib/flow/utils";
   
-  const floatEventCallback = async () => {
+  const floatCallback = async () => {
     return new Promise(async (resolve, reject) => {
-      let event = await getEvent($page.params.address, $page.params.eventId);
       let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
       if (!holder) {
-        resolve({event, float: 'deleted'})
+        resolve('deleted');
       } else {
         let float = await getFLOAT(holder?.address, holder?.id);
-        resolve({event, float});
+        console.log(float)
+        resolve(float);
       }
     })
   }
   let recipientAddr = "";
-  let data = floatEventCallback();
+  let data = floatCallback();
   
   // JS STUFF
   let card;
@@ -81,7 +81,7 @@ url={$page.url}
 {/await}
 
 {#await data then data}
-  {#if data?.float == 'deleted'}
+  {#if data == 'deleted'}
     <article>This FLOAT has been deleted.</article>
   {:else}
     <article class="toggle">

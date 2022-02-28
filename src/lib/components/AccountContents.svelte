@@ -7,8 +7,8 @@
   export let address;
   
   let floatEvents = getEvents(address);
-  
   let floats = getFLOATs(address);
+  console.log(floats)
   
   function getEventsArray(floatEventsObj) {
     if(floatEventsObj && Object.keys(floatEventsObj)?.length > 0) {

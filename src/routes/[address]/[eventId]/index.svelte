@@ -27,7 +27,6 @@
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
     let data = {...eventData, hasClaimed};
-    console.log(data);
     return data;
   }
 
