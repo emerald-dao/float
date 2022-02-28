@@ -27,8 +27,29 @@ transaction(claimable: Bool, name: String, description: String, image: String, u
   }
 
   execute {
-    let verifier = FLOATVerifiers.Verifier(_timelock: timelock, _dateStart: dateStart, _timePeriod: timePeriod, _limited: limited, _capacity: capacity, _secret: secret, _secrets: secrets)
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {})
+    var Timelock: FLOATVerifiers.Timelock? = nil
+    var Secret: FLOATVerifiers.Secret? = nil
+    var Limited: FLOATVerifiers.Limited? = nil
+    var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
+    var verifiers: [{FLOAT.IVerifier}] = []
+    if timelock {
+      Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
+      verifiers.append(Timelock!)
+    }
+    if secret {
+      if secrets.length == 1 {
+        Secret = FLOATVerifiers.Secret(_secretPhrase: secrets[0])
+        verifiers.append(Secret!)
+      } else {
+        MultipleSecret = FLOATVerifiers.MultipleSecret(_secrets: secrets)
+        verifiers.append(MultipleSecret!)
+      }
+    }
+    if limited {
+      Limited = FLOATVerifiers.Limited(_capacity: capacity)
+      verifiers.append(Limited!)
+    }
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {})
     log("Started a new event.")
   }
 }

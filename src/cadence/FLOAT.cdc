@@ -242,26 +242,9 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub struct interface IVerifier {
-        // Modules that are currently activated,
-        // meaning acting as walls for the user
-        // to be able to claim.
-        pub fun activatedModules(): [Type]
-
-        // True if the user is somehow able to
-        // get to claiming the FLOAT at this moment.
-        //
-        // Examples:
-        // If the current time is within the
-        // time limit, it's not at capacity, but they have
-        // to type in a secret code, this would be true.
-        // 
-        // If the event hasn't started yet or is
-        // at capacity, this would be false.
-        pub fun canAttemptClaim(event: &FLOATEvent{FLOATEventPublic}): Bool
-
         // A function every verifier must implement. Returns a bool
         // if all checks pass, meaning the user can be minted a FLOAT.
-        access(account) fun verify(event: &FLOATEvent{FLOATEventPublic}, _ params: {String: AnyStruct}): Bool
+        access(account) fun verify(_ params: {String: AnyStruct})
     }
 
     pub resource interface FLOATEventPublic {
@@ -275,7 +258,7 @@ pub contract FLOAT: NonFungibleToken {
         pub var totalSupply: UInt64
         pub var transferrable: Bool
         pub let url: String
-        pub let verifier: {IVerifier}
+        pub fun getVerifiers(): [{IVerifier}]
         pub fun getClaimed(): {Address: FLOATMetadataViews.TokenIdentifier}
         pub fun getCurrentHolders(): {UInt64: FLOATMetadataViews.TokenIdentifier}
         pub fun getExtraMetadata(): {String: String}
@@ -320,7 +303,7 @@ pub contract FLOAT: NonFungibleToken {
         pub var totalSupply: UInt64
         pub var transferrable: Bool
         pub let url: String
-        pub let verifier: {IVerifier}
+        pub let verifiers: [{IVerifier}]
 
         /***************** Setters for the Event Owner *****************/
 
@@ -384,6 +367,10 @@ pub contract FLOAT: NonFungibleToken {
             return self.currentHolders
         }
 
+        pub fun getVerifiers(): [{IVerifier}] {
+            return self.verifiers
+        }
+
         /****************** Getting a FLOAT ******************/
 
         // Used to give a person a FLOAT from this event.
@@ -438,8 +425,13 @@ pub contract FLOAT: NonFungibleToken {
                     "This FLOATEvent is not claimable, and thus not currently active."
             }
             
-            if !self.verifier.verify(event: &self as &FLOATEvent{FLOATEventPublic}, params) {
-                panic("You did not meet some requirement in order to claim.")
+            params["event"] = &self as &FLOATEvent{FLOATEventPublic}
+            params["claimee"] = recipient.owner!.address
+            var i = 0
+            while i < self.verifiers.length {
+                let verifier = &self.verifiers[i] as &{IVerifier}
+                verifier.verify(params)
+                i = i + 1
             }
 
             // You're good to go.
@@ -465,7 +457,7 @@ pub contract FLOAT: NonFungibleToken {
             _name: String,
             _transferrable: Bool,
             _url: String,
-            _verifier: {IVerifier},
+            _verifiers: [{IVerifier}],
         ) {
             self.claimable = _claimable
             self.claimed = {}
@@ -481,7 +473,7 @@ pub contract FLOAT: NonFungibleToken {
             self.totalSupply = 0
             self.url = _url
             
-            self.verifier = _verifier
+            self.verifiers = _verifiers
 
             FLOAT.totalFLOATEvents = FLOAT.totalFLOATEvents + 1
             emit FLOATEventCreated(eventId: self.eventId, description: self.description, host: self.host, image: self.image, name: self.name, url: self.url)
@@ -511,7 +503,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getAddressWhoCanMintForMe(): [Address]
         pub fun getIDs(): [UInt64]
         // Account Setters
-        access(account) fun createEvent(claimable: Bool, description: String, image: String, name: String, transferrable: Bool, url: String, verifier: {IVerifier}, _ extraMetadata: {String: String}): UInt64
+        access(account) fun createEvent(claimable: Bool, description: String, image: String, name: String, transferrable: Bool, url: String, verifiers: [{IVerifier}], _ extraMetadata: {String: String}): UInt64
         access(account) fun receiveSharing(fromHost: Address) 
         access(account) fun removeSharing(ofHost: Address)
         // Account Getters
@@ -537,7 +529,7 @@ pub contract FLOAT: NonFungibleToken {
             name: String, 
             transferrable: Bool,
             url: String,
-            verifier: {IVerifier},
+            verifiers: [{IVerifier}],
             _ extraMetadata: {String: String}
         ): UInt64 {
             pre {
@@ -554,7 +546,7 @@ pub contract FLOAT: NonFungibleToken {
                 _name: name, 
                 _transferrable: transferrable,
                 _url: url,
-                _verifier: verifier
+                _verifiers: verifiers
             )
             let eventId = FLOATEvent.eventId
             self.nameToId[FLOATEvent.name] = eventId
@@ -646,7 +638,7 @@ pub contract FLOAT: NonFungibleToken {
             name: String, 
             transferrable: Bool,
             url: String,
-            verifier: {IVerifier},
+            verifiers: [{IVerifier}],
             _ extraMetadata: {String: String}
         ) {
             let floatEvents = getAccount(forHost).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -656,7 +648,7 @@ pub contract FLOAT: NonFungibleToken {
                 floatEvents.getAddressWhoCanMintForMe().contains(self.owner!.address), 
                 message: "You cannot mint for this host."
             )
-            let eventId = floatEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, extraMetadata)
+            let eventId = floatEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
             emit FLOATEventCreatedBySharedMinter(forHost: forHost, bySharedMinter: self.owner!.address, eventId: eventId)
         }
 
@@ -706,10 +698,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath025
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath025
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath025
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath025
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath025
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath026
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath026
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath026
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath026
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath026
     }
 }

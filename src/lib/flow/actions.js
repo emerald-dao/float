@@ -96,11 +96,32 @@ export const createFloat = async (draftFloat) => {
         }
       
         execute {
-          let verifier = FLOATVerifiers.Verifier(_timelock: timelock, _dateStart: dateStart, _timePeriod: timePeriod, _limited: limited, _capacity: capacity, _secret: secret, _secrets: secrets)
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {})
+          var Timelock: FLOATVerifiers.Timelock? = nil
+          var Secret: FLOATVerifiers.Secret? = nil
+          var Limited: FLOATVerifiers.Limited? = nil
+          var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
+          var verifiers: [{FLOAT.IVerifier}] = []
+          if timelock {
+            Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
+            verifiers.append(Timelock!)
+          }
+          if secret {
+            if secrets.length == 1 {
+              Secret = FLOATVerifiers.Secret(_secretPhrase: secrets[0])
+              verifiers.append(Secret!)
+            } else {
+              MultipleSecret = FLOATVerifiers.MultipleSecret(_secrets: secrets)
+              verifiers.append(MultipleSecret!)
+            }
+          }
+          if limited {
+            Limited = FLOATVerifiers.Limited(_capacity: capacity)
+            verifiers.append(Limited!)
+          }
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {})
           log("Started a new event.")
         }
-      }      
+      }          
       `,
       args: (arg, t) => [
         arg(floatObject.claimable, t.Bool),
@@ -168,19 +189,36 @@ export const createFloatForHost = async (forHost, draftFloat) => {
       transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-        let SharedMinter: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}
       
         prepare(acct: AuthAccount) {
           self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          self.SharedMinter = getAccount(forHost).getCapability(FLOAT.FLOATEventsPublicPath)
-                                .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
-                                ?? panic("Could not borrow the public FLOATEvents from forHost")
         }
       
         execute {
-          let verifier = FLOATVerifiers.Verifier(_timelock: timelock, _dateStart: dateStart, _timePeriod: timePeriod, _limited: limited, _capacity: capacity, _secret: secret, _secrets: secrets)
-          self.SharedMinter.createEventSharedMinter(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifier: verifier, {}, sharedMinter: self.FLOATEvents)
+          var Timelock: FLOATVerifiers.Timelock? = nil
+          var Secret: FLOATVerifiers.Secret? = nil
+          var Limited: FLOATVerifiers.Limited? = nil
+          var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
+          var verifiers: [{FLOAT.IVerifier}] = []
+          if timelock {
+            Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
+            verifiers.append(Timelock!)
+          }
+          if secret {
+            if secrets.length == 1 {
+              Secret = FLOATVerifiers.Secret(_secretPhrase: secrets[0])
+              verifiers.append(Secret!)
+            } else {
+              MultipleSecret = FLOATVerifiers.MultipleSecret(_secrets: secrets)
+              verifiers.append(MultipleSecret!)
+            }
+          }
+          if limited {
+            Limited = FLOATVerifiers.Limited(_capacity: capacity)
+            verifiers.append(Limited!)
+          }
+          self.FLOATEvents.createEventSharedMinter(forHost: forHost, claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {})
           log("Started a new event for host.")
         }
       }  
@@ -742,7 +780,6 @@ export const getEvent = async (addr, eventId) => {
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)
         return FLOATEventMetadataView(
-          _canAttemptClaim: event.verifier.canAttemptClaim(event: event), 
           _claimable: event.claimable, 
           _dateCreated: event.dateCreated, 
           _description: event.description, 
@@ -751,16 +788,14 @@ export const getEvent = async (addr, eventId) => {
           _eventId: event.eventId, 
           _image: event.image, 
           _name: event.name, 
-          _requiresSecret: event.verifier.activatedModules().contains(Type<FLOATVerifiers.Secret>()) || event.verifier.activatedModules().contains(Type<FLOATVerifiers.MultipleSecret>()), 
           _totalSupply: event.totalSupply, 
           _transferrable: event.transferrable, 
           _url: event.url, 
-          _verifier: event.verifier
+          _verifiers: event.getVerifiers()
         )
       }
       
       pub struct FLOATEventMetadataView {
-          pub let canAttemptClaim: Bool
           pub let claimable: Bool
           pub let dateCreated: UFix64
           pub let description: String 
@@ -769,14 +804,12 @@ export const getEvent = async (addr, eventId) => {
           pub let eventId: UInt64
           pub let image: String 
           pub let name: String
-          pub let requiresSecret: Bool
           pub var totalSupply: UInt64
           pub let transferrable: Bool
           pub let url: String
-          pub let verifier: {FLOAT.IVerifier}
-      
+          pub let verifiers: {String: {FLOAT.IVerifier}}
+
           init(
-              _canAttemptClaim: Bool,
               _claimable: Bool,
               _dateCreated: UFix64,
               _description: String, 
@@ -785,13 +818,11 @@ export const getEvent = async (addr, eventId) => {
               _eventId: UInt64,
               _image: String, 
               _name: String,
-              _requiresSecret: Bool,
               _totalSupply: UInt64,
               _transferrable: Bool,
               _url: String,
-              _verifier: {FLOAT.IVerifier}
+              _verifiers: [{FLOAT.IVerifier}]
           ) {
-              self.canAttemptClaim = _canAttemptClaim
               self.claimable = _claimable
               self.dateCreated = _dateCreated
               self.description = _description
@@ -800,11 +831,13 @@ export const getEvent = async (addr, eventId) => {
               self.eventId = _eventId
               self.image = _image
               self.name = _name
-              self.requiresSecret = _requiresSecret
               self.totalSupply = _totalSupply
               self.transferrable = _transferrable
               self.url = _url
-              self.verifier = _verifier
+              self.verifiers = {}
+              for verifier in _verifiers {
+                self.verifiers[verifier.getType().identifier] = verifier
+              }
           }
       }
       `,
@@ -1176,21 +1209,16 @@ export const resolveVerifier = async (address, eventId) => {
       import FLOAT from 0xFLOAT
       import FLOATVerifiers from 0xFLOAT
 
-      pub fun main(account: Address, eventId: UInt64): {String: AnyStruct} {
+      pub fun main(account: Address, eventId: UInt64): [String] {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let publicRef: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} = floatEventCollection.borrowPublicEventRef(eventId: eventId)
-        let verifier = publicRef.verifier as! FLOATVerifiers.Verifier
-        let answers: {String: AnyStruct} = {}
+        let floatEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} = floatEventCollection.borrowPublicEventRef(eventId: eventId)
+        let verifiers = floatEvent.getVerifiers()
+        let answers: [String] = []
       
-        if let timelock = verifier.timelock {
-          answers["dateStart"] = timelock.dateStart
-          answers["dateEnding"] = timelock.dateEnding
-        }
-      
-        if let limited = verifier.limited {
-          answers["capacity"] = limited.capacity
+        for verifier in verifiers {
+          answers.append(verifier.getType().identifier)
         }
         return answers
       }

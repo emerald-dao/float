@@ -1,14 +1,11 @@
 <script>
   import { page } from "$app/stores";
   import {
-    floatClaimedStatus,
-    floatClaimingInProgress,
-    user,
+    user
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
     getEvent,
-    claimFLOAT,
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
@@ -19,10 +16,10 @@
 
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
-  import Countdown from "$lib/components/common/Countdown.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
+  import ClaimButton from "$lib/components/ClaimButton.svelte";
 
   let claimsTableInView;
 
@@ -30,14 +27,11 @@
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
     let data = {...eventData, hasClaimed};
+    console.log(data);
     return data;
   }
 
   let floatEvent = floatEventCallback();
-
-  let claimCode = "";
-
-  $: currentUnixTime = +new Date() / 1000;
 </script>
 
 <svelte:head>
@@ -108,96 +102,16 @@
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
       </p>
-      {#if floatEvent?.verifier.limited}
+      
+      {#if floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"]}
         <p>
-          Only <span class="emphasis">{floatEvent.verifier.limited.capacity}</span> will ever exist.
+          Only <span class="emphasis">{floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"].capacity}</span> will ever exist.
         </p>
       {/if}
       <footer>
-        <!-- 
-        Possible cases:
-        - not claimable -> host needs to manually assign
-        - claimable
-          - secret code -> Add secrete code + "Claim"
-          - no secret code -> "Claim"
-        - claimable and not open
-          - time not started -> "Claimable in .... days"
-          - time expired -> "This FLOAT is closed"
-          - capacity reached -> "This FLOAT is closed. All 1000/1000 have been claimed"
-      -->
 
-        {#if floatEvent?.hasClaimed}
-          <button class="secondary outline" disabled>
-            ✓ You already claimed this FLOAT.
-          </button>
-        {:else if floatEvent?.claimable}
-          {#if floatEvent?.canAttemptClaim}
-            {#if floatEvent?.requiresSecret}
-              <label for="claimCode">
-                Enter the claim code below (<i>case sensitive</i>).
-                <input
-                  type="text"
-                  name="claimCode"
-                  bind:value={claimCode}
-                  placeholder="secret code"
-                />
-              </label>
-            {/if}
-            {#if floatEvent?.requiresSecret && claimCode === ""}
-              <button class="secondary outline" disabled>
-                You must enter a secret code.
-              </button>
-            {:else if $floatClaimingInProgress}
-              <button aria-busy="true" disabled>Claiming FLOAT</button>
-            {:else if $floatClaimedStatus.success}
-              <a
-                role="button"
-                class="d-block"
-                href="/account"
-                style="display:block"
-                >FLOAT claimed successfully!
-              </a>
-            {:else if !$floatClaimedStatus.success && $floatClaimedStatus.error}
-              <button class="error" disabled>
-                {$floatClaimedStatus.error}
-              </button>
-            {:else}
-              <button
-                disabled={$floatClaimingInProgress}
-                on:click={() =>
-                  claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)}
-                >Claim this FLOAT
-              </button>
-            {/if}
-          {:else if floatEvent?.verifier.limited && floatEvent?.verifier.limited.capacity <= floatEvent?.totalSupply}
-            <button class="secondary outline" disabled>
-              This FLOAT is no longer available.<br /> All
-              <span class="emphasis">
-                {floatEvent?.totalSupply}/{floatEvent?.verifier.limited.capacity}
-              </span> have been claimed.
-            </button>
-          {:else if floatEvent?.verifier.timelock && floatEvent?.verifier.timelock.dateStart > currentUnixTime}
-            <button class="secondary outline" disabled>
-              This FLOAT Event has not started yet.<br />
-              Starting in
-              <span class="emphasis">
-                <Countdown unix={floatEvent?.verifier.timelock.dateStart} />
-              </span>
-            </button>
-          {:else if floatEvent?.verifier.timelock && floatEvent?.verifier.timelock.dateEnding < currentUnixTime}
-            <button class="secondary outline" disabled>
-              This FLOAT is no longer available.<br />This event has ended.
-            </button>
-          {:else}
-            <button class="secondary outline" disabled>
-              This FLOAT is closed.<br />Unknown reason.
-            </button>
-          {/if}
-        {:else}
-          <button class="secondary outline" disabled>
-            This FLOAT is not claimable.<br />The host has done this either to distribute it manually or halt claiming.
-          </button>
-        {/if}
+        <ClaimButton floatEvent={floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+        
         {#if $user?.addr == floatEvent?.host}
           <div class="toggle">
             <button

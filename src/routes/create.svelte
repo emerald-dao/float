@@ -105,13 +105,14 @@ import NonFungibleToken from ${import.meta.env.VITE_CORE_CONTRACTS_ADDRESS}
 
 transaction(eventId: UInt64, recipient: Address) {
 
-	let FLOATEvents: &FLOAT.FLOATEvents
+	let FLOATEvent: &FLOAT.FLOATEvent
 	let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
 
 	prepare(signer: AuthAccount) {
-		self.FLOATEvents = 
-			signer.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-					?? panic("Could not borrow the signer's FLOAT Events resource.")
+		let FLOATEvents = signer.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+			?? panic("Could not borrow the signer's FLOAT Events resource.")
+		self.FLOATEvent = FLOATEvents.borrowEventRef(eventId: eventId)
+
 		self.RecipientCollection = 
 			getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
 				.borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
@@ -123,7 +124,7 @@ transaction(eventId: UInt64, recipient: Address) {
 		// Give the "recipient" a FLOAT from the event with "eventId"
 		//
 
-		self.FLOATEvents.distributeDirectly(id: eventId, recipient: self.RecipientCollection)
+		self.FLOATEvent.mint(recipient: self.RecipientCollection)
 		log("Distributed the FLOAT.")
 
 		//
@@ -262,151 +263,151 @@ transaction(eventId: UInt64, recipient: Address) {
       </button>
     </div>
 
-    {#if $draftFloat.claimable}
-      <h5>Cannot be changed later.</h5>
-      <!-- QUANTITY -->
-      <div class="grid no-break mb-1">
-        <button
-          class:secondary={$draftFloat.quantity}
-          class="outline"
-          on:click={() => ($draftFloat.quantity = false)}
-        >
-          Unlimited Quantity
-          <span
-            >Select this if you don't want your FLOAT to have a limited
-            quantity.</span
-          >
-        </button>
-        <button
-          class:secondary={!$draftFloat.quantity}
-          class="outline"
-          on:click={() => ($draftFloat.quantity = true)}
-        >
-          Limited Quantity
-          <span
-            >You can set the maximum number of times the FLOAT can be minted.</span
-          >
-        </button>
-      </div>
-      {#if $draftFloat.quantity}
-        <label for="quantity"
-          >How many can be claimed?
-          <input
-            type="number"
-            name="quantity"
-            bind:value={$draftFloat.quantity}
-            min="1"
-            placeholder="ex. 100"
-          />
-        </label>
-        <hr />
-      {/if}
-
-      <!-- TIME -->
-      <div class="grid no-break mb-1">
-        <button
-          class:secondary={$draftFloat.timelock}
-          class="outline"
-          on:click={() => ($draftFloat.timelock = false)}
-        >
-          No Time Limit
-          <span>Can be minted at any point in the future.</span>
-        </button>
-        <button
-          class:secondary={!$draftFloat.timelock}
-          class="outline"
-          on:click={() => ($draftFloat.timelock = true)}
-        >
-          Time Limit
-          <span>Can only be minted between a specific time interval.</span>
-        </button>
-      </div>
-      {#if $draftFloat.timelock}
-        <div class="grid">
-          <!-- Date -->
-          <label for="start"
-            >Start ({timezone})
-            <input
-              type="datetime-local"
-              id="start"
-              name="start"
-              bind:value={$draftFloat.startTime}
-            />
-          </label>
-
-          <!-- Date -->
-          <label for="start"
-            >End ({timezone})
-            <input
-              type="datetime-local"
-              id="start"
-              name="start"
-              bind:value={$draftFloat.endTime}
-            />
-          </label>
-        </div>
-        <hr />
-      {/if}
-
-      <!-- SECRET -->
-      <div class="grid no-break mb-1">
-        <button
-          class:secondary={$draftFloat.claimCodeEnabled}
-          class="outline"
-          on:click={() => ($draftFloat.claimCodeEnabled = false)}
-        >
-          Anyone Can Claim
-          <span
-            >Your FLOAT can be minted freely by anyone.</span
-          >
-        </button>
-        <button
-          class:secondary={!$draftFloat.claimCodeEnabled}
-          class="outline"
-          on:click={() => ($draftFloat.claimCodeEnabled = true)}
-        >
-          Use Secret Code(s)
-          <span
-            >Your FLOAT can only be minted if people know the secret code(s).</span
-          >
-        </button>
-      </div>
-
-      <!-- ONE SECRET OR MULTIPLE -->
-      {#if $draftFloat.claimCodeEnabled}
-        <div class="grid no-break mb-1">
-          <button
-            class:secondary={$draftFloat.multipleSecretsEnabled}
-            class="outline"
-            on:click={() => ($draftFloat.multipleSecretsEnabled = false)}
-          >
-            One Code for All
-            <span>Use the same secret code for everyone.</span>
-          </button>
-          <button
-            class:secondary={!$draftFloat.multipleSecretsEnabled}
-            class="outline"
-            on:click={() => ($draftFloat.multipleSecretsEnabled = true)}
-          >
-            Multiple Secret Codes
-            <span>Specify a bunch of secret codes, each of which can only be used once.</span>
-          </button>
-        </div>
-      {/if}
-      {#if $draftFloat.claimCodeEnabled}
-        <label for="claimCode">{@html $draftFloat.multipleSecretsEnabled ? "Enter your codes, separated by a comma ( , )" : "Enter a claim code"} (<i>case-sensitive</i>)
-          <input
-            type="text"
-            name="claimCode"
-            bind:value={$draftFloat.claimCode}
-            placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code3, code4" : "mySecretCode"}
-          />
-        </label>
-        <hr />
-      {/if}
-    {:else}
+    {#if !$draftFloat.claimable}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
       <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}>{distributeCode}</xmp>
+    {/if}
+
+    <h5>Cannot be changed later.</h5>
+    <!-- QUANTITY -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.quantity}
+        class="outline"
+        on:click={() => ($draftFloat.quantity = false)}
+      >
+        Unlimited Quantity
+        <span
+          >Select this if you don't want your FLOAT to have a limited
+          quantity.</span
+        >
+      </button>
+      <button
+        class:secondary={!$draftFloat.quantity}
+        class="outline"
+        on:click={() => ($draftFloat.quantity = true)}
+      >
+        Limited Quantity
+        <span
+          >You can set the maximum number of times the FLOAT can be minted.</span
+        >
+      </button>
+    </div>
+    {#if $draftFloat.quantity}
+      <label for="quantity"
+        >How many can be claimed?
+        <input
+          type="number"
+          name="quantity"
+          bind:value={$draftFloat.quantity}
+          min="1"
+          placeholder="ex. 100"
+        />
+      </label>
+      <hr />
+    {/if}
+
+    <!-- TIME -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.timelock}
+        class="outline"
+        on:click={() => ($draftFloat.timelock = false)}
+      >
+        No Time Limit
+        <span>Can be minted at any point in the future.</span>
+      </button>
+      <button
+        class:secondary={!$draftFloat.timelock}
+        class="outline"
+        on:click={() => ($draftFloat.timelock = true)}
+      >
+        Time Limit
+        <span>Can only be minted between a specific time interval.</span>
+      </button>
+    </div>
+    {#if $draftFloat.timelock}
+      <div class="grid">
+        <!-- Date -->
+        <label for="start"
+          >Start ({timezone})
+          <input
+            type="datetime-local"
+            id="start"
+            name="start"
+            bind:value={$draftFloat.startTime}
+          />
+        </label>
+
+        <!-- Date -->
+        <label for="start"
+          >End ({timezone})
+          <input
+            type="datetime-local"
+            id="start"
+            name="start"
+            bind:value={$draftFloat.endTime}
+          />
+        </label>
+      </div>
+      <hr />
+    {/if}
+
+    <!-- SECRET -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.claimCodeEnabled}
+        class="outline"
+        on:click={() => ($draftFloat.claimCodeEnabled = false)}
+      >
+        Anyone Can Claim
+        <span
+          >Your FLOAT can be minted freely by anyone.</span
+        >
+      </button>
+      <button
+        class:secondary={!$draftFloat.claimCodeEnabled}
+        class="outline"
+        on:click={() => ($draftFloat.claimCodeEnabled = true)}
+      >
+        Use Secret Code(s)
+        <span
+          >Your FLOAT can only be minted if people know the secret code(s).</span
+        >
+      </button>
+    </div>
+
+    <!-- ONE SECRET OR MULTIPLE -->
+    {#if $draftFloat.claimCodeEnabled}
+      <div class="grid no-break mb-1">
+        <button
+          class:secondary={$draftFloat.multipleSecretsEnabled}
+          class="outline"
+          on:click={() => ($draftFloat.multipleSecretsEnabled = false)}
+        >
+          One Code for All
+          <span>Use the same secret code for everyone.</span>
+        </button>
+        <button
+          class:secondary={!$draftFloat.multipleSecretsEnabled}
+          class="outline"
+          on:click={() => ($draftFloat.multipleSecretsEnabled = true)}
+        >
+          Multiple Secret Codes
+          <span>Specify a bunch of secret codes, each of which can only be used once.</span>
+        </button>
+      </div>
+    {/if}
+    {#if $draftFloat.claimCodeEnabled}
+      <label for="claimCode">{@html $draftFloat.multipleSecretsEnabled ? "Enter your codes, separated by a comma ( , )" : "Enter a claim code"} (<i>case-sensitive</i>)
+        <input
+          type="text"
+          name="claimCode"
+          bind:value={$draftFloat.claimCode}
+          placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code3, code4" : "mySecretCode"}
+        />
+      </label>
+      <hr />
     {/if}
 
     <footer>
