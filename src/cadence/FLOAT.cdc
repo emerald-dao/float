@@ -21,7 +21,7 @@ pub contract FLOAT: NonFungibleToken {
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, recipient: Address, serial: UInt64)
     pub event FLOATClaimed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, eventName: String, recipient: Address, serial: UInt64)
     pub event FLOATDeposited(id: UInt64, to: Address)
-    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
+    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, by: Address?)
     pub event FLOATTransferred(id: UInt64, from: Address, to: Address, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
     pub event FLOATEventCreatedBySharedMinter(forHost: Address, bySharedMinter: Address, eventId: UInt64)
@@ -57,6 +57,7 @@ pub contract FLOAT: NonFungibleToken {
     pub struct FLOATMetadata {
         pub let id: UInt64
         pub let dateReceived: UFix64
+        pub let eventDescription: String
         pub let eventHost: Address
         pub let eventId: UInt64
         pub let eventImage: String
@@ -68,6 +69,7 @@ pub contract FLOAT: NonFungibleToken {
         init(
             _id: UInt64,
             _dateReceived: UFix64, 
+            _eventDescription: String,
             _eventHost: Address, 
             _eventId: UInt64,
             _eventImage: String,
@@ -78,6 +80,7 @@ pub contract FLOAT: NonFungibleToken {
         ) {
             self.id = _id
             self.dateReceived = _dateReceived
+            self.eventDescription = _eventDescription
             self.eventHost = _eventHost
             self.eventId = _eventId
             self.eventImage = _eventImage
@@ -93,6 +96,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let id: UInt64
 
         pub let dateReceived: UFix64
+        pub let eventDescription: String
         pub let eventHost: Address
         pub let eventId: UInt64
         pub let eventImage: String
@@ -110,11 +114,9 @@ pub contract FLOAT: NonFungibleToken {
         // Helper function to get the metadata of the event 
         // this FLOAT is from.
         pub fun getEventMetadata(): FLOATEventMetadata? {
-            if let floatEvents = self.eventsCap.borrow() {
-                let resolver = floatEvents.borrowViewResolver(id: self.eventId)
-                if let view = resolver.resolveView(Type<FLOATEventMetadata>()) {
-                    return view as! FLOATEventMetadata
-                }
+            if let resolver = self.eventsCap.borrow()?.borrowViewResolver(id: self.eventId) {
+                let view = resolver.resolveView(Type<FLOATEventMetadata>()) 
+                return view as! FLOATEventMetadata?
             }
             return nil
         }
@@ -131,19 +133,11 @@ pub contract FLOAT: NonFungibleToken {
         pub fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.Display>():
-                    if let eventMetadata = self.getEventMetadata() {
-                        return MetadataViews.Display(
-                            name: self.eventName, 
-                            description: eventMetadata.description, 
-                            file: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
-                        )
-                    } else {
-                         return MetadataViews.Display(
-                            name: self.eventName, 
-                            description: "", 
-                            file: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
-                        )
-                    }
+                    return MetadataViews.Display(
+                        name: self.eventName, 
+                        description: self.eventDescription, 
+                        file: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
+                    )
                 case Type<TokenIdentifier>():
                     return TokenIdentifier(
                         _id: self.id, 
@@ -154,6 +148,7 @@ pub contract FLOAT: NonFungibleToken {
                     return FLOATMetadata(
                         _id: self.id,
                         _dateReceived: self.dateReceived, 
+                        _eventDescription: self.eventDescription,
                         _eventHost: self.eventHost, 
                         _eventId: self.eventId,
                         _eventImage: self.eventImage,
@@ -169,9 +164,10 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
 
-        init(_eventHost: Address, _eventId: UInt64, _eventImage: String, _eventName: String, _originalRecipient: Address, _serial: UInt64) {
+        init(_eventDescription: String, _eventHost: Address, _eventId: UInt64, _eventImage: String, _eventName: String, _originalRecipient: Address, _serial: UInt64) {
             self.id = self.uuid
             self.dateReceived = getCurrentBlock().timestamp
+            self.eventDescription = _eventDescription
             self.eventHost = _eventHost
             self.eventId = _eventId
             self.eventImage = _eventImage
@@ -207,7 +203,8 @@ pub contract FLOAT: NonFungibleToken {
                 id: self.id, 
                 eventHost: self.eventHost, 
                 eventId: self.eventId, 
-                serial: self.serial
+                serial: self.serial,
+                by: self.owner?.address
             )
         }
     }
@@ -219,7 +216,7 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun deposit(token: @NonFungibleToken.NFT) {
             let nft <- token as! @NFT
-            emit FLOATDeposited(id: nft.id, to: self.owner!.address, )
+            emit FLOATDeposited(id: nft.id, to: self.owner!.address)
             self.ownedNFTs[nft.id] <-! nft
         }
 
@@ -249,22 +246,8 @@ pub contract FLOAT: NonFungibleToken {
             recipient.deposit(token: <- nft)
         }
 
-        // Only returns NFT IDs for which
-        // you can still view event metadata
-        // from (meaning the event host didn't
-        // unlink their FLOATEvents resource to
-        // the public)
         pub fun getIDs(): [UInt64] {
-            let ids = self.ownedNFTs.keys
-            let answer: [UInt64] = []
-            for id in ids {
-                let tokenRef = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
-                let nftRef = tokenRef as! &NFT
-                if nftRef.eventsCap.check() {
-                    answer.append(id)
-                }
-            }
-            return answer
+            return self.ownedNFTs.keys
         }
 
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
@@ -295,8 +278,9 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub struct interface IVerifier {
-        // A function every verifier must implement. Returns a bool
-        // if all checks pass, meaning the user can be minted a FLOAT.
+        // A function every verifier must implement. 
+        // Will have `assert`s in it to make sure
+        // the user fits some criteria.
         access(account) fun verify(_ params: {String: AnyStruct})
     }
 
@@ -320,7 +304,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let totalSupply: UInt64
         pub let transferrable: Bool
         pub let url: String
-        pub let verifiers: {String: {IVerifier}}
+        pub let verifiers: {String: [{IVerifier}]}
 
         init(
             _claimable: Bool,
@@ -333,7 +317,7 @@ pub contract FLOAT: NonFungibleToken {
             _totalSupply: UInt64,
             _transferrable: Bool,
             _url: String,
-            _verifiers: {String: {IVerifier}}
+            _verifiers: {String: [{IVerifier}]}
         ) {
             self.claimable = _claimable
             self.dateCreated = getCurrentBlock().timestamp
@@ -383,7 +367,7 @@ pub contract FLOAT: NonFungibleToken {
         pub var totalSupply: UInt64
         pub var transferrable: Bool
         pub let url: String
-        access(account) let verifiers: {String: {IVerifier}}
+        access(account) let verifiers: {String: [{IVerifier}]}
 
         /***************** Setters for the Event Owner *****************/
 
@@ -501,6 +485,7 @@ pub contract FLOAT: NonFungibleToken {
             let serial = self.totalSupply
 
             let token <- create NFT(
+                _eventDescription: self.description,
                 _eventHost: self.host, 
                 _eventId: self.eventId,
                 _eventImage: self.image,
@@ -542,8 +527,13 @@ pub contract FLOAT: NonFungibleToken {
             params["claimee"] = recipient.owner!.address
             
             for identifier in self.verifiers.keys {
-                let verifier = &self.verifiers[identifier] as &{IVerifier}
-                verifier.verify(params)
+                let typedModules = &self.verifiers[identifier] as &[{IVerifier}]
+                var i = 0
+                while i < typedModules.length {
+                    let verifier = &typedModules[i] as &{IVerifier}
+                    verifier.verify(params)
+                    i = i + 1
+                }
             }
 
             // You're good to go.
@@ -569,7 +559,7 @@ pub contract FLOAT: NonFungibleToken {
             _name: String,
             _transferrable: Bool,
             _url: String,
-            _verifiers: {String: {IVerifier}},
+            _verifiers: {String: [{IVerifier}]},
         ) {
             self.claimable = _claimable
             self.claimed = {}
@@ -611,10 +601,11 @@ pub contract FLOAT: NonFungibleToken {
         // Public Getters
         pub var sharedMinting: Bool
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}
-        pub fun getAllEvents(): {String: UInt64}
+        pub fun getAllEvents(): {UInt64: String}
         pub fun getAddressWhoICanMintFor(): [Address]
         pub fun getAddressWhoCanMintForMe(): [Address]
         pub fun getIDs(): [UInt64]
+        pub fun isSharedMinterFor(host: Address): Bool
         // Account Setters
         access(account) fun createEvent(claimable: Bool, description: String, image: String, name: String, transferrable: Bool, url: String, verifiers: [{IVerifier}], _ extraMetadata: {String: String}): UInt64
         access(account) fun receiveSharing(fromHost: Address) 
@@ -624,8 +615,6 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
-        // Makes sure a name is only being used once for every account.
-        access(account) var nameToId: {String: UInt64}
         access(account) var events: @{UInt64: FLOATEvent}
         // A list of accounts you can mint for
         access(account) var canMintForThem: {Address: Bool}
@@ -645,13 +634,14 @@ pub contract FLOAT: NonFungibleToken {
             verifiers: [{IVerifier}],
             _ extraMetadata: {String: String}
         ): UInt64 {
-            pre {
-                self.nameToId[name] == nil: 
-                    "An event with this name already exists in your Collection."
-            }
-            let typedVerifiers: {String: {IVerifier}} = {}
+            let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
-                typedVerifiers[verifier.getType().identifier] = verifier
+                let identifier = verifier.getType().identifier
+                if typedVerifiers[identifier] == nil {
+                    typedVerifiers[identifier] = [verifier]
+                } else {
+                    typedVerifiers[identifier]!.append(verifier)
+                }
             }
 
             let FLOATEvent <- create FLOATEvent(
@@ -666,7 +656,6 @@ pub contract FLOAT: NonFungibleToken {
                 _verifiers: typedVerifiers
             )
             let eventId = FLOATEvent.eventId
-            self.nameToId[FLOATEvent.name] = eventId
             self.events[FLOATEvent.eventId] <-! FLOATEvent
             return eventId
         }
@@ -678,9 +667,6 @@ pub contract FLOAT: NonFungibleToken {
         // are currently holding that FLOAT, as written in the
         // destroy() function of the FLOATEvent resource.
         pub fun deleteEvent(eventId: UInt64) {
-            let name: String = self.borrowEventRef(eventId: eventId).name
-
-            self.nameToId.remove(key: name)
             let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
             destroy event
         }
@@ -702,8 +688,13 @@ pub contract FLOAT: NonFungibleToken {
             return self.events.keys
         }
 
-        pub fun getAllEvents(): {String: UInt64} {
-            return self.nameToId
+        pub fun getAllEvents(): {UInt64: String} {
+            let answer: {UInt64: String} = {}
+            for id in self.events.keys {
+                let ref = &self.events[id] as &FLOATEvent
+                answer[id] = ref.name
+            }
+            return answer
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
@@ -765,17 +756,29 @@ pub contract FLOAT: NonFungibleToken {
             let floatEvents = getAccount(forHost).getCapability(FLOAT.FLOATEventsPublicPath)
                                 .borrow<&FLOATEvents{FLOATEventsPublic}>() 
                                 ?? panic("Cannot borrow the public FLOAT Events from forHost")
-            
-            assert(
-                floatEvents.sharedMinting, 
-                message: "The host has turned shared minting turned off."
-            )
-            assert(
-                floatEvents.getAddressWhoCanMintForMe().contains(self.owner!.address), 
-                message: "You cannot mint for this host."
-            )
+            self.isSharedMinterFor(host: forHost)
             let eventId = floatEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
             emit FLOATEventCreatedBySharedMinter(forHost: forHost, bySharedMinter: self.owner!.address, eventId: eventId)
+        }
+
+        pub fun mintSharedMinter(
+            forHost: Address, 
+            eventId: UInt64, 
+            recipient: &Collection{NonFungibleToken.CollectionPublic}
+        ) {
+            let floatEvents = getAccount(forHost).getCapability(FLOAT.FLOATEventsPublicPath)
+                                .borrow<&FLOATEvents{FLOATEventsPublic}>() 
+                                ?? panic("Cannot borrow the public FLOAT Events from forHost")
+            assert(self.isSharedMinterFor(host: forHost), message: "You cannot mint for this host.")
+            let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: eventId)
+            floatEvent.mint(recipient: recipient)
+        }
+
+        pub fun isSharedMinterFor(host: Address): Bool {
+            let floatEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
+                                .borrow<&FLOATEvents{FLOATEventsPublic}>() 
+                                ?? panic("Cannot borrow the public FLOAT Events from forHost")
+            return floatEvents.sharedMinting && self.canMintForThem.containsKey(host)
         }
 
         // ACCESSIBLE BY: Owner
@@ -799,7 +802,6 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         init() {
-            self.nameToId = {}
             self.events <- {}
             self.canMintForThem = {}
             self.canMintForMe = {}
@@ -824,10 +826,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath029
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath029
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath029
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath029
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath029
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath032
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath032
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath032
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath032
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath032
     }
 }

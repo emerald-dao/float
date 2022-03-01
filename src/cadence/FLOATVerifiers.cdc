@@ -16,7 +16,7 @@ pub contract FLOATVerifiers {
         pub let dateStart: UFix64
         pub let dateEnding: UFix64
 
-        access(account) fun verify(_ params: {String: AnyStruct}) {
+        pub fun verify(_ params: {String: AnyStruct}) {
             assert(
                 getCurrentBlock().timestamp >= self.dateStart,
                 message: "This FLOAT Event has not started yet."
@@ -40,9 +40,9 @@ pub contract FLOATVerifiers {
     // to claim a FLOAT (not very secure, but cool feature)
     pub struct Secret: FLOAT.IVerifier {
         // The secret code, set by the owner of this event.
-        pub let secretPhrase: String
+        access(self) let secretPhrase: String
 
-        access(account) fun verify(_ params: {String: AnyStruct}) {
+        pub fun verify(_ params: {String: AnyStruct}) {
             let secretPhrase = params["secretPhrase"]! as! String
             assert(
                 self.secretPhrase == secretPhrase, 
@@ -65,7 +65,7 @@ pub contract FLOATVerifiers {
     pub struct Limited: FLOAT.IVerifier {
         pub var capacity: UInt64
 
-        access(account) fun verify(_ params: {String: AnyStruct}) {
+        pub fun verify(_ params: {String: AnyStruct}) {
             let event = params["event"]! as! FLOAT.FLOATEventMetadata
             let currentCapacity = event.totalSupply
             assert(
@@ -80,9 +80,9 @@ pub contract FLOATVerifiers {
     }
 
     pub struct MultipleSecret: FLOAT.IVerifier {
-        access(account) let secrets: {String: Bool}
+        access(self) let secrets: {String: Bool}
 
-        access(account) fun verify(_ params: {String: AnyStruct}) {
+        pub fun verify(_ params: {String: AnyStruct}) {
             let secretPhrase = params["secretPhrase"]! as! String
             assert(
                 self.secrets[secretPhrase] != nil, 

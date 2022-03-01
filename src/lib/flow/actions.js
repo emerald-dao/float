@@ -777,70 +777,15 @@ export const getEvent = async (addr, eventId) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xCORE
 
-      pub fun main(account: Address, eventId: UInt64): FLOATEventMetadata? {
+      pub fun main(account: Address, eventId: UInt64): FLOAT.FLOATEventMetadata? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let resolved = floatEventCollection.borrowViewResolver(id: eventId)
         if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
-          let metadata = view as! FLOAT.FLOATEventMetadata
-          return FLOATEventMetadata(
-            _claimable: metadata.claimable, 
-            _description: metadata.description, 
-            _eventId: metadata.eventId, 
-            _extraMetadata: metadata.extraMetadata, 
-            _host: metadata.host, 
-            _image: metadata.image,
-            _name: metadata.name, 
-            _totalSupply: metadata.totalSupply, 
-            _transferrable: metadata.transferrable, 
-            _url: metadata.url, 
-            _verifiers: metadata.verifiers
-          )
+          return view as! FLOAT.FLOATEventMetadata
         }
         return nil
-      }
-      
-      pub struct FLOATEventMetadata {
-          pub let claimable: Bool
-          pub let dateCreated: UFix64
-          pub let description: String 
-          pub let eventId: UInt64
-          pub let extraMetadata: {String: String}
-          pub let host: Address
-          pub let image: String 
-          pub let name: String
-          pub let totalSupply: UInt64
-          pub let transferrable: Bool
-          pub let url: String
-          pub let verifiers: {String: {FLOAT.IVerifier}}
-      
-          init(
-              _claimable: Bool,
-              _description: String, 
-              _eventId: UInt64,
-              _extraMetadata: {String: String},
-              _host: Address, 
-              _image: String, 
-              _name: String,
-              _totalSupply: UInt64,
-              _transferrable: Bool,
-              _url: String,
-              _verifiers: {String: {FLOAT.IVerifier}}
-          ) {
-              self.claimable = _claimable
-              self.dateCreated = getCurrentBlock().timestamp
-              self.description = _description
-              self.eventId = _eventId
-              self.extraMetadata = _extraMetadata
-              self.host = _host
-              self.image = _image
-              self.name = _name
-              self.transferrable = _transferrable
-              self.totalSupply = _totalSupply
-              self.url = _url
-              self.verifiers = _verifiers
-          }
       }
       `,
       args: (arg, t) => [
@@ -862,75 +807,21 @@ export const getEvents = async (addr) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xCORE
 
-      pub fun main(account: Address): {String: FLOATEventMetadata} {
+      pub fun main(account: Address): {String: FLOAT.FLOATEventMetadata} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEvents: [UInt64] = floatEventCollection.getIDs()
-        let returnVal: {String: FLOATEventMetadata} = {}
+        let returnVal: {String: FLOAT.FLOATEventMetadata} = {}
       
         for eventId in floatEvents {
           let resolved = floatEventCollection.borrowViewResolver(id: eventId)
           if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
             let metadata = view as! FLOAT.FLOATEventMetadata
-            returnVal[metadata.name] = FLOATEventMetadata(
-              _claimable: metadata.claimable, 
-              _description: metadata.description, 
-              _eventId: metadata.eventId, 
-              _extraMetadata: metadata.extraMetadata, 
-              _host: metadata.host, 
-              _image: metadata.image,
-              _name: metadata.name, 
-              _totalSupply: metadata.totalSupply, 
-              _transferrable: metadata.transferrable, 
-              _url: metadata.url, 
-              _verifiers: metadata.verifiers
-            )
+            returnVal[metadata.name] = metadata
           }
         }
         return returnVal
-      }
-      
-      pub struct FLOATEventMetadata {
-          pub let claimable: Bool
-          pub let dateCreated: UFix64
-          pub let description: String 
-          pub let eventId: UInt64
-          pub let extraMetadata: {String: String}
-          pub let host: Address
-          pub let image: String 
-          pub let name: String
-          pub let totalSupply: UInt64
-          pub let transferrable: Bool
-          pub let url: String
-          pub let verifiers: {String: {FLOAT.IVerifier}}
-      
-          init(
-              _claimable: Bool,
-              _description: String, 
-              _eventId: UInt64,
-              _extraMetadata: {String: String},
-              _host: Address, 
-              _image: String, 
-              _name: String,
-              _totalSupply: UInt64,
-              _transferrable: Bool,
-              _url: String,
-              _verifiers: {String: {FLOAT.IVerifier}}
-          ) {
-              self.claimable = _claimable
-              self.dateCreated = getCurrentBlock().timestamp
-              self.description = _description
-              self.eventId = _eventId
-              self.extraMetadata = _extraMetadata
-              self.host = _host
-              self.image = _image
-              self.name = _name
-              self.transferrable = _transferrable
-              self.totalSupply = _totalSupply
-              self.url = _url
-              self.verifiers = _verifiers
-          }
       }
       `,
       args: (arg, t) => [
@@ -1036,7 +927,7 @@ export const getFLOAT = async (addr, id) => {
       ]
     })
     // console.log(queryResult)
-    return queryResult || [];
+    return queryResult || {};
   } catch (e) {
     console.log(e);
   }

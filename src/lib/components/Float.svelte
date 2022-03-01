@@ -2,6 +2,8 @@
   export let float = {};
   export let preview = false;
   export let individual = false;
+
+  console.log(float);
 </script>
 
 {#if individual}

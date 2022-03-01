@@ -22,11 +22,13 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
 
   let claimsTableInView;
+  let limitedVerifier;
 
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
     let data = {...eventData, hasClaimed};
+    limitedVerifier = data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
     return data;
   }
 
@@ -102,9 +104,9 @@
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
       </p>
       
-      {#if floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"]}
+      {#if limitedVerifier && limitedVerifier[0]}
         <p>
-          Only <span class="emphasis">{floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"].capacity}</span> will ever exist.
+          Only <span class="emphasis">{limitedVerifier[0].capacity}</span> will ever exist.
         </p>
       {/if}
       <footer>

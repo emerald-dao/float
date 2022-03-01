@@ -8,7 +8,6 @@
   
   let floatEvents = getEvents(address);
   let floats = getFLOATs(address);
-  console.log(floats)
   
   function getEventsArray(floatEventsObj) {
     if(floatEventsObj && Object.keys(floatEventsObj)?.length > 0) {
@@ -27,7 +26,7 @@
   {:then floats} 
     {#if floats?.length > 0}
       {#each floats as float}
-      <Float {float} individual={true} />
+      <Float float={{eventMetadata: float.event, ...float.float}} individual={true} />
       {/each}
     {:else}
     <p>This account doesn't have any FLOATs yet.</p>

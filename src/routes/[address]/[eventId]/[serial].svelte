@@ -3,7 +3,7 @@
   import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { user } from "$lib/flow/stores";
-import { convertAddress } from "$lib/flow/utils";
+  import { convertAddress } from "$lib/flow/utils";
   
   const floatCallback = async () => {
     return new Promise(async (resolve, reject) => {
@@ -121,7 +121,7 @@ url={$page.url}
       {/if}
     </article>
 
-    {#if $user?.addr == data?.float.owner}
+    {#if $user?.addr == data?.float.owner && data?.event.transferrable}
       <article>
         <label for="recipientAddr">
           Copy the recipient's address below.
