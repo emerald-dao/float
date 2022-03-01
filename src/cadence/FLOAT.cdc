@@ -21,7 +21,7 @@ pub contract FLOAT: NonFungibleToken {
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, recipient: Address, serial: UInt64)
     pub event FLOATClaimed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, eventName: String, recipient: Address, serial: UInt64)
     pub event FLOATDeposited(id: UInt64, to: Address)
-    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, by: Address?)
+    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATTransferred(id: UInt64, from: Address, to: Address, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
     pub event FLOATEventCreatedBySharedMinter(forHost: Address, bySharedMinter: Address, eventId: UInt64)
@@ -203,8 +203,7 @@ pub contract FLOAT: NonFungibleToken {
                 id: self.id, 
                 eventHost: self.eventHost, 
                 eventId: self.eventId, 
-                serial: self.serial,
-                by: self.owner?.address
+                serial: self.serial
             )
         }
     }
@@ -778,7 +777,11 @@ pub contract FLOAT: NonFungibleToken {
             let floatEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                                 .borrow<&FLOATEvents{FLOATEventsPublic}>() 
                                 ?? panic("Cannot borrow the public FLOAT Events from forHost")
-            return floatEvents.sharedMinting && self.canMintForThem.containsKey(host)
+            // you MUST check the other host's "canMintForMe"
+            // This is confusing, but basically it's possible
+            // for the canMintForMe and canMintForThem to be
+            // out of sync
+            return floatEvents.sharedMinting && floatEvents.getAddressWhoCanMintForMe().contains(self.owner!.address)
         }
 
         // ACCESSIBLE BY: Owner
