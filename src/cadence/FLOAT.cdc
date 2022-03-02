@@ -232,7 +232,7 @@ pub contract FLOAT: NonFungibleToken {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
             
-            let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() ?? panic("This Event Collection this FLOAT came from has been deleted.")
+            let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() ?? panic("The FLOATEvent that this FLOAT came from has been unlinked.")
             let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: nft.eventId)
 
             // Checks to see if this FLOAT is transferrable.
@@ -513,7 +513,7 @@ pub contract FLOAT: NonFungibleToken {
         // You can pass in `params` that will be forwarded to the
         // customized `verify` function of the verifier.  
         //
-        // For example, the FLOAT platfrom allows event hosts
+        // For example, the FLOAT platform allows event hosts
         // to specify a secret phrase. That secret phrase will 
         // be passed in the `params`.
         pub fun claim(recipient: &Collection, params: {String: AnyStruct}) {
@@ -760,6 +760,8 @@ pub contract FLOAT: NonFungibleToken {
             emit FLOATEventCreatedBySharedMinter(forHost: forHost, bySharedMinter: self.owner!.address, eventId: eventId)
         }
 
+        // A method you call to mint for someone else. 
+        // You have to be a shared minter for them.
         pub fun mintSharedMinter(
             forHost: Address, 
             eventId: UInt64, 
@@ -780,7 +782,8 @@ pub contract FLOAT: NonFungibleToken {
             // you MUST check the other host's "canMintForMe"
             // This is confusing, but basically it's possible
             // for the canMintForMe and canMintForThem to be
-            // out of sync
+            // out of sync, but the canMintForMe will always
+            // be correct.
             return floatEvents.sharedMinting && floatEvents.getAddressWhoCanMintForMe().contains(self.owner!.address)
         }
 

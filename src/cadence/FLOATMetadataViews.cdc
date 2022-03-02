@@ -1,3 +1,0 @@
-pub contract FLOATMetadataViews {
-
-}
