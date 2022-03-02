@@ -1,6 +1,6 @@
 <script>
-  import { addSharedMinterInProgress, removeSharedMinterInProgress, transactionInProgress, user } from "$lib/flow/stores";
-  import { addSharedMinter, authenticate, unauthenticate, getAddressesWhoCanMintForMe, removeSharedMinter } from '$lib/flow/actions';
+  import { addSharedMinterInProgress, addSharedMinterStatus, removeSharedMinterInProgress, user } from "$lib/flow/stores";
+  import { addSharedMinter, authenticate, unauthenticate, getAllowed, removeSharedMinter } from '$lib/flow/actions';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   
   import AccountContents from '$lib/components/AccountContents.svelte';
@@ -10,7 +10,7 @@
   
   let removeMinter = "";
   const loadAddresses = async () => {
-    let addresses = await getAddressesWhoCanMintForMe($user?.addr);
+    let addresses = await getAllowed($user?.addr);
     if (addresses?.length > 0) {
       removeMinter = addresses[0];
     }
@@ -68,7 +68,22 @@
             placeholder="0x00000000000"
           />
         </label>
-        <button aria-busy={$addSharedMinterInProgress} disabled={$addSharedMinterInProgress} on:click={addSharedMinter(newSharedMinter)}>Add Shared Minter</button>
+        {#if $addSharedMinterInProgress}
+          <button aria-busy="true" disabled>Adding...</button>
+        {:else if $addSharedMinterStatus.success}
+          <button disabled>Successfully added {newSharedMinter}</button>
+        {:else if !$addSharedMinterStatus.success && $addSharedMinterStatus.error}
+          <button class="error" disabled>
+            {$addSharedMinterStatus.error}
+          </button>
+        {:else}
+          <button
+            disabled={$addSharedMinterInProgress}
+            on:click={() =>
+              addSharedMinter(newSharedMinter)}
+            >Add Shared Minter
+          </button>
+        {/if}
       </article>
     {/if}
   </div>

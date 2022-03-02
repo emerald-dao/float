@@ -4,7 +4,7 @@
     eventCreationInProgress,
     eventCreatedStatus,
   } from "$lib/flow/stores";
-  import { authenticate, createFloat, createFloatForHost, getAddressesWhoICanMintFor } from "$lib/flow/actions";
+  import { authenticate, createEvent, getCanMintForThem } from "$lib/flow/actions";
 
   import { draftFloat, theme } from "$lib/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
@@ -14,6 +14,7 @@
   import LibLoader from "$lib/components/LibLoader.svelte";
   import { onMount } from "svelte";
   import Float from "$lib/components/Float.svelte";
+import { distributeCode } from "$lib/flow/utils";
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
@@ -76,9 +77,9 @@
 
     // otherwise, continue with creation
     if (minter === $user?.addr) {
-      createFloat($draftFloat);
+      createEvent(null, $draftFloat);
     } else {
-      createFloatForHost(minter, $draftFloat);
+      createEvent(minter, $draftFloat);
     }
   }
 
@@ -97,42 +98,7 @@
     }
   }
 
-  let sharedMinters = getAddressesWhoICanMintFor($user?.addr);
-
-  let distributeCode = `
-import FLOAT from ${import.meta.env.VITE_FLOAT_ADDRESS}
-import NonFungibleToken from ${import.meta.env.VITE_CORE_CONTRACTS_ADDRESS}
-
-transaction(eventId: UInt64, recipient: Address) {
-
-	let FLOATEvent: &FLOAT.FLOATEvent
-	let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
-
-	prepare(signer: AuthAccount) {
-		let FLOATEvents = signer.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-			?? panic("Could not borrow the signer's FLOAT Events resource.")
-		self.FLOATEvent = FLOATEvents.borrowEventRef(eventId: eventId)
-
-		self.RecipientCollection = 
-			getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
-				.borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
-				?? panic("Could not get the public FLOAT Collection from the recipient.")
-	}
-
-	execute {
-		//
-		// Give the "recipient" a FLOAT from the event with "eventId"
-		//
-
-		self.FLOATEvent.mint(recipient: self.RecipientCollection)
-		log("Distributed the FLOAT.")
-
-		//
-		// SOME OTHER ACTION HAPPENS
-		//
-	}
-}
-	`;
+  let sharedMinters = getCanMintForThem($user?.addr);
 </script>
 
 <svelte:head>

@@ -12,5 +12,9 @@ export const eventCreatedStatus = writable(false);
 export const floatClaimingInProgress = writable(false);
 export const floatClaimedStatus = writable(false);
 
+export const floatDistributingInProgress = writable(false);
+export const floatDistributingStatus = writable(false);
+
 export const addSharedMinterInProgress = writable(false);
+export const addSharedMinterStatus = writable(false);
 export const removeSharedMinterInProgress = writable(false);

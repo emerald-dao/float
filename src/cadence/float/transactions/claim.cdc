@@ -1,6 +1,7 @@
 import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
+import MetadataViews from "../../core-contracts/MetadataViews.cdc"
+import SharedAccount from "../../sharedaccount/SharedAccount.cdc"
 
 transaction(eventId: UInt64, host: Address, secret: String?) {
  
@@ -20,6 +21,12 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
       acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
       acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+    }
+
+    if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
+        acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+        acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
     }
 
     let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)

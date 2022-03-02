@@ -1,7 +1,9 @@
 <script>
   import { page } from "$app/stores";
   import {
-    user
+    user,
+    floatDistributingInProgress,
+    floatDistributingStatus
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -9,7 +11,9 @@
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
-    hasClaimedEvent
+    hasClaimedEvent,
+    distributeDirectly,
+    isSharedWithUser
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from 'svelte-intersection-observer';
@@ -33,6 +37,9 @@
   }
 
   let floatEvent = floatEventCallback();
+  let canMintForMe = isSharedWithUser($page.params.address, $user?.addr);
+
+  let recipientAddr = "";
 </script>
 
 <svelte:head>
@@ -113,24 +120,24 @@
 
         <ClaimButton floatEvent={floatEvent} hasClaimed={floatEvent?.hasClaimed} />
         
-        {#if $user?.addr == floatEvent?.host}
+        {#if $user?.addr == floatEvent?.host || canMintForMe}
           <div class="toggle">
             <button
               class="outline"
-              on:click={() => toggleClaimable(floatEvent?.eventId)}
+              on:click={() => toggleClaimable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
             >
               {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
               class="outline"
-              on:click={() => toggleTransferrable(floatEvent?.eventId)}
+              on:click={() => toggleTransferrable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
             >
               {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
             </button>
             <button
               class="outline red"
               disabled={floatEvent?.totalSupply !== 0}
-              on:click={() => deleteEvent(floatEvent?.eventId)}
+              on:click={() => deleteEvent($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
             >
               Delete this event
             </button>
@@ -138,6 +145,40 @@
         {/if}
       </footer>
     </article>
+
+    {#if $user?.addr == floatEvent?.host || canMintForMe}
+      <article>
+        <label for="distributeDirectly">
+          Mint directly to a user (their collection must be set up).
+          <input
+            type="text"
+            name="distributeDirectly"
+            bind:value={recipientAddr}
+            placeholder="0x00000000000"
+          />
+        </label>
+        {#if $floatDistributingInProgress}
+          <button aria-busy="true" disabled>Minting FLOAT to {recipientAddr}</button>
+        {:else if $floatDistributingStatus.success}
+          <a 
+          role="button"
+          class="d-block"
+          href="/{recipientAddr}"
+          style="display:block">FLOAT minted successfully!</a>
+        {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
+          <button class="error" disabled>
+            {$floatDistributingStatus.error}
+          </button>
+        {:else}
+          <button
+            disabled={$floatDistributingInProgress}
+            on:click={() =>
+              distributeDirectly($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId, recipientAddr)}
+            >Mint this FLOAT
+          </button>
+        {/if}
+      </article>
+    {/if}
 
     <article>
       <header>

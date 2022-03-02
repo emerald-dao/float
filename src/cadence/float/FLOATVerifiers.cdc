@@ -1,5 +1,5 @@
 import FLOAT from "./FLOAT.cdc"
-import MetadataViews from "./core-contracts/MetadataViews.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
 pub contract FLOATVerifiers {
 

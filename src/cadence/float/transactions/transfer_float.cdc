@@ -1,5 +1,5 @@
 import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 
 transaction(id: UInt64, recipient: Address) {
 
