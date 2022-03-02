@@ -38,7 +38,7 @@
         <br />
         <br />
 
-        <label for="removeMinter">Accounts who can mint for you:</label>
+        <label for="removeMinter">Accounts who share your account:</label>
         
           {#await sharedMinters then sharedMinters}
             {#if sharedMinters?.length > 0}
@@ -49,7 +49,7 @@
               </select>
               <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
             {:else}
-              <p>None</p>
+              <p><b>None</b></p>
             {/if}
           {/await}
       {/if}
@@ -60,7 +60,7 @@
       <article>
         <label for="receiver">
           Add a shared minter by copying the receiver's address below.<br /><br />
-          <strong>BEWARE</strong>: This will allow this user to create FLOAT Events for you.
+          <strong>BEWARE</strong>: This will allow this user to control your account on FLOAT.
           <input
             type="text"
             name="receiver"

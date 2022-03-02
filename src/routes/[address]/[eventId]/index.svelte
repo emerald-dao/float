@@ -120,65 +120,69 @@
 
         <ClaimButton floatEvent={floatEvent} hasClaimed={floatEvent?.hasClaimed} />
         
-        {#if $user?.addr == floatEvent?.host || canMintForMe}
-          <div class="toggle">
-            <button
-              class="outline"
-              on:click={() => toggleClaimable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-            >
-              {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
-            </button>
-            <button
-              class="outline"
-              on:click={() => toggleTransferrable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-            >
-              {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
-            </button>
-            <button
-              class="outline red"
-              disabled={floatEvent?.totalSupply !== 0}
-              on:click={() => deleteEvent($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-            >
-              Delete this event
-            </button>
-          </div>
-        {/if}
+        {#await canMintForMe then canMintForMe}
+          {#if $user?.addr == floatEvent?.host || canMintForMe}
+            <div class="toggle">
+              <button
+                class="outline"
+                on:click={() => toggleClaimable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
+              >
+                {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
+              </button>
+              <button
+                class="outline"
+                on:click={() => toggleTransferrable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
+              >
+                {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
+              </button>
+              <button
+                class="outline red"
+                disabled={floatEvent?.totalSupply !== 0}
+                on:click={() => deleteEvent($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
+              >
+                Delete this event
+              </button>
+            </div>
+          {/if}
+        {/await}
       </footer>
     </article>
 
-    {#if $user?.addr == floatEvent?.host || canMintForMe}
-      <article>
-        <label for="distributeDirectly">
-          Mint directly to a user (their collection must be set up).
-          <input
-            type="text"
-            name="distributeDirectly"
-            bind:value={recipientAddr}
-            placeholder="0x00000000000"
-          />
-        </label>
-        {#if $floatDistributingInProgress}
-          <button aria-busy="true" disabled>Minting FLOAT to {recipientAddr}</button>
-        {:else if $floatDistributingStatus.success}
-          <a 
-          role="button"
-          class="d-block"
-          href="/{recipientAddr}"
-          style="display:block">FLOAT minted successfully!</a>
-        {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
-          <button class="error" disabled>
-            {$floatDistributingStatus.error}
-          </button>
-        {:else}
-          <button
-            disabled={$floatDistributingInProgress}
-            on:click={() =>
-              distributeDirectly($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId, recipientAddr)}
-            >Mint this FLOAT
-          </button>
-        {/if}
-      </article>
-    {/if}
+    {#await canMintForMe then canMintForMe}
+      {#if $user?.addr == floatEvent?.host || canMintForMe}
+        <article>
+          <label for="distributeDirectly">
+            Mint directly to a user (their collection must be set up).
+            <input
+              type="text"
+              name="distributeDirectly"
+              bind:value={recipientAddr}
+              placeholder="0x00000000000"
+            />
+          </label>
+          {#if $floatDistributingInProgress}
+            <button aria-busy="true" disabled>Minting FLOAT to {recipientAddr}</button>
+          {:else if $floatDistributingStatus.success}
+            <a 
+            role="button"
+            class="d-block"
+            href="/{recipientAddr}"
+            style="display:block">FLOAT minted successfully!</a>
+          {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
+            <button class="error" disabled>
+              {$floatDistributingStatus.error}
+            </button>
+          {:else}
+            <button
+              disabled={$floatDistributingInProgress}
+              on:click={() =>
+                distributeDirectly($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId, recipientAddr)}
+              >Mint this FLOAT
+            </button>
+          {/if}
+        </article>
+      {/if}
+    {/await}
 
     <article>
       <header>
