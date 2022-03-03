@@ -16,7 +16,9 @@ import {
   removeSharedMinterInProgress,
   floatDistributingInProgress,
   floatDistributingStatus,
-  addSharedMinterStatus
+  addSharedMinterStatus,
+  toggleTransferringInProgress,
+  toggleClaimingInProgress
 } from './stores.js';
 
 import { draftFloat } from '$lib/stores';
@@ -510,7 +512,8 @@ export const transferFLOAT = async (id, recipient) => {
 
 export const toggleClaimable = async (forHost, eventId) => {
   let transactionId = false;
-  initTransactionState()
+  initTransactionState();
+  toggleClaimingInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -557,6 +560,7 @@ export const toggleClaimable = async (forHost, eventId) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         setTimeout(() => transactionInProgress.set(false), 2000)
+        toggleClaimingInProgress.set(false);
       }
     })
 
@@ -565,13 +569,15 @@ export const toggleClaimable = async (forHost, eventId) => {
 
   } catch (e) {
     transactionStatus.set(99)
+    toggleClaimingInProgress.set(false);
     console.log(e)
   }
 }
 
 export const toggleTransferrable = async (forHost, eventId) => {
   let transactionId = false;
-  initTransactionState()
+  initTransactionState();
+  toggleTransferringInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -618,6 +624,7 @@ export const toggleTransferrable = async (forHost, eventId) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         setTimeout(() => transactionInProgress.set(false), 2000)
+        toggleTransferringInProgress.set(false);
       }
     })
 
@@ -626,6 +633,7 @@ export const toggleTransferrable = async (forHost, eventId) => {
 
   } catch (e) {
     transactionStatus.set(99)
+    toggleTransferringInProgress.set(false);
     console.log(e)
   }
 }
@@ -818,6 +826,7 @@ export const removeSharedMinter = async (user) => {
 
   } catch (e) {
     transactionStatus.set(99)
+    removeSharedMinterInProgress.set(false);
     console.log(e)
   }
 }
@@ -1059,7 +1068,7 @@ export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
         arg(accountAddress, t.Address)
       ]
     })
-    
+
     return queryResult || queryResult === false;
   } catch (e) {
     console.log(e);

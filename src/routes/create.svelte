@@ -4,12 +4,15 @@
     eventCreationInProgress,
     eventCreatedStatus,
   } from "$lib/flow/stores";
-  import { authenticate, createEvent, getCanMintForThem } from "$lib/flow/actions";
+  import {
+    authenticate,
+    createEvent,
+    getCanMintForThem,
+  } from "$lib/flow/actions";
 
   import { draftFloat, theme } from "$lib/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
-  import { notifications } from '$lib/notifications';
-
+  import { notifications } from "$lib/notifications";
 
   import LibLoader from "$lib/components/LibLoader.svelte";
   import { onMount } from "svelte";
@@ -71,7 +74,7 @@
     // check if all required inputs are correct
     let canCreateFloat = checkInputs();
 
-    if(!canCreateFloat) {
+    if (!canCreateFloat) {
       return;
     }
 
@@ -85,16 +88,18 @@
 
   function checkInputs() {
     let errorArray = [];
-    let messageString = 'The following mandatory fields are missing'; 
+    let messageString = "The following mandatory fields are missing";
 
     // add conditions here
-    if(!$draftFloat.name) { errorArray.push("Event name") }
+    if (!$draftFloat.name) {
+      errorArray.push("Event name");
+    }
 
-    if(errorArray.length > 0) {
-      notifications.info(`${messageString}: ${errorArray.join(",")}`)
+    if (errorArray.length > 0) {
+      notifications.info(`${messageString}: ${errorArray.join(",")}`);
       return false;
     } else {
-      return true
+      return true;
     }
   }
 
@@ -108,8 +113,7 @@
 <LibLoader
   url="https://cdn.jsdelivr.net/npm/ipfs-http-client@56.0.0/index.min.js"
   on:loaded={ipfsReady}
-  uniqueId={+new Date()}
-/>
+  uniqueId={+new Date()} />
 
 <div class="container">
   <article>
@@ -130,8 +134,7 @@
       <textarea
         id="description"
         name="description"
-        bind:value={$draftFloat.description}
-      />
+        bind:value={$draftFloat.description} />
     </label>
 
     {#if ipfsIsReady}
@@ -143,8 +146,7 @@
           type="file"
           id="image"
           name="image"
-          accept="image/png, image/gif, image/jpeg"
-        />
+          accept="image/png, image/gif, image/jpeg" />
         {#if uploading}
           <progress value={uploadingPercent * 100} max="100" />
         {/if}
@@ -168,8 +170,7 @@
           },
           eventHost: $user?.addr || "0x0000000000",
         }}
-        preview={true}
-      />
+        preview={true} />
       <div class="mb-2" />
     {/if}
 
@@ -188,20 +189,18 @@
       <button
         class:secondary={!$draftFloat.transferrable}
         class="outline"
-        on:click={() => ($draftFloat.transferrable = true)}
-      >
+        on:click={() => ($draftFloat.transferrable = true)}>
         Transferrable
         <span>This FLOAT can be transferred to other accounts.</span>
       </button>
       <button
         class:secondary={$draftFloat.transferrable}
         class="outline"
-        on:click={() => ($draftFloat.transferrable = false)}
-      >
+        on:click={() => ($draftFloat.transferrable = false)}>
         Non-Transferrable
-        <span
-          >This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).</span
-        >
+        <span>
+          This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).
+        </span>
       </button>
     </div>
 
@@ -209,29 +208,27 @@
       <button
         class:secondary={!$draftFloat.claimable}
         class="outline"
-        on:click={() => ($draftFloat.claimable = true)}
-      >
+        on:click={() => ($draftFloat.claimable = true)}>
         Claimable
-        <span
-          >Users can mint their own FLOAT based on the parameters defined below.</span
-        >
+        <span>
+          Users can mint their own FLOAT based on the parameters defined below.
+        </span>
       </button>
       <button
         class:secondary={$draftFloat.claimable}
         class="outline"
-        on:click={() => ($draftFloat.claimable = false)}
-      >
+        on:click={() => ($draftFloat.claimable = false)}>
         Not Claimable
         <span
           >You will be responsible for distributing the FLOAT to accounts in
-          your own custom transactions.</span
-        >
+          your own custom transactions.</span>
       </button>
     </div>
 
     {#if !$draftFloat.claimable}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
-      <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}>{distributeCode}</xmp>
+      <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}
+        >{distributeCode}</xmp>
     {/if}
 
     <h5>Cannot be changed later.</h5>
@@ -240,23 +237,18 @@
       <button
         class:secondary={$draftFloat.quantity}
         class="outline"
-        on:click={() => ($draftFloat.quantity = false)}
-      >
+        on:click={() => ($draftFloat.quantity = false)}>
         Unlimited Quantity
         <span
-          >Select this if you don't want your FLOAT to have a limited
-          quantity.</span
-        >
+          >Select this if you don't want your FLOAT to have a limited quantity.</span>
       </button>
       <button
         class:secondary={!$draftFloat.quantity}
         class="outline"
-        on:click={() => ($draftFloat.quantity = true)}
-      >
+        on:click={() => ($draftFloat.quantity = true)}>
         Limited Quantity
         <span
-          >You can set the maximum number of times the FLOAT can be minted.</span
-        >
+          >You can set the maximum number of times the FLOAT can be minted.</span>
       </button>
     </div>
     {#if $draftFloat.quantity}
@@ -267,8 +259,7 @@
           name="quantity"
           bind:value={$draftFloat.quantity}
           min="1"
-          placeholder="ex. 100"
-        />
+          placeholder="ex. 100" />
       </label>
       <hr />
     {/if}
@@ -278,16 +269,14 @@
       <button
         class:secondary={$draftFloat.timelock}
         class="outline"
-        on:click={() => ($draftFloat.timelock = false)}
-      >
+        on:click={() => ($draftFloat.timelock = false)}>
         No Time Limit
         <span>Can be minted at any point in the future.</span>
       </button>
       <button
         class:secondary={!$draftFloat.timelock}
         class="outline"
-        on:click={() => ($draftFloat.timelock = true)}
-      >
+        on:click={() => ($draftFloat.timelock = true)}>
         Time Limit
         <span>Can only be minted between a specific time interval.</span>
       </button>
@@ -301,8 +290,7 @@
             type="datetime-local"
             id="start"
             name="start"
-            bind:value={$draftFloat.startTime}
-          />
+            bind:value={$draftFloat.startTime} />
         </label>
 
         <!-- Date -->
@@ -312,8 +300,7 @@
             type="datetime-local"
             id="start"
             name="start"
-            bind:value={$draftFloat.endTime}
-          />
+            bind:value={$draftFloat.endTime} />
         </label>
       </div>
       <hr />
@@ -324,22 +311,17 @@
       <button
         class:secondary={$draftFloat.claimCodeEnabled}
         class="outline"
-        on:click={() => ($draftFloat.claimCodeEnabled = false)}
-      >
+        on:click={() => ($draftFloat.claimCodeEnabled = false)}>
         Anyone Can Claim
-        <span
-          >Your FLOAT can be minted freely by anyone.</span
-        >
+        <span>Your FLOAT can be minted freely by anyone.</span>
       </button>
       <button
         class:secondary={!$draftFloat.claimCodeEnabled}
         class="outline"
-        on:click={() => ($draftFloat.claimCodeEnabled = true)}
-      >
+        on:click={() => ($draftFloat.claimCodeEnabled = true)}>
         Use Secret Code(s)
         <span
-          >Your FLOAT can only be minted if people know the secret code(s).</span
-        >
+          >Your FLOAT can only be minted if people know the secret code(s).</span>
       </button>
     </div>
 
@@ -349,29 +331,33 @@
         <button
           class:secondary={$draftFloat.multipleSecretsEnabled}
           class="outline"
-          on:click={() => ($draftFloat.multipleSecretsEnabled = false)}
-        >
+          on:click={() => ($draftFloat.multipleSecretsEnabled = false)}>
           One Code for All
           <span>Use the same secret code for everyone.</span>
         </button>
         <button
           class:secondary={!$draftFloat.multipleSecretsEnabled}
           class="outline"
-          on:click={() => ($draftFloat.multipleSecretsEnabled = true)}
-        >
+          on:click={() => ($draftFloat.multipleSecretsEnabled = true)}>
           Multiple Secret Codes
-          <span>Specify a bunch of secret codes, each of which can only be used once.</span>
+          <span
+            >Specify a bunch of secret codes, each of which can only be used
+            once.</span>
         </button>
       </div>
     {/if}
     {#if $draftFloat.claimCodeEnabled}
-      <label for="claimCode">{@html $draftFloat.multipleSecretsEnabled ? "Enter your codes, separated by a comma ( , )" : "Enter a claim code"} (<i>case-sensitive</i>)
+      <label for="claimCode"
+        >{@html $draftFloat.multipleSecretsEnabled
+          ? "Enter your codes, separated by a comma ( , )"
+          : "Enter a claim code"} (<i>case-sensitive</i>)
         <input
           type="text"
           name="claimCode"
           bind:value={$draftFloat.claimCode}
-          placeholder={$draftFloat.multipleSecretsEnabled ? "code1, code2, code3, code4" : "mySecretCode"}
-        />
+          placeholder={$draftFloat.multipleSecretsEnabled
+            ? "code1, code2, code3, code4"
+            : "mySecretCode"} />
       </label>
       <hr />
     {/if}
@@ -379,7 +365,8 @@
     <footer>
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
-          <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
+          <button class="contrast small-button" on:click={authenticate}
+            >Connect Wallet</button>
         </div>
       {:else if $eventCreationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
@@ -394,12 +381,12 @@
       {:else}
         {#await sharedMinters then sharedMinters}
           {#if sharedMinters?.length > 0}
-            <label for="minters">Select who you'd like to mint from.</label>
+            <label for="minters">Select who you'd like to mint for.</label>
             <select bind:value={minter} id="minters" required>
               <option value={$user?.addr} selected>You</option>
-                {#each sharedMinters as minter}
-                  <option value={minter}>{minter}</option>
-                {/each}
+              {#each sharedMinters as minter}
+                <option value={minter}>{minter}</option>
+              {/each}
             </select>
           {/if}
         {/await}

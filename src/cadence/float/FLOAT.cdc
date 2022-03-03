@@ -665,7 +665,7 @@ pub contract FLOAT: NonFungibleToken {
                                 ?? panic("Cannot borrow the InfoPublic from the host")
             assert(
                 sharedInfo.isAllowed(account: self.owner!.address),
-                message: "You do not share an account with this address."
+                message: "This account owner does not share their account with you."
             )
             let otherFLOATEvents = getAccount(fromHost).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOATEvents{FLOATEventsPublic}>()

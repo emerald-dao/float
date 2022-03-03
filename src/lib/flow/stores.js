@@ -18,3 +18,6 @@ export const floatDistributingStatus = writable(false);
 export const addSharedMinterInProgress = writable(false);
 export const addSharedMinterStatus = writable(false);
 export const removeSharedMinterInProgress = writable(false);
+
+export const toggleClaimingInProgress = writable(false);
+export const toggleTransferringInProgress = writable(false);

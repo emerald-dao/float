@@ -3,7 +3,9 @@
   import {
     user,
     floatDistributingInProgress,
-    floatDistributingStatus
+    floatDistributingStatus,
+    toggleClaimingInProgress,
+    toggleTransferringInProgress,
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -13,16 +15,16 @@
     deleteEvent,
     hasClaimedEvent,
     distributeDirectly,
-    isSharedWithUser
+    isSharedWithUser,
   } from "$lib/flow/actions.js";
 
-  import IntersectionObserver from 'svelte-intersection-observer';
+  import IntersectionObserver from "svelte-intersection-observer";
 
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
 
-  import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
+  import ClaimsTable from "$lib/components/common/table/ClaimsTable.svelte";
   import ClaimButton from "$lib/components/ClaimButton.svelte";
 
   let claimsTableInView;
@@ -30,11 +32,16 @@
 
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
-    let hasClaimed = await hasClaimedEvent($page.params.address, $page.params.eventId, $user.addr);
-    let data = {...eventData, hasClaimed};
-    limitedVerifier = data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
+    let hasClaimed = await hasClaimedEvent(
+      $page.params.address,
+      $page.params.eventId,
+      $user.addr
+    );
+    let data = { ...eventData, hasClaimed };
+    limitedVerifier =
+      data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
     return data;
-  }
+  };
 
   let floatEvent = floatEventCallback();
   let canMintForMe = isSharedWithUser($page.params.address, $user?.addr);
@@ -54,8 +61,7 @@
       title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
       author={floatEvent?.host}
       description={floatEvent?.description}
-      url={$page.url}
-    />
+      url={$page.url} />
 
     <article>
       <header>
@@ -67,8 +73,7 @@
           <small class="muted"
             >Created on {new Date(
               floatEvent?.dateCreated * 1000
-            ).toLocaleString()}</small
-          >
+            ).toLocaleString()}</small>
         </p>
       </header>
       {#if floatEvent?.hasClaimed}
@@ -84,9 +89,7 @@
             },
             serial: floatEvent?.hasClaimed.serial,
           }}
-          individual={true}
-        />
-    
+          individual={true} />
       {:else}
         <Float
           float={{
@@ -99,47 +102,67 @@
             },
           }}
           preview={true}
-          individual={false}
-        />
+          individual={false} />
       {/if}
 
       <blockquote>
-        <strong><small class="muted">DESCRIPTION</small></strong><br
-        />{floatEvent?.description}
+        <strong><small class="muted">DESCRIPTION</small></strong
+        ><br />{floatEvent?.description}
       </blockquote>
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
       </p>
-      
+
       {#if limitedVerifier && limitedVerifier[0]}
         <p>
-          Only <span class="emphasis">{limitedVerifier[0].capacity}</span> will ever exist.
+          Only <span class="emphasis">{limitedVerifier[0].capacity}</span> will ever
+          exist.
         </p>
       {/if}
       <footer>
+        <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
 
-        <ClaimButton floatEvent={floatEvent} hasClaimed={floatEvent?.hasClaimed} />
-        
         {#await canMintForMe then canMintForMe}
           {#if $user?.addr == floatEvent?.host || canMintForMe}
             <div class="toggle">
               <button
                 class="outline"
-                on:click={() => toggleClaimable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-              >
+                disabled={$toggleClaimingInProgress}
+                aria-busy={$toggleClaimingInProgress}
+                on:click={() =>
+                  toggleClaimable(
+                    $user?.addr == floatEvent?.host
+                      ? null
+                      : $page.params.address,
+                    floatEvent?.eventId
+                  )}>
                 {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
               </button>
               <button
                 class="outline"
-                on:click={() => toggleTransferrable($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-              >
-                {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
+                disabled={$toggleTransferringInProgress}
+                aria-busy={$toggleTransferringInProgress}
+                on:click={() =>
+                  toggleTransferrable(
+                    $user?.addr == floatEvent?.host
+                      ? null
+                      : $page.params.address,
+                    floatEvent?.eventId
+                  )}>
+                {floatEvent?.transferrable
+                  ? "Stop transfers"
+                  : "Allow transfers"}
               </button>
               <button
                 class="outline red"
                 disabled={floatEvent?.totalSupply !== 0}
-                on:click={() => deleteEvent($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId)}
-              >
+                on:click={() =>
+                  deleteEvent(
+                    $user?.addr == floatEvent?.host
+                      ? null
+                      : $page.params.address,
+                    floatEvent?.eventId
+                  )}>
                 Delete this event
               </button>
             </div>
@@ -157,17 +180,17 @@
               type="text"
               name="distributeDirectly"
               bind:value={recipientAddr}
-              placeholder="0x00000000000"
-            />
+              placeholder="0x00000000000" />
           </label>
           {#if $floatDistributingInProgress}
-            <button aria-busy="true" disabled>Minting FLOAT to {recipientAddr}</button>
+            <button aria-busy="true" disabled
+              >Minting FLOAT to {recipientAddr}</button>
           {:else if $floatDistributingStatus.success}
-            <a 
-            role="button"
-            class="d-block"
-            href="/{recipientAddr}"
-            style="display:block">FLOAT minted successfully!</a>
+            <a
+              role="button"
+              class="d-block"
+              href="/{recipientAddr}"
+              style="display:block">FLOAT minted successfully!</a>
           {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
             <button class="error" disabled>
               {$floatDistributingStatus.error}
@@ -176,7 +199,11 @@
             <button
               disabled={$floatDistributingInProgress}
               on:click={() =>
-                distributeDirectly($user?.addr == floatEvent?.host ? null : $page.params.address, floatEvent?.eventId, recipientAddr)}
+                distributeDirectly(
+                  $user?.addr == floatEvent?.host ? null : $page.params.address,
+                  floatEvent?.eventId,
+                  recipientAddr
+                )}
               >Mint this FLOAT
             </button>
           {/if}
@@ -188,21 +215,17 @@
       <header>
         <h3>Owned by</h3>
       </header>
-      <IntersectionObserver
-        once
-        element={claimsTableInView}
-        let:intersecting
-        
-      >
-      <div bind:this={claimsTableInView}>
-        {#if intersecting}
-          <ClaimsTable address={floatEvent?.host} eventId={floatEvent?.eventId} />
-        {/if}
-      </div>
+      <IntersectionObserver once element={claimsTableInView} let:intersecting>
+        <div bind:this={claimsTableInView}>
+          {#if intersecting}
+            <ClaimsTable
+              address={floatEvent?.host}
+              eventId={floatEvent?.eventId} />
+          {/if}
+        </div>
       </IntersectionObserver>
     </article>
   {/await}
-
 </div>
 
 <style>
@@ -256,7 +279,7 @@
   }
 
   .claimed-badge {
-    width:250px;
+    width: 250px;
     margin: 0 auto;
     padding: 0.3rem 0.5rem;
     border: 1px solid var(--green);
@@ -266,7 +289,6 @@
   }
 
   .claims {
-    text-align:left;
+    text-align: left;
   }
-
 </style>
