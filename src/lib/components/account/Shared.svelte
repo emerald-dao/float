@@ -1,0 +1,64 @@
+<script>
+  import { addSharedMinterInProgress, addSharedMinterStatus, removeSharedMinterInProgress, user } from "$lib/flow/stores";
+  import { addSharedMinter, getAllowed, removeSharedMinter } from '$lib/flow/actions';
+
+  let newSharedMinter = "";
+  
+  let removeMinter = "";
+  const loadAddresses = async () => {
+    let addresses = await getAllowed($user?.addr);
+    if (addresses?.length > 0) {
+      removeMinter = addresses[0];
+    }
+    return addresses;
+  }
+
+  let sharedMinters = loadAddresses();
+</script>
+
+<!-- Add minters to your account so they can create FLOAT Events for you -->
+<article>
+  <label for="receiver">
+    Add a shared minter by copying the receiver's address below.<br /><br />
+    <strong>BEWARE</strong>: This will allow this user to control your account on FLOAT.
+    <input
+      type="text"
+      name="receiver"
+      bind:value={newSharedMinter}
+      placeholder="0x00000000000"
+    />
+  </label>
+  {#if $addSharedMinterInProgress}
+    <button aria-busy="true" disabled>Adding...</button>
+  {:else if $addSharedMinterStatus.success}
+    <button disabled>Successfully added {newSharedMinter}</button>
+  {:else if !$addSharedMinterStatus.success && $addSharedMinterStatus.error}
+    <button class="error" disabled>
+      {$addSharedMinterStatus.error}
+    </button>
+  {:else}
+    <button
+      disabled={$addSharedMinterInProgress}
+      on:click={() =>
+        addSharedMinter(newSharedMinter)}
+      >Add Shared Minter
+    </button>
+  {/if}
+</article>
+
+<article>
+  <label for="removeMinter">Accounts who share your account:</label>
+
+  {#await sharedMinters then sharedMinters}
+    {#if sharedMinters?.length > 0}
+      <select bind:value={removeMinter} id="removeMinter" required>
+        {#each sharedMinters as minter}
+          <option value={minter}>{minter}</option>
+        {/each}
+      </select>
+      <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
+    {:else}
+      <p><b>None</b></p>
+    {/if}
+  {/await}
+</article>

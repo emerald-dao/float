@@ -15,6 +15,7 @@ pub contract SharedAccount {
   }
 
   pub resource Info: InfoPublic {
+    // Nik Will never be in this list
     pub var allowed: {Address: Bool}
 
     // This is simply for easability. Nothing

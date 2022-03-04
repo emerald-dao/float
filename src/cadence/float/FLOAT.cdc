@@ -593,6 +593,32 @@ pub contract FLOAT: NonFungibleToken {
             emit FLOATEventDestroyed(eventId: self.eventId, host: self.host, name: self.name)
         }
     }
+
+    pub struct Group {
+        pub let name: String
+        pub let image: String
+        pub let description: String
+        access(account) var events: {UInt64: Bool}
+
+        access(account) fun addEvent(eventId: UInt64) {
+            self.events[eventId] = true
+        }
+
+        access(account) fun removeEvent(eventId: UInt64) {
+            self.events.remove(key: eventId)
+        }
+
+        pub fun getEvents(): [UInt64] {
+            return self.events.keys
+        }
+
+        init(_name: String, _image: String, _description: String) {
+            self.name = _name
+            self.image = _image
+            self.description = _description
+            self.events = {}
+        }
+    }
  
     // 
     // FLOATEvents
@@ -603,8 +629,8 @@ pub contract FLOAT: NonFungibleToken {
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}
         pub fun getAllEvents(): {UInt64: String}
         pub fun getIDs(): [UInt64]
-        // Account Setters
-        access(account) fun createEvent(claimable: Bool, description: String, image: String, name: String, transferrable: Bool, url: String, verifiers: [{IVerifier}], _ extraMetadata: {String: String}): UInt64
+        pub fun getGroup(groupName: String): Group
+        pub fun getGroups(): [String]
         // Account Getters
         access(account) fun borrowEventRef(eventId: UInt64): &FLOATEvent
         access(account) fun borrowEventsRef(): &FLOATEvents
@@ -612,6 +638,7 @@ pub contract FLOAT: NonFungibleToken {
 
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
         access(account) var events: @{UInt64: FLOATEvent}
+        access(account) var groups: {String: Group}
 
         pub fun createEvent(
             claimable: Bool,
@@ -656,6 +683,32 @@ pub contract FLOAT: NonFungibleToken {
         pub fun deleteEvent(eventId: UInt64) {
             let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
             destroy event
+        }
+
+        pub fun createGroup(groupName: String, image: String, description: String) {
+            self.groups[groupName] = Group(_name: groupName, _image: image, _description: description)
+        }
+
+        pub fun deleteGroup(groupName: String) {
+            self.groups.remove(key: groupName)
+        }
+
+        pub fun addEventToGroup(groupName: String, eventId: UInt64) {
+            let ref = &self.groups[groupName] as &Group
+            ref.addEvent(eventId: eventId)
+        }
+
+        pub fun removeEventFromGroup(groupName: String, eventId: UInt64) {
+            let ref = &self.groups[groupName] as &Group
+            ref.removeEvent(eventId: eventId)
+        }
+
+        pub fun getGroup(groupName: String): Group {
+            return self.groups[groupName] ?? panic("This group does not exist.")
+        }
+        
+        pub fun getGroups(): [String] {
+            return self.groups.keys
         }
 
         // Only accessible to people who share your account
@@ -708,6 +761,7 @@ pub contract FLOAT: NonFungibleToken {
 
         init() {
             self.events <- {}
+            self.groups = {}
         }
 
         destroy() {
@@ -728,10 +782,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath033
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath033
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath033
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath033
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath033
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath034
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath034
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath034
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath034
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath034
     }
 }

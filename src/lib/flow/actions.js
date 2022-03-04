@@ -831,6 +831,242 @@ export const removeSharedMinter = async (user) => {
   }
 }
 
+export const createGroup = async (forHost, draftGroup) => {
+  let transactionId = false;
+  initTransactionState();
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(forHost: Address?, groupName: String, image: String, description: String) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          if let fromHost = forHost {
+            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+          } else {
+            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          }
+        }
+
+        execute {
+          self.FLOATEvents.createGroup(groupName: groupName, image: image, description: description)
+          log("Created a new Group.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(forHost, t.Optional(t.Address)),
+        arg(draftGroup.name, t.String),
+        arg(draftGroup.ipfsHash, t.String),
+        arg(draftGroup.description, t.String)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const deleteGroup = async (forHost, groupName) => {
+  let transactionId = false;
+  initTransactionState();
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(forHost: Address?, groupName: String) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          if let fromHost = forHost {
+            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+          } else {
+            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          }
+        }
+
+        execute {
+          self.FLOATEvents.deleteGroup(groupName: groupName)
+          log("Deleted a Group.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(forHost, t.Optional(t.Address)),
+        arg(groupName, t.String)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const addEventToGroup = async (forHost, groupName, eventId) => {
+  let transactionId = false;
+  initTransactionState();
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(forHost: Address?, groupName: String, eventId: UInt64) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          if let fromHost = forHost {
+            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+          } else {
+            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          }
+        }
+
+        execute {
+          self.FLOATEvents.addEventToGroup(groupName: groupName, eventId: eventId)
+          log("Added an event to a group.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(forHost, t.Optional(t.Address)),
+        arg(groupName, t.String),
+        arg(parseInt(eventId), t.UInt64)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
+export const removeEventFromGroup = async (forHost, groupName, eventId) => {
+  let transactionId = false;
+  initTransactionState();
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      transaction(forHost: Address?, groupName: String, eventId: UInt64) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+
+        prepare(acct: AuthAccount) {
+          if let fromHost = forHost {
+            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+          } else {
+            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          }
+        }
+
+        execute {
+          self.FLOATEvents.removeEventFromGroup(groupName: groupName, eventId: eventId)
+          log("Removed an event from a Group.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(forHost, t.Optional(t.Address)),
+        arg(groupName, t.String),
+        arg(parseInt(eventId), t.UInt64)
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    let res = await fcl.tx(transactionId).onceSealed()
+    return res;
+
+  } catch (e) {
+    transactionStatus.set(99)
+    console.log(e)
+  }
+}
+
 
 /****************************** GETTERS ******************************/
 
@@ -1204,6 +1440,95 @@ export const isSharedWithUser = async (account, user) => {
       ]
     })
     return queryResult;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getGroups = async (account) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      pub fun main(account: Address): {String: FLOAT.Group} {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let groups = floatEventCollection.getGroups()
+
+        let answer: {String: FLOAT.Group} = {}
+        for groupName in groups {
+          answer[groupName] = floatEventCollection.getGroup(groupName: groupName)
+        }
+
+        return answer
+      }
+      `,
+      args: (arg, t) => [
+        arg(account, t.Address)
+      ]
+    })
+    return queryResult || {};
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getEventsInGroup = async (account, groupName) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import MetadataViews from 0xCORE
+
+      pub fun main(account: Address, groupName: String): [FLOAT.FLOATEventMetadata] {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let group = floatEventCollection.getGroup(groupName: groupName)
+        let eventIds = group.getEvents()
+
+        let answer: [FLOAT.FLOATEventMetadata] = []
+        for eventId in eventIds {
+          let resolver = floatEventCollection.borrowViewResolver(id: eventId)
+          let view = resolver.resolveView(Type<FLOAT.FLOATEventMetadata>())! as! FLOAT.FLOATEventMetadata
+          answer.append(view)
+        }
+
+        return answer
+      }
+      `,
+      args: (arg, t) => [
+        arg(account, t.Address),
+        arg(groupName, t.String)
+      ]
+    })
+    return queryResult || {};
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getGroup = async (account, groupName) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      pub fun main(account: Address, groupName: String): FLOAT.Group {
+        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
+                                    .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        return floatEventCollection.getGroup(groupName: groupName)
+      }
+      `,
+      args: (arg, t) => [
+        arg(account, t.Address),
+        arg(groupName, t.String)
+      ]
+    })
+    return queryResult || {};
   } catch (e) {
     console.log(e);
   }

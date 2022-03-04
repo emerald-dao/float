@@ -16,6 +16,8 @@
     hasClaimedEvent,
     distributeDirectly,
     isSharedWithUser,
+  addEventToGroup,
+  getGroups,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -45,8 +47,10 @@
 
   let floatEvent = floatEventCallback();
   let canMintForMe = isSharedWithUser($page.params.address, $user?.addr);
+  let groups = getGroups($page.params.address);
 
   let recipientAddr = "";
+  let groupName = "";
 </script>
 
 <svelte:head>
@@ -121,93 +125,104 @@
       {/if}
       <footer>
         <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
-
-        {#await canMintForMe then canMintForMe}
-          {#if $user?.addr == floatEvent?.host || canMintForMe}
-            <div class="toggle">
-              <button
-                class="outline"
-                disabled={$toggleClaimingInProgress}
-                aria-busy={$toggleClaimingInProgress}
-                on:click={() =>
-                  toggleClaimable(
-                    $user?.addr == floatEvent?.host
-                      ? null
-                      : $page.params.address,
-                    floatEvent?.eventId
-                  )}>
-                {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
-              </button>
-              <button
-                class="outline"
-                disabled={$toggleTransferringInProgress}
-                aria-busy={$toggleTransferringInProgress}
-                on:click={() =>
-                  toggleTransferrable(
-                    $user?.addr == floatEvent?.host
-                      ? null
-                      : $page.params.address,
-                    floatEvent?.eventId
-                  )}>
-                {floatEvent?.transferrable
-                  ? "Stop transfers"
-                  : "Allow transfers"}
-              </button>
-              <button
-                class="outline red"
-                disabled={floatEvent?.totalSupply !== 0}
-                on:click={() =>
-                  deleteEvent(
-                    $user?.addr == floatEvent?.host
-                      ? null
-                      : $page.params.address,
-                    floatEvent?.eventId
-                  )}>
-                Delete this event
-              </button>
-            </div>
-          {/if}
-        {/await}
       </footer>
     </article>
 
     {#await canMintForMe then canMintForMe}
       {#if $user?.addr == floatEvent?.host || canMintForMe}
-        <article>
-          <label for="distributeDirectly">
-            Mint directly to a user (their collection must be set up).
-            <input
-              type="text"
-              name="distributeDirectly"
-              bind:value={recipientAddr}
-              placeholder="0x00000000000" />
-          </label>
-          {#if $floatDistributingInProgress}
-            <button aria-busy="true" disabled
-              >Minting FLOAT to {recipientAddr}</button>
-          {:else if $floatDistributingStatus.success}
-            <a
-              role="button"
-              class="d-block"
-              href="/{recipientAddr}"
-              style="display:block">FLOAT minted successfully!</a>
-          {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
-            <button class="error" disabled>
-              {$floatDistributingStatus.error}
-            </button>
-          {:else}
-            <button
-              disabled={$floatDistributingInProgress}
-              on:click={() =>
-                distributeDirectly(
-                  $user?.addr == floatEvent?.host ? null : $page.params.address,
-                  floatEvent?.eventId,
-                  recipientAddr
-                )}
-              >Mint this FLOAT
-            </button>
-          {/if}
-        </article>
+        <div class="toggle">
+          <button
+            class="outline"
+            disabled={$toggleClaimingInProgress}
+            aria-busy={$toggleClaimingInProgress}
+            on:click={() =>
+              toggleClaimable(
+                $user?.addr == floatEvent?.host
+                  ? null
+                  : $page.params.address,
+                floatEvent?.eventId
+              )}>
+            {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
+          </button>
+          <button
+            class="outline"
+            disabled={$toggleTransferringInProgress}
+            aria-busy={$toggleTransferringInProgress}
+            on:click={() =>
+              toggleTransferrable(
+                $user?.addr == floatEvent?.host
+                  ? null
+                  : $page.params.address,
+                floatEvent?.eventId
+              )}>
+            {floatEvent?.transferrable
+              ? "Stop transfers"
+              : "Allow transfers"}
+          </button>
+          <button
+            class="outline red"
+            disabled={floatEvent?.totalSupply !== 0}
+            on:click={() =>
+              deleteEvent(
+                $user?.addr == floatEvent?.host
+                  ? null
+                  : $page.params.address,
+                floatEvent?.eventId
+              )}>
+            Delete this event
+          </button>
+        </div>
+        <div class="grid admin">
+          <article>
+            <label for="distributeDirectly">
+              Mint directly to a user (their collection must be set up).
+              <input
+                type="text"
+                name="distributeDirectly"
+                bind:value={recipientAddr}
+                placeholder="0x00000000000" />
+            </label>
+            {#if $floatDistributingInProgress}
+              <button aria-busy="true" disabled
+                >Minting FLOAT to {recipientAddr}</button>
+            {:else if $floatDistributingStatus.success}
+              <a
+                role="button"
+                class="d-block"
+                href="/{recipientAddr}"
+                style="display:block">FLOAT minted successfully!</a>
+            {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
+              <button class="error" disabled>
+                {$floatDistributingStatus.error}
+              </button>
+            {:else}
+              <button
+                disabled={$floatDistributingInProgress}
+                on:click={() =>
+                  distributeDirectly(
+                    $user?.addr == floatEvent?.host ? null : $page.params.address,
+                    floatEvent?.eventId,
+                    recipientAddr
+                  )}
+                >Mint this FLOAT
+              </button>
+            {/if}
+          </article>
+
+          <article>
+            <label for="addToGroup">Add this event to a Group.</label>
+            {#await groups then groups}
+              {#if Object.values(groups).length > 0}
+                <select bind:value={groupName} id="addToGroup" required>
+                  {#each Object.values(groups) as group}
+                    <option value={group.name}>{group.name}</option>
+                  {/each}
+                </select>
+                <button on:click={() => addEventToGroup($user?.addr == floatEvent?.host ? null : $page.params.address, groupName, floatEvent?.eventId)}>Add to Group</button>
+              {/if}
+            {/await}
+          </article>
+        </div>
       {/if}
     {/await}
 
@@ -289,6 +304,10 @@
   }
 
   .claims {
+    text-align: left;
+  }
+
+  .admin {
     text-align: left;
   }
 </style>

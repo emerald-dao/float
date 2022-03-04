@@ -16,6 +16,12 @@ export const draftFloat = writable({
   multipleSecretsEnabled: false
 });
 
+export const draftGroup = writable({
+  name: '',
+  description: '',
+  ipfsHash: ''
+});
+
 
 export const theme = writable(null);
 

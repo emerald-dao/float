@@ -1,100 +1,55 @@
 <script>
-  import { addSharedMinterInProgress, addSharedMinterStatus, removeSharedMinterInProgress, user } from "$lib/flow/stores";
-  import { addSharedMinter, authenticate, unauthenticate, getAllowed, removeSharedMinter } from '$lib/flow/actions';
   import { PAGE_TITLE_EXTENSION } from '$lib/constants'
   
-  import AccountContents from '$lib/components/AccountContents.svelte';
-  import UserAddress from '$lib/components/UserAddress.svelte';
+  import AccountInfo from "$lib/components/account/AccountInfo.svelte";
+  import Shared from '$lib/components/account/Shared.svelte';
+  import Groups from '$lib/components/account/Groups.svelte';
 
-  let newSharedMinter = "";
-  
-  let removeMinter = "";
-  const loadAddresses = async () => {
-    let addresses = await getAllowed($user?.addr);
-    if (addresses?.length > 0) {
-      removeMinter = addresses[0];
-    }
-    return addresses;
-  }
-
-  let sharedMinters = loadAddresses();
+  let tab = "account";
 </script>
 <svelte:head>
 <title>Account {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
 <div class="container">
-  <h1>Your Account</h1>
+  <ul class="tabs">
+    <li on:click|preventDefault={() => tab = "account"} class:selected="{tab === 'account'}">Your Account</li>
+    <li on:click|preventDefault={() => tab = "shared"} class:selected="{tab === 'shared'}">Shared Minting</li>
+    <li on:click|preventDefault={() => tab = "groups"} class:selected="{tab === 'groups'}">Groups</li>
+  </ul>
   
-  <div class="grid">
-    <article>
-      {#if !$user?.loggedIn}
-        <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
-      {:else}
-        You are currently logged in as:
-        <UserAddress address={$user?.addr}/>
-        <br/>
-        <a href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
-        <br />
-        <br />
-
-        <label for="removeMinter">Accounts who share your account:</label>
-        
-          {#await sharedMinters then sharedMinters}
-            {#if sharedMinters?.length > 0}
-              <select bind:value={removeMinter} id="removeMinter" required>
-                {#each sharedMinters as minter}
-                  <option value={minter}>{minter}</option>
-                {/each}
-              </select>
-              <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
-            {:else}
-              <p><b>None</b></p>
-            {/if}
-          {/await}
-      {/if}
-    </article>
-  
-    {#if $user?.loggedIn}
-      <!-- Add minters to your account so they can create FLOAT Events for you -->
-      <article>
-        <label for="receiver">
-          Add a shared minter by copying the receiver's address below.<br /><br />
-          <strong>BEWARE</strong>: This will allow this user to control your account on FLOAT.
-          <input
-            type="text"
-            name="receiver"
-            bind:value={newSharedMinter}
-            placeholder="0x00000000000"
-          />
-        </label>
-        {#if $addSharedMinterInProgress}
-          <button aria-busy="true" disabled>Adding...</button>
-        {:else if $addSharedMinterStatus.success}
-          <button disabled>Successfully added {newSharedMinter}</button>
-        {:else if !$addSharedMinterStatus.success && $addSharedMinterStatus.error}
-          <button class="error" disabled>
-            {$addSharedMinterStatus.error}
-          </button>
-        {:else}
-          <button
-            disabled={$addSharedMinterInProgress}
-            on:click={() =>
-              addSharedMinter(newSharedMinter)}
-            >Add Shared Minter
-          </button>
-        {/if}
-      </article>
-    {/if}
-  </div>
-  
-  {#if $user?.addr}
-  <AccountContents address={$user.addr} />
-  {/if} 
+  {#if tab === 'account'}
+    <AccountInfo />
+  {:else if tab === 'shared'}
+    <Shared />
+  {:else if tab === 'groups'}
+    <Groups />
+  {:else}
+    <AccountInfo />
+  {/if}
 </div>
 
 <style>
-  .remove {
-    
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  .tabs li {
+    list-style-type: none;
+    font-size: 25px;
+  }
+
+  .selected {
+    border-bottom: 2px solid var(--primary);
+  }
+
+  @media screen and (max-width: 700px) {
+    .tabs {
+      margin: 0px;
+    }
+    .tabs li {
+      font-size: 15px;
+    }
   }
 </style>
