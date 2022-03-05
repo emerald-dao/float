@@ -130,6 +130,8 @@
 
     {#await canMintForMe then canMintForMe}
       {#if $user?.addr == floatEvent?.host || canMintForMe}
+      <article>
+        <h1>Admin Dashboard</h1>
         <div class="toggle">
           <button
             class="outline"
@@ -223,6 +225,8 @@
             {/await}
           </article>
         </div>
+      </article>
+        
       {/if}
     {/await}
 
