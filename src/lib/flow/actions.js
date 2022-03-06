@@ -18,7 +18,9 @@ import {
   floatDistributingStatus,
   addSharedMinterStatus,
   toggleTransferringInProgress,
-  toggleClaimingInProgress
+  toggleClaimingInProgress,
+  addGroupInProgress,
+  addGroupStatus
 } from './stores.js';
 
 import { draftFloat } from '$lib/stores';
@@ -79,7 +81,7 @@ export const createEvent = async (forHost, draftFloat) => {
       import MetadataViews from 0xCORE
       import SharedAccount from 0xFLOAT
 
-      transaction(forHost: Address?, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
+      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
@@ -87,7 +89,7 @@ export const createEvent = async (forHost, draftFloat) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
@@ -104,10 +106,10 @@ export const createEvent = async (forHost, draftFloat) => {
                     (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
           }
           
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -143,7 +145,7 @@ export const createEvent = async (forHost, draftFloat) => {
       }  
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(floatObject.claimable, t.Bool),
         arg(floatObject.name, t.String),
         arg(floatObject.description, t.String),
@@ -215,7 +217,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
@@ -307,7 +309,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
 
-      transaction(forHost: Address?, eventId: UInt64, recipient: Address) {
+      transaction(forHost: Address, eventId: UInt64, recipient: Address) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
         let FLOATEvent: &FLOAT.FLOATEvent
@@ -317,7 +319,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
@@ -328,10 +330,10 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
       
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -358,7 +360,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(parseInt(eventId), t.UInt64),
         arg(recipient, t.Address)
       ],
@@ -520,16 +522,16 @@ export const toggleClaimable = async (forHost, eventId) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, eventId: UInt64) {
+      transaction(forHost: Address, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
         let FLOATEvent: &FLOAT.FLOATEvent
       
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -545,7 +547,7 @@ export const toggleClaimable = async (forHost, eventId) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(eventId, t.UInt64)
       ],
       payer: fcl.authz,
@@ -584,16 +586,16 @@ export const toggleTransferrable = async (forHost, eventId) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, eventId: UInt64) {
+      transaction(forHost: Address, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
         let FLOATEvent: &FLOAT.FLOATEvent
       
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -609,7 +611,7 @@ export const toggleTransferrable = async (forHost, eventId) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(eventId, t.UInt64)
       ],
       payer: fcl.authz,
@@ -649,7 +651,7 @@ export const deleteEvent = async (forHost, eventId) => {
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
 
-      transaction(forHost: Address?, eventId: UInt64) {
+      transaction(forHost: Address, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
@@ -657,7 +659,7 @@ export const deleteEvent = async (forHost, eventId) => {
           // set up the FLOAT Collection where users will store their FLOATs
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
@@ -668,10 +670,10 @@ export const deleteEvent = async (forHost, eventId) => {
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           } 
       
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -685,7 +687,7 @@ export const deleteEvent = async (forHost, eventId) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(eventId, t.UInt64)
       ],
       payer: fcl.authz,
@@ -835,26 +837,28 @@ export const createGroup = async (forHost, draftGroup) => {
   let transactionId = false;
   initTransactionState();
 
+  addGroupInProgress.set(true);
+
   try {
     transactionId = await fcl.mutate({
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, groupName: String, image: String, description: String) {
+      transaction(forHost: Address, groupName: String, image: String, description: String) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-
+      
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
         }
-
+      
         execute {
           self.FLOATEvents.createGroup(groupName: groupName, image: image, description: description)
           log("Created a new Group.")
@@ -862,7 +866,7 @@ export const createGroup = async (forHost, draftGroup) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(draftGroup.name, t.String),
         arg(draftGroup.ipfsHash, t.String),
         arg(draftGroup.description, t.String)
@@ -878,7 +882,14 @@ export const createGroup = async (forHost, draftGroup) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        setTimeout(() => transactionInProgress.set(false), 2000)
+        if (res.statusCode === 0) {
+          addGroupStatus.set(respondWithSuccess());
+        } else {
+          addGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        addGroupInProgress.set(false);
+
+        setTimeout(() => transactionInProgress.set(false), 2000);
       }
     })
 
@@ -886,8 +897,10 @@ export const createGroup = async (forHost, draftGroup) => {
     return res;
 
   } catch (e) {
-    transactionStatus.set(99)
-    console.log(e)
+    transactionStatus.set(99);
+    addGroupInProgress.set(false);
+    addGroupStatus.set(respondWithError(e));
+    console.log(e);
   }
 }
 
@@ -900,21 +913,21 @@ export const deleteGroup = async (forHost, groupName) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, groupName: String) {
+      transaction(forHost: Address, groupName: String) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-
+      
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
         }
-
+      
         execute {
           self.FLOATEvents.deleteGroup(groupName: groupName)
           log("Deleted a Group.")
@@ -922,7 +935,7 @@ export const deleteGroup = async (forHost, groupName) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(groupName, t.String)
       ],
       payer: fcl.authz,
@@ -958,21 +971,21 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, groupName: String, eventId: UInt64) {
+      transaction(forHost: Address, groupName: String, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-
+      
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
         }
-
+      
         execute {
           self.FLOATEvents.addEventToGroup(groupName: groupName, eventId: eventId)
           log("Added an event to a group.")
@@ -980,7 +993,7 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(groupName, t.String),
         arg(parseInt(eventId), t.UInt64)
       ],
@@ -1017,21 +1030,21 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address?, groupName: String, eventId: UInt64) {
+      transaction(forHost: Address, groupName: String, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-
+      
         prepare(acct: AuthAccount) {
-          if let fromHost = forHost {
+          if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
           } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
         }
-
+      
         execute {
           self.FLOATEvents.removeEventFromGroup(groupName: groupName, eventId: eventId)
           log("Removed an event from a Group.")
@@ -1039,7 +1052,7 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Optional(t.Address)),
+        arg(forHost, t.Address),
         arg(groupName, t.String),
         arg(parseInt(eventId), t.UInt64)
       ],

@@ -2,7 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
-transaction(forHost: Address?, eventId: UInt64) {
+transaction(forHost: Address, eventId: UInt64) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
 
@@ -10,7 +10,7 @@ transaction(forHost: Address?, eventId: UInt64) {
     // set up the FLOAT Collection where users will store their FLOATs
     if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
         acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-        acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection}>
+        acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
     }
 
@@ -21,10 +21,10 @@ transaction(forHost: Address?, eventId: UInt64) {
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
     } 
 
-    if let fromHost = forHost {
+    if forHost != acct.address {
       let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                         ?? panic("Could not borrow the FLOATEvents from the signer.")
-      self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: fromHost)
+      self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
     } else {
       self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                         ?? panic("Could not borrow the FLOATEvents from the signer.")

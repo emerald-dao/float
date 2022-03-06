@@ -1,5 +1,5 @@
 import FLOAT from "../FLOAT.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 pub fun main(account: Address): {UFix64: CombinedMetadata} {
   let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
                         .borrow<&FLOAT.Collection{MetadataViews.ResolverCollection}>()

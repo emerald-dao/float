@@ -1,11 +1,11 @@
 import FLOAT from "../FLOAT.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 pub fun main(account: Address): {String: FLOAT.FLOATEventMetadata} {
   let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                               .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-  let floatEvents: [UInt64] = floatEventCollection.getIDs()
+  let floatEvents: [UInt64] = floatEventCollection.getIDs() 
   let returnVal: {String: FLOAT.FLOATEventMetadata} = {}
 
   for eventId in floatEvents {

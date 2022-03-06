@@ -21,3 +21,6 @@ export const removeSharedMinterInProgress = writable(false);
 
 export const toggleClaimingInProgress = writable(false);
 export const toggleTransferringInProgress = writable(false);
+
+export const addGroupInProgress = writable(false);
+export const addGroupStatus = writable(false);

@@ -1,5 +1,5 @@
 import FLOAT from "../FLOAT.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 pub fun main(account: Address, eventId: UInt64): [String] {
   let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)

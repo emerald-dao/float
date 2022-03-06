@@ -78,12 +78,7 @@
       return;
     }
 
-    // otherwise, continue with creation
-    if (minter === $user?.addr) {
-      createEvent(null, $draftFloat);
-    } else {
-      createEvent(minter, $draftFloat);
-    }
+    createEvent(minter, $draftFloat);
   }
 
   function checkInputs() {
@@ -92,7 +87,11 @@
 
     // add conditions here
     if (!$draftFloat.name) {
-      errorArray.push("Event name");
+      errorArray.push("Event Name");
+    } else if (!$draftFloat.description) {
+      errorArray.push("Event Description");
+    } else if (!imagePreviewSrc) {
+      errorArray.push("Event Image");
     }
 
     if (errorArray.length > 0) {
@@ -117,7 +116,7 @@
 
 <div class="container">
   <article>
-    <h1 class="mb-1">Create a new FLOAT</h1>
+    <h1 class="mb-1" style="text-align: center;">Create a new FLOAT</h1>
 
     <label for="name"
       >Event Name
@@ -371,7 +370,11 @@
       {:else if $eventCreationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
       {:else if $eventCreatedStatus.success}
-        <a role="button" class="d-block" href="/{$user.addr}" style="display:block">
+        <a
+          role="button"
+          class="d-block"
+          href="/{$user.addr}"
+          style="display:block">
           Event created successfully!
         </a>
       {:else if !$eventCreatedStatus.success && $eventCreatedStatus.error}

@@ -1,11 +1,12 @@
 <script>
-  import { getGroups, createGroup, deleteGroup } from '$lib/flow/actions';
-  import { draftGroup } from '$lib/stores';
-  import LibLoader from '../LibLoader.svelte';
-  import {onMount} from 'svelte';
-  import Group from '../Group.svelte';
-  import { user } from '$lib/flow/stores';
-import { page } from '$app/stores';
+  import { getGroups, createGroup } from "$lib/flow/actions";
+  import { draftGroup } from "$lib/stores";
+  import LibLoader from "../LibLoader.svelte";
+  import { onMount } from "svelte";
+  import Group from "../Group.svelte";
+  import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
+  import { page } from "$app/stores";
+  import { authenticate } from "@samatech/onflow-fcl-esm";
 
   let ipfsIsReady = false;
   let uploading = false;
@@ -13,6 +14,7 @@ import { page } from '$app/stores';
   let uploadedSuccessfully = false;
 
   let imagePreviewSrc = null;
+  let open = false;
 
   onMount(() => {
     ipfsIsReady = window?.IpfsHttpClient ?? false;
@@ -51,7 +53,6 @@ import { page } from '$app/stores';
   }
 
   let groups = getGroups($page.params.address);
-
 </script>
 
 <LibLoader
@@ -60,16 +61,21 @@ import { page } from '$app/stores';
   uniqueId={+new Date()} />
 
 {#if $user?.addr === $page.params.address}
-  <article class="create">
-    <h4>Create a new Group</h4>
+  {#if open}
+    <article>
+      <h4>Create a new Group</h4>
 
-    <label for="name"
-        >Event Name
-        <input type="text" id="name" name="name" bind:value={$draftGroup.name} />
+      <label for="name"
+        >Group Name
+        <input
+          type="text"
+          id="name"
+          name="name"
+          bind:value={$draftGroup.name} />
       </label>
 
       <label for="description"
-        >Event Description
+        >Group Description
         <textarea
           id="description"
           name="description"
@@ -78,7 +84,7 @@ import { page } from '$app/stores';
 
       {#if ipfsIsReady}
         <label for="image"
-          >Event Image
+          >Group Image
           <input
             aria-busy={!!uploading}
             on:change={(e) => uploadToIPFS(e)}
@@ -100,18 +106,50 @@ import { page } from '$app/stores';
 
       {#if imagePreviewSrc}
         <h3>Preview</h3>
-        <Group preview={true} name={$draftGroup.name} {imagePreviewSrc} description={$draftGroup.description} />
+        <Group
+          preview={true}
+          name={$draftGroup.name}
+          {imagePreviewSrc}
+          description={$draftGroup.description} />
       {/if}
 
-      <button on:click|preventDefault={createGroup(null, $draftGroup)}>Create Group</button>
-  </article>
+      {#if !$user?.loggedIn}
+        <div class="mt-2 mb-2">
+          <button class="contrast small-button" on:click={authenticate}
+            >Connect Wallet</button>
+        </div>
+      {:else if $addGroupInProgress}
+        <button aria-busy="true" disabled>Creating Group</button>
+      {:else if $addGroupStatus.success}
+        <button disabled>Group created successfully!</button>
+      {:else if !$addGroupStatus.success && $addGroupStatus.error}
+        <button class="error" disabled>
+          {$addGroupStatus.error}
+        </button>
+      {:else}
+        <button
+          on:click|preventDefault={createGroup(
+            $page.params.address,
+            $draftGroup
+          )}>
+          Create Group
+        </button>
+      {/if}
+    </article>
+  {:else}
+    <button on:click={() => (open = true)} class="create"
+      >Create a new Group</button>
+  {/if}
 {/if}
 
 <h3 class="mt-1">Groups</h3>
 {#await groups then groups}
   {#if Object.keys(groups).length > 0}
     {#each Object.values(groups) as group}
-      <Group name={group.name} imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`} description={group.description} />
+      <Group
+        name={group.name}
+        imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
+        description={group.description} />
     {/each}
   {:else}
     <p>This account has not created any Groups.</p>
@@ -120,5 +158,6 @@ import { page } from '$app/stores';
 
 <style>
   .create {
+    margin-top: 20px;
   }
 </style>
