@@ -93,7 +93,8 @@
             },
             serial: floatEvent?.hasClaimed.serial,
           }}
-          individual={true} />
+          individual={true}
+          list={false} />
       {:else}
         <Float
           float={{
@@ -106,7 +107,8 @@
             },
           }}
           preview={true}
-          individual={false} />
+          individual={false}
+           />
       {/if}
 
       <blockquote>

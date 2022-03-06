@@ -1472,6 +1472,7 @@ export const getGroups = async (account) => {
     return queryResult || {};
   } catch (e) {
     console.log(e);
+    return {};
   }
 }
 

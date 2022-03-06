@@ -1,0 +1,26 @@
+<script>
+import { page } from '$app/stores';
+
+  import Loading from '$lib/components/common/Loading.svelte';
+  import Float from '$lib/components/Float.svelte';
+  import { getFLOATs } from '$lib/flow/actions.js'
+  
+  let floats = getFLOATs($page.params.address);
+
+</script>
+
+<h3>Claimed FLOATs</h3>
+
+<div class="card-container">
+  {#await floats}
+  <Loading />
+  {:then floats} 
+    {#if floats?.length > 0}
+      {#each floats as float}
+      <Float float={{eventMetadata: float.event, ...float.float}} individual={true} />
+      {/each}
+    {:else}
+    <p>This account doesn't have any FLOATs yet.</p>
+    {/if}
+  {/await}
+</div>

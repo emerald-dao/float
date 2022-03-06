@@ -2,6 +2,7 @@
   export let float = {};
   export let preview = false;
   export let individual = false;
+  export let list = true;
 
   console.log(float);
 </script>
@@ -11,7 +12,7 @@
     class="no-style"
     href="/{float?.eventHost}/{float?.eventId}/{float?.serial}"
   >
-    <article class="card">
+    <article class="card" class:nomargin={!list}>
       <img
         src="https://ipfs.infura.io/ipfs/{float?.eventImage}"
         alt="{float?.eventName} Image"
@@ -78,5 +79,9 @@
   p {
     margin-top: 10px;
     margin-bottom: 10px;
+  }
+
+  .nomargin {
+    margin-right: 0px;
   }
 </style>

@@ -2,12 +2,38 @@
   import { page } from '$app/stores';
   import Meta from '$lib/components/common/Meta.svelte';
 
-  import AccountContents from '$lib/components/AccountContents.svelte';
-  import CheckAddress from '$lib/components/CheckAddress.svelte';
+  import Groups from '$lib/components/account/Groups.svelte';
+  import Floats from '$lib/components/Floats.svelte';
+  import Events from '$lib/components/Events.svelte';
+import { user } from '$lib/flow/stores';
+import Shared from '$lib/components/account/Shared.svelte';
+
+  let tab = "floats";
 </script>
 
 <style>
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+  }
 
+  .tabs li {
+    list-style-type: none;
+    font-size: 25px;
+  }
+
+  .selected {
+    border-bottom: 2px solid var(--primary);
+  }
+
+  @media screen and (max-width: 700px) {
+    .tabs {
+      margin: 0px;
+    }
+    .tabs li {
+      font-size: 15px;
+    }
+  }
 </style>
 
 <Meta
@@ -18,12 +44,27 @@ url={$page.url}
 />
 
 <div class="container">
-	
-  <h1 class="mb-1">{$page.params.address}'s Account</h1>
-  <AccountContents address={$page.params.address} />
 
-  <h3 class="mt-1">Check another address</h3>
-  <CheckAddress />
+  <ul class="tabs">
+    <li on:click|preventDefault={() => tab = "floats"} class:selected="{tab === 'floats'}">FLOATs</li>
+    <li on:click|preventDefault={() => tab = "events"} class:selected="{tab === 'events'}">Events</li>
+    <li on:click|preventDefault={() => tab = "groups"} class:selected="{tab === 'groups'}">Groups</li>
+    {#if $user?.addr == $page.params.address}
+      <li on:click|preventDefault={() => tab = "shared"} class:selected="{tab === 'shared'}">Shared Minting</li>
+    {/if}
+  </ul>
+	
+  {#if tab === 'floats'}
+    <Floats />
+  {:else if tab === 'events'}
+    <Events />
+  {:else if tab === 'groups'}
+    <Groups />
+  {:else if tab === 'shared'}
+    <Shared />
+  {:else}
+    <Floats />
+  {/if}
 	
 </div>
 

@@ -98,7 +98,7 @@
     
     <li>
       {#if $user?.loggedIn}
-      <a href="/account" role="button" class="outline">
+      <a href="/{$user?.addr}" role="button" class="outline">
         <UserAddress address={$user?.addr || '0x0'} abbreviated={true}/>
       </a>
       {:else}

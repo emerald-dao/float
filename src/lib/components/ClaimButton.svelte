@@ -1,7 +1,7 @@
 <script>
   export let floatEvent;
   export let hasClaimed;
-  import { floatClaimedStatus, floatClaimingInProgress } from "$lib/flow/stores";
+  import { floatClaimedStatus, floatClaimingInProgress, user } from "$lib/flow/stores";
   import { claimFLOAT } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
 
@@ -60,7 +60,7 @@
     <a
       role="button"
       class="d-block"
-      href="/account"
+      href="/{$user?.addr}"
       style="display:block"
       >FLOAT claimed successfully!
     </a>

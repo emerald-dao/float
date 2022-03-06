@@ -39,8 +39,21 @@ import Loading from "$lib/components/common/Loading.svelte";
     align-items: center;
     grid-template-columns: auto 1fr;
   }
+  .grid p {
+    margin: 0;
+  }
   .grid img {
     max-width: 400px;
     max-height: 200px;
+  }
+
+  @media screen and (max-width: 700px) {
+    .grid h1 {
+      font-size: 20px;
+    }
+    .grid img {
+      max-width: 200px;
+      max-height: 100px;
+    }
   }
 </style>

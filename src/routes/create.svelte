@@ -371,7 +371,7 @@
       {:else if $eventCreationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
       {:else if $eventCreatedStatus.success}
-        <a role="button" class="d-block" href="/account" style="display:block">
+        <a role="button" class="d-block" href="/{$user.addr}" style="display:block">
           Event created successfully!
         </a>
       {:else if !$eventCreatedStatus.success && $eventCreatedStatus.error}
