@@ -93,14 +93,29 @@ h3 {
   display: flex;
 }
 
+.input-button-group button {
+  display: inline-block;
+  flex-shrink: 1;
+  width: auto;
+  min-width: 150px;
+}
+
+.input-button-group input,
+.input-button-group select {
+  flex-grow: 1;
+  width: 100%;
+}
+
 .input-button-group a,
 .input-button-group button,
-.input-button-group input {
+.input-button-group input,
+.input-button-group select {
   margin: 0;
   margin-bottom: 0 !important;
 }
 
-.input-button-group input {
+.input-button-group input,
+.input-button-group select {
   margin-right:10px;
 }
 

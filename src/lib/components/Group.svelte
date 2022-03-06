@@ -13,14 +13,14 @@
     </div>
     <div class="details">
       <h4>{name}</h4>
-      <p>{description}</p>
+      <h6>{description}</h6>
     </div>
   </article>
 </a>
 
 <style>
   .preview {
-    padding: 50px 50px 50px 20px;
+    padding: 30px 50px;
     margin-bottom: 15px;
     align-items: center;
     display: flex;
@@ -28,7 +28,12 @@
   }
 
   .details {
-    margin-left: 15px;
+    margin-left: 30px;
+  }
+
+  a .details h6 {
+    font-weight: normal;
+    margin: 0px;
   }
 
   .img-container {
@@ -42,10 +47,6 @@
     padding: 0px;
     max-width: 200px;
     max-height: 100px;
-  }
-
-  .details p {
-    /* color: var(--color); */
   }
 
   h4,

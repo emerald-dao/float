@@ -121,8 +121,7 @@
           <strong><small class="muted">GROUPS</small></strong>
           <br />
           {#each floatEvent?.groups as group}
-            <a href="/{$page.params.address}/group/{group}">{group}</a>
-            <span> | </span>
+            <a href="/{$page.params.address}/group/{group}"><div class="group-badge">{group}</div></a>
           {/each}
         </blockquote>
       {/if}
@@ -171,26 +170,21 @@
               Delete this event
             </button>
           </div>
-          <div class="grid admin">
-            <article>
-              <label for="distributeDirectly">
-                Mint directly to a user (their collection must be set up).
-                <input
-                  type="text"
-                  name="distributeDirectly"
-                  bind:value={recipientAddr}
-                  placeholder="0x00000000000" />
-              </label>
+
+          <div class="input-group">
+            <h4>Award Manually</h4>
+            <div class="input-button-group">
+              <input type="text" id="address" name="address" placeholder="0x00000000000" bind:value={recipientAddr}>
               {#if $floatDistributingInProgress}
                 <button aria-busy="true" disabled>
-                  Minting FLOAT to {recipientAddr}
+                  Award
                 </button>
               {:else if $floatDistributingStatus.success}
                 <a
                   role="button"
                   class="d-block"
                   href="/{recipientAddr}"
-                  style="display:block">FLOAT minted successfully!</a>
+                  style="display:block">Awarded</a>
               {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
                 <button class="error" disabled>
                   {$floatDistributingStatus.error}
@@ -204,15 +198,18 @@
                       floatEvent?.eventId,
                       recipientAddr
                     )}
-                  >Mint this FLOAT
+                  >Award
                 </button>
               {/if}
-            </article>
+            </div>
+            <small>Paste in a Flow address.</small>
+          </div>
 
-            <article>
+          <div class="input-group">
+            <h4>Add to Group</h4>
+            <div class="input-button-group">
               {#await groups then groups}
                 {#if Object.values(groups).length > 0}
-                  <label for="addToGroup">Add this event to a Group.</label>
                   <select bind:value={groupName} id="addToGroup" required>
                     {#each Object.values(groups) as group}
                       <option value={group.name}>{group.name}</option>
@@ -224,13 +221,15 @@
                         $page.params.address,
                         groupName,
                         floatEvent?.eventId
-                      )}>Add to Group</button>
+                      )}>Add</button>
                 {:else}
                   <p>You have not created any groups.</p>
                 {/if}
               {/await}
-            </article>
+            </div>
+            <small>Add to a pre-existing Group.</small>
           </div>
+
         </article>
       {/if}
     {/await}
@@ -253,6 +252,15 @@
 </div>
 
 <style>
+  h4 {
+    margin: 0px;
+    margin-bottom: 10px;
+  }
+  .input-group {
+    text-align: left;
+    margin-top: 30px;
+  }
+
   .container {
     text-align: center;
   }
@@ -309,6 +317,17 @@
     border: 1px solid var(--green);
     border-radius: 100px;
     color: var(--green);
+    font-size: 0.7rem;
+  }
+
+  .group-badge {
+    display: inline-block;
+    margin-right: 15px;
+    margin-top: 5px;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--primary);
+    border-radius: 100px;
+    color: var(--primary);
     font-size: 0.7rem;
   }
 
