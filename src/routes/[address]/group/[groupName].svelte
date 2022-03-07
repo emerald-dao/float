@@ -4,7 +4,7 @@
   import Event from "$lib/components/Event.svelte";
   import Group from "$lib/components/Group.svelte";
   import { deleteGroup, getEventsInGroup, getGroup } from "$lib/flow/actions";
-  import { user } from "$lib/flow/stores";
+  import { deleteGroupInProgress, deleteGroupStatus, user } from "$lib/flow/stores";
 
   let events = getEventsInGroup($page.params.address, $page.params.groupName);
   let group = getGroup($page.params.address, $page.params.groupName);
@@ -19,12 +19,22 @@
 {/await}
 
 {#if $user?.addr == $page.params.address}
-  <button
-    class="red outline"
-    on:click|preventDefault={deleteGroup(
-      $page.params.address,
-      $page.params.groupName
-    )}>Delete Group</button>
+  {#if $deleteGroupInProgress}
+    <button class="outline red" aria-busy="true" disabled>Deleting Group</button>
+  {:else if $deleteGroupStatus.success}
+    <button class="outline red" disabled>Group deleted successfully.</button>
+  {:else if !$deleteGroupStatus.success && $deleteGroupStatus.error}
+    <button class="outline red" disabled>
+      {$deleteGroupStatus.error}
+    </button>
+  {:else}
+    <button
+      class="red outline"
+      on:click|preventDefault={deleteGroup(
+        $page.params.address,
+        $page.params.groupName
+      )}>Delete Group</button>
+  {/if}
 {/if}
 
 <div class="card-container">

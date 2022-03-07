@@ -12,8 +12,23 @@ export const eventCreatedStatus = writable(false);
 export const floatClaimingInProgress = writable(false);
 export const floatClaimedStatus = writable(false);
 
+export const floatDeletionInProgress = writable(false);
+export const floatDeletionStatus = writable(false);
+
 export const floatDistributingInProgress = writable(false);
 export const floatDistributingStatus = writable(false);
+
+export const floatTransferInProgress = writable(false);
+export const floatTransferStatus = writable(false);
+
+export const awardFloatInProgress = writable(false);
+export const awardFloatStatus = writable(false);
+
+export const addEventToGroupInProgress = writable(false);
+export const addEventToGroupStatus = writable(false);
+
+export const removeEventFromGroupInProgress = writable(false);
+export const removeEventFromGroupStatus = writable(false);
 
 export const addSharedMinterInProgress = writable(false);
 export const addSharedMinterStatus = writable(false);
@@ -24,3 +39,6 @@ export const toggleTransferringInProgress = writable(false);
 
 export const addGroupInProgress = writable(false);
 export const addGroupStatus = writable(false);
+
+export const deleteGroupInProgress = writable(false);
+export const deleteGroupStatus = writable(false);

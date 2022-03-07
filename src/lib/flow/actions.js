@@ -20,7 +20,17 @@ import {
   toggleTransferringInProgress,
   toggleClaimingInProgress,
   addGroupInProgress,
-  addGroupStatus
+  addGroupStatus,
+  floatDeletionInProgress,
+  floatDeletionStatus,
+  floatTransferInProgress,
+  floatTransferStatus,
+  addEventToGroupInProgress,
+  addEventToGroupStatus,
+  removeEventFromGroupStatus,
+  removeEventFromGroupInProgress,
+  deleteGroupInProgress,
+  deleteGroupStatus
 } from './stores.js';
 
 import { draftFloat } from '$lib/stores';
@@ -375,7 +385,6 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        console.log(res);
         if (res.statusCode === 0) {
           floatDistributingStatus.set(respondWithSuccess());
         } else {
@@ -389,8 +398,8 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
 
   } catch (e) {
     transactionStatus.set(99)
-    floatClaimedStatus.set(respondWithError(e));
-    floatClaimingInProgress.set(false);
+    floatDistributingStatus.set(respondWithError(e));
+    floatDistributingInProgress.set(false);
 
     console.log(e)
   }
@@ -399,7 +408,9 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
 export const deleteFLOAT = async (id) => {
 
   let transactionId = false;
-  initTransactionState()
+  initTransactionState();
+
+  floatDeletionInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -435,18 +446,21 @@ export const deleteFLOAT = async (id) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        draftFloat.set({
-          claimable: true,
-          transferrable: true,
-        })
+        if (res.statusCode === 0) {
+          floatDeletionStatus.set(respondWithSuccess());
+        } else {
+          floatDeletionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        floatDeletionInProgress.set(false);
 
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
   } catch (e) {
-    transactionStatus.set(99)
-
+    transactionStatus.set(99);
+    floatDeletionInProgress.set(false);
+    floatDeletionStatus.set(respondWithError(e))
     console.log(e)
   }
 }
@@ -455,6 +469,8 @@ export const transferFLOAT = async (id, recipient) => {
 
   let transactionId = false;
   initTransactionState()
+
+  floatTransferInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -496,17 +512,20 @@ export const transferFLOAT = async (id, recipient) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        draftFloat.set({
-          claimable: true,
-          transferrable: true,
-        })
-
+        if (res.statusCode === 0) {
+          floatTransferStatus.set(respondWithSuccess());
+        } else {
+          floatTransferStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        floatTransferInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
   } catch (e) {
-    transactionStatus.set(99)
+    transactionStatus.set(99);
+    floatTransferInProgress.set(false);
+    floatTransferStatus.set(respondWithError(e));
 
     console.log(e)
   }
@@ -908,6 +927,8 @@ export const deleteGroup = async (forHost, groupName) => {
   let transactionId = false;
   initTransactionState();
 
+  deleteGroupInProgress.set(true);
+
   try {
     transactionId = await fcl.mutate({
       cadence: `
@@ -949,6 +970,12 @@ export const deleteGroup = async (forHost, groupName) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
+        if (res.statusCode === 0) {
+          deleteGroupStatus.set(respondWithSuccess());
+        } else {
+          deleteGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        deleteGroupInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
@@ -957,7 +984,9 @@ export const deleteGroup = async (forHost, groupName) => {
     return res;
 
   } catch (e) {
-    transactionStatus.set(99)
+    transactionStatus.set(99);
+    deleteGroupInProgress.set(false);
+    deleteGroupStatus.set(respondWithError(e));
     console.log(e)
   }
 }
@@ -965,6 +994,8 @@ export const deleteGroup = async (forHost, groupName) => {
 export const addEventToGroup = async (forHost, groupName, eventId) => {
   let transactionId = false;
   initTransactionState();
+
+  addEventToGroupInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -1008,6 +1039,12 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
+        if (res.statusCode === 0) {
+          addEventToGroupStatus.set(respondWithSuccess());
+        } else {
+          addEventToGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        addEventToGroupInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
@@ -1016,7 +1053,9 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
     return res;
 
   } catch (e) {
-    transactionStatus.set(99)
+    transactionStatus.set(99);
+    addEventToGroupStatus.set(respondWithError(e));
+    addEventToGroupInProgress.set(false);
     console.log(e)
   }
 }
@@ -1024,6 +1063,8 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
 export const removeEventFromGroup = async (forHost, groupName, eventId) => {
   let transactionId = false;
   initTransactionState();
+
+  removeEventFromGroupInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -1067,6 +1108,12 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
+        if (res.statusCode === 0) {
+          removeEventFromGroupStatus.set(respondWithSuccess());
+        } else {
+          removeEventFromGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        removeEventFromGroupInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
@@ -1075,7 +1122,9 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
     return res;
 
   } catch (e) {
-    transactionStatus.set(99)
+    transactionStatus.set(99);
+    removeEventFromGroupStatus.set(respondWithError(e));
+    removeEventFromGroupInProgress.set(false);
     console.log(e)
   }
 }

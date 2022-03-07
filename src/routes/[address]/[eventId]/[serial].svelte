@@ -2,7 +2,7 @@
   import { page } from "$app/stores";
   import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
-  import { user } from "$lib/flow/stores";
+  import { floatDeletionInProgress, floatDeletionStatus, floatTransferInProgress, floatTransferStatus, user } from "$lib/flow/stores";
   import { convertAddress } from "$lib/flow/utils";
   
   const floatCallback = async () => {
@@ -115,9 +115,19 @@ url={$page.url}
         {data?.event.description}
       </blockquote>
       {#if $user?.addr == data?.float.owner}
-        <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
-          Delete this FLOAT
-        </button>
+        {#if $floatDeletionInProgress}
+          <button class="outline red" aria-busy="true" disabled>Deleting FLOAT</button>
+        {:else if $floatDeletionStatus.success}
+          <button class="outline red">FLOAT deleted successfully.</button>
+        {:else if !$floatDeletionStatus.success && $floatDeletionStatus.error}
+          <button class="outline red" disabled>
+            {$floatDeletionStatus.error}
+          </button>
+        {:else}
+          <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
+            Delete this FLOAT
+          </button>
+        {/if}
       {/if}
     </article>
 
@@ -132,7 +142,19 @@ url={$page.url}
           placeholder="0x00000000000"
           />
         </label>
-        <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>Transfer this FLOAT</button>
+        {#if $floatTransferInProgress}
+          <button aria-busy="true" disabled>Transferring FLOAT</button>
+        {:else if $floatTransferStatus.success}
+          <button>FLOAT transferred successfully.</button>
+        {:else if !$floatTransferStatus.success && $floatTransferStatus.error}
+          <button disabled>
+            {$floatTransferStatus.error}
+          </button>
+        {:else}
+          <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>
+            Transfer this FLOAT
+          </button>
+        {/if}
       </article>
     {/if}
   {/if}

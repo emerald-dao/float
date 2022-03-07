@@ -6,6 +6,10 @@
     floatDistributingStatus,
     toggleClaimingInProgress,
     toggleTransferringInProgress,
+addEventToGroupInProgress,
+addEventToGroupStatus,
+removeEventFromGroupInProgress,
+removeEventFromGroupStatus,
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -182,7 +186,7 @@ removeEventFromGroup,
               <input type="text" id="address" name="address" placeholder="0x00000000000" bind:value={recipientAddr}>
               {#if $floatDistributingInProgress}
                 <button aria-busy="true" disabled>
-                  Award
+                  Awarding
                 </button>
               {:else if $floatDistributingStatus.success}
                 <a
@@ -192,7 +196,7 @@ removeEventFromGroup,
                   style="display:block">Awarded</a>
               {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
                 <button class="error" disabled>
-                  {$floatDistributingStatus.error}
+                  Error
                 </button>
               {:else}
                 <button
@@ -219,37 +223,57 @@ removeEventFromGroup,
                     <option value={group}>{group}</option>
                   {/each}
                 </select>
-                <button
-                  on:click={() =>
-                    addEventToGroup(
-                      $page.params.address,
-                      groupName,
-                      floatEvent?.eventId
-                    )}>Add</button>
+                {#if $addEventToGroupInProgress}
+                  <button aria-busy="true" disabled>Adding</button>
+                {:else if $addEventToGroupStatus.success}
+                  <button disabled>Added</button>
+                {:else if !$addEventToGroupStatus.success && $addEventToGroupStatus.error}
+                  <button class="error" disabled>
+                    {$addEventToGroupStatus.error}
+                  </button>
+                {:else}
+                  <button
+                    on:click={() =>
+                      addEventToGroup(
+                        $page.params.address,
+                        groupName,
+                        floatEvent?.eventId
+                      )}>Add</button>
+                {/if}
               </div>
               <small>Add to a pre-existing Group.</small>
             </div>
           {/if}
 
           {#if floatEvent.groups.length > 0}
-          <div class="input-group">
-            <h4>Remove from a Group</h4>
-            <div class="input-button-group">
-              <select bind:value={groupName} id="removeFromGroup" required>
-                {#each floatEvent.groups as group}
-                  <option value={group}>{group}</option>
-                {/each}
-              </select>
-              <button
-                on:click={() =>
-                  removeEventFromGroup(
-                    $page.params.address,
-                    groupName,
-                    floatEvent?.eventId
-                  )}>Remove</button>
+            <div class="input-group">
+              <h4>Remove from a Group</h4>
+              <div class="input-button-group">
+                <select bind:value={groupName} id="removeFromGroup" required>
+                  {#each floatEvent.groups as group}
+                    <option value={group}>{group}</option>
+                  {/each}
+                </select>
+                {#if $removeEventFromGroupInProgress}
+                  <button aria-busy="true" disabled>Removing</button>
+                {:else if $removeEventFromGroupStatus.success}
+                  <button disabled>Removed</button>
+                {:else if !$removeEventFromGroupStatus.success && $removeEventFromGroupStatus.error}
+                  <button class="error" disabled>
+                    {$removeEventFromGroupStatus.error}
+                  </button>
+                {:else}
+                  <button
+                    on:click={() =>
+                      removeEventFromGroup(
+                        $page.params.address,
+                        groupName,
+                        floatEvent?.eventId
+                      )}>Remove</button>
+                {/if}
+              </div>
+              <small>Add to a pre-existing Group.</small>
             </div>
-            <small>Add to a pre-existing Group.</small>
-          </div>
           {/if}
         </article>
       {/if}
