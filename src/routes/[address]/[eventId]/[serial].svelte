@@ -82,7 +82,7 @@ url={$page.url}
 
 {#await data then data}
   {#if data == 'deleted'}
-    <article>This FLOAT has been deleted.</article>
+    <article>This FLOAT has been deleted or it has not been minted yet.</article>
   {:else}
     <article class="toggle">
       <header>

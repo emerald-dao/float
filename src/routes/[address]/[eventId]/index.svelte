@@ -18,6 +18,7 @@
     isSharedWithUser,
     addEventToGroup,
     getGroups,
+removeEventFromGroup,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -32,6 +33,8 @@
   let claimsTableInView;
   let limitedVerifier;
 
+  let groups;
+  let groupsWeCanAddTo;
   const floatEventCallback = async () => {
     let eventData = await getEvent($page.params.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent(
@@ -43,12 +46,14 @@
     limitedVerifier =
       data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
     console.log(data);
+
+    groups = await getGroups($page.params.address);
+    groupsWeCanAddTo = Object.keys(groups).filter(groupName => !data.groups.includes(groupName));
     return data;
   };
 
   let floatEvent = floatEventCallback();
   let canMintForMe = isSharedWithUser($page.params.address, $user?.addr);
-  let groups = getGroups($page.params.address);
 
   let recipientAddr = "";
   let groupName = "";
@@ -205,31 +210,47 @@
             <small>Paste in a Flow address.</small>
           </div>
 
+          {#if groupsWeCanAddTo.length > 0}
+            <div class="input-group">
+              <h4>Add to Group</h4>
+              <div class="input-button-group">
+                <select bind:value={groupName} id="addToGroup" required>
+                  {#each groupsWeCanAddTo as group}
+                    <option value={group}>{group}</option>
+                  {/each}
+                </select>
+                <button
+                  on:click={() =>
+                    addEventToGroup(
+                      $page.params.address,
+                      groupName,
+                      floatEvent?.eventId
+                    )}>Add</button>
+              </div>
+              <small>Add to a pre-existing Group.</small>
+            </div>
+          {/if}
+
+          {#if floatEvent.groups.length > 0}
           <div class="input-group">
-            <h4>Add to Group</h4>
+            <h4>Remove from a Group</h4>
             <div class="input-button-group">
-              {#await groups then groups}
-                {#if Object.values(groups).length > 0}
-                  <select bind:value={groupName} id="addToGroup" required>
-                    {#each Object.values(groups) as group}
-                      <option value={group.name}>{group.name}</option>
-                    {/each}
-                  </select>
-                  <button
-                    on:click={() =>
-                      addEventToGroup(
-                        $page.params.address,
-                        groupName,
-                        floatEvent?.eventId
-                      )}>Add</button>
-                {:else}
-                  <p>You have not created any groups.</p>
-                {/if}
-              {/await}
+              <select bind:value={groupName} id="removeFromGroup" required>
+                {#each floatEvent.groups as group}
+                  <option value={group}>{group}</option>
+                {/each}
+              </select>
+              <button
+                on:click={() =>
+                  removeEventFromGroup(
+                    $page.params.address,
+                    groupName,
+                    floatEvent?.eventId
+                  )}>Remove</button>
             </div>
             <small>Add to a pre-existing Group.</small>
           </div>
-
+          {/if}
         </article>
       {/if}
     {/await}

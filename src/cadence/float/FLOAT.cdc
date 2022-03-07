@@ -622,6 +622,8 @@ pub contract FLOAT: NonFungibleToken {
             pre {
                 self.currentHolders.keys.length == 0:
                     "You cannot delete this event because some FLOATs still exist from this event."
+                self.groups.keys.length == 0:
+                    "You cannot delete an event that belongs to a group."
             }
             emit FLOATEventDestroyed(eventId: self.eventId, host: self.host, name: self.name)
         }
@@ -719,6 +721,9 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun createGroup(groupName: String, image: String, description: String) {
+            pre {
+                self.groups[groupName] == nil: "A group with this name already exists."
+            }
             self.groups[groupName] = Group(_name: groupName, _image: image, _description: description)
         }
 
@@ -733,6 +738,9 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun addEventToGroup(groupName: String, eventId: UInt64) {
+            pre {
+                self.groups[groupName] != nil: "This group does not exist."
+            }
             let groupRef = &self.groups[groupName] as &Group
             groupRef.addEvent(eventId: eventId)
 
@@ -741,6 +749,9 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun removeEventFromGroup(groupName: String, eventId: UInt64) {
+            pre {
+                self.groups[groupName] != nil: "This group does not exist."
+            }
             let groupRef = &self.groups[groupName] as &Group
             groupRef.removeEvent(eventId: eventId)
 
@@ -827,10 +838,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath036
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath036
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath036
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath036
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath036
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath037
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath037
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath037
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath037
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath037
     }
 }
