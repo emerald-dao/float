@@ -9,7 +9,9 @@
     addEventToGroupInProgress,
     addEventToGroupStatus,
     removeEventFromGroupInProgress,
-    removeEventFromGroupStatus
+    removeEventFromGroupStatus,
+deleteEventInProgress,
+deleteEventStatus
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -176,13 +178,25 @@
                 toggleTransferrable(resolvedNameObject.address, floatEvent?.eventId)}>
               {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
             </button>
-            <button
-              class="outline red"
-              disabled={floatEvent?.totalSupply !== 0}
-              on:click={() =>
-                deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}>
-              Delete this event
-            </button>
+            {#if $deleteEventInProgress}
+                <button class="outline red" aria-busy="true" disabled>
+                  Deleting...
+                </button>
+              {:else if $deleteEventStatus.success}
+                <button class="outline red" disabled>Deleted</button>
+              {:else if !$deleteEventStatus.success && $deleteEventStatus.error}
+                <button class="error" disabled>
+                  Error
+                </button>
+              {:else}
+                <button
+                  class="outline red"
+                  disabled={floatEvent?.totalSupply !== 0}
+                  on:click={() =>
+                    deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}>
+                  Delete this event
+                </button>
+              {/if}
           </div>
 
           <div class="input-group">

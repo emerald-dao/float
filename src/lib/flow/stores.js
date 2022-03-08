@@ -42,3 +42,6 @@ export const addGroupStatus = writable(false);
 
 export const deleteGroupInProgress = writable(false);
 export const deleteGroupStatus = writable(false);
+
+export const deleteEventInProgress = writable(false);
+export const deleteEventStatus = writable(false);

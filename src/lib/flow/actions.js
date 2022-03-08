@@ -30,7 +30,9 @@ import {
   removeEventFromGroupStatus,
   removeEventFromGroupInProgress,
   deleteGroupInProgress,
-  deleteGroupStatus
+  deleteGroupStatus,
+  deleteEventInProgress,
+  deleteEventStatus
 } from './stores.js';
 
 import { draftFloat } from '$lib/stores';
@@ -661,7 +663,9 @@ export const toggleTransferrable = async (forHost, eventId) => {
 
 export const deleteEvent = async (forHost, eventId) => {
   let transactionId = false;
-  initTransactionState()
+  initTransactionState();
+
+  deleteEventInProgress.set(true);
 
   try {
     transactionId = await fcl.mutate({
@@ -720,6 +724,12 @@ export const deleteEvent = async (forHost, eventId) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
+        if (res.statusCode === 0) {
+          deleteEventStatus.set(respondWithSuccess());
+        } else {
+          deleteEventStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        deleteEventInProgress.set(false);
         setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
@@ -728,8 +738,10 @@ export const deleteEvent = async (forHost, eventId) => {
     return res;
 
   } catch (e) {
-    transactionStatus.set(99)
-    console.log(e)
+    transactionStatus.set(99);
+    deleteEventStatus.set(respondWithError(e));
+    deleteEventInProgress.set(false);
+    console.log(e);
   }
 }
 

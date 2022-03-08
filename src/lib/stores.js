@@ -45,7 +45,9 @@ export function persistentWritable(key, defaultValue) {
   // Subscribe to changes.
   subscribe(value => {
       // Store the new value.
-      localStorage.setItem(key, JSON.stringify(value));
+      if (localStorage) {
+        localStorage.setItem(key, JSON.stringify(value));
+      }
   });
 
   return { subscribe, set, update };
