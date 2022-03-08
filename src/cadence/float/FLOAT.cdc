@@ -338,6 +338,9 @@ pub contract FLOAT: NonFungibleToken {
         pub fun hasClaimed(account: Address): TokenIdentifier?
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier?
         pub fun claim(recipient: &Collection, params: {String: AnyStruct})
+        pub fun getExtraMetadata(): {String: AnyStruct}
+        pub fun getVerifiers(): {String: [{IVerifier}]}
+        pub fun getGroups(): [String]
     }
 
     pub struct FLOATEventMetadata {
@@ -500,6 +503,18 @@ pub contract FLOAT: NonFungibleToken {
         // verify if someone holds that serial.
         pub fun getCurrentHolders(): {UInt64: TokenIdentifier} {
             return self.currentHolders
+        }
+
+        pub fun getExtraMetadata(): {String: AnyStruct} {
+            return self.extraMetadata
+        }
+
+        pub fun getVerifiers(): {String: [{IVerifier}]} {
+            return self.verifiers
+        }
+
+        pub fun getGroups(): [String] {
+            return self.groups.keys
         }
 
         pub fun getViews(): [Type] {
@@ -668,8 +683,6 @@ pub contract FLOAT: NonFungibleToken {
             pre {
                 self.totalSupply == 0:
                     "You cannot delete this event because some FLOATs still exist from this event."
-                self.groups.keys.length == 0:
-                    "You cannot delete an event that belongs to a group."
             }
             emit FLOATEventDestroyed(eventId: self.eventId, host: self.host, name: self.name)
         }
@@ -764,6 +777,10 @@ pub contract FLOAT: NonFungibleToken {
         // destroy() function of the FLOATEvent resource.
         pub fun deleteEvent(eventId: UInt64) {
             let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
+            for groupName in event.getGroups() {
+                let groupRef = &self.groups[groupName] as &Group 
+                groupRef.removeEvent(eventId: eventId)
+            }
             destroy event
         }
 
@@ -886,10 +903,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath040
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath040
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath040
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath040
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath040
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath041
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath041
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath041
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath041
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath041
     }
 }
