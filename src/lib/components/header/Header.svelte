@@ -90,6 +90,7 @@
     vertical-align: middle;
     align-items: center;
     color: var(--primary);
+    font-weight: normal;
   }
 
   @media screen and (max-width: 500px) {
@@ -126,12 +127,12 @@
         {/if}
       </a>
     </li>
-    <li>
+    <li style="padding: 0px;">
       <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
         {#if $resolver === 'fn'}
-          <kdb>.fn</kdb>
+          <span>.fn</span>
         {:else}
-          <kdb>.find</kdb>
+          <span>.find</span>
         {/if}
       </button>
     </li>
@@ -139,7 +140,8 @@
       <a href="/about">About</a>
     </li>
     
-    {#await resolvedName then resolvedName}
+    <li>
+      {#await resolvedName then resolvedName}
       {#if $user?.loggedIn}
         <a href="/{resolvedName}" role="button" class="outline">
           <UserAddress address={$user?.addr} />
@@ -148,6 +150,7 @@
         <ConnectWallet/>
       {/if}
     {/await}
+    </li>
   </ul>
 </nav>
 

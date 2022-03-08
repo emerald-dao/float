@@ -207,7 +207,9 @@ pub contract FLOAT: NonFungibleToken {
 
     pub resource interface CollectionPublic {
         pub fun deposit(token: @NonFungibleToken.NFT)
+        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver}
+        pub fun owns(id: UInt64): Bool
         pub fun getIDs(): [UInt64]
         pub fun getAllIDs(): [UInt64]
     }
@@ -266,6 +268,10 @@ pub contract FLOAT: NonFungibleToken {
             return self.ownedNFTs.keys
         }
 
+        pub fun owns(id: UInt64): Bool {
+            return self.ownedNFTs[id] != nil
+        }
+
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
         }
@@ -312,9 +318,8 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         destroy() {
-            let ids = self.ownedNFTs.keys
-            for id in ids {
-                self.destroyFLOAT(id: id)
+            pre {
+                self.ownedNFTs.keys.length == 0: "You cannot delete a Collection with FLOATs inside of it."
             }
             destroy self.ownedNFTs
         }
@@ -471,14 +476,28 @@ pub contract FLOAT: NonFungibleToken {
             return self.claimed[account]
         }
 
+        // This is a guarantee that the person owns the token
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier? {
-            return self.currentHolders[serial]
+            if let data = self.currentHolders[serial] {
+                if let collection = getAccount(data.address).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&Collection{CollectionPublic}>() {
+                    if collection.owns(id: data.id) {
+                        return data
+                    }
+                }
+            }
+            
+            return nil
         }
 
         pub fun getClaimed(): {Address: TokenIdentifier} {
             return self.claimed
         }
 
+        // This dictionary may be slightly off if for some
+        // reason the FLOATEvents owner ever unlinked their
+        // resource from the public.  
+        // Use `getCurrentHolder(serial: UInt64)` to truly
+        // verify if someone holds that serial.
         pub fun getCurrentHolders(): {UInt64: TokenIdentifier} {
             return self.currentHolders
         }
@@ -867,10 +886,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath039
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath039
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath039
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath039
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath039
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath040
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath040
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath040
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath040
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath040
     }
 }

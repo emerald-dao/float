@@ -22,7 +22,7 @@
   {#if !$user?.loggedIn}
     <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
   {:else}
-    <h4>You are currently logged in as: </h4><button class="outline"><UserAddress address={$user?.addr} abbreviated={false} /></button>
+    <h4>You are logged in as: </h4><button class="outline"><UserAddress address={$user?.addr} abbreviated={false} /></button>
     <br/>
     <a class="logout" href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
   {/if}
@@ -89,9 +89,16 @@
     display: inline;
     width: auto;
     padding: 10px;
+    margin-bottom: 10px;
   }
 
   .logout {
-    width: 300px;
+    width: 200px;
+  }
+
+  @media screen and (max-width: 767px) {
+    .user-info h4 {
+      margin-bottom: 10px;
+    }
   }
 </style>
