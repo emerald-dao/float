@@ -6,10 +6,10 @@
     floatDistributingStatus,
     toggleClaimingInProgress,
     toggleTransferringInProgress,
-addEventToGroupInProgress,
-addEventToGroupStatus,
-removeEventFromGroupInProgress,
-removeEventFromGroupStatus,
+    addEventToGroupInProgress,
+    addEventToGroupStatus,
+    removeEventFromGroupInProgress,
+    removeEventFromGroupStatus
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -22,7 +22,7 @@ removeEventFromGroupStatus,
     isSharedWithUser,
     addEventToGroup,
     getGroups,
-removeEventFromGroup,
+    removeEventFromGroup
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -57,7 +57,7 @@ removeEventFromGroup,
   };
 
   let floatEvent = floatEventCallback();
-  let canMintForMe = isSharedWithUser($page.params.address, $user?.addr);
+  let isSharedWithMe = isSharedWithUser($page.params.address, $user?.addr);
 
   let recipientAddr = "";
   let groupName = "";
@@ -150,8 +150,8 @@ removeEventFromGroup,
       </footer>
     </article>
 
-    {#await canMintForMe then canMintForMe}
-      {#if $user?.addr == floatEvent?.host || canMintForMe}
+    {#await isSharedWithMe then isSharedWithMe}
+      {#if isSharedWithMe}
         <article>
           <h1>Admin Dashboard</h1>
           <div class="toggle">

@@ -19,38 +19,26 @@
     ✓ You already claimed this FLOAT.
   </button>
 {:else if floatEvent?.claimable}
-  {#if (secretModule || multipleSecretModule)}
-    <label for="claimCode">
-      Enter the claim code below (<i>case sensitive</i>).
-      <input
-        type="text"
-        name="claimCode"
-        bind:value={claimCode}
-        placeholder="secret code"
-      />
-    </label>
-  {/if}
-
-  {#if (secretModule || multipleSecretModule) && claimCode === ""}
-    <button class="secondary outline" disabled>
-      You must enter a secret code.
-    </button>
-  {:else if limitedModule && limitedModule.capacity <= floatEvent?.totalSupply}
+  {#if limitedModule && (limitedModule[0].capacity <= floatEvent?.totalSupply)}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br /> All
       <span class="emphasis">
-        {floatEvent?.totalSupply}/{limitedModule.capacity}
+        {floatEvent?.totalSupply}/{limitedModule[0].capacity}
       </span> have been claimed.
     </button>
-  {:else if timelockModule && timelockModule.dateStart > currentUnixTime}
+  {:else if timelockModule && (timelockModule[0].dateStart > currentUnixTime)}
     <button class="secondary outline" disabled>
       This FLOAT Event has not started yet.<br />
       Starting in
       <span class="emphasis">
-        <Countdown unix={timelockModule.dateStart} />
+        <Countdown unix={timelockModule[0].dateStart} />
       </span>
     </button>
-  {:else if timelockModule && timelockModule.dateEnding < currentUnixTime}
+  {:else if multipleSecretModule && (Object.keys(multipleSecretModule[0].secrets).length === 0)}
+    <button class="secondary outline" disabled>
+      This FLOAT Event has run out of secret codes.
+    </button>
+  {:else if timelockModule && (timelockModule[0].dateEnding < currentUnixTime)}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br />This event has ended.
     </button>
@@ -69,12 +57,24 @@
       {$floatClaimedStatus.error}
     </button>
   {:else}
+    {#if secretModule || multipleSecretModule}
+      <label for="claimCode">
+        Enter the claim code below (<i>case sensitive</i>).
+        <input
+          type="text"
+          name="claimCode"
+          bind:value={claimCode}
+          placeholder="secret code"
+        />
+      </label>
+    {/if}
     <button
-      disabled={$floatClaimingInProgress}
+      class={((secretModule || multipleSecretModule) && claimCode == "") ? "secondary outline" : null}
+      disabled={$floatClaimingInProgress || ((secretModule || multipleSecretModule) && claimCode == "")}
       on:click={() =>
         claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)}
-      >Claim this FLOAT
-    </button>
+      >{((secretModule || multipleSecretModule) && claimCode == "") ? "You must input a secret phrase" : "Claim this FLOAT"}
+  </button>
   {/if}
 {:else}
   <button class="secondary outline" disabled>

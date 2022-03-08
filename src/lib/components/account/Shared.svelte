@@ -46,19 +46,18 @@
   {/if}
 </article>
 
-<article>
-  <label for="removeMinter">Accounts who share your account:</label>
 
-  {#await sharedMinters then sharedMinters}
-    {#if sharedMinters?.length > 0}
+{#await sharedMinters then sharedMinters}
+  {#if sharedMinters?.length > 0}
+    <article>
+      <label for="removeMinter">Accounts who share your account:</label>
       <select bind:value={removeMinter} id="removeMinter" required>
         {#each sharedMinters as minter}
           <option value={minter}>{minter}</option>
         {/each}
       </select>
       <button class="outline red" aria-busy={$removeSharedMinterInProgress} disabled={$removeSharedMinterInProgress} on:click={() => removeSharedMinter(removeMinter)}>Remove</button>
-    {:else}
-      <p><b>None</b></p>
-    {/if}
-  {/await}
-</article>
+    </article>
+  {/if}
+{/await}
+

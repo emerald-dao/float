@@ -1169,18 +1169,18 @@ export const getEvents = async (addr) => {
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xCORE
 
-      pub fun main(account: Address): {String: FLOAT.FLOATEventMetadata} {
+      pub fun main(account: Address): {UFix64: FLOAT.FLOATEventMetadata} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEvents: [UInt64] = floatEventCollection.getIDs()
-        let returnVal: {String: FLOAT.FLOATEventMetadata} = {}
+        let floatEvents: [UInt64] = floatEventCollection.getIDs() 
+        let returnVal: {UFix64: FLOAT.FLOATEventMetadata} = {}
       
         for eventId in floatEvents {
           let resolved = floatEventCollection.borrowViewResolver(id: eventId)
           if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
             let metadata = view as! FLOAT.FLOATEventMetadata
-            returnVal[metadata.name] = metadata
+            returnVal[metadata.dateCreated] = metadata
           }
         }
         return returnVal
@@ -1401,30 +1401,6 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
   }
 }
 
-export const getCanMintForThem = async (address) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
-      import SharedAccount from 0xFLOAT
-
-      pub fun main(address: Address): [Address] {
-        let infoPublic = getAccount(address).getCapability(SharedAccount.InfoPublicPath)
-                                    .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>()
-                                    ?? panic("Could not borrow the InfoPublic from the account.")
-        return infoPublic.getCanMintForThem()
-      }
-      `,
-      args: (arg, t) => [
-        arg(address, t.Address)
-      ]
-    })
-    // console.log(queryResult);
-    return queryResult || [];
-  } catch (e) {
-    console.log(e);
-  }
-}
-
 export const getAllowed = async (address) => {
   try {
     let queryResult = await fcl.query({
@@ -1493,7 +1469,7 @@ export const isSharedWithUser = async (account, user) => {
         let infoPublic = getAccount(account).getCapability(SharedAccount.InfoPublicPath)
                                     .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>()
                                     ?? panic("Could not borrow the InfoPublic from the account.")
-        return infoPublic.isAllowed(account: user)
+        return infoPublic.isAllowed(account: user) || account == user
       }
       `,
       args: (arg, t) => [
@@ -1504,6 +1480,7 @@ export const isSharedWithUser = async (account, user) => {
     return queryResult;
   } catch (e) {
     console.log(e);
+    return false;
   }
 }
 
@@ -1579,7 +1556,7 @@ export const getGroup = async (account, groupName) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      pub fun main(account: Address, groupName: String): FLOAT.Group {
+      pub fun main(account: Address, groupName: String): FLOAT.Group? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")

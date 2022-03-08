@@ -7,7 +7,7 @@
   import {
     authenticate,
     createEvent,
-    getCanMintForThem,
+    isSharedWithUser
   } from "$lib/flow/actions";
 
   import { draftFloat, theme } from "$lib/stores";
@@ -69,10 +69,10 @@
     ipfsIsReady = true;
   }
 
-  let minter = $user?.addr;
-  function initCreateFloat() {
+  let minter = null;
+  async function initCreateFloat() {
     // check if all required inputs are correct
-    let canCreateFloat = checkInputs();
+    let canCreateFloat = await checkInputs();
 
     if (!canCreateFloat) {
       return;
@@ -81,7 +81,7 @@
     createEvent(minter, $draftFloat);
   }
 
-  function checkInputs() {
+  async function checkInputs() {
     let errorArray = [];
     let messageString = "The following mandatory fields are missing";
 
@@ -94,6 +94,16 @@
       errorArray.push("Event Image");
     }
 
+    if (!minter) {
+      minter = $user?.addr;
+    }
+    let canMintFor = await isSharedWithUser($user?.addr, minter);
+    console.log(canMintFor);
+    if (!canMintFor) {
+      messageString = "You cannot mint for"
+      errorArray.push(minter)
+    }
+
     if (errorArray.length > 0) {
       notifications.info(`${messageString}: ${errorArray.join(",")}`);
       return false;
@@ -102,7 +112,6 @@
     }
   }
 
-  let sharedMinters = getCanMintForThem($user?.addr);
 </script>
 
 <svelte:head>
@@ -355,8 +364,8 @@
           name="claimCode"
           bind:value={$draftFloat.claimCode}
           placeholder={$draftFloat.multipleSecretsEnabled
-            ? "code1, code2, code3, code4"
-            : "mySecretCode"} />
+            ? "ex. code1, code2, code3, code4"
+            : "ex. mySecretCode"} />
       </label>
       <hr />
     {/if}
@@ -382,24 +391,24 @@
           {$eventCreatedStatus.error}
         </button>
       {:else}
-        {#await sharedMinters then sharedMinters}
-          {#if sharedMinters?.length > 0}
-            <label for="minters">Select who you'd like to mint for.</label>
-            <select bind:value={minter} id="minters" required>
-              <option value={$user?.addr} selected>You</option>
-              {#each sharedMinters as minter}
-                <option value={minter}>{minter}</option>
-              {/each}
-            </select>
-          {/if}
-        {/await}
         <button on:click|preventDefault={initCreateFloat}>Create FLOAT</button>
+
+        <article>
+          <h4>OPTIONAL: Shared Minting</h4>
+          <div class="input-button-group">
+            <input placeholder="0x00000000000" type="text" id="minters" name="minters" bind:value={minter} />
+          </div>
+          <small>Input an address here to create an event for them. This is only allowed if you share an account with them.</small>
+        </article>
       {/if}
     </footer>
   </article>
 </div>
 
 <style>
+  h4 {
+    margin: 0;
+  }
   .outline {
     text-align: left;
   }
