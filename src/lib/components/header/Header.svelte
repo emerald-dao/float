@@ -15,7 +15,7 @@
 
     let html = document.querySelector('html')
     let currentDataTheme = html.getAttribute('data-theme');
-    $theme = currentDataTheme || 'light'
+    $theme = currentDataTheme || 'dark';
 
     if (!$theme && window?.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
       $theme = 'dark';
@@ -89,7 +89,7 @@
     display: flex;
     vertical-align: middle;
     align-items: center;
-    color: white;
+    color: var(--primary);
   }
 
   @media screen and (max-width: 500px) {

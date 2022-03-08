@@ -33,7 +33,7 @@ export function persistentWritable(key, defaultValue) {
   const { subscribe, set, update } = writable();
 
   // Get stored value.
-  const storedValue = JSON.parse(localStorage.getItem(key));
+  const storedValue = localStorage && JSON.parse(localStorage.getItem(key));
 
   // Determine resolved value.
   const resolvedValue = (storedValue === null) ? defaultValue : storedValue;
