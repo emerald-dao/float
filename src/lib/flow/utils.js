@@ -3,6 +3,7 @@ import {
 } from './stores.js';
 
 import { get } from 'svelte/store'
+import { resolver } from '$lib/stores.js';
 
 export function parseErrorMessageFromFCL(errorString) {
   let newString = errorString?.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: assertion failed:', 'Error:')
@@ -48,13 +49,9 @@ transaction(eventId: UInt64, recipient: Address) {
 }
 `;
 
-async function getResolvedName() {
-	let addressObject = await resolveAddressObject(floatEvent?.host);  
-	if (addressObject.resolvedNames.find) {
-		return addressObject.resolvedNames.find;
-	}
-	if (addressObject.resolvedNames.fn) {
-		return addressObject.resolvedNames.fn;
+export function getResolvedName(addressObject, priority = get(resolver)) {
+	if (addressObject.resolvedNames[priority]) {
+		return addressObject.resolvedNames[priority];
 	}
 	return addressObject.address;
 }

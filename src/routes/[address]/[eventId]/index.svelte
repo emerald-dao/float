@@ -34,19 +34,10 @@
 
   import ClaimsTable from "$lib/components/common/table/ClaimsTable.svelte";
   import ClaimButton from "$lib/components/ClaimButton.svelte";
+  import { getResolvedName } from "$lib/flow/utils";
 
   let claimsTableInView;
   let limitedVerifier;
-
-  function getResolvedName(addressObject) {
-    if (addressObject.resolvedNames.find) {
-      return addressObject.resolvedNames.find;
-    }
-    if (addressObject.resolvedNames.fn) {
-      return addressObject.resolvedNames.fn;
-    }
-    return addressObject.address;
-  }
 
   let groups;
   let groupsWeCanAddTo;

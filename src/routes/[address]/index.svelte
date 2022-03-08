@@ -44,10 +44,10 @@
     {#await addressObject then addressObject}
       {#if $user?.addr == addressObject.address}
         <li
-          on:click|preventDefault={() => (tab = "shared")}
-          class:animatedlink={tab !== "shared"}
-          class:selected={tab === "shared"}>
-          Share Account
+          on:click|preventDefault={() => (tab = "account")}
+          class:animatedlink={tab !== "account"}
+          class:selected={tab === "account"}>
+          Account
         </li>
       {/if}
     {/await}
@@ -62,7 +62,7 @@
       <Events {addressObject} />
     {:else if tab === "groups"}
       <Groups {addressObject} />
-    {:else if tab === "shared"}
+    {:else if tab === "account"}
       <Shared />
     {:else}
       <Floats {addressObject} />

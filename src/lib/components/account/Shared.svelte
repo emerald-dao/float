@@ -1,6 +1,8 @@
 <script>
   import { addSharedMinterInProgress, addSharedMinterStatus, removeSharedMinterInProgress, user } from "$lib/flow/stores";
   import { addSharedMinter, getAllowed, removeSharedMinter } from '$lib/flow/actions';
+  import UserAddress from "../UserAddress.svelte";
+  import { authenticate, unauthenticate } from "@samatech/onflow-fcl-esm";
 
   let newSharedMinter = "";
   
@@ -15,6 +17,16 @@
 
   let sharedMinters = loadAddresses();
 </script>
+
+<article class="user-info">
+  {#if !$user?.loggedIn}
+    <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
+  {:else}
+    <h4>You are currently logged in as: </h4><button class="outline"><UserAddress address={$user?.addr} abbreviated={false} /></button>
+    <br/>
+    <a class="logout" href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
+  {/if}
+</article>
 
 <!-- Add minters to your account so they can create FLOAT Events for you -->
 <article>
@@ -61,3 +73,25 @@
   {/if}
 {/await}
 
+<style>
+  .user-info {
+    text-align: center;
+    padding: 50px;
+  }
+
+  .user-info h4 {
+    display: inline-block;
+    margin-bottom: 50px;
+  }
+
+  .user-info button {
+    margin-left: 10px;
+    display: inline;
+    width: auto;
+    padding: 10px;
+  }
+
+  .logout {
+    width: 300px;
+  }
+</style>

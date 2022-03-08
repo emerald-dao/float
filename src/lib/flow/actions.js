@@ -1582,35 +1582,89 @@ export const resolveAddressObject = async (lookup) => {
     },
     address: ""
   };
+  let rootLookup = lookup.split('.')[0];
   // const findCache = JSON.parse(localStorage.getItem('findCache')) || {};
   // if (findCache && findCache[lookup]) {
   //   return Promise.resolve(findCache[lookup]);
   // }
   try {
-    if (lookup.length > 14) {
+    if (rootLookup.length > 14) {
       answer.address = lookup;
       answer.resolvedNames.find = await fcl.query({
         cadence: `
-        import FIND from 0xa16ab1d0abde3625
+        import FIND from 0xFIND
 
-        pub fun main(address: Address): String {
-            let name = FIND.reverseLookup(address) ?? panic("Does not exist")
-            return name.concat(".find")
+        pub fun main(address: Address): String? {
+            let name = FIND.reverseLookup(address)
+            return name?.concat(".find")
         }
         `,
         args: (arg, t) => [
           arg(lookup, t.Address)
         ]
-      })
+      });
+
+      answer.resolvedNames.fn = await fcl.query({
+        cadence: `
+        import Domains from 0xFN
+      
+        pub fun main(address: Address): String? {
+    
+          let account = getAccount(address)
+          let collectionCap = account.getCapability<&{Domains.CollectionPublic}>(Domains.CollectionPublicPath) 
+      
+          if collectionCap.check() != true {
+            return nil
+          }
+      
+          var flownsName = ""
+          let collection = collectionCap.borrow()!
+          let ids = collection.getIDs()
+          
+          for id in ids {
+            let domain = collection.borrowDomain(id: id)!
+            let isDefault = domain.getText(key: "isDefault")
+            flownsName = domain.getDomainName()
+            if isDefault == "true" {
+              break
+            }
+          }
+      
+          return flownsName
+        }
+        `,
+        args: (arg, t) => [
+          arg(lookup, t.Address)
+        ]
+      });
     } else if (lookup.includes('.find')) {
       answer.resolvedNames.find = lookup;
-      let rootLookup = lookup.split('.')[0];
       answer.address = await fcl.query({
         cadence: `
-        import FIND from 0xa16ab1d0abde3625
+        import FIND from 0xFIND
   
-        pub fun main(name: String) : Address  {
-          return FIND.lookupAddress(name) ?? panic("Does not exist.")
+        pub fun main(name: String) : Address?  {
+          return FIND.lookupAddress(name)
+        }
+        `,
+        args: (arg, t) => [
+          arg(rootLookup, t.String)
+        ]
+      })
+    } else if (lookup.includes('.fn')) {
+      answer.resolvedNames.fn = lookup;
+      answer.address = await fcl.query({
+        cadence: `
+        import Flowns from 0xFN
+        import Domains from 0xFN
+        pub fun main(name: String): Address? {
+          
+          let prefix = "0x"
+          let rootHash = Flowns.hash(node: "", lable: "fn")
+          let nameHash = prefix.concat(Flowns.hash(node: rootHash, lable: name))
+          let address = Domains.getRecords(nameHash)
+        
+          return address
         }
         `,
         args: (arg, t) => [

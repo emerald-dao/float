@@ -1,20 +1,15 @@
 <script>
-import { resolveAddressObject } from "$lib/flow/actions";
-import Loading from "./common/Loading.svelte";
+  import { resolveAddressObject } from "$lib/flow/actions";
+  import { getResolvedName } from "$lib/flow/utils";
+  import Loading from "./common/Loading.svelte";
 
-  async function getResolvedName() {
-    let addressObject = await resolveAddressObject(floatEvent?.host);  
-    if (addressObject.resolvedNames.find) {
-      return addressObject.resolvedNames.find;
-    }
-    if (addressObject.resolvedNames.fn) {
-      return addressObject.resolvedNames.fn;
-    }
-    return addressObject.address;
-  }
   export let floatEvent = {};
+  async function initialize() {
+    let addressObject = await resolveAddressObject(floatEvent?.host);  
+    return getResolvedName(addressObject);
+  }
   
-  let resolvedName = getResolvedName();
+  let resolvedName = initialize();
 </script>
 
 <style>

@@ -4,8 +4,10 @@
   import ConnectWallet from '$lib/components/ConnectWallet.svelte';
   import UserAddress from '../UserAddress.svelte';
   import { onMount } from 'svelte';
-  import { theme } from '$lib/stores.js';
+  import { resolver, theme } from '$lib/stores.js';
   import { fade, draw } from 'svelte/transition';
+  import { resolveAddressObject } from '$lib/flow/actions';
+  import { getResolvedName } from '$lib/flow/utils';
 
   let toggleTheme;
 
@@ -28,6 +30,20 @@
       localStorage.setItem('theme', newTheme);
     }
   })
+
+  async function initialize(address) {
+    let addressObject = await resolveAddressObject(address);
+    return getResolvedName(addressObject)
+  }
+  $: resolvedName = initialize($user?.addr || "");
+
+  function toggleResolver() {
+    if ($resolver === 'fn') {
+      $resolver = 'find';
+    } else {
+      $resolver = 'fn';
+    }
+  }
 
 </script>
 
@@ -63,15 +79,31 @@
     align-items: center;
   }
 
+  .resolver-toggle {
+    padding: 5px;
+    width: 60px;
+    background-color: var(--primary-focus);
+    display: inline-block;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    vertical-align: middle;
+    align-items: center;
+    color: white;
+  }
+
   @media screen and (max-width: 500px) {
     img {
       max-width: 100px;
+    }
+    .float-logo {
+      display: none;
     }
   }
 </style>
 
 <nav class="container">
-  <ul>
+  <ul class="float-logo">
     <li>
       <!-- when on mainnnet, replace this line with the one below-->
       <h1><a href="/"><img src="/logo-mainnet.png" alt="Emerald City FLOAT" /></a></h1>
@@ -94,17 +126,28 @@
         {/if}
       </a>
     </li>
-    <li><a href="/about">About</a></li>
-    
     <li>
-      {#if $user?.loggedIn}
-      <a href="/{$user?.addr}" role="button" class="outline">
-        <UserAddress address={$user?.addr || '0x0'} abbreviated={true}/>
-      </a>
-      {:else}
-      <ConnectWallet/>
-      {/if}
+      <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
+        {#if $resolver === 'fn'}
+          <kdb>.fn</kdb>
+        {:else}
+          <kdb>.find</kdb>
+        {/if}
+      </button>
     </li>
+    <li>
+      <a href="/about">About</a>
+    </li>
+    
+    {#await resolvedName then resolvedName}
+      {#if $user?.loggedIn}
+        <a href="/{resolvedName}" role="button" class="outline">
+          <UserAddress address={$user?.addr} />
+        </a>
+      {:else}
+        <ConnectWallet/>
+      {/if}
+    {/await}
   </ul>
 </nav>
 

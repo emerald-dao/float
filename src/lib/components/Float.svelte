@@ -1,22 +1,18 @@
 <script>
   import { resolveAddressObject } from "$lib/flow/actions";
+  import { getResolvedName } from "$lib/flow/utils";
 
   export let float = {};
   export let preview = false;
   export let individual = false;
   export let list = true;
 
-  async function getResolvedName() {
+  async function initialize() {
     let addressObject = await resolveAddressObject(float?.eventHost);  
-    if (addressObject.resolvedNames.find) {
-      return addressObject.resolvedNames.find;
-    }
-    if (addressObject.resolvedNames.fn) {
-      return addressObject.resolvedNames.fn;
-    }
-    return addressObject.address;
+    return getResolvedName(addressObject);
   }
-  let resolvedName = getResolvedName();
+  
+  let resolvedName = initialize();
 
 </script>
 

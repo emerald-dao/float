@@ -3,21 +3,12 @@
   import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT, resolveAddressObject } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { floatDeletionInProgress, floatDeletionStatus, floatTransferInProgress, floatTransferStatus, user } from "$lib/flow/stores";
+  import { getResolvedName } from "$lib/flow/utils";
   
   let eventOwnerResolvedName;
   let eventOwnerObject;
   let floatOwner;
   let floatOriginalOwner;
-  function getResolvedName(addressObject) {
-    if (addressObject.resolvedNames.find) {
-      return addressObject.resolvedNames.find;
-    }
-    if (addressObject.resolvedNames.fn) {
-      return addressObject.resolvedNames.fn;
-    }
-    return addressObject.address;
-  }
-  
   const floatCallback = async () => {
     eventOwnerObject = await resolveAddressObject($page.params.address);
     eventOwnerResolvedName = getResolvedName(eventOwnerObject);
