@@ -5,7 +5,7 @@ pub fun main(account: Address, groupName: String): [FLOAT.FLOATEventMetadata] {
   let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                               .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>()
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-  let group = floatEventCollection.getGroup(groupName: groupName)
+  let group = floatEventCollection.getGroup(groupName: groupName) ?? panic("This group doesn't exist.")
   let eventIds = group.getEvents()
 
   let answer: [FLOAT.FLOATEventMetadata] = []
