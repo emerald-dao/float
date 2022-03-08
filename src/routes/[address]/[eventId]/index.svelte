@@ -191,7 +191,7 @@
               <input type="text" id="address" name="address" placeholder="0x00000000000" bind:value={recipientAddr}>
               {#if $floatDistributingInProgress}
                 <button aria-busy="true" disabled>
-                  Awarding
+                  Award
                 </button>
               {:else if $floatDistributingStatus.success}
                 <a

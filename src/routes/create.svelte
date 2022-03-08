@@ -78,7 +78,7 @@
       return;
     }
 
-    createEvent(minter, $draftFloat);
+    createEvent(minter || $user?.addr, $draftFloat);
   }
 
   async function checkInputs() {
@@ -94,14 +94,13 @@
       errorArray.push("Event Image");
     }
 
-    if (!minter) {
-      minter = $user?.addr;
-    }
-    let canMintFor = await isSharedWithUser($user?.addr, minter);
-    console.log(canMintFor);
-    if (!canMintFor) {
-      messageString = "You cannot mint for"
-      errorArray.push(minter)
+    if (minter) {
+      let canMintFor = await isSharedWithUser(minter, $user?.addr);
+      console.log(canMintFor);
+      if (!canMintFor) {
+        messageString = "You cannot mint for"
+        errorArray.push(minter)
+      }
     }
 
     if (errorArray.length > 0) {
