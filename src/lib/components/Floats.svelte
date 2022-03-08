@@ -1,11 +1,10 @@
 <script>
-import { page } from '$app/stores';
-
+  export let addressObject;
   import Loading from '$lib/components/common/Loading.svelte';
   import Float from '$lib/components/Float.svelte';
   import { getFLOATs } from '$lib/flow/actions.js'
   
-  let floats = getFLOATs($page.params.address);
+  let floats = getFLOATs(addressObject.address);
 
 </script>
 
@@ -13,14 +12,14 @@ import { page } from '$app/stores';
 
 <div class="card-container">
   {#await floats}
-  <Loading />
+    <Loading />
   {:then floats} 
     {#if floats?.length > 0}
       {#each floats as float}
-      <Float float={{eventMetadata: float.event, ...float.float}} individual={true} />
+        <Float float={{eventMetadata: float.event, ...float.float}} individual={true} />
       {/each}
     {:else}
-    <p>This account doesn't have any FLOATs yet.</p>
+      <p>This account doesn't have any FLOATs yet.</p>
     {/if}
   {/await}
 </div>

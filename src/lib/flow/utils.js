@@ -12,14 +12,6 @@ export function parseErrorMessageFromFCL(errorString) {
   return newString;
 }
 
-// Converts addresses. We can use this for .find and .fn later as well.
-export function convertAddress(address) {
-  if (address === get(user).addr) {
-    return "you";
-  }
-  return address;
-}
-
 export let distributeCode = `
 import FLOAT from 0xFLOAT
 import NonFungibleToken from 0xCORE
@@ -54,4 +46,15 @@ transaction(eventId: UInt64, recipient: Address) {
 		//
 	}
 }
-`
+`;
+
+async function getResolvedName() {
+	let addressObject = await resolveAddressObject(floatEvent?.host);  
+	if (addressObject.resolvedNames.find) {
+		return addressObject.resolvedNames.find;
+	}
+	if (addressObject.resolvedNames.fn) {
+		return addressObject.resolvedNames.fn;
+	}
+	return addressObject.address;
+}

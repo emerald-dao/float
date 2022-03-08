@@ -1574,6 +1574,60 @@ export const getGroup = async (account, groupName) => {
   }
 }
 
+export const resolveAddressObject = async (lookup) => {
+  let answer = {
+    resolvedNames: {
+      find: "",
+      fn: ""
+    },
+    address: ""
+  };
+  // const findCache = JSON.parse(localStorage.getItem('findCache')) || {};
+  // if (findCache && findCache[lookup]) {
+  //   return Promise.resolve(findCache[lookup]);
+  // }
+  try {
+    if (lookup.length > 14) {
+      answer.address = lookup;
+      answer.resolvedNames.find = await fcl.query({
+        cadence: `
+        import FIND from 0xa16ab1d0abde3625
+
+        pub fun main(address: Address): String {
+            let name = FIND.reverseLookup(address) ?? panic("Does not exist")
+            return name.concat(".find")
+        }
+        `,
+        args: (arg, t) => [
+          arg(lookup, t.Address)
+        ]
+      })
+    } else if (lookup.includes('.find')) {
+      answer.resolvedNames.find = lookup;
+      let rootLookup = lookup.split('.')[0];
+      answer.address = await fcl.query({
+        cadence: `
+        import FIND from 0xa16ab1d0abde3625
+  
+        pub fun main(name: String) : Address  {
+          return FIND.lookupAddress(name) ?? panic("Does not exist.")
+        }
+        `,
+        args: (arg, t) => [
+          arg(rootLookup, t.String)
+        ]
+      })
+    }
+    console.log(answer)
+    // findCache[lookup] = queryResult;
+    // localStorage.setItem('findCache', JSON.stringify(findCache));
+    return answer;
+  } catch (e) {
+    console.log(e)
+    return answer;
+  }
+}
+
 function initTransactionState() {
   transactionInProgress.set(true);
   transactionStatus.set(-1);

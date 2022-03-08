@@ -1,12 +1,11 @@
 <script>
-  import { page } from "$app/stores";
-
   import Loading from "$lib/components/common/Loading.svelte";
   import Event from "$lib/components/Event.svelte";
   import { getEvents } from "$lib/flow/actions.js";
   import { user } from "$lib/flow/stores";
+  export let addressObject;
 
-  let floatEvents = getEvents($page.params.address);
+  let floatEvents = getEvents(addressObject.address);
 
   function getEventsArray(floatEventsObj) {
     if (floatEventsObj && Object.keys(floatEventsObj)?.length > 0) {
@@ -17,7 +16,7 @@
   }
 </script>
 
-{#if $user?.addr == $page.params.address}
+{#if $user?.addr == addressObject.address}
   <a href="/create" role="button" class="addnew">Create a new Event</a>
 {/if}
 

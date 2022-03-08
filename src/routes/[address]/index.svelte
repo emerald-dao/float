@@ -7,6 +7,10 @@
   import Events from "$lib/components/Events.svelte";
   import { user } from "$lib/flow/stores";
   import Shared from "$lib/components/account/Shared.svelte";
+  import { resolveAddressObject } from "$lib/flow/actions";
+  import Loading from "$lib/components/common/Loading.svelte";
+
+  let addressObject = resolveAddressObject($page.params.address);
 
   let tab = "floats";
 </script>
@@ -37,27 +41,33 @@
       class:selected={tab === "groups"}>
       Groups
     </li>
-    {#if $user?.addr == $page.params.address}
-      <li
-        on:click|preventDefault={() => (tab = "shared")}
-        class:animatedlink={tab !== "shared"}
-        class:selected={tab === "shared"}>
-        Share Account
-      </li>
-    {/if}
+    {#await addressObject then addressObject}
+      {#if $user?.addr == addressObject.address}
+        <li
+          on:click|preventDefault={() => (tab = "shared")}
+          class:animatedlink={tab !== "shared"}
+          class:selected={tab === "shared"}>
+          Share Account
+        </li>
+      {/if}
+    {/await}
   </ul>
 
-  {#if tab === "floats"}
-    <Floats />
-  {:else if tab === "events"}
-    <Events />
-  {:else if tab === "groups"}
-    <Groups />
-  {:else if tab === "shared"}
-    <Shared />
-  {:else}
-    <Floats />
-  {/if}
+  {#await addressObject}
+    <Loading />
+  {:then addressObject}
+    {#if tab === "floats"}
+      <Floats {addressObject} />
+    {:else if tab === "events"}
+      <Events {addressObject} />
+    {:else if tab === "groups"}
+      <Groups {addressObject} />
+    {:else if tab === "shared"}
+      <Shared />
+    {:else}
+      <Floats {addressObject} />
+    {/if}
+  {/await}
 </div>
 
 <style>

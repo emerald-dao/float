@@ -1,21 +1,37 @@
 <script>
   import { page } from "$app/stores";
-  import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT } from "$lib/flow/actions.js";
+  import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT, resolveAddressObject } from "$lib/flow/actions.js";
   import Meta from '$lib/components/common/Meta.svelte';
   import { floatDeletionInProgress, floatDeletionStatus, floatTransferInProgress, floatTransferStatus, user } from "$lib/flow/stores";
-  import { convertAddress } from "$lib/flow/utils";
+  
+  let eventOwnerResolvedName;
+  let eventOwnerObject;
+  let floatOwner;
+  let floatOriginalOwner;
+  function getResolvedName(addressObject) {
+    if (addressObject.resolvedNames.find) {
+      return addressObject.resolvedNames.find;
+    }
+    if (addressObject.resolvedNames.fn) {
+      return addressObject.resolvedNames.fn;
+    }
+    return addressObject.address;
+  }
   
   const floatCallback = async () => {
-    return new Promise(async (resolve, reject) => {
-      let holder = await getCurrentHolder($page.params.address, $page.params.eventId, $page.params.serial)
-      if (!holder) {
-        resolve('deleted');
-      } else {
-        let float = await getFLOAT(holder?.address, holder?.id);
-        console.log(float)
-        resolve(float);
-      }
-    })
+    eventOwnerObject = await resolveAddressObject($page.params.address);
+    eventOwnerResolvedName = getResolvedName(eventOwnerObject);
+    let holder = await getCurrentHolder(eventOwnerObject.address, $page.params.eventId, $page.params.serial)
+    if (!holder) {
+      return 'deleted';
+    } else {
+      let data = await getFLOAT(holder?.address, holder?.id);
+      let floatOwnerObject = await resolveAddressObject(data.float.owner);
+      floatOwner = getResolvedName(floatOwnerObject);
+      let floatOriginalOwnerObject = await resolveAddressObject(data.float.originalRecipient);
+      floatOriginalOwner = getResolvedName(floatOriginalOwnerObject);
+      return data;
+    }
   }
   let recipientAddr = "";
   let data = floatCallback();
@@ -38,14 +54,14 @@
   
   function animate(container) {
     container.addEventListener('mousemove', (e) => {
-      let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-      let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+      let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+      let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
     
     container.addEventListener('touchmove', (e) => {
-      let xAxis = (window.innerWidth / 2 - e.pageX) / 25;
-      let yAxis = (window.innerHeight / 2 - e.pageY) / 25;
+      let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+      let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
     
@@ -72,12 +88,12 @@
 </script>
 
 {#await data then data}
-<Meta
-title="{data?.event.name} | FLOAT #{$page.params.eventId}"
-author={data?.event.host}
-description={data?.event.description}
-url={$page.url}
-/>
+  <Meta
+  title="{data?.event.name} | FLOAT #{$page.params.eventId}"
+  author={data?.event.host}
+  description={data?.event.description}
+  url={$page.url}
+  />
 {/await}
 
 {#await data then data}
@@ -86,12 +102,12 @@ url={$page.url}
   {:else}
     <article class="toggle">
       <header>
-        <h3>Owned by {convertAddress(data?.float.owner)}</h3>
-        <small class="muted">Originally claimed by {convertAddress(data?.float.originalRecipient)}</small>
+        <h3>Owned by {floatOwner}</h3>
+        <small class="muted">Originally claimed by {floatOriginalOwner}</small>
       </header>
       
       <div class="whole">
-        <a href="/{data.event.host}/{data.event.eventId}" class="wrap" bind:this={container}>
+        <a href="/{eventOwnerResolvedName}/{data.event.eventId}" class="wrap" bind:this={container}>
           <div class="float transition" bind:this={card}>
             <div class="image transition" bind:this={image}>
               <img src={`https://ipfs.infura.io/ipfs/${data.event.image}`} alt="float">
@@ -101,7 +117,7 @@ url={$page.url}
               <p class="transition" bind:this={createdBy}>
                 <small>
                   <span class="credit">Created by</span>
-                  <a href="/{data.event.host}" class="host">{data.event.host}</a>
+                  <a href="/{eventOwnerResolvedName}" class="host">{eventOwnerResolvedName}</a>
                 </small>
               </p>
               <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.float.serial}</code>
@@ -191,7 +207,7 @@ url={$page.url}
     width: 20rem;
     min-height: 50vh;
     border-radius: 30px;
-    padding: 1rem 5rem;
+    padding: 1rem 1rem;
     padding-bottom: 2rem;
     box-shadow: 0 20px 20px rgb(0, 0, 0, 0.2), 0 0px 50px rgb(0, 0, 0, 0.2);
     background-color: var(--card-background-color);
@@ -205,7 +221,8 @@ url={$page.url}
   }
   
   .image img {
-    width: 20rem;
+    max-width: 200px;
+    max-height: 200px;
   }
   
   .info {

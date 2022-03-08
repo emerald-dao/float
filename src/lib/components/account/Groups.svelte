@@ -5,8 +5,8 @@
   import { onMount } from "svelte";
   import Group from "../Group.svelte";
   import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
-  import { page } from "$app/stores";
   import { authenticate } from "@samatech/onflow-fcl-esm";
+  export let addressObject;
 
   let ipfsIsReady = false;
   let uploading = false;
@@ -52,7 +52,7 @@
     ipfsIsReady = true;
   }
 
-  let groups = getGroups($page.params.address);
+  let groups = getGroups(addressObject.address);
 </script>
 
 <LibLoader
@@ -60,7 +60,7 @@
   on:loaded={ipfsReady}
   uniqueId={+new Date()} />
 
-{#if $user?.addr === $page.params.address}
+{#if $user?.addr === addressObject.address}
   {#if open}
     <article>
       <h4>Create a new Group</h4>
@@ -129,7 +129,7 @@
       {:else}
         <button
           on:click|preventDefault={createGroup(
-            $page.params.address,
+            addressObject.address,
             $draftGroup
           )}>
           Create Group

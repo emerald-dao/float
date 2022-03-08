@@ -22,7 +22,8 @@
     isSharedWithUser,
     addEventToGroup,
     getGroups,
-    removeEventFromGroup
+    removeEventFromGroup,
+    resolveAddressObject
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -37,12 +38,25 @@
   let claimsTableInView;
   let limitedVerifier;
 
+  function getResolvedName(addressObject) {
+    if (addressObject.resolvedNames.find) {
+      return addressObject.resolvedNames.find;
+    }
+    if (addressObject.resolvedNames.fn) {
+      return addressObject.resolvedNames.fn;
+    }
+    return addressObject.address;
+  }
+
   let groups;
   let groupsWeCanAddTo;
+  let resolvedNameObject;
+  let isSharedWithMe;
   const floatEventCallback = async () => {
-    let eventData = await getEvent($page.params.address, $page.params.eventId);
+    resolvedNameObject = await resolveAddressObject($page.params.address);
+    let eventData = await getEvent(resolvedNameObject.address, $page.params.eventId);
     let hasClaimed = await hasClaimedEvent(
-      $page.params.address,
+      resolvedNameObject.address,
       $page.params.eventId,
       $user.addr
     );
@@ -51,13 +65,13 @@
       data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
     console.log(data);
 
-    groups = await getGroups($page.params.address);
+    groups = await getGroups(resolvedNameObject.address);
     groupsWeCanAddTo = Object.keys(groups).filter(groupName => !data.groups.includes(groupName));
+    isSharedWithMe = isSharedWithUser(resolvedNameObject.address, $user?.addr);
     return data;
   };
 
   let floatEvent = floatEventCallback();
-  let isSharedWithMe = isSharedWithUser($page.params.address, $user?.addr);
 
   let recipientAddr = "";
   let groupName = "";
@@ -130,7 +144,7 @@
           <strong><small class="muted">GROUPS</small></strong>
           <br />
           {#each floatEvent?.groups as group}
-            <a href="/{$page.params.address}/group/{group}"><div class="group-badge">{group}</div></a>
+            <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"><div class="group-badge">{group}</div></a>
           {/each}
         </blockquote>
       {/if}
@@ -160,7 +174,7 @@
               disabled={$toggleClaimingInProgress}
               aria-busy={$toggleClaimingInProgress}
               on:click={() =>
-                toggleClaimable($page.params.address, floatEvent?.eventId)}>
+                toggleClaimable(resolvedNameObject.address, floatEvent?.eventId)}>
               {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
@@ -168,14 +182,14 @@
               disabled={$toggleTransferringInProgress}
               aria-busy={$toggleTransferringInProgress}
               on:click={() =>
-                toggleTransferrable($page.params.address, floatEvent?.eventId)}>
+                toggleTransferrable(resolvedNameObject.address, floatEvent?.eventId)}>
               {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
             </button>
             <button
               class="outline red"
               disabled={floatEvent?.totalSupply !== 0}
               on:click={() =>
-                deleteEvent($page.params.address, floatEvent?.eventId)}>
+                deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}>
               Delete this event
             </button>
           </div>
@@ -203,7 +217,7 @@
                   disabled={$floatDistributingInProgress}
                   on:click={() =>
                     distributeDirectly(
-                      $page.params.address,
+                      resolvedNameObject.address,
                       floatEvent?.eventId,
                       recipientAddr
                     )}
@@ -235,7 +249,7 @@
                   <button
                     on:click={() =>
                       addEventToGroup(
-                        $page.params.address,
+                        resolvedNameObject.address,
                         groupName,
                         floatEvent?.eventId
                       )}>Add</button>
@@ -266,7 +280,7 @@
                   <button
                     on:click={() =>
                       removeEventFromGroup(
-                        $page.params.address,
+                        resolvedNameObject.address,
                         groupName,
                         floatEvent?.eventId
                       )}>Remove</button>
