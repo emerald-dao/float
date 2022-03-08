@@ -6,7 +6,14 @@
   import Group from "../Group.svelte";
   import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
   import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { getResolvedName } from "$lib/flow/utils";
   export let addressObject;
+
+  async function initialize() {
+    return getResolvedName(addressObject);
+  }
+  
+  let resolvedName = initialize();
 
   let ipfsIsReady = false;
   let uploading = false;
@@ -144,16 +151,19 @@
 
 <h3 class="mt-1">Groups</h3>
 {#await groups then groups}
-  {#if Object.keys(groups).length > 0}
-    {#each Object.values(groups) as group}
-      <Group
-        name={group.name}
-        imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
-        description={group.description} />
-    {/each}
-  {:else}
-    <p>This account has not created any Groups.</p>
-  {/if}
+  {#await resolvedName then resolvedName}
+    {#if Object.keys(groups).length > 0}
+      {#each Object.values(groups) as group}
+        <Group
+          {resolvedName}
+          name={group.name}
+          imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
+          description={group.description} />
+      {/each}
+    {:else}
+      <p>This account has not created any Groups.</p>
+    {/if}
+  {/await}
 {/await}
 
 <style>

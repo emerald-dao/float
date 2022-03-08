@@ -1,12 +1,11 @@
 <script>
-  import { user } from "$lib/flow/stores";
-
+  export let resolvedName;
   export let name = "";
   export let imagePreviewSrc = "";
   export let description = "";
 </script>
 
-<a href="/{$user?.addr}/group/{name}">
+<a href="/{resolvedName}/group/{name}">
   <article class="preview">
     <div class="img-container">
       <img src={imagePreviewSrc} alt="group" />

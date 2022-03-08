@@ -3,44 +3,52 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import Event from "$lib/components/Event.svelte";
   import Group from "$lib/components/Group.svelte";
-  import { deleteGroup, getEventsInGroup, getGroup } from "$lib/flow/actions";
+  import { deleteGroup, getEventsInGroup, getGroup, resolveAddressObject } from "$lib/flow/actions";
   import { deleteGroupInProgress, deleteGroupStatus, user } from "$lib/flow/stores";
 
-  let events = getEventsInGroup($page.params.address, $page.params.groupName);
-  let group = getGroup($page.params.address, $page.params.groupName);
+  let events;
+  let group;
+  async function initialize() {
+    let addressObject = await resolveAddressObject($page.params.address); 
+    events = await getEventsInGroup(addressObject.address, $page.params.groupName);
+    group = await getGroup(addressObject.address, $page.params.groupName);
+    return addressObject;
+  }
+  
+  let addressObject = initialize();
 </script>
 
-{#await group then group}
+{#await addressObject then addressObject}
   <Group
     name={group.name}
     description={group.description}
     imagePreviewSrc="https://ipfs.infura.io/ipfs/{group.image}"
     preview={true} />
+
+  {#if $user?.addr == addressObject.address}
+    {#if $deleteGroupInProgress}
+      <button class="outline red" aria-busy="true" disabled>Deleting Group</button>
+    {:else if $deleteGroupStatus.success}
+      <button class="outline red" disabled>Group deleted successfully.</button>
+    {:else if !$deleteGroupStatus.success && $deleteGroupStatus.error}
+      <button class="outline red" disabled>
+        {$deleteGroupStatus.error}
+      </button>
+    {:else}
+      <button
+        class="red outline"
+        on:click|preventDefault={deleteGroup(
+          addressObject.address,
+          $page.params.groupName
+        )}>Delete Group</button>
+    {/if}
+  {/if}
 {/await}
 
-{#if $user?.addr == $page.params.address}
-  {#if $deleteGroupInProgress}
-    <button class="outline red" aria-busy="true" disabled>Deleting Group</button>
-  {:else if $deleteGroupStatus.success}
-    <button class="outline red" disabled>Group deleted successfully.</button>
-  {:else if !$deleteGroupStatus.success && $deleteGroupStatus.error}
-    <button class="outline red" disabled>
-      {$deleteGroupStatus.error}
-    </button>
-  {:else}
-    <button
-      class="red outline"
-      on:click|preventDefault={deleteGroup(
-        $page.params.address,
-        $page.params.groupName
-      )}>Delete Group</button>
-  {/if}
-{/if}
-
 <div class="card-container">
-  {#await events}
+  {#await addressObject}
     <Loading />
-  {:then events}
+  {:then addressObject}
     {#each events as event}
       <Event
         floatEvent={{
