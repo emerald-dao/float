@@ -16,7 +16,7 @@
   {:then floats} 
     {#if floats?.length > 0}
       {#each floats as float}
-        <Float float={{eventMetadata: float.event, ...float.float}} individual={true} />
+        <Float float={{totalSupply: float.totalSupply, transferrable: float.transferrable, ...float.float}} individual={true} />
       {/each}
     {:else}
       <p>This account doesn't have any FLOATs yet.</p>

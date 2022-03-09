@@ -4,9 +4,11 @@
   import Meta from '$lib/components/common/Meta.svelte';
   import { floatDeletionInProgress, floatDeletionStatus, floatTransferInProgress, floatTransferStatus, user } from "$lib/flow/stores";
   import { getResolvedName } from "$lib/flow/utils";
+import Loading from "$lib/components/common/Loading.svelte";
   
   let eventOwnerResolvedName;
   let eventOwnerObject;
+  let owner;
   let floatOwner;
   let floatOriginalOwner;
   const floatCallback = async () => {
@@ -16,12 +18,13 @@
     if (!holder) {
       return 'deleted';
     } else {
-      let data = await getFLOAT(holder?.address, holder?.id);
-      let floatOwnerObject = await resolveAddressObject(data.float.owner);
+      let float = await getFLOAT(holder.address, holder.id);
+      owner = holder.address;
+      let floatOwnerObject = await resolveAddressObject(owner);
       floatOwner = getResolvedName(floatOwnerObject);
-      let floatOriginalOwnerObject = await resolveAddressObject(data.float.originalRecipient);
+      let floatOriginalOwnerObject = await resolveAddressObject(float.float.originalRecipient);
       floatOriginalOwner = getResolvedName(floatOriginalOwnerObject);
-      return data;
+      return {...float.float, totalSupply: float.totalSupply, transferrable: float.transferrable};
     }
   }
   let recipientAddr = "";
@@ -80,14 +83,16 @@
 
 {#await data then data}
   <Meta
-  title="{data?.event.name} | FLOAT #{$page.params.eventId}"
-  author={data?.event.host}
-  description={data?.event.description}
+  title="{data.eventName} | FLOAT #{$page.params.eventId}"
+  author={data.eventHost}
+  description={data.description}
   url={$page.url}
   />
 {/await}
 
-{#await data then data}
+{#await data}
+  <Loading />
+{:then data}
   {#if data == 'deleted'}
     <article>This FLOAT has been deleted or it has not been minted yet.</article>
   {:else}
@@ -98,20 +103,20 @@
       </header>
       
       <div class="whole">
-        <a href="/{eventOwnerResolvedName}/{data.event.eventId}" class="wrap" bind:this={container}>
+        <a href="/{eventOwnerResolvedName}/{data.eventId}" class="wrap" bind:this={container}>
           <div class="float transition" bind:this={card}>
             <div class="image transition" bind:this={image}>
-              <img src={`https://ipfs.infura.io/ipfs/${data.event.image}`} alt="float">
+              <img src={`https://ipfs.infura.io/ipfs/${data.eventImage}`} alt="float">
             </div>
             <div class="info">
-              <h1 class="transition" bind:this={title}>{data.event.name}</h1>
+              <h1 class="transition" bind:this={title}>{data.eventName}</h1>
               <p class="transition" bind:this={createdBy}>
                 <small>
                   <span class="credit">Created by</span>
                   <a href="/{eventOwnerResolvedName}" class="host">{eventOwnerResolvedName}</a>
                 </small>
               </p>
-              <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.float.serial}</code>
+              <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.serial}</code>
             </div>
           </div>
         </a>
@@ -119,9 +124,9 @@
       
       <blockquote>
         <strong><small class="muted">DESCRIPTION</small></strong><br/>
-        {data?.event.description}
+        {data.eventDescription}
       </blockquote>
-      {#if $user?.addr == data?.float.owner}
+      {#if $user?.addr == owner}
         {#if $floatDeletionInProgress}
           <button class="outline red" aria-busy="true" disabled>Deleting FLOAT</button>
         {:else if $floatDeletionStatus.success}
@@ -131,14 +136,14 @@
             {$floatDeletionStatus.error}
           </button>
         {:else}
-          <button class="outline red" on:click={() => deleteFLOAT(data?.float.id)}>
+          <button class="outline red" on:click={() => deleteFLOAT(data.id)}>
             Delete this FLOAT
           </button>
         {/if}
       {/if}
     </article>
 
-    {#if $user?.addr == data?.float.owner && data?.event.transferrable}
+    {#if $user?.addr == owner && data.transferrable}
       <article>
         <label for="recipientAddr">
           Copy the recipient's address below.
@@ -158,7 +163,7 @@
             {$floatTransferStatus.error}
           </button>
         {:else}
-          <button on:click={transferFLOAT(data?.float.id, recipientAddr)}>
+          <button on:click={transferFLOAT(data.id, recipientAddr)}>
             Transfer this FLOAT
           </button>
         {/if}

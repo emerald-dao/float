@@ -8,7 +8,7 @@
   export let list = true;
 
   async function initialize() {
-    let addressObject = await resolveAddressObject(float?.eventHost);  
+    let addressObject = await resolveAddressObject(float.eventHost);  
     return getResolvedName(addressObject);
   }
   
@@ -20,30 +20,30 @@
   {#if individual}
     <a
       class="no-style"
-      href="/{resolvedName}/{float?.eventId}/{float?.serial}">
+      href="/{resolvedName}/{float.eventId}/{float.serial}">
       <article class="card" class:nomargin={!list}>
         <img
-          src="https://ipfs.infura.io/ipfs/{float?.eventImage}"
-          alt="{float?.eventName} Image" />
-        <h1>{float?.eventName}</h1>
+          src="https://ipfs.infura.io/ipfs/{float.eventImage}"
+          alt="{float.eventName} Image" />
+        <h1>{float.eventName}</h1>
         <p>
           <small>
             <span class="credit">Created by</span>
             <a href="/{resolvedName}" class="host">{resolvedName}</a>
           </small>
         </p>
-        <code data-tooltip="{float?.serial} of {float?.eventMetadata.totalSupply}"
-          >#{float?.serial}</code>
+        <code data-tooltip="{float.serial} of {float.totalSupply}"
+          >#{float.serial}</code>
       </article>
     </a>
   {:else if preview}
     <article class="card card-preview">
-      {#if float?.eventImage}
+      {#if float.eventImage}
         <img
-          src="https://ipfs.infura.io/ipfs/{float?.eventImage}"
-          alt="{float?.eventName} Image" />
+          src="https://ipfs.infura.io/ipfs/{float.eventImage}"
+          alt="{float.eventName} Image" />
       {/if}
-      <h1>{float?.eventName}</h1>
+      <h1>{float.eventName}</h1>
       <p>
         <small>
           <span class="credit">Created by</span>
@@ -51,25 +51,25 @@
         </small>
       </p>
       <code data-tooltip="Minted so far"
-        >#{float?.eventMetadata.totalSupply}</code>
+        >#{float.totalSupply}</code>
     </article>
   {:else}
-    <a class="no-style" href="/{resolvedName}/{float?.eventId}">
+    <a class="no-style" href="/{resolvedName}/{float.eventId}">
       <article class="card">
-        {#if float?.eventImage}
+        {#if float.eventImage}
           <img
-            src="https://ipfs.infura.io/ipfs/{float?.eventImage}"
-            alt="{float?.eventName} Image" />
+            src="https://ipfs.infura.io/ipfs/{float.eventImage}"
+            alt="{float.eventName} Image" />
         {/if}
-        <h1>{float?.eventName}</h1>
+        <h1>{float.eventName}</h1>
         <p>
           <small>
             <span class="credit">Created by</span>
             <a href="/{resolvedName}" class="host">{resolvedName}</a>
           </small>
         </p>
-        <code data-tooltip="{float?.serial} of {float?.eventMetadata.totalSupply}"
-          >#{float?.serial}</code>
+        <code data-tooltip="{float.serial} of {float.totalSupply}"
+          >#{float.serial}</code>
       </article>
     </a>
   {/if}

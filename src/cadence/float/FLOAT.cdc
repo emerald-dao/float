@@ -60,49 +60,6 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
-    // Metadata for a FLOAT. 
-    // You'll notice it contains
-    // copied data from the event it's from. While 
-    // this may be inefficient, it is necessary
-    // in case the event owner ever unlinks their
-    // FLOATEvents.
-    pub struct FLOATMetadata {
-        pub let id: UInt64
-        pub let dateReceived: UFix64
-        pub let eventDescription: String
-        pub let eventHost: Address
-        pub let eventId: UInt64
-        pub let eventImage: String
-        pub let eventName: String
-        pub let originalRecipient: Address
-        pub let owner: Address
-        pub let serial: UInt64
-
-        init(
-            _id: UInt64,
-            _dateReceived: UFix64, 
-            _eventDescription: String,
-            _eventHost: Address, 
-            _eventId: UInt64,
-            _eventImage: String,
-            _eventName: String,
-            _originalRecipient: Address,
-            _owner: Address,
-            _serial: UInt64
-        ) {
-            self.id = _id
-            self.dateReceived = _dateReceived
-            self.eventDescription = _eventDescription
-            self.eventHost = _eventHost
-            self.eventId = _eventId
-            self.eventImage = _eventImage
-            self.eventName = _eventName
-            self.originalRecipient = _originalRecipient
-            self.owner = _owner
-            self.serial = _serial
-        }
-    }
-
     // Represents a FLOAT
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         // The `uuid` of this resource
@@ -117,8 +74,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let originalRecipient: Address
         pub let serial: UInt64
 
-        // A capability that points to the FLOATEvents 
-        // this FLOAT is from.
+        // A capability that points to the FLOATEvents this FLOAT is from.
         // There is a chance the event host unlinks their event from
         // the public, in which case it's impossible to know details
         // about the event. Which is fine, since we store the
@@ -139,7 +95,6 @@ pub contract FLOAT: NonFungibleToken {
              return [
                 Type<MetadataViews.Display>(),
                 Type<TokenIdentifier>(),
-                Type<FLOATMetadata>(),
                 Type<FLOATEventMetadata>()
             ]
         }
@@ -158,19 +113,6 @@ pub contract FLOAT: NonFungibleToken {
                         _address: self.owner!.address,
                         _serial: self.serial
                     ) 
-                case Type<FLOATMetadata>():
-                    return FLOATMetadata(
-                        _id: self.id,
-                        _dateReceived: self.dateReceived, 
-                        _eventDescription: self.eventDescription,
-                        _eventHost: self.eventHost, 
-                        _eventId: self.eventId,
-                        _eventImage: self.eventImage,
-                        _eventName: self.eventName,
-                        _originalRecipient: self.originalRecipient,
-                        _owner: self.owner!.address,
-                        _serial: self.serial
-                    )
                 case Type<FLOATEventMetadata>():
                     return self.getEventMetadata()
             }
@@ -206,23 +148,35 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub resource interface CollectionPublic {
-        pub fun deposit(token: @NonFungibleToken.NFT)
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
+        pub fun borrowFLOAT(id: UInt64): &NFT?
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver}
-        pub fun owns(id: UInt64): Bool
+        pub fun deposit(token: @NonFungibleToken.NFT)
         pub fun getIDs(): [UInt64]
         pub fun getAllIDs(): [UInt64]
+        pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64]
+        pub fun ownedFLOATsFromEvent(eventId: UInt64): [&NFT]
     }
 
     // A Collection that holds all of the users FLOATs.
     // Withdrawing is not allowed. You can only transfer.
     pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, CollectionPublic {
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
+        // Maps an eventId to the ids of FLOATs that this
+        // this user owns from that event
+        access(account) var events: {UInt64: {UInt64: Bool}}
 
         pub fun deposit(token: @NonFungibleToken.NFT) {
             let nft <- token as! @NFT
-            emit Deposit(id: nft.id, to: self.owner!.address)
-            self.ownedNFTs[nft.id] <-! nft
+            let id = nft.id
+            let eventId = nft.eventId
+            emit Deposit(id: id, to: self.owner!.address)
+            if self.events[eventId] == nil {
+                self.events[eventId] = {id: true}
+            } else {
+                self.events[eventId]!.insert(key: id, true)
+            }
+            self.ownedNFTs[id] <-! nft
         }
 
         // Function is disabled, but here to fit the NonFungibleToken standard.
@@ -249,9 +203,12 @@ pub contract FLOAT: NonFungibleToken {
             floatEvent.transferred(id: nft.id, serial: nft.serial, to: recipient.owner!.address)
             emit FLOATTransferred(id: nft.id, from: self.owner!.address, to: recipient.owner!.address, eventHost: nft.eventHost, eventId: nft.eventId, serial: nft.serial)
 
+            self.events[nft.eventId]!.remove(key: nft.id)
             recipient.deposit(token: <- nft)
         }
 
+        // Only returns the FLOATs for which we can still
+        // access data about their event.
         pub fun getIDs(): [UInt64] {
             let ids: [UInt64] = []
             for key in self.ownedNFTs.keys {
@@ -268,12 +225,36 @@ pub contract FLOAT: NonFungibleToken {
             return self.ownedNFTs.keys
         }
 
-        pub fun owns(id: UInt64): Bool {
-            return self.ownedNFTs[id] != nil
+        // Returns an array of ids that belong to
+        // the passed in eventId
+        pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
+            if self.events[eventId] != nil {
+                return self.events[eventId]!.keys
+            }
+            return []
+        }
+
+        // Returns an array of FLOATs that belong to
+        // the passed in eventId
+        pub fun ownedFLOATsFromEvent(eventId: UInt64): [&NFT] {
+            let answer: [&NFT] = []
+            let ids = self.ownedIdsFromEvent(eventId: eventId)
+            for id in ids {
+                answer.append(self.borrowFLOAT(id: id)!)
+            }
+            return answer
         }
 
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return &self.ownedNFTs[id] as &NonFungibleToken.NFT
+        }
+
+        pub fun borrowFLOAT(id: UInt64): &NFT? {
+            if self.ownedNFTs[id] != nil {
+                let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
+                return ref as! &NFT
+            }
+            return nil
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
@@ -309,12 +290,13 @@ pub contract FLOAT: NonFungibleToken {
                 serial: nft.serial,
                 lastOwner: self.owner!.address
             )
-
+            self.events[nft.eventId]!.remove(key: nft.id)
             destroy nft
         }
 
         init() {
             self.ownedNFTs <- {}
+            self.events = {}
         }
 
         destroy() {
@@ -333,6 +315,16 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub resource interface FLOATEventPublic {
+        pub var claimable: Bool
+        pub let dateCreated: UFix64
+        pub let description: String 
+        pub let eventId: UInt64
+        pub let host: Address
+        pub let image: String 
+        pub let name: String
+        pub var totalSupply: UInt64
+        pub var transferrable: Bool
+        pub let url: String
         pub fun getClaimed(): {Address: TokenIdentifier}
         pub fun getCurrentHolders(): {UInt64: TokenIdentifier}
         pub fun hasClaimed(account: Address): TokenIdentifier?
@@ -410,7 +402,11 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub resource FLOATEvent: FLOATEventPublic, MetadataViews.Resolver {
         pub var claimable: Bool
+        // Maps an address to the FLOAT they claimed
         access(account) var claimed: {Address: TokenIdentifier}
+        // Maps a serial to the person who theoretically owns
+        // that FLOAT. Must be serial --> TokenIdentifier because
+        // it's possible someone has multiple FLOATs from this event.
         access(account) var currentHolders: {UInt64: TokenIdentifier}
         pub let dateCreated: UFix64
         pub let description: String 
@@ -479,11 +475,11 @@ pub contract FLOAT: NonFungibleToken {
             return self.claimed[account]
         }
 
-        // This is a guarantee that the person owns the token
+        // This is a guarantee that the person owns the FLOAT
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier? {
             if let data = self.currentHolders[serial] {
                 if let collection = getAccount(data.address).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&Collection{CollectionPublic}>() {
-                    if collection.owns(id: data.id) {
+                    if collection.borrowFLOAT(id: data.id) != nil {
                         return data
                     }
                 }
@@ -903,10 +899,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath041
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath041
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath041
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath041
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath041
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath042
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath042
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath042
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath042
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath042
     }
 }
