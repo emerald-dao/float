@@ -6,5 +6,5 @@ pub fun main(hostAddress: Address, eventId: UInt64, accountAddress: Address): FL
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
   let floatEventPublic = floatEventCollection.borrowPublicEventRef(eventId: eventId)
 
-  return floatEventPublic.hasClaimed(account: accountAddress)
+  return floatEventPublic!.hasClaimed(account: accountAddress)
 }

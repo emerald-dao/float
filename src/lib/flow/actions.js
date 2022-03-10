@@ -249,7 +249,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
           let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                               .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                               ?? panic("Could not borrow the public FLOATEvents from the host.")
-          self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId)
+          self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist.")
       
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
@@ -351,7 +351,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
       
-          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId)
+          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
                                       .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
                                       ?? panic("Could not get the public FLOAT Collection from the recipient.")
@@ -558,7 +558,7 @@ export const toggleClaimable = async (forHost, eventId) => {
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
       
-          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId)
+          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
         }
       
         execute {
@@ -622,7 +622,7 @@ export const toggleTransferrable = async (forHost, eventId) => {
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
       
-          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId)
+          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
         }
       
         execute {
@@ -1315,7 +1315,7 @@ export const getHoldersInEvent = async (addr, eventId) => {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        return floatEventCollection.borrowPublicEventRef(eventId: eventId).getCurrentHolders()
+        return floatEventCollection.borrowPublicEventRef(eventId: eventId)!.getCurrentHolders()
       }
       `,
       args: (arg, t) => [
@@ -1340,7 +1340,7 @@ export const getClaimedInEvent = async (addr, eventId) => {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        return floatEventCollection.borrowPublicEventRef(eventId: eventId).getClaimed()
+        return floatEventCollection.borrowPublicEventRef(eventId: eventId)!.getClaimed()
       }
       `,
       args: (arg, t) => [
@@ -1367,7 +1367,7 @@ export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let floatEventPublic = floatEventCollection.borrowPublicEventRef(eventId: eventId)
       
-        return floatEventPublic.hasClaimed(account: accountAddress)
+        return floatEventPublic!.hasClaimed(account: accountAddress)
       }
       `,
       args: (arg, t) => [
@@ -1393,7 +1393,7 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
         let floatEventCollection = getAccount(hostAddress).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let floatEventPublic = floatEventCollection.borrowPublicEventRef(eventId: eventId)
+        let floatEventPublic = floatEventCollection.borrowPublicEventRef(eventId: eventId)!
       
         return floatEventPublic.getCurrentHolder(serial: serial)
       }
@@ -1500,17 +1500,17 @@ export const getGroups = async (account) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      pub fun main(account: Address): {String: FLOAT.Group} {
+      pub fun main(account: Address): {String: &FLOAT.Group} {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")
         let groups = floatEventCollection.getGroups()
-
-        let answer: {String: FLOAT.Group} = {}
+      
+        let answer: {String: &FLOAT.Group} = {}
         for groupName in groups {
           answer[groupName] = floatEventCollection.getGroup(groupName: groupName)
         }
-
+      
         return answer
       }
       `,
@@ -1566,7 +1566,7 @@ export const getGroup = async (account, groupName) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      pub fun main(account: Address, groupName: String): FLOAT.Group? {
+      pub fun main(account: Address, groupName: String): &FLOAT.Group? {
         let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
                                     .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                                     ?? panic("Could not borrow the FLOAT Events Collection from the account.")

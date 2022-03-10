@@ -32,7 +32,7 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
     let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                         .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                         ?? panic("Could not borrow the public FLOATEvents from the host.")
-    self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId)
+    self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist.")
 
     self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                         ?? panic("Could not get the Collection from the signer.")

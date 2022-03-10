@@ -15,7 +15,7 @@ transaction(forHost: Address, eventId: UInt64) {
                         ?? panic("Could not borrow the FLOATEvents from the signer.")
     }
 
-    self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId)
+    self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
   }
 
   execute {

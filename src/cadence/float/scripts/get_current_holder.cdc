@@ -6,5 +6,5 @@ pub fun main(hostAddress: Address, eventId: UInt64, serial: UInt64): FLOAT.Token
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
   let floatEventPublic = floatEventCollection.borrowPublicEventRef(eventId: eventId)
 
-  return floatEventPublic.getCurrentHolder(serial: serial)
+  return floatEventPublic!.getCurrentHolder(serial: serial)
 }

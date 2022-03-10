@@ -32,7 +32,7 @@ transaction(forHost: Address, eventId: UInt64, recipient: Address) {
                         ?? panic("Could not borrow the FLOATEvents from the signer.")
     }
 
-		self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId)
+		self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
 		self.RecipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
 																.borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
 																?? panic("Could not get the public FLOAT Collection from the recipient.")
