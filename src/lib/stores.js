@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import { browser } from '$app/env';
 
 export const draftFloat = writable({
   name: '',
@@ -23,7 +24,7 @@ export const draftGroup = writable({
 });
 
 
-export const theme = writable(null);
+export const theme = persistentWritable('theme', 'dark');
 
 export const resolver = persistentWritable('preferredNameResolver', 'fn');
 
@@ -34,8 +35,8 @@ export function persistentWritable(key, defaultValue) {
 
   let storedValue;
   // Get stored value.
-  if (localStorage) {
-    storedValue = JSON.parse(localStorage.getItem(key));
+  if (browser) {
+    storedValue = localStorage.getItem(key);
   }
 
   // Determine resolved value.
@@ -48,8 +49,8 @@ export function persistentWritable(key, defaultValue) {
   // Subscribe to changes.
   subscribe(value => {
       // Store the new value.
-      if (localStorage) {
-        localStorage.setItem(key, JSON.stringify(value));
+      if (browser) {
+        localStorage.setItem(key, value);
       }
   });
 
