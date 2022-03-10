@@ -172,9 +172,7 @@
         float={{
           eventName: $draftFloat.name,
           eventImage: $draftFloat.ipfsHash,
-          eventMetadata: {
-            totalSupply: "SERIAL_NUM",
-          },
+          totalSupply: "SERIAL_NUM",
           eventHost: $user?.addr || "0x0000000000",
         }}
         preview={true} />

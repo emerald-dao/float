@@ -105,9 +105,7 @@ deleteEventStatus
             eventId: floatEvent?.eventId,
             eventImage: floatEvent?.image,
             eventName: floatEvent?.name,
-            eventMetadata: {
-              totalSupply: floatEvent?.totalSupply,
-            },
+            totalSupply: floatEvent?.totalSupply,
             serial: floatEvent?.hasClaimed.serial,
           }}
           individual={true}
@@ -119,9 +117,7 @@ deleteEventStatus
             eventId: floatEvent?.eventId,
             eventImage: floatEvent?.image,
             eventName: floatEvent?.name,
-            eventMetadata: {
-              totalSupply: floatEvent?.totalSupply,
-            },
+            totalSupply: floatEvent?.totalSupply,
           }}
           preview={true}
           individual={false} />
