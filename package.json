@@ -29,5 +29,8 @@
     "svelte": "^3.44.3",
     "svelte-intersection-observer": "^0.10.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "copy-to-clipboard": "^3.3.1"
+  }
 }

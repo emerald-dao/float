@@ -1,11 +1,24 @@
 <script>
   import { page } from "$app/stores";
-  import { getFLOAT, transferFLOAT, getCurrentHolder, deleteFLOAT, resolveAddressObject } from "$lib/flow/actions.js";
-  import Meta from '$lib/components/common/Meta.svelte';
-  import { floatDeletionInProgress, floatDeletionStatus, floatTransferInProgress, floatTransferStatus, user } from "$lib/flow/stores";
+  import {
+    getFLOAT,
+    transferFLOAT,
+    getCurrentHolder,
+    deleteFLOAT,
+    resolveAddressObject,
+  } from "$lib/flow/actions.js";
+  import Meta from "$lib/components/common/Meta.svelte";
+  import {
+    floatDeletionInProgress,
+    floatDeletionStatus,
+    floatTransferInProgress,
+    floatTransferStatus,
+    user,
+  } from "$lib/flow/stores";
   import { getResolvedName } from "$lib/flow/utils";
-import Loading from "$lib/components/common/Loading.svelte";
-  
+  import Loading from "$lib/components/common/Loading.svelte";
+  import copy from "copy-to-clipboard";
+
   let eventOwnerResolvedName;
   let eventOwnerObject;
   let owner;
@@ -14,22 +27,32 @@ import Loading from "$lib/components/common/Loading.svelte";
   const floatCallback = async () => {
     eventOwnerObject = await resolveAddressObject($page.params.address);
     eventOwnerResolvedName = getResolvedName(eventOwnerObject);
-    let holder = await getCurrentHolder(eventOwnerObject.address, $page.params.eventId, $page.params.serial)
+    let holder = await getCurrentHolder(
+      eventOwnerObject.address,
+      $page.params.eventId,
+      $page.params.serial
+    );
     if (!holder) {
-      return 'deleted';
+      return "deleted";
     } else {
       let float = await getFLOAT(holder.address, holder.id);
       owner = holder.address;
       let floatOwnerObject = await resolveAddressObject(owner);
       floatOwner = getResolvedName(floatOwnerObject);
-      let floatOriginalOwnerObject = await resolveAddressObject(float.float.originalRecipient);
+      let floatOriginalOwnerObject = await resolveAddressObject(
+        float.float.originalRecipient
+      );
       floatOriginalOwner = getResolvedName(floatOriginalOwnerObject);
-      return {...float.float, totalSupply: float.totalSupply, transferrable: float.transferrable};
+      return {
+        ...float.float,
+        totalSupply: float.totalSupply,
+        transferrable: float.transferrable,
+      };
     }
-  }
+  };
   let recipientAddr = "";
   let data = floatCallback();
-  
+
   // JS STUFF
   let card;
   let container;
@@ -37,98 +60,115 @@ import Loading from "$lib/components/common/Loading.svelte";
   let image;
   let createdBy;
   let serial;
-  
-  $: if(card, container, title, image, createdBy, serial) {
+
+  $: if ((card, container, title, image, createdBy, serial)) {
     // once dom elements are loaded, fire animate
-    animate(container)
+    animate(container);
     // then delete animate as it would keep firing
-    animate = () => {}
+    animate = () => {};
   }
-  
-  
+
   function animate(container) {
-    container.addEventListener('mousemove', (e) => {
+    container.addEventListener("mousemove", (e) => {
       let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
       let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
-    
-    container.addEventListener('touchmove', (e) => {
+
+    container.addEventListener("touchmove", (e) => {
       let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
       let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
-    
-    container.addEventListener('mouseenter', (e) => {
+
+    container.addEventListener("mouseenter", (e) => {
       setTimeout(() => {
-        card.style.transition = 'none';
+        card.style.transition = "none";
       }, 300);
-      title.style.transform = 'translateZ(150px)';
-      image.style.transform = 'translateZ(200px)';
-      createdBy.style.transform = 'translateZ(125px)';
-      serial.style.transform = 'translateZ(100px)';
+      title.style.transform = "translateZ(150px)";
+      image.style.transform = "translateZ(200px)";
+      createdBy.style.transform = "translateZ(125px)";
+      serial.style.transform = "translateZ(100px)";
     });
-    
-    container.addEventListener('mouseleave', (e) => {
-      card.style.transition = 'all 0.5s ease';
+
+    container.addEventListener("mouseleave", (e) => {
+      card.style.transition = "all 0.5s ease";
       card.style.transform = `rotateY(0deg) rotateX(0deg)`;
-      title.style.transform = 'translateZ(0px)';
-      image.style.transform = 'translateZ(0px)';
-      createdBy.style.transform = 'translateZ(0px)';
-      serial.style.transform = 'translateZ(0px)';
+      title.style.transform = "translateZ(0px)";
+      image.style.transform = "translateZ(0px)";
+      createdBy.style.transform = "translateZ(0px)";
+      serial.style.transform = "translateZ(0px)";
     });
-    
   }
 </script>
 
 {#await data then data}
   <Meta
-  title="{data.eventName} | FLOAT #{$page.params.eventId}"
-  author={data.eventHost}
-  description={data.description}
-  url={$page.url}
-  />
+    title="{data.eventName} | FLOAT #{$page.params.eventId}"
+    author={data.eventHost}
+    description={data.description}
+    url={$page.url} />
 {/await}
 
 {#await data}
   <Loading />
 {:then data}
-  {#if data == 'deleted'}
-    <article>This FLOAT has been deleted or it has not been minted yet.</article>
+  {#if data == "deleted"}
+    <article>
+      This FLOAT has been deleted or it has not been minted yet.
+    </article>
   {:else}
     <article class="toggle">
       <header>
-        <h3>Owned by {floatOwner}</h3>
-        <small class="muted">Originally claimed by {floatOriginalOwner}</small>
+        <h3>FLOAT #{data.id}</h3>
+        <p style="margin-bottom: 10px;">
+          Owned by {floatOwner} | Originally claimed by {floatOriginalOwner}
+        </p>
+        <code
+          class="copy"
+          data-tooltip="Paste into Discord to view FLOAT"
+          on:click={() =>
+            copy(`/float address:${floatOwner} floatid:${data.id}`)}
+          >/float {floatOwner} {data.id}</code>
       </header>
-      
+
       <div class="whole">
-        <a href="/{eventOwnerResolvedName}/{data.eventId}" class="wrap" bind:this={container}>
+        <a
+          href="/{eventOwnerResolvedName}/{data.eventId}"
+          class="wrap"
+          bind:this={container}>
           <div class="float transition" bind:this={card}>
             <div class="image transition" bind:this={image}>
-              <img src={`https://ipfs.infura.io/ipfs/${data.eventImage}`} alt="float">
+              <img
+                src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
+                alt="float" />
             </div>
             <div class="info">
               <h1 class="transition" bind:this={title}>{data.eventName}</h1>
               <p class="transition" bind:this={createdBy}>
                 <small>
                   <span class="credit">Created by</span>
-                  <a href="/{eventOwnerResolvedName}" class="host">{eventOwnerResolvedName}</a>
+                  <a href="/{eventOwnerResolvedName}" class="host"
+                    >{eventOwnerResolvedName}</a>
                 </small>
               </p>
-              <code class="transition" data-tooltip="Serial #" bind:this={serial}>#{data.serial}</code>
+              <code
+                class="transition"
+                data-tooltip="Serial #"
+                bind:this={serial}>#{data.serial}</code>
             </div>
           </div>
         </a>
       </div>
-      
+
       <blockquote>
-        <strong><small class="muted">DESCRIPTION</small></strong><br/>
+        <strong><small class="muted">DESCRIPTION</small></strong><br />
         {data.eventDescription}
       </blockquote>
       {#if $user?.addr == owner}
         {#if $floatDeletionInProgress}
-          <button class="outline red" aria-busy="true" disabled>Deleting FLOAT</button>
+          <button class="outline red" aria-busy="true" disabled
+            >Deleting FLOAT</button>
         {:else if $floatDeletionStatus.success}
           <button class="outline red">FLOAT deleted successfully.</button>
         {:else if !$floatDeletionStatus.success && $floatDeletionStatus.error}
@@ -148,11 +188,10 @@ import Loading from "$lib/components/common/Loading.svelte";
         <label for="recipientAddr">
           Copy the recipient's address below.
           <input
-          type="text"
-          name="recipientAddr"
-          bind:value={recipientAddr}
-          placeholder="0x00000000000"
-          />
+            type="text"
+            name="recipientAddr"
+            bind:value={recipientAddr}
+            placeholder="0x00000000000" />
         </label>
         {#if $floatTransferInProgress}
           <button aria-busy="true" disabled>Transferring FLOAT</button>
@@ -173,11 +212,17 @@ import Loading from "$lib/components/common/Loading.svelte";
 {/await}
 
 <style>
+  .copy {
+    background: var(--primary);
+    color: var(--primary-inverse);
+    cursor: pointer;
+  }
+
   .whole {
     position: relative;
     display: flex;
     width: 100%;
-    height:100%;
+    height: 100%;
     justify-content: center;
     align-items: center;
     box-sizing: border-box;
@@ -186,18 +231,18 @@ import Loading from "$lib/components/common/Loading.svelte";
     left: 0;
     z-index: 10000;
   }
-  
+
   .wrap {
     /* Body Stuff */
     width: 50%;
     display: flex;
-    position:relatve;
+    position: relatve;
     justify-content: center;
     align-items: center;
     perspective: 1000px;
     text-decoration: none;
   }
-  
+
   .float {
     transform-style: preserve-3d;
     width: 20rem;
@@ -208,43 +253,42 @@ import Loading from "$lib/components/common/Loading.svelte";
     box-shadow: 0 20px 20px rgb(0, 0, 0, 0.2), 0 0px 50px rgb(0, 0, 0, 0.2);
     background-color: var(--card-background-color);
   }
-  
+
   .image {
     min-height: 35vh;
     display: flex;
     align-items: center;
     justify-content: center;
   }
-  
+
   .image img {
     max-width: 200px;
     max-height: 200px;
   }
-  
+
   .info {
     text-align: center;
     transform-style: preserve-3d;
   }
-  
+
   .info h1 {
     font-size: 1.5rem;
   }
-  
+
   .credit {
     margin-top: 20px;
     display: block;
   }
-  
+
   .host {
     font-family: monospace;
   }
-  
+
   article {
     text-align: center;
     align-items: center;
-    
   }
-  
+
   .muted {
     font-size: 0.7rem;
     opacity: 0.7;
@@ -252,10 +296,9 @@ import Loading from "$lib/components/common/Loading.svelte";
   blockquote {
     text-align: left;
   }
-  
+
   .transition {
     transition-property: transform;
     transition-duration: 1s;
   }
-  
 </style>

@@ -1598,6 +1598,7 @@ export const resolveAddressObject = async (lookup) => {
   //   return Promise.resolve(findCache[lookup]);
   // }
   try {
+    console.log(answer)
     if (rootLookup.length > 14) {
       answer.address = lookup;
       answer.resolvedNames.find = await fcl.query({
@@ -1682,7 +1683,6 @@ export const resolveAddressObject = async (lookup) => {
         ]
       })
     }
-    console.log(answer)
     // findCache[lookup] = queryResult;
     // localStorage.setItem('findCache', JSON.stringify(findCache));
     return answer;
