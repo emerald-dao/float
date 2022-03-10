@@ -3,6 +3,7 @@
   import { addSharedMinter, getAllowed, removeSharedMinter } from '$lib/flow/actions';
   import UserAddress from "../UserAddress.svelte";
   import { authenticate, unauthenticate } from "@samatech/onflow-fcl-esm";
+  import CopyBadge from "$lib/components/common/CopyBadge.svelte";
 
   let newSharedMinter = "";
   
@@ -22,7 +23,12 @@
   {#if !$user?.loggedIn}
     <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
   {:else}
-    <h4>You are logged in as: </h4><button class="outline"><UserAddress address={$user?.addr} abbreviated={false} /></button>
+    <h4>You are logged in as: </h4>
+    <button class="outline">
+      <CopyBadge text={$user?.addr}>
+        <span class="mono">{$user?.addr}</span>
+      </CopyBadge>
+    </button>
     <br/>
     <a class="logout" href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
   {/if}

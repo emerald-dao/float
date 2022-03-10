@@ -380,17 +380,6 @@ deleteEventStatus
     font-size: 0.7rem;
   }
 
-  .group-badge {
-    display: inline-block;
-    margin-right: 15px;
-    margin-top: 5px;
-    padding: 0.3rem 0.75rem;
-    border: 1px solid var(--primary);
-    border-radius: 100px;
-    color: var(--primary);
-    font-size: 0.7rem;
-  }
-
   .claims {
     text-align: left;
   }

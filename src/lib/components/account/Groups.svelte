@@ -149,22 +149,26 @@
   {/if}
 {/if}
 
-<h3 class="mt-1">Groups</h3>
-{#await groups then groups}
-  {#await resolvedName then resolvedName}
-    {#if Object.keys(groups).length > 0}
-      {#each Object.values(groups) as group}
-        <Group
-          {resolvedName}
-          name={group.name}
-          imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
-          description={group.description} />
-      {/each}
-    {:else}
-      <p>This account has not created any Groups.</p>
-    {/if}
+<article>
+  <header>
+    <h3 class="text-center">Groups</h3>
+  </header>
+  {#await groups then groups}
+    {#await resolvedName then resolvedName}
+      {#if Object.keys(groups).length > 0}
+        {#each Object.values(groups) as group}
+          <Group
+            {resolvedName}
+            name={group.name}
+            imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
+            description={group.description} />
+        {/each}
+      {:else}
+        <p>This account has not created any Groups.</p>
+      {/if}
+    {/await}
   {/await}
-{/await}
+</article>
 
 <style>
   .create {

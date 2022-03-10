@@ -6,6 +6,8 @@
   import "../app.css";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
+  import { resolver } from '$lib/stores.js';
+
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -15,6 +17,15 @@
       html.setAttribute("data-theme", savedTheme);
     }
   });
+
+
+  function toggleResolver() {
+    if ($resolver === 'fn') {
+      $resolver = 'find';
+    } else {
+      $resolver = 'fn';
+    }
+  }
 </script>
 
 <Header />
@@ -60,6 +71,15 @@
       </span>
     </small>
   </p>
+  <p><small>Preferred name service</small>
+    <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
+      {#if $resolver === 'fn'}
+        <span>.fn</span>
+      {:else}
+        <span>.find</span>
+      {/if}
+    </button>
+  </p>
 </footer>
 
 <style>
@@ -99,5 +119,18 @@
     footer {
       padding: 10px 0;
     }
+  }
+
+  .resolver-toggle {
+    padding: 3px 8px;
+    font-size: 0.5rem;
+    background-color: var(--primary-focus);
+    text-align: center;
+    display:inline-block;
+    vertical-align: middle;
+    align-items: center;
+    color: var(--primary);
+    font-weight: normal;
+    width:auto;
   }
 </style>

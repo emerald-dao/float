@@ -4,7 +4,7 @@
   import ConnectWallet from '$lib/components/ConnectWallet.svelte';
   import UserAddress from '../UserAddress.svelte';
   import { onMount } from 'svelte';
-  import { resolver, theme } from '$lib/stores.js';
+  import { theme } from '$lib/stores.js';
   import { fade, draw } from 'svelte/transition';
   import { resolveAddressObject } from '$lib/flow/actions';
   import { getResolvedName } from '$lib/flow/utils';
@@ -29,13 +29,7 @@
   }
   $: resolvedName = initialize($user?.addr || "");
 
-  function toggleResolver() {
-    if ($resolver === 'fn') {
-      $resolver = 'find';
-    } else {
-      $resolver = 'fn';
-    }
-  }
+
 
 </script>
 
@@ -69,20 +63,6 @@
     display: flex;
     vertical-align: middle;
     align-items: center;
-  }
-
-  .resolver-toggle {
-    padding: 5px;
-    width: 60px;
-    background-color: var(--primary-focus);
-    display: inline-block;
-    text-align: center;
-    justify-content: center;
-    display: flex;
-    vertical-align: middle;
-    align-items: center;
-    color: var(--primary);
-    font-weight: normal;
   }
 
   @media screen and (max-width: 500px) {
@@ -119,7 +99,7 @@
         {/if}
       </a>
     </li>
-    <li style="padding: 0px;">
+    <!-- <li style="padding: 0px;">
       <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
         {#if $resolver === 'fn'}
           <span>.fn</span>
@@ -127,7 +107,7 @@
           <span>.find</span>
         {/if}
       </button>
-    </li>
+    </li> -->
     <li>
       <a href="/about">About</a>
     </li>
