@@ -66,7 +66,7 @@ pub contract FLOATVerifiers {
         pub var capacity: UInt64
 
         pub fun verify(_ params: {String: AnyStruct}) {
-            let event = params["event"]! as! FLOAT.FLOATEventMetadata
+            let event = params["event"]! as! &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
             let currentCapacity = event.totalSupply
             assert(
                 currentCapacity < self.capacity,
