@@ -27,7 +27,7 @@ pub contract FLOAT: NonFungibleToken {
     pub event FLOATEventCreatedBySharedMinter(forHost: Address, bySharedMinter: Address, eventId: UInt64)
     pub event FLOATEventDestroyed(eventId: UInt64, host: Address, name: String)
 
-    // Throw away for standard.pub event Deposit(id: UInt64, to: Address?)
+    // Throw away for standard
     pub event Withdraw(id: UInt64, from: Address?)
     pub event Deposit(id: UInt64, to: Address?)
 
@@ -557,6 +557,14 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         /****************** Getting a FLOAT ******************/
+
+        pub fun batchMint(recipients: [&Collection{NonFungibleToken.CollectionPublic}]) {
+            for recipient in recipients {
+                if self.claimed[recipient.owner!.address] == nil {
+                    self.mint(recipient: recipient)
+                }
+            }
+        }
 
         // Used to give a person a FLOAT from this event.
         // Used as a helper function for `claim`, but can also be 
