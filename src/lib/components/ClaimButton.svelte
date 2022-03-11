@@ -48,7 +48,7 @@
     <a
       role="button"
       class="d-block"
-      href="/{$user?.addr}"
+      href="/{$user?.addr}/?tab=floats"
       style="display:block"
       >FLOAT claimed successfully!
     </a>

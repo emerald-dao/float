@@ -4,13 +4,11 @@
     
     import Table, { Row, Sort } from "./Table.svelte";
     import { sortNumber, sortString } from "./sorting.js";
+    import { formatter } from "$lib/flow/utils";
     import { page } from "$app/stores";
     
     export let floatEvents;
-    let rows2 = floatEvents;
     let rows = floatEvents;
-    
-    const formatter = new Intl.DateTimeFormat("en-US");
     
     console.log('EventsTable:', floatEvents);
     
@@ -18,7 +16,7 @@
     let pageSize = 25; 
     
     function onCellClick(row) {
-      return;  window.location = `/${row.host}/${row.eventId}`
+      return;
     }
     
     function onSortNumber(event) {
@@ -61,12 +59,12 @@
         <td data-label="Event">
           <div class="d-flex">
             <div style="margin-right:10px;">
-              <a href="/{row.host}/{row.eventId}">
+              <a href="/{$page.params.address}/event/{row.eventId}">
                 <img alt="" class="table-image" src="https://ipfs.infura.io/ipfs/{row.image}" />
               </a>
             </div>
             <div>
-              <a href="/{row.host}/{row.eventId}">
+              <a href="/{$page.params.address}/event/{row.eventId}">
                 {row.name}
               </a>
               <div class="event-description">{row.description}</div>
@@ -77,7 +75,7 @@
         <td data-label="Groups">
           <span>{row.groups.length > 0 ? "" : " - " } 
             {#each row.groups as group}
-            <a href="{row.host}/group/{group}"><div class="group-badge small">{group}</div></a>
+            <a href="{$page.params.address}/group/{group}"><div class="group-badge small">{group}</div></a>
             {/each}
           </span>
         </td>
@@ -88,8 +86,8 @@
   
   <style>
     .table-image {
-      min-width: 48px;
-      height: 48px;
+      max-width: 75px;
+      height:auto;
     }
     
     .event-description {

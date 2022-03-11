@@ -9,10 +9,12 @@
   import Shared from "$lib/components/account/Shared.svelte";
   import { resolveAddressObject } from "$lib/flow/actions";
   import Loading from "$lib/components/common/Loading.svelte";
+  import { goto } from "$app/navigation";
 
   let addressObject = resolveAddressObject($page.params.address);
 
-  let tab = "floats";
+  $: tab = $page.query.get('tab') || 'floats';
+  let query = new URLSearchParams($page.query.toString());
 </script>
 
 <Meta
@@ -24,19 +26,28 @@
 <div class="container">
   <ul class="tabs">
     <li
-      on:click|preventDefault={() => (tab = "floats")}
+      on:click={() => {
+        query.set('tab', 'floats')
+        goto(`?${query.toString()}`);
+      }}
       class:animatedlink={tab !== "floats"}
       class:selected={tab === "floats"}>
       FLOATs
     </li>
     <li
-      on:click|preventDefault={() => (tab = "events")}
+      on:click={() => {
+        query.set('tab', 'events')
+        goto(`?${query.toString()}`);
+      }}
       class:animatedlink={tab !== "events"}
       class:selected={tab === "events"}>
       Events
     </li>
     <li
-      on:click|preventDefault={() => (tab = "groups")}
+      on:click={() => {
+        query.set('tab', 'groups')
+        goto(`?${query.toString()}`);
+      }}
       class:animatedlink={tab !== "groups"}
       class:selected={tab === "groups"}>
       Groups
@@ -44,7 +55,10 @@
     {#await addressObject then addressObject}
       {#if $user?.addr == addressObject.address}
         <li
-          on:click|preventDefault={() => (tab = "account")}
+        on:click={() => {
+          query.set('tab', 'account')
+          goto(`?${query.toString()}`);
+        }}
           class:animatedlink={tab !== "account"}
           class:selected={tab === "account"}>
           Account

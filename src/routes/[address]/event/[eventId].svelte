@@ -101,26 +101,25 @@ deleteEventStatus
         <div class="claimed-badge">✓ You claimed this FLOAT</div>
         <Float
           float={{
-            eventHost: floatEvent?.host,
-            eventId: floatEvent?.eventId,
-            eventImage: floatEvent?.image,
-            eventName: floatEvent?.name,
-            totalSupply: floatEvent?.totalSupply,
-            serial: floatEvent?.hasClaimed.serial,
+            id: floatEvent.hasClaimed.id,
+            owner: floatEvent.hasClaimed.address,
+            eventHost: floatEvent.host,
+            eventImage: floatEvent.image,
+            eventName: floatEvent.name,
+            totalSupply: floatEvent.totalSupply,
+            serial: floatEvent.hasClaimed.serial
           }}
-          individual={true}
-          list={false} />
+          claimed={true}
+           />
       {:else}
         <Float
           float={{
-            eventHost: floatEvent?.host,
-            eventId: floatEvent?.eventId,
-            eventImage: floatEvent?.image,
-            eventName: floatEvent?.name,
-            totalSupply: floatEvent?.totalSupply,
+            eventHost: floatEvent.host,
+            eventImage: floatEvent.image,
+            eventName: floatEvent.name,
+            totalSupply: floatEvent.totalSupply
           }}
-          preview={true}
-          individual={false} />
+           />
       {/if}
 
       <blockquote>
@@ -187,7 +186,6 @@ deleteEventStatus
               {:else}
                 <button
                   class="outline red"
-                  disabled={floatEvent?.totalSupply !== 0}
                   on:click={() =>
                     deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}>
                   Delete this event

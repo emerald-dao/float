@@ -10,6 +10,7 @@
 
   function getEventsArray(floatEventsObj) {
     if (floatEventsObj && Object.keys(floatEventsObj)?.length > 0) {
+      console.log(floatEventsObj)
       return Object.values(floatEventsObj);
     } else {
       return [];

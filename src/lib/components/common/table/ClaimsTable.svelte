@@ -55,7 +55,7 @@
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Serial"><a href="{$page.path}/{row.serial}"><code>#{row.serial}</code></a></td>
+        <td data-label="Serial"><a href="/{row.address}/float/{row.id}"><code>#{row.serial}</code></a></td>
         <td data-label="Address"><span class="mono"><a href="/{row.address}">{row.address}</a></span></td>
       </Row>
     {/each}

@@ -175,7 +175,7 @@
           totalSupply: "SERIAL_NUM",
           eventHost: $user?.addr || "0x0000000000",
         }}
-        preview={true} />
+         />
       <div class="mb-2" />
     {/if}
 
@@ -379,7 +379,7 @@
         <a
           role="button"
           class="d-block"
-          href="/{$user.addr}"
+          href="/{$user.addr}/?tab=events"
           style="display:block">
           Event created successfully!
         </a>

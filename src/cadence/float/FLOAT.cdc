@@ -274,8 +274,8 @@ pub contract FLOAT: NonFungibleToken {
             // of who owns the FLOAT is going to be messed up. But that is their
             // fault. We shouldn't let that prevent the user from deleting the FLOAT.
             if let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() {
-                let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: nft.eventId) ?? panic("Event no longer exists (not possible)")
-                floatEvent.accountDeletedFLOAT(serial: nft.serial)
+                let floatEvent: &FLOATEvent? = floatEvents.borrowEventRef(eventId: nft.eventId)
+                floatEvent?.accountDeletedFLOAT(serial: nft.serial)
             }
         
             emit FLOATDestroyed(
@@ -344,7 +344,7 @@ pub contract FLOAT: NonFungibleToken {
         pub let dateCreated: UFix64
         pub let description: String 
         pub let eventId: UInt64
-        access(account) var extraMetadata: {String: String}
+        access(account) var extraMetadata: {String: AnyStruct}
         access(account) var groups: {String: Bool}
         pub let host: Address
         pub let image: String 
@@ -371,7 +371,7 @@ pub contract FLOAT: NonFungibleToken {
         // Updates the metadata in case you want
         // to add something. Not currently used for anything
         // on FLOAT, so it's empty.
-        pub fun updateMetadata(newExtraMetadata: {String: String}) {
+        pub fun updateMetadata(newExtraMetadata: {String: AnyStruct}) {
             self.extraMetadata = newExtraMetadata
         }
 
@@ -559,7 +559,7 @@ pub contract FLOAT: NonFungibleToken {
         init (
             _claimable: Bool,
             _description: String, 
-            _extraMetadata: {String: String},
+            _extraMetadata: {String: AnyStruct},
             _host: Address, 
             _image: String, 
             _name: String,
@@ -648,7 +648,7 @@ pub contract FLOAT: NonFungibleToken {
             transferrable: Bool,
             url: String,
             verifiers: [{IVerifier}],
-            _ extraMetadata: {String: String}
+            _ extraMetadata: {String: AnyStruct}
         ): UInt64 {
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
@@ -816,10 +816,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath042
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath042
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath042
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath042
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath042
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath043
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath043
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath043
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath043
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath043
     }
 }

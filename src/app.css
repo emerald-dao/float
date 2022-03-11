@@ -371,3 +371,7 @@ main {
 .group-badge.small {
   font-size: 0.4rem;
 }
+
+.no-margin {
+  margin: 0px;
+}

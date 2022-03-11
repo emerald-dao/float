@@ -3,7 +3,6 @@
   import {
     getFLOAT,
     transferFLOAT,
-    getCurrentHolder,
     deleteFLOAT,
     resolveAddressObject,
   } from "$lib/flow/actions.js";
@@ -19,36 +18,27 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import CopyBadge from "$lib/components/common/CopyBadge.svelte";
 
-  let eventOwnerResolvedName;
-  let eventOwnerObject;
-  let owner;
+  let ownerAddr;
   let floatOwner;
   let floatOriginalOwner;
+  let eventOwnerResolvedName;
   const floatCallback = async () => {
-    eventOwnerObject = await resolveAddressObject($page.params.address);
-    eventOwnerResolvedName = getResolvedName(eventOwnerObject);
-    let holder = await getCurrentHolder(
-      eventOwnerObject.address,
-      $page.params.eventId,
-      $page.params.serial
-    );
-    if (!holder) {
-      return "deleted";
-    } else {
-      let float = await getFLOAT(holder.address, holder.id);
-      owner = holder.address;
-      let floatOwnerObject = await resolveAddressObject(owner);
-      floatOwner = getResolvedName(floatOwnerObject);
-      let floatOriginalOwnerObject = await resolveAddressObject(
-        float.float.originalRecipient
-      );
-      floatOriginalOwner = getResolvedName(floatOriginalOwnerObject);
-      return {
-        ...float.float,
-        totalSupply: float.totalSupply,
-        transferrable: float.transferrable,
-      };
+    let floatOwnerObject = await resolveAddressObject($page.params.address);
+    ownerAddr = floatOwnerObject.address;
+    floatOwner = getResolvedName(floatOwnerObject);
+
+    let float = await getFLOAT(ownerAddr, $page.params.id);
+    if (!float) {
+      return 'deleted';
     }
+    let floatOriginalOwnerObject = await resolveAddressObject(
+      float.float.originalRecipient
+    );
+    let eventOwnerObject = await resolveAddressObject(float.float.eventHost);
+    eventOwnerResolvedName = getResolvedName(eventOwnerObject);
+    floatOriginalOwner = getResolvedName(floatOriginalOwnerObject);
+    return {...float.float, totalSupply: float.totalSupply, transferrable: float.transferrable};
+    
   };
   let recipientAddr = "";
   let data = floatCallback();
@@ -121,9 +111,8 @@
     <article class="toggle">
       <header>
         <h3>FLOAT #{data.id}</h3>
-        <p style="margin-bottom: 10px;">
-          Owned by {floatOwner} | Originally claimed by {floatOriginalOwner}
-        </p>
+        <p>Owned by {floatOwner} <small>(originally claimed by {floatOriginalOwner})</small></p>
+        <br/>
         <div
         class="command-badge mono"
         data-tooltip="Paste into Discord to view FLOAT">
@@ -137,39 +126,68 @@
       </header>
 
       <div class="whole">
-        <a
-          href="/{eventOwnerResolvedName}/{data.eventId}"
-          class="wrap"
-          bind:this={container}>
-          <div class="float transition" bind:this={card}>
-            <div class="image transition" bind:this={image}>
-              <img
-                src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
-                alt="float" />
+        {#if data.totalSupply}
+          <a
+            href="/{eventOwnerResolvedName}/event/{data.eventId}"
+            class="wrap"
+            bind:this={container}>
+            <div class="float transition" bind:this={card}>
+              <div class="image transition" bind:this={image}>
+                <img
+                  src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
+                  alt="float" />
+              </div>
+              <div class="info">
+                <h1 class="transition" bind:this={title}>{data.eventName}</h1>
+                <p class="transition" bind:this={createdBy}>
+                  <small>
+                    <span class="credit">Created by</span>
+                    <a href="/{eventOwnerResolvedName}" class="host"
+                      >{eventOwnerResolvedName}</a>
+                  </small>
+                </p>
+                <code
+                  class="transition"
+                  data-tooltip="Serial #"
+                  bind:this={serial}>#{data.serial}</code>
+              </div>
             </div>
-            <div class="info">
-              <h1 class="transition" bind:this={title}>{data.eventName}</h1>
-              <p class="transition" bind:this={createdBy}>
-                <small>
-                  <span class="credit">Created by</span>
-                  <a href="/{eventOwnerResolvedName}" class="host"
-                    >{eventOwnerResolvedName}</a>
-                </small>
-              </p>
-              <code
-                class="transition"
-                data-tooltip="Serial #"
-                bind:this={serial}>#{data.serial}</code>
+          </a>
+        {:else}
+          <div class="wrap" bind:this={container}>
+            <div class="float transition" bind:this={card}>
+              <div class="image transition" bind:this={image}>
+                <img
+                  src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
+                  alt="float" />
+              </div>
+              <div class="info">
+                <h1 class="transition" bind:this={title}>{data.eventName}</h1>
+                <p class="transition" bind:this={createdBy}>
+                  <small>
+                    <span class="credit">Created by</span>
+                    <a href="/{eventOwnerResolvedName}" class="host"
+                      >{eventOwnerResolvedName}</a>
+                  </small>
+                </p>
+                <code
+                  class="transition"
+                  data-tooltip="Serial #"
+                  bind:this={serial}>#{data.serial}</code>
+              </div>
             </div>
           </div>
-        </a>
+        {/if}
       </div>
 
       <blockquote>
         <strong><small class="muted">DESCRIPTION</small></strong><br />
         {data.eventDescription}
       </blockquote>
-      {#if $user?.addr == owner}
+      {#if !data.totalSupply}
+        <p class="red">The Event this FLOAT is from has been deleted.</p>
+      {/if}
+      {#if $user?.addr == ownerAddr}
         {#if $floatDeletionInProgress}
           <button class="outline red" aria-busy="true" disabled
             >Deleting FLOAT</button>
@@ -187,7 +205,7 @@
       {/if}
     </article>
 
-    {#if $user?.addr == owner && data.transferrable}
+    {#if $user?.addr == ownerAddr && data.transferrable}
       <article>
         <label for="recipientAddr">
           Copy the recipient's address below.
@@ -216,10 +234,17 @@
 {/await}
 
 <style>
-  .copy {
-    background: var(--primary);
-    color: var(--primary-inverse);
-    cursor: pointer;
+
+  header > p {
+    margin: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  small {
+    font-size: 13px;
+    margin-left: 10px;
   }
 
   .whole {

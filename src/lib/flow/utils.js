@@ -53,5 +53,13 @@ export function getResolvedName(addressObject, priority = get(resolver)) {
 	if (addressObject.resolvedNames[priority]) {
 		return addressObject.resolvedNames[priority];
 	}
+	if (addressObject.resolvedNames['fn']) {
+		return addressObject.resolvedNames['fn'];
+	}
+	if (addressObject.resolvedNames['find']) {
+		return addressObject.resolvedNames['find'];
+	}
 	return addressObject.address;
 }
+
+export const formatter = new Intl.DateTimeFormat("en-US");

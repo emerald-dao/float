@@ -3,13 +3,22 @@
   import { getResolvedName } from "$lib/flow/utils";
 
   export let float = {};
-  export let preview = false;
-  export let individual = false;
-  export let list = true;
+  export let claimed = false;
 
+  let eventHostObject;
+  let eventHostResolvedName;
+
+  let ownerObject;
+  let ownerResolvedName;
   async function initialize() {
-    let addressObject = await resolveAddressObject(float.eventHost);  
-    return getResolvedName(addressObject);
+    eventHostObject = await resolveAddressObject(float.eventHost);  
+    eventHostResolvedName = getResolvedName(eventHostObject);
+
+    if (float.owner) {
+      ownerObject = await resolveAddressObject(float.owner);  
+      ownerResolvedName = getResolvedName(ownerObject);
+    }
+    return "";
   }
   
   let resolvedName = initialize();
@@ -17,11 +26,11 @@
 </script>
 
 {#await resolvedName then resolvedName}
-  {#if individual}
+  {#if claimed}
     <a
       class="no-style"
-      href="/{resolvedName}/{float.eventId}/{float.serial}">
-      <article class="card" class:nomargin={!list}>
+      href="/{ownerResolvedName}/float/{float.id}">
+      <article class="card">
         <img
           src="https://ipfs.infura.io/ipfs/{float.eventImage}"
           alt="{float.eventName} Image" />
@@ -29,14 +38,14 @@
         <p>
           <small>
             <span class="credit">Created by</span>
-            <a href="/{resolvedName}" class="host">{resolvedName}</a>
+            <a href="/{eventHostResolvedName}" class="host">{eventHostResolvedName}</a>
           </small>
         </p>
         <code data-tooltip="{float.serial} of {float.totalSupply}"
           >#{float.serial}</code>
       </article>
     </a>
-  {:else if preview}
+  {:else}
     <article class="card card-preview">
       {#if float.eventImage}
         <img
@@ -47,31 +56,12 @@
       <p>
         <small>
           <span class="credit">Created by</span>
-          <a href="/{resolvedName}" class="host">{resolvedName}</a>
+          <a href="/{eventHostResolvedName}" class="host">{eventHostResolvedName}</a>
         </small>
       </p>
       <code data-tooltip="Minted so far"
         >#{float.totalSupply}</code>
     </article>
-  {:else}
-    <a class="no-style" href="/{resolvedName}/{float.eventId}">
-      <article class="card">
-        {#if float.eventImage}
-          <img
-            src="https://ipfs.infura.io/ipfs/{float.eventImage}"
-            alt="{float.eventName} Image" />
-        {/if}
-        <h1>{float.eventName}</h1>
-        <p>
-          <small>
-            <span class="credit">Created by</span>
-            <a href="/{resolvedName}" class="host">{resolvedName}</a>
-          </small>
-        </p>
-        <code data-tooltip="{float.serial} of {float.totalSupply}"
-          >#{float.serial}</code>
-      </article>
-    </a>
   {/if}
 {/await}
 

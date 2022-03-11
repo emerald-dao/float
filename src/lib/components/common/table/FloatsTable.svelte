@@ -5,18 +5,16 @@
   import Table, { Row, Sort } from "./Table.svelte";
   import { sortNumber, sortString } from "./sorting.js";
   import { page } from "$app/stores";
+  import { formatter } from "$lib/flow/utils";
 
   export let floats;
-  let rows2 = floats;
   let rows = floats;
   
-  console.log('FloatsTable:', floats);
-  
-  let pageCount = 0; //first page
+  let pageCount = 0;
   let pageSize = 25; 
 
   function onCellClick(row) {
-    return; // window.location = `/${row.address}`
+    return;
   }
 
   function onSortNumber(event) {
@@ -53,18 +51,18 @@
         <Sort key="serial" on:sort={onSortNumber} />
       </th>
       <th>
-        Host
-        <Sort key="eventHost" on:sort={onSortString} />
+        Received
+        <!-- <Sort key="dateReceived" on:sort={onSortNumber} /> -->
       </th>
     </tr>
   </thead>
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Image"><a href="{$page.path}/{row.eventId}/{row.serial}"><img alt="" class="table-image" src="https://ipfs.infura.io/ipfs/{row.eventImage}" /></a></td>
-        <td data-label="Name"><a href="{$page.path}/{row.eventId}/{row.serial}">{row.eventName}</a></td>
-        <td data-label="Serial"><a href="{$page.path}/{row.eventId}/{row.serial}"><code>#{row.serial}</code></a></td>
-        <td data-label="Host"><span class="mono"><a href="/{row.eventHost}">{row.eventHost}</a></span></td>
+        <td data-label="Image"><a href="{$page.path}/float/{row.id}"><img alt="" class="table-image" src="https://ipfs.infura.io/ipfs/{row.eventImage}" /></a></td>
+        <td data-label="Name"><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a></td>
+        <td data-label="Serial"><a href="{$page.path}/float/{row.id}"><code>#{row.serial}</code></a></td>
+        <td data-label="Received">{formatter.format(row.dateReceived * 1000)}</td>
       </Row>
     {/each}
   </tbody>
@@ -72,8 +70,8 @@
 
 <style>
   .table-image {
-    width: auto;
-    height: 24px;
+    max-width: 100px;
+    max-height: 50px;
   }
 
 </style>
