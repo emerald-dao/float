@@ -379,3 +379,19 @@ main {
 .no-margin {
   margin: 0px;
 }
+
+.command-badge {
+  display:inline-flex;
+  font-size:0.7rem;
+  vertical-align: middle;
+  justify-items: center;
+  align-items:center;
+  border: 1px solid var(--color);
+  border-radius:5px;
+  padding: 3px 8px;
+}
+
+.command {
+  font-family:monospace;
+  margin-left: 8px;
+}

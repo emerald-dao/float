@@ -121,8 +121,7 @@
         </svg>
         <span class="command">/float {floatOwner} {data.id}</span>
       </div>
-      <CopyBadge text={`/float address:${floatOwner} floatid:${data.id}`}>
-        </CopyBadge>
+      <CopyBadge text={`/float address:${floatOwner} floatid:${data.id}`}></CopyBadge>
       </header>
 
       <div class="whole">
@@ -329,21 +328,5 @@
   .transition {
     transition-property: transform;
     transition-duration: 1s;
-  }
-
-  .command-badge {
-    display:inline-flex;
-    font-size:0.7rem;
-    vertical-align: middle;
-    justify-items: center;
-    align-items:center;
-    border: 1px solid var(--color);
-    border-radius:5px;
-    padding: 3px 8px;
-  }
-
-  .command {
-    font-family:monospace;
-    margin-left: 8px;
   }
 </style>
