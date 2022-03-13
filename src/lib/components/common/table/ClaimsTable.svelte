@@ -40,7 +40,7 @@
 {#await promise}
 <article aria-busy=true></article>
 {:then rows}
-<Table {pageCount} {pageSize} {rows} let:rows={rows2}>
+<Table {pageCount} {pageSize} {rows} let:rows={rows2} labels={{ empty: "This FLOAT has not been claimed yet."}}>
   <thead slot="head">
     <tr>
       <th>

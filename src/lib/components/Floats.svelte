@@ -2,9 +2,17 @@
   export let addressObject;
   import Loading from '$lib/components/common/Loading.svelte';
   import FloatsTable from '$lib/components/common/table/FloatsTable.svelte';
-  import { getFLOATs } from '$lib/flow/actions.js'
+  import Float from '$lib/components/Float.svelte';
+  import { getFLOATs } from '$lib/flow/actions.js';
+  import { user } from "$lib/flow/stores";
+
   
-  let floats = getFLOATs(addressObject.address);
+  let floats = async () => {
+    console.log('async floats', floats)
+    const floatsRaw = await getFLOATs(addressObject.address);
+    const floatsFormatted = Object.values(floatsRaw || {})?.map(obj => obj.float)
+    return floatsFormatted || [];
+  }
   
 </script>
 
@@ -14,9 +22,33 @@
   <header>
     <h3 class="text-center">Claimed FLOATs</h3>
   </header>
-  {#await floats}
+  {#await floats()}
   <Loading />
   {:then floats} 
-  <FloatsTable floats={Object.values(floats || {})?.map(obj => obj.float)} />
+    {#if floats.length > 10}
+      <FloatsTable {floats} />
+    {:else if floats.length > 0}
+      {#each floats as float}
+        <Float {float}/>
+      {/each}
+    {:else}
+    <p class="text-center">This account has not claimed any FLOATs yet.</p>
+    {#if $user?.addr == addressObject.address}
+      <a href="/create" role="button" class="addnew">Create a new FLOAT Event</a>
+    {/if}
+    {/if}
   {/await}
 </article>
+
+<style>
+    .addnew {
+    font-weight: bold;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 767px) {
+    .addnew {
+      margin-top: 20px;
+    }
+  }
+</style>

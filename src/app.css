@@ -97,7 +97,7 @@ h3 {
   display:flex;
   justify-items:center;
   align-items:center;
-  
+
 }
 
 .input-button-group {
@@ -201,6 +201,10 @@ main {
 }
 .rounded-circle {
   border-radius: 50%;
+}
+
+.m-0 {
+  margin:0;
 }
 
 .mb-1 {

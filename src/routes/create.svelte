@@ -18,6 +18,7 @@
   import { onMount } from "svelte";
   import Float from "$lib/components/Float.svelte";
   import { distributeCode } from "$lib/flow/utils";
+  import { slide } from 'svelte/transition';
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
@@ -30,6 +31,8 @@
 
   let imagePreview;
   let imagePreviewSrc = null;
+
+  let advancedOptions = false;
 
   console.log($theme);
 
@@ -367,6 +370,17 @@
       <hr />
     {/if}
 
+    {#if advancedOptions}
+    <div transition:slide>
+      <h4>Create on behalf of another account (shared minting)</h4>
+      <div class="input-button-group">
+        <input placeholder="0x00000000000" type="text" id="minters" name="minters" bind:value={minter} />
+      </div>
+      <small>Input an address to create an event as that account. This will only work if that account has given you shared minting rights.</small>
+    </div>
+    {/if}
+    <button class="secondary outline text-center mt-2" on:click={ () => advancedOptions = !advancedOptions }>{ advancedOptions ? 'Hide' : 'Show'} advanced options</button>
+
     <footer>
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
@@ -389,14 +403,6 @@
         </button>
       {:else}
         <button on:click|preventDefault={initCreateFloat}>Create FLOAT</button>
-
-        <article>
-          <h4>OPTIONAL: Shared Minting</h4>
-          <div class="input-button-group">
-            <input placeholder="0x00000000000" type="text" id="minters" name="minters" bind:value={minter} />
-          </div>
-          <small>Input an address here to create an event for them. This is only allowed if you share an account with them.</small>
-        </article>
       {/if}
     </footer>
   </article>

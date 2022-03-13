@@ -36,7 +36,7 @@
   }
 </script>
 
-<Table {pageCount} {pageSize} {rows} let:rows={rows2} >
+<Table {pageCount} {pageSize} {rows} let:rows={rows2} labels={{ empty: "This account has not claimed any FLOATs.", loading: "Loading FLOATs..."}}>
   <thead slot="head">
     <tr>
       <th>

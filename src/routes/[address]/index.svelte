@@ -124,6 +124,11 @@
   font-size: 18px;
   text-transform: uppercase;
   font-weight: bold;
+  cursor:pointer;
+}
+
+.tabs li.selected {
+  cursor:default;
 }
 
   @media screen and (max-width: 767px) {

@@ -23,44 +23,53 @@
   {#if !$user?.loggedIn}
     <button class="contrast small-button" on:click={authenticate}>Connect Wallet</button>
   {:else}
-    <h4>You are logged in as: </h4>
-    <button class="outline">
-      <CopyBadge text={$user?.addr}>
-        <span class="mono">{$user?.addr}</span>
-      </CopyBadge>
-    </button>
+    <h2>Welcome to FLOAT</h2>
+    <p class="mb-1 mt-2">You are currently logged in as</p>
+    <div class="btn-group">
+      <button class="outline mb-1">
+        <CopyBadge text={$user?.addr}>
+          <span class="mono">{$user?.addr}</span>
+        </CopyBadge>
+      </button>
+      <button class="logout" on:click={unauthenticate}>Logout</button>
+    </div>
     <br/>
-    <a class="logout" href="/" role="button" on:click|preventDefault={unauthenticate}>Logout</a>
   {/if}
 </article>
 
 <!-- Add minters to your account so they can create FLOAT Events for you -->
 <article>
-  <label for="receiver">
-    Add a shared minter by copying the receiver's address below.<br /><br />
-    <strong>BEWARE</strong>: This will allow this user to control your account on FLOAT.
+  <header>
+    <h3 class=text-center>Shared Minting</h3>
+  </header>
+
+  <p class="m-0 mb-1">Share this account with another address and allow them to create events on your behalf. Add an address below and click on "Add Shared Minter". Do at your own risk! </p>
+  <label for="receiver m-0">
     <input
-      type="text"
-      name="receiver"
-      bind:value={newSharedMinter}
-      placeholder="0x00000000000"
+    class="m-0"
+    type="text"
+    name="receiver"
+    bind:value={newSharedMinter}
+    placeholder="0x00000000000"
     />
   </label>
   {#if $addSharedMinterInProgress}
-    <button aria-busy="true" disabled>Adding...</button>
+  <button aria-busy="true" disabled>Adding...</button>
   {:else if $addSharedMinterStatus.success}
-    <button disabled>Successfully added {newSharedMinter}</button>
+  <button disabled>Successfully added {newSharedMinter}</button>
   {:else if !$addSharedMinterStatus.success && $addSharedMinterStatus.error}
-    <button class="error" disabled>
-      {$addSharedMinterStatus.error}
-    </button>
+  <button class="error" disabled>
+    {$addSharedMinterStatus.error}
+  </button>
   {:else}
-    <button
-      disabled={$addSharedMinterInProgress}
-      on:click={() =>
+  <button
+  disabled={$addSharedMinterInProgress}
+  on:click={() =>
         addSharedMinter(newSharedMinter)}
       >Add Shared Minter
     </button>
+    <p class="text-center m-0 red"><small><strong>BEWARE</strong>: Anyone with access to the address above will be able to control this account on FLOAT.</small></p>
+    
   {/if}
 </article>
 

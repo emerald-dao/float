@@ -163,7 +163,7 @@
             description={group.description} />
         {/each}
       {:else}
-        <p class="text-center no-margin">This account has not created any Groups.</p>
+        <p class="text-center no-margin">This account has not created any groups yet.</p>
       {/if}
     {/await}
   {/await}

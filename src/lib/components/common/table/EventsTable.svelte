@@ -38,7 +38,7 @@
     }
   </script>
   
-  <Table {pageCount} {pageSize} {rows} let:rows={rows2} >
+  <Table {pageCount} {pageSize} {rows} let:rows={rows2} labels={{ empty: "This account has not created any events.", loading: "Loading events..."}} >
     <thead slot="head">
       <tr>
         <th>
