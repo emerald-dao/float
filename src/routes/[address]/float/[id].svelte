@@ -94,7 +94,7 @@
 
 {#await data then data}
   <Meta
-    title="{data.eventName} | FLOAT #{$page.params.eventId}"
+    title="{data.eventName} | FLOAT #{$page.params.id}"
     author={data.eventHost}
     description={data.description}
     url={$page.url} />

@@ -65,6 +65,9 @@ pub contract FLOAT: NonFungibleToken {
         // The `uuid` of this resource
         pub let id: UInt64
 
+        // Some of these are also duplicated on the event,
+        // but it's necessary to put them here as well
+        // in case the FLOATEvent host deletes the event
         pub let dateReceived: UFix64
         pub let eventDescription: String
         pub let eventHost: Address
@@ -189,8 +192,7 @@ pub contract FLOAT: NonFungibleToken {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
             
-            let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() ?? panic("The FLOATEvent that this FLOAT came from has been unlinked.")
-            let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: nft.eventId) ?? panic("The Event no longer exists")
+            let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() ?? panic("The FLOAT Evemt host unlinked their FLOAT Events")
 
             // Checks to see if this FLOAT is transferrable.
             assert(floatEvent.transferrable, message: "This FLOAT is not transferrable.")
@@ -216,6 +218,7 @@ pub contract FLOAT: NonFungibleToken {
             return ids
         }
 
+        // Returns all the FLOATs ids
         pub fun getAllIDs(): [UInt64] {
             return self.ownedNFTs.keys
         }
@@ -273,9 +276,8 @@ pub contract FLOAT: NonFungibleToken {
             // for some reason (heavily recommend against it), their records
             // of who owns the FLOAT is going to be messed up. But that is their
             // fault. We shouldn't let that prevent the user from deleting the FLOAT.
-            if let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() {
-                let floatEvent: &FLOATEvent? = floatEvents.borrowEventRef(eventId: nft.eventId)
-                floatEvent?.accountDeletedFLOAT(serial: nft.serial)
+            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
+                floatEvent.accountDeletedFLOAT(serial: nft.serial)
             }
         
             emit FLOATDestroyed(
@@ -295,8 +297,8 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         destroy() {
-            pre {
-                self.ownedNFTs.keys.length == 0: "You cannot delete a Collection with FLOATs inside of it."
+            for id in self.getIDs() {
+                self.destroyFLOAT(id: id)
             }
             destroy self.ownedNFTs
         }
@@ -328,6 +330,9 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getVerifiers(): {String: [{IVerifier}]}
         pub fun getGroups(): [String]
         pub fun hasClaimed(account: Address): TokenIdentifier?
+
+        access(account) fun accountDeletedFLOAT(serial: UInt64)
+        access(account) fun transferred(id: UInt64, serial: UInt64, to: Address)
     }
 
     //
@@ -394,16 +399,20 @@ pub contract FLOAT: NonFungibleToken {
             self.currentHolders.remove(key: serial)
         }
 
+        // Adds this FLOAT Event to a group
         access(account) fun addToGroup(groupName: String) {
             self.groups[groupName] = true
         }
 
+        // Removes this FLOAT Event to a group
         access(account) fun removeFromGroup(groupName: String) {
             self.groups.remove(key: groupName)
         }
 
         /***************** Getters (all exposed to the public) *****************/
 
+        // Returns info about the FLOAT that this account claimed
+        // (if any)
         pub fun hasClaimed(account: Address): TokenIdentifier? {
             return self.claimed[account]
         }
@@ -424,6 +433,8 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
 
+        // Returns an accurate dictionary of all the
+        // claimers
         pub fun getClaimed(): {Address: TokenIdentifier} {
             return self.claimed
         }
@@ -441,6 +452,8 @@ pub contract FLOAT: NonFungibleToken {
             return self.extraMetadata
         }
 
+        // Gets all the verifiers that will be used
+        // for claiming
         pub fun getVerifiers(): {String: [{IVerifier}]} {
             return self.verifiers
         }
@@ -470,6 +483,8 @@ pub contract FLOAT: NonFungibleToken {
 
         /****************** Getting a FLOAT ******************/
 
+        // Will not panic if one of the recipients has already claimed.
+        // It will just skip them.
         pub fun batchMint(recipients: [&Collection{NonFungibleToken.CollectionPublic}]) {
             for recipient in recipients {
                 if self.claimed[recipient.owner!.address] == nil {
@@ -594,6 +609,8 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    // A container of FLOAT Events (maybe because they're similar to
+    // one another).
     pub resource Group {
         pub let id: UInt64
         pub let name: String
@@ -633,9 +650,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getGroup(groupName: String): &Group?
         pub fun getGroups(): [String]
         // Account Getters
-        access(account) fun borrowEventRef(eventId: UInt64): &FLOATEvent?
         access(account) fun borrowEventsRef(): &FLOATEvents
-        access(account) fun borrowSharedRef(fromHost: Address): &FLOATEvents
     }
 
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
@@ -678,6 +693,8 @@ pub contract FLOAT: NonFungibleToken {
             return eventId
         }
 
+        // Deletes an event. Also makes sure to remove
+        // the event from all the groups its in.
         pub fun deleteEvent(eventId: UInt64) {
             let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
             for groupName in event.getGroups() {
@@ -694,6 +711,8 @@ pub contract FLOAT: NonFungibleToken {
             self.groups[groupName] <-! create Group(_name: groupName, _image: image, _description: description)
         }
 
+        // Deletes a group. Also makes sure to remove
+        // the group from all the events that use it.
         pub fun deleteGroup(groupName: String) {
             let eventsInGroup = self.groups[groupName]?.getEvents() 
                                 ?? panic("This Group does not exist.")
@@ -704,6 +723,8 @@ pub contract FLOAT: NonFungibleToken {
             destroy self.groups.remove(key: groupName)
         }
 
+        // Adds an event to a group. Also adds the group
+        // to the event.
         pub fun addEventToGroup(groupName: String, eventId: UInt64) {
             pre {
                 self.groups[groupName] != nil: "This group does not exist."
@@ -716,6 +737,7 @@ pub contract FLOAT: NonFungibleToken {
             eventRef.addToGroup(groupName: groupName)
         }
 
+        // Simply takes the event away from the group
         pub fun removeEventFromGroup(groupName: String, eventId: UInt64) {
             pre {
                 self.groups[groupName] != nil: "This group does not exist."
@@ -739,7 +761,10 @@ pub contract FLOAT: NonFungibleToken {
             return self.groups.keys
         }
 
-        // Only accessible to people who share your account
+        // Only accessible to people who share your account. 
+        // If `fromHost` has allowed you to share your account
+        // in the SharedAccount contract, you can get a reference
+        // to their FLOATEvents here and do pretty much whatever you want.
         pub fun borrowSharedRef(fromHost: Address): &FLOATEvents {
             let sharedInfo = getAccount(fromHost).getCapability(SharedAccount.InfoPublicPath)
                                 .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>() 
@@ -781,6 +806,8 @@ pub contract FLOAT: NonFungibleToken {
             return self.events.keys
         }
 
+        // Maps the eventId to the name of that
+        // event. Just a kind helper.
         pub fun getAllEvents(): {UInt64: String} {
             let answer: {UInt64: String} = {}
             for id in self.events.keys {
@@ -818,10 +845,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePathXXX
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPathXXX
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePathXXX
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePathXXX
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPathXXX
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePathXXXO
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPathXXXO
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePathXXXO
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePathXXXO
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPathXXXO
     }
 }

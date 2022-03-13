@@ -8,8 +8,9 @@ pub contract SharedAccount {
     pub fun isAllowed(account: Address): Bool
   }
 
+  // A list of people you allow to share your
+  // account.
   pub resource Info: InfoPublic {
-    // Nik Will never be in this list
     access(account) var allowed: {Address: Bool}
 
     // Allow someone to share your account
