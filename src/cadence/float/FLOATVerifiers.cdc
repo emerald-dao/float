@@ -1,5 +1,4 @@
 import FLOAT from "./FLOAT.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
 
 pub contract FLOATVerifiers {
 
@@ -79,6 +78,12 @@ pub contract FLOATVerifiers {
         }
     }
 
+    //
+    // MultipleSecret
+    //
+    // Allows for Multiple Secret codes
+    // Everytime a secret gets used, it gets removed
+    // from the list.
     pub struct MultipleSecret: FLOAT.IVerifier {
         access(self) let secrets: {String: Bool}
 

@@ -8,16 +8,9 @@
   let eventHostObject;
   let eventHostResolvedName;
 
-  let ownerObject;
-  let ownerResolvedName;
   async function initialize() {
     eventHostObject = await resolveAddressObject(float.eventHost);  
     eventHostResolvedName = getResolvedName(eventHostObject);
-
-    if (float.owner) {
-      ownerObject = await resolveAddressObject(float.owner);  
-      ownerResolvedName = getResolvedName(ownerObject);
-    }
     return "";
   }
   
@@ -29,7 +22,7 @@
   {#if claimed}
     <a
       class="no-style"
-      href="/{ownerResolvedName}/float/{float.id}">
+      href="/{float.owner}/float/{float.id}">
       <article class="card">
         <img
           src="https://ipfs.infura.io/ipfs/{float.eventImage}"

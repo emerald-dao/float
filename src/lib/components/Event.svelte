@@ -10,6 +10,7 @@
   }
   
   let resolvedName = initialize();
+  console.log(floatEvent)
 </script>
 
 <style>

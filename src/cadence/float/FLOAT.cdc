@@ -845,10 +845,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePathXXXO
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPathXXXO
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePathXXXO
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePathXXXO
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPathXXXO
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath
     }
 }

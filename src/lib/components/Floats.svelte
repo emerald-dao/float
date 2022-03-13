@@ -1,4 +1,6 @@
 <script>
+import { page } from '$app/stores';
+
   export let addressObject;
   import Loading from '$lib/components/common/Loading.svelte';
   import FloatsTable from '$lib/components/common/table/FloatsTable.svelte';
@@ -8,9 +10,10 @@
 
   
   let floats = async () => {
-    console.log('async floats', floats)
     const floatsRaw = await getFLOATs(addressObject.address);
-    const floatsFormatted = Object.values(floatsRaw || {})?.map(obj => obj.float)
+    const floatsFormatted = Object.values(floatsRaw || {})?.map(obj => {
+      return {totalSupply: obj.totalSupply, owner: $page.params.address, ...obj.float}
+    })
     return floatsFormatted || [];
   }
   
@@ -29,7 +32,7 @@
       <FloatsTable {floats} />
     {:else if floats.length > 0}
       {#each floats as float}
-        <Float {float}/>
+        <Float {float} claimed={true} />
       {/each}
     {:else}
     <p class="text-center">This account has not claimed any FLOATs yet.</p>
