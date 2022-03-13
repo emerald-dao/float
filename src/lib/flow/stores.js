@@ -18,6 +18,9 @@ export const floatDeletionStatus = writable(false);
 export const floatDistributingInProgress = writable(false);
 export const floatDistributingStatus = writable(false);
 
+export const floatDistributingManyInProgress = writable(false);
+export const floatDistributingManyStatus = writable(false);
+
 export const floatTransferInProgress = writable(false);
 export const floatTransferStatus = writable(false);
 

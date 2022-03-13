@@ -136,7 +136,6 @@
       {:else}
         <button
           on:click|preventDefault={createGroup(
-            addressObject.address,
             $draftGroup
           )}>
           Create Group

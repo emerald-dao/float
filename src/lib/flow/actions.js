@@ -32,7 +32,9 @@ import {
   deleteGroupInProgress,
   deleteGroupStatus,
   deleteEventInProgress,
-  deleteEventStatus
+  deleteEventStatus,
+  floatDistributingManyStatus,
+  floatDistributingManyInProgress
 } from './stores.js';
 
 import { draftFloat } from '$lib/stores';
@@ -98,24 +100,25 @@ export const createEvent = async (forHost, draftFloat) => {
         let FLOATEvents: &FLOAT.FLOATEvents
       
         prepare(acct: AuthAccount) {
-          // set up the FLOAT Collection where users will store their FLOATs
+          // SETUP COLLECTION
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
-          // set up the FLOAT Events where users will store all their created events
+          // SETUP FLOATEVENTS
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
             acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
-
+      
+          // SETUP SHARED MINTING
           if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-            acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-            acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                    (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
           }
           
           if forHost != acct.address {
@@ -226,24 +229,25 @@ export const claimFLOAT = async (eventId, host, secret) => {
         let Collection: &FLOAT.Collection
       
         prepare(acct: AuthAccount) {
-          // set up the FLOAT Collection where users will store their FLOATs
+          // SETUP COLLECTION
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
-          // set up the FLOAT Events where users will store all their created events
+          // SETUP FLOATEVENTS
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
             acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
-
+      
+          // SETUP SHARED MINTING
           if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-            acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-            acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                    (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
           }
       
           let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -264,7 +268,6 @@ export const claimFLOAT = async (eventId, host, secret) => {
           log("Claimed the FLOAT.")
         }
       }
-       
       `,
       args: (arg, t) => [
         arg(parseInt(eventId), t.UInt64),
@@ -320,28 +323,36 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
+      import SharedAccount from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64, recipient: Address) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
         let FLOATEvent: &FLOAT.FLOATEvent
         let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
-      
+
         prepare(acct: AuthAccount) {
-          // set up the FLOAT Collection where users will store their FLOATs
+          // SETUP COLLECTION
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
-      
-          // set up the FLOAT Events where users will store all their created events
+
+          // SETUP FLOATEVENTS
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
             acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
           }
-      
+
+          // SETUP SHARED MINTING
+          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
+              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          }
+
           if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
@@ -350,24 +361,16 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
           }
-      
+
           self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath)
                                       .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
                                       ?? panic("Could not get the public FLOAT Collection from the recipient.")
         }
-      
+
         execute {
-          //
-          // Give the "recipient" a FLOAT from the event with "id"
-          //
-      
           self.FLOATEvent.mint(recipient: self.RecipientCollection)
           log("Distributed the FLOAT.")
-      
-          //
-          // SOME OTHER ACTION HAPPENS
-          //
         }
       }
       `,
@@ -402,6 +405,113 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
     transactionStatus.set(99)
     floatDistributingStatus.set(respondWithError(e));
     floatDistributingInProgress.set(false);
+
+    console.log(e)
+  }
+}
+
+export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
+
+  let transactionId = false;
+  initTransactionState()
+
+  floatDistributingManyInProgress.set(true);
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import NonFungibleToken from 0xCORE
+      import MetadataViews from 0xCORE
+      import SharedAccount from 0xFLOAT
+
+      transaction(forHost: Address, eventId: UInt64, recipients: [Address]) {
+
+        let FLOATEvents: &FLOAT.FLOATEvents
+        let FLOATEvent: &FLOAT.FLOATEvent
+        let RecipientCollections: [&FLOAT.Collection{NonFungibleToken.CollectionPublic}]
+      
+        prepare(acct: AuthAccount) {
+          // SETUP COLLECTION
+          if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+              acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+                      (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+          }
+      
+          // SETUP FLOATEVENTS
+          if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+            acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+          }
+      
+          // SETUP SHARED MINTING
+          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
+              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          }
+      
+          if forHost != acct.address {
+            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
+          } else {
+            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOATEvents from the signer.")
+          }
+      
+          self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
+          self.RecipientCollections = []
+          for recipient in recipients {
+            if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
+              self.RecipientCollections.append(recipientCollection)
+            }
+          }
+        }
+      
+        execute {
+          //
+          // Give the "recipients" a FLOAT from the event with "id"
+          //
+      
+          self.FLOATEvent.batchMint(recipients: self.RecipientCollections)
+          log("Distributed the FLOAT.")
+        }
+      }
+      `,
+      args: (arg, t) => [
+        arg(forHost, t.Address),
+        arg(parseInt(eventId), t.UInt64),
+        arg(recipients, t.Array(t.Address))
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        if (res.statusCode === 0) {
+          floatDistributingManyStatus.set(respondWithSuccess());
+        } else {
+          floatDistributingManyStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        floatDistributingManyInProgress.set(false);
+
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+  } catch (e) {
+    transactionStatus.set(99)
+    floatDistributingManyStatus.set(respondWithError(e));
+    floatDistributingManyInProgress.set(false);
 
     console.log(e)
   }
@@ -673,25 +783,33 @@ export const deleteEvent = async (forHost, eventId) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
+      import SharedAccount from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
         prepare(acct: AuthAccount) {
-          // set up the FLOAT Collection where users will store their FLOATs
+          // SETUP COLLECTION
           if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
               acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
               acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                       (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
           }
       
-          // set up the FLOAT Events where users will store all their created events
+          // SETUP FLOATEVENTS
           if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
             acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
             acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                       (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
-          } 
+          }
+      
+          // SETUP SHARED MINTING
+          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
+              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          }
       
           if forHost != acct.address {
             let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -864,7 +982,7 @@ export const removeSharedMinter = async (user) => {
   }
 }
 
-export const createGroup = async (forHost, draftGroup) => {
+export const createGroup = async (draftGroup) => {
   let transactionId = false;
   initTransactionState();
 
@@ -874,22 +992,41 @@ export const createGroup = async (forHost, draftGroup) => {
     transactionId = await fcl.mutate({
       cadence: `
       import FLOAT from 0xFLOAT
+      import NonFungibleToken from 0xCORE
+      import MetadataViews from 0xCORE
+      import SharedAccount from 0xFLOAT
 
-      transaction(forHost: Address, groupName: String, image: String, description: String) {
+      transaction(groupName: String, image: String, description: String) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
-      
+
         prepare(acct: AuthAccount) {
-          if forHost != acct.address {
-            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-                              ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
-          } else {
+            // SETUP COLLECTION
+            if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+                acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
+                acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+                        (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+            }
+
+            // SETUP FLOATEVENTS
+            if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+              acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+              acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                        (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+            }
+
+            // SETUP SHARED MINTING
+            if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
+                acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
+                acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
+                        (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+            }
+
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          }
+
         }
-      
+
         execute {
           self.FLOATEvents.createGroup(groupName: groupName, image: image, description: description)
           log("Created a new Group.")
@@ -897,7 +1034,6 @@ export const createGroup = async (forHost, draftGroup) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Address),
         arg(draftGroup.name, t.String),
         arg(draftGroup.ipfsHash, t.String),
         arg(draftGroup.description, t.String)
@@ -935,7 +1071,7 @@ export const createGroup = async (forHost, draftGroup) => {
   }
 }
 
-export const deleteGroup = async (forHost, groupName) => {
+export const deleteGroup = async (groupName) => {
   let transactionId = false;
   initTransactionState();
 
@@ -946,19 +1082,13 @@ export const deleteGroup = async (forHost, groupName) => {
       cadence: `
       import FLOAT from 0xFLOAT
 
-      transaction(forHost: Address, groupName: String) {
+      transaction(groupName: String) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
         prepare(acct: AuthAccount) {
-          if forHost != acct.address {
-            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-                              ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
-          } else {
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOATEvents from the signer.")
-          }
         }
       
         execute {
@@ -968,7 +1098,6 @@ export const deleteGroup = async (forHost, groupName) => {
       }
       `,
       args: (arg, t) => [
-        arg(forHost, t.Address),
         arg(groupName, t.String)
       ],
       payer: fcl.authz,

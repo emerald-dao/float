@@ -190,7 +190,7 @@ pub contract FLOAT: NonFungibleToken {
             let nft <- token as! @NFT
             
             let floatEvents: &FLOATEvents{FLOATEventsPublic} = nft.eventsCap.borrow() ?? panic("The FLOATEvent that this FLOAT came from has been unlinked.")
-            let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: nft.eventId) ?? panic("The Event no longer exists (not possible)")
+            let floatEvent: &FLOATEvent = floatEvents.borrowEventRef(eventId: nft.eventId) ?? panic("The Event no longer exists")
 
             // Checks to see if this FLOAT is transferrable.
             assert(floatEvent.transferrable, message: "This FLOAT is not transferrable.")
@@ -411,14 +411,16 @@ pub contract FLOAT: NonFungibleToken {
         // This is a guarantee that the person owns the FLOAT
         // with the passed in serial
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier? {
-            if let data = self.currentHolders[serial] {
-                let collection = getAccount(data.address).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&Collection{CollectionPublic}>() 
-                if collection?.borrowFLOAT(id: data.id) != nil {
-                    return data
-                }
-                
+            pre {
+                self.currentHolders[serial] != nil:
+                    "This serial has not been created yet."
             }
-            
+            let data = self.currentHolders[serial]!
+            let collection = getAccount(data.address).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&Collection{CollectionPublic}>() 
+            if collection?.borrowFLOAT(id: data.id) != nil {
+                return data
+            }
+                
             return nil
         }
 
@@ -625,7 +627,6 @@ pub contract FLOAT: NonFungibleToken {
     //
     pub resource interface FLOATEventsPublic {
         // Public Getters
-        pub fun borrowSharedRef(fromHost: Address): &FLOATEvents
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}?
         pub fun getAllEvents(): {UInt64: String}
         pub fun getIDs(): [UInt64]
@@ -634,6 +635,7 @@ pub contract FLOAT: NonFungibleToken {
         // Account Getters
         access(account) fun borrowEventRef(eventId: UInt64): &FLOATEvent?
         access(account) fun borrowEventsRef(): &FLOATEvents
+        access(account) fun borrowSharedRef(fromHost: Address): &FLOATEvents
     }
 
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
@@ -710,20 +712,20 @@ pub contract FLOAT: NonFungibleToken {
             let groupRef = &self.groups[groupName] as &Group
             groupRef.addEvent(eventId: eventId)
 
-            let eventRef = self.borrowEventRef(eventId: eventId)
-            eventRef!.addToGroup(groupName: groupName)
+            let eventRef = self.borrowEventRef(eventId: eventId)!
+            eventRef.addToGroup(groupName: groupName)
         }
 
         pub fun removeEventFromGroup(groupName: String, eventId: UInt64) {
             pre {
                 self.groups[groupName] != nil: "This group does not exist."
-                 self.events[eventId] != nil: "This event does not exist."
+                self.events[eventId] != nil: "This event does not exist."
             }
             let groupRef = &self.groups[groupName] as &Group
             groupRef.removeEvent(eventId: eventId)
 
-            let eventRef = self.borrowEventRef(eventId: eventId)
-            eventRef!.removeFromGroup(groupName: groupName)
+            let eventRef = self.borrowEventRef(eventId: eventId)!
+            eventRef.removeFromGroup(groupName: groupName)
         }
 
         pub fun getGroup(groupName: String): &Group? {
@@ -816,10 +818,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath043
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath043
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath043
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath043
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath043
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePathXXX
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPathXXX
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePathXXX
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePathXXX
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPathXXX
     }
 }

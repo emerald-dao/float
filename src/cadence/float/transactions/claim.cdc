@@ -9,20 +9,21 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
   let Collection: &FLOAT.Collection
 
   prepare(acct: AuthAccount) {
-    // set up the FLOAT Collection where users will store their FLOATs
+    // SETUP COLLECTION
     if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
         acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
         acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
     }
 
-    // set up the FLOAT Events where users will store all their created events
+    // SETUP FLOATEVENTS
     if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
       acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
       acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
     }
 
+    // SETUP SHARED MINTING
     if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
         acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
         acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>

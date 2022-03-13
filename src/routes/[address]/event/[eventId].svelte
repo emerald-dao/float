@@ -11,7 +11,9 @@
     removeEventFromGroupInProgress,
     removeEventFromGroupStatus,
 deleteEventInProgress,
-deleteEventStatus
+deleteEventStatus,
+floatDistributingManyStatus,
+floatDistributingManyInProgress
   } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
@@ -25,7 +27,8 @@ deleteEventStatus
     addEventToGroup,
     getGroups,
     removeEventFromGroup,
-    resolveAddressObject
+    resolveAddressObject,
+distributeDirectlyMany
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -68,6 +71,22 @@ deleteEventStatus
 
   let recipientAddr = "";
   let groupName = "";
+  let listOfAddresses;
+
+  const uploadList = (e) => {
+    const file = e.target.files[0];
+    if (file.type === "text/plain") {
+      var fr = new FileReader();
+      fr.onload = (e) => {
+        let stuff = e.target.result;
+        listOfAddresses = stuff.split('\n\r');
+      }
+
+      fr.readAsText(file);
+    } else {
+      listOfAddresses = 'error';
+    }
+  }
 </script>
 
 <svelte:head>
@@ -202,11 +221,7 @@ deleteEventStatus
                   Award
                 </button>
               {:else if $floatDistributingStatus.success}
-                <a
-                  role="button"
-                  class="d-block"
-                  href="/{recipientAddr}"
-                  style="display:block">Awarded</a>
+                <button disabled>Awarded</button>
               {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
                 <button class="error" disabled>
                   Error
@@ -227,9 +242,45 @@ deleteEventStatus
             <small>Paste in a Flow address.</small>
           </div>
 
+          <div class="input-group">
+            <h4>Award Manually to Many</h4>
+            <div class="input-button-group">
+              <input type="file" id="list" name="list" placeholder="0x00000000000" on:change={uploadList}>
+              {#if $floatDistributingManyInProgress}
+                <button aria-busy="true" disabled>
+                  Award
+                </button>
+              {:else if $floatDistributingManyStatus.success}
+                <button disabled>Awarded</button>
+              {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
+                <button class="error" disabled>
+                  Error
+                </button>
+              {:else}
+                <button
+                  disabled={$floatDistributingManyInProgress || listOfAddresses === 'error'}
+                  on:click={() =>
+                    distributeDirectlyMany(
+                      resolvedNameObject.address,
+                      floatEvent?.eventId,
+                      listOfAddresses
+                    )}
+                  >Award
+                </button>
+              {/if}
+            </div>
+            {#if listOfAddresses && listOfAddresses !== 'error'}
+              <small>Minting to: {listOfAddresses.toString()}</small>
+            {:else if listOfAddresses === 'error'}
+              <small class="red">This file is not supported. Please upload a .txt file.</small>
+            {:else}
+              <small>Upload a .txt file with an addresses each on their own line.</small>
+            {/if}
+          </div>
+
           {#if groupsWeCanAddTo.length > 0}
             <div class="input-group">
-              <h4>Add to Group</h4>
+              <h4>Add Event to Group</h4>
               <div class="input-button-group">
                 <select bind:value={groupName} id="addToGroup" required>
                   {#each groupsWeCanAddTo as group}
@@ -260,7 +311,7 @@ deleteEventStatus
 
           {#if floatEvent.groups.length > 0}
             <div class="input-group">
-              <h4>Remove from a Group</h4>
+              <h4>Remove Event from Group</h4>
               <div class="input-button-group">
                 <select bind:value={groupName} id="removeFromGroup" required>
                   {#each floatEvent.groups as group}

@@ -38,7 +38,6 @@
       <button
         class="red outline"
         on:click|preventDefault={deleteGroup(
-          addressObject.address,
           $page.params.groupName
         )}>Delete Group</button>
     {/if}

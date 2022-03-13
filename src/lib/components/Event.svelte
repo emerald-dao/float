@@ -33,7 +33,7 @@
 {#await resolvedName}
   <Loading />
 {:then resolvedName}
-  <a class="no-style" href="/{resolvedName}/{floatEvent?.eventId}">
+  <a class="no-style" href="/{resolvedName}/event/{floatEvent?.eventId}">
     <article class="card">
       {#if floatEvent?.image}
       <img src="https://ipfs.infura.io/ipfs/{floatEvent?.image}" alt="{floatEvent.name} Image" />
