@@ -274,7 +274,7 @@
     {:else if listOfAddresses === 'error'}
     <small class="red">This file is not supported. Please upload a .txt file.</small>
     {:else}
-    <small>Upload a .txt file with an addresses each on their own line.</small>
+    <small>Upload a .txt file <a href="/example.txt" download>(here is an example)</a> of addresses, each on their own line.</small>
     {/if}
   </div>
   
