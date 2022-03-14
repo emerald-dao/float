@@ -21,6 +21,7 @@
 
   .confirmation {
     font-size: 0.7rem;
+    padding: 0px 10px;
   }
 </style>
 

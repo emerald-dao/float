@@ -70,7 +70,9 @@
 {#if $user?.addr === addressObject.address}
   {#if open}
     <article>
-      <h4>Create a new Group</h4>
+      <header>
+        <h3 class="m-0 text-center">Create a new Group</h3>
+      </header>
 
       <label for="name"
         >Group Name
@@ -142,9 +144,6 @@
         </button>
       {/if}
     </article>
-  {:else}
-    <button on:click={() => (open = true)} class="create"
-      >Create a new Group</button>
   {/if}
 {/if}
 
@@ -164,6 +163,9 @@
         {/each}
       {:else}
         <p class="text-center no-margin">This account has not created any groups yet.</p>
+
+        <button on:click={() => (open = true)} class="create"
+          >Create a new Group</button>
       {/if}
     {/await}
   {/await}
