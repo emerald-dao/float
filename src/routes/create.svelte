@@ -372,11 +372,11 @@
 
     {#if advancedOptions}
     <div transition:slide>
-      <h4>Create on behalf of another account (shared minting)</h4>
+      <h4 class="">Create on behalf of another account (shared minting)</h4>
       <div class="input-button-group">
         <input placeholder="0x00000000000" type="text" id="minters" name="minters" bind:value={minter} />
       </div>
-      <small>Input an address to create an event as that account. This will only work if that account has given you shared minting rights.</small>
+      <p class="small mt-1">Input an address to create an event as that account. This will only work if that account has given you shared minting rights.</p>
     </div>
     {/if}
     <button class="secondary outline text-center mt-2" on:click={ () => advancedOptions = !advancedOptions }>{ advancedOptions ? 'Hide' : 'Show'} advanced options</button>
@@ -422,6 +422,11 @@
     line-height: 1.2;
     font-weight: 400;
     opacity: 0.6;
+  }
+
+  .small {
+    font-size: 0.75rem;
+    line-height:1.2;
   }
 
   /* .image-preview {
