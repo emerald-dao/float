@@ -1,8 +1,30 @@
+// MADE BY: Emerald City, Jacob Tucker
+
+// This contract is probably the most confusing element of the FLOAT
+// platform. Listed here is a bunch of Structs which all implement
+// FLOAT.IVerifier. 
+
+// This pattern allows us to define arbitrary "restrictions" or "verifiers"
+// on our FLOAT Events. For example, Timelock is a verifier that makes sure
+// the current time is within the start and end date that the FLOAT Event host
+// specified when they created an event.  
+
+// The cool part is all of these verifiers are totally optional, and are only
+// passed in with the newly created event if the host wanted to enable them.  
+// You can mix and match them however you want. For example, one event I could
+// use both Timelock and Limited, and for another event I could just use Secret.  
+
+// Each verifier must have a `verify` function that takes in a generalized `params`
+// argument so we can pass user data through as well as info about the event itself.  
+// This is important for Secret for example because we want to pass the users guess
+// of the secret code through. For Limited, we need to know the totalSupply of the event,
+// so we pass it through as well.
+
 import FLOAT from "./FLOAT.cdc"
 
 pub contract FLOATVerifiers {
 
-    // The "modules" to be used by implementing Verifiers
+    // The "verifiers" to be used
     
     //
     // Timelock

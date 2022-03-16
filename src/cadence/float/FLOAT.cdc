@@ -1,3 +1,32 @@
+// MADE BY: Emerald City, Jacob Tucker
+
+// This contract is for FLOAT, a proof of participation platform
+// on Flow. It is similar to POAP, but a lot, lot cooler. ;)
+
+// The main idea is that FLOATs are simply NFTs. They are minted from
+// a FLOATEvent, which is basically an event that a host starts. For example,
+// if I have a Twitter space and want to create an event for it, I can create
+// a new FLOATEvent in my FLOATEvents collection and mint FLOATs to people
+// from this Twitter space event representing that they were there.  
+
+// The complicated part is the FLOATVerifiers contract. That contract 
+// defines a list of "verifiers" that can be tagged onto a FLOATEvent to make
+// the claiming more secure. For example, a host can decide to put a time 
+// constraint on when users can claim a FLOAT. They would do that by passing in
+// a Timelock struct (defined in FLOATVerifiers.cdc) with a time period for which
+// users can claim. 
+
+// For a whole list of verifiers, see FLOATVerifiers.cdc 
+
+// Lastly, we implemented SharedAccount.cdc, which allows you to specify
+// someone else can control your account (in the context of FLOAT). This 
+// is specifically designed for teams to be able to handle one "host" on the
+// FLOAT platform so all the company's events are under one account.
+// This is mainly used to give other people access to your FLOATEvents resource,
+// and allow them to mint for you and control Admin operations on your events.  
+
+// For more info on SharedAccount, see SharedAccount.cdc
+
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
 import SharedAccount from "../sharedaccount/SharedAccount.cdc"
@@ -93,6 +122,7 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
 
+        // This is for the MetdataStandard
         pub fun getViews(): [Type] {
              return [
                 Type<MetadataViews.Display>(),
@@ -100,6 +130,7 @@ pub contract FLOAT: NonFungibleToken {
             ]
         }
 
+        // This is for the MetdataStandard
         pub fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.Display>():
@@ -130,6 +161,7 @@ pub contract FLOAT: NonFungibleToken {
             self.originalRecipient = _originalRecipient
             self.serial = _serial
 
+            // Stores a capability to the FLOATEvents of its creator
             self.eventsCap = getAccount(_eventHost)
                 .getCapability<&FLOATEvents{FLOATEventsPublic, MetadataViews.ResolverCollection}>(FLOAT.FLOATEventsPublicPath)
             
@@ -146,6 +178,7 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    // A public interface for people to call into our Collection
     pub resource interface CollectionPublic {
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT
         pub fun borrowFLOAT(id: UInt64): &NFT?
@@ -160,11 +193,13 @@ pub contract FLOAT: NonFungibleToken {
     // A Collection that holds all of the users FLOATs.
     // Withdrawing is not allowed. You can only transfer.
     pub resource Collection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, CollectionPublic {
+        // Maps a FLOAT id to the FLOAT itself
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
-        // Maps an eventId to the ids of FLOATs that this
+        // Maps an eventId to the ids of FLOATs that
         // this user owns from that event
         access(account) var events: {UInt64: {UInt64: Bool}}
 
+        // Deposits a FLOAT to the collection
         pub fun deposit(token: @NonFungibleToken.NFT) {
             let nft <- token as! @NFT
             let id = nft.id
@@ -202,6 +237,8 @@ pub contract FLOAT: NonFungibleToken {
             emit FLOATTransferred(id: nft.id, from: self.owner!.address, to: recipient.owner!.address, eventHost: nft.eventHost, eventId: nft.eventId, serial: nft.serial)
 
             self.events[nft.eventId]!.remove(key: nft.id)
+
+            // Transfers the FLOAT
             recipient.deposit(token: <- nft)
         }
 
@@ -304,6 +341,11 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    // An interface that every "verifier" must implement. 
+    // A verifier is one of the options on the FLOAT Event page,
+    // for example, a "time limit," or a "limited" number of 
+    // FLOATs that can be claimed. 
+    // All the current verifiers can be seen inside FLOATVerifiers.cdc
     pub struct interface IVerifier {
         // A function every verifier must implement. 
         // Will have `assert`s in it to make sure
@@ -311,6 +353,7 @@ pub contract FLOAT: NonFungibleToken {
         access(account) fun verify(_ params: {String: AnyStruct})
     }
 
+    // A public interface to read the FLOATEvent
     pub resource interface FLOATEventPublic {
         pub var claimable: Bool
         pub let dateCreated: UFix64
@@ -339,6 +382,8 @@ pub contract FLOAT: NonFungibleToken {
     // FLOATEvent
     //
     pub resource FLOATEvent: FLOATEventPublic, MetadataViews.Resolver {
+        // Whether or not users can claim from our event (can be toggled
+        // at any time)
         pub var claimable: Bool
         // Maps an address to the FLOAT they claimed
         access(account) var claimed: {Address: TokenIdentifier}
@@ -348,15 +393,30 @@ pub contract FLOAT: NonFungibleToken {
         access(account) var currentHolders: {UInt64: TokenIdentifier}
         pub let dateCreated: UFix64
         pub let description: String 
+        // This is equal to this resource's uuid
         pub let eventId: UInt64
         access(account) var extraMetadata: {String: AnyStruct}
+        // The groups that this FLOAT Event belongs to (groups
+        // are within the FLOATEvents resource)
         access(account) var groups: {String: Bool}
+        // Who created this FLOAT Event
         pub let host: Address
+        // The image of the FLOAT Event
         pub let image: String 
+        // The name of the FLOAT Event
         pub let name: String
+        // The total number of FLOATs that have been
+        // minted from this event
         pub var totalSupply: UInt64
+        // Whether or not the FLOATs that users own
+        // from this event can be transferred (can be
+        // toggled at any point)
         pub var transferrable: Bool
+        // A url of where the event took place
         pub let url: String
+        // A list of verifiers this FLOAT Event contains.
+        // Will be used every time someone "claims" a FLOAT
+        // to see if they pass the requirements
         access(account) let verifiers: {String: [{IVerifier}]}
 
         /***************** Setters for the Event Owner *****************/
@@ -496,7 +556,10 @@ pub contract FLOAT: NonFungibleToken {
         // Used to give a person a FLOAT from this event.
         // Used as a helper function for `claim`, but can also be 
         // used by the event owner and shared accounts to
-        // mint directly to a user.
+        // mint directly to a user. 
+        //
+        // If the event owner directly mints to a user, it does not
+        // run the verifiers on the user. It bypasses all of them.
         //
         // Return the id of the FLOAT it minted
         pub fun mint(recipient: &Collection{NonFungibleToken.CollectionPublic}): UInt64 {
@@ -517,11 +580,14 @@ pub contract FLOAT: NonFungibleToken {
                 _serial: serial
             ) 
             let id = token.id
+            // Saves the claimer
             self.claimed[recipientAddr] = TokenIdentifier(
                 _id: id,
                 _address: recipientAddr,
                 _serial: serial
             )
+            // Saves the claimer as the current holder
+            // of the newly minted FLOAT
             self.currentHolders[serial] = TokenIdentifier(
                 _id: id,
                 _address: recipientAddr,
@@ -549,6 +615,9 @@ pub contract FLOAT: NonFungibleToken {
             params["event"] = &self as &FLOATEvent{FLOATEventPublic}
             params["claimee"] = recipient.owner!.address
             
+            // Runs a loop over all the verifiers that this FLOAT Events
+            // implements. For example, "Limited", "Timelock", "Secret", etc.  
+            // All the verifiers are in the FLOATVerifiers.cdc contract
             for identifier in self.verifiers.keys {
                 let typedModules = &self.verifiers[identifier] as &[{IVerifier}]
                 var i = 0
@@ -610,12 +679,14 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     // A container of FLOAT Events (maybe because they're similar to
-    // one another).
+    // one another, or an event host wants to list all their AMAs together, etc).
     pub resource Group {
         pub let id: UInt64
         pub let name: String
         pub let image: String
         pub let description: String
+        // All the FLOAT Events that belong
+        // to this group.
         access(account) var events: {UInt64: Bool}
 
         access(account) fun addEvent(eventId: UInt64) {
@@ -653,10 +724,15 @@ pub contract FLOAT: NonFungibleToken {
         access(account) fun borrowEventsRef(): &FLOATEvents
     }
 
+    // A "Collection" of FLOAT Events
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
+        // All the FLOAT Events this collection stores
         access(account) var events: @{UInt64: FLOATEvent}
+        // All the Groups this collection stores
         access(account) var groups: @{String: Group}
 
+        // Creates a new FLOAT Event by passing in some basic parameters
+        // and a list of all the verifiers this event must abide by
         pub fun createEvent(
             claimable: Bool,
             description: String,
@@ -763,7 +839,7 @@ pub contract FLOAT: NonFungibleToken {
 
         // Only accessible to people who share your account. 
         // If `fromHost` has allowed you to share your account
-        // in the SharedAccount contract, you can get a reference
+        // in the SharedAccount.cdc contract, you can get a reference
         // to their FLOATEvents here and do pretty much whatever you want.
         pub fun borrowSharedRef(fromHost: Address): &FLOATEvents {
             let sharedInfo = getAccount(fromHost).getCapability(SharedAccount.InfoPublicPath)

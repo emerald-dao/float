@@ -1,3 +1,16 @@
+// MADE BY: Emerald City, Jacob Tucker
+
+// This is a very simple contract that lets users add addresses
+// to an "Info" resource signifying they want them to share their account.  
+
+// This is specifically used by the
+// `pub fun borrowSharedRef(fromHost: Address): &FLOATEvents`
+// function inside FLOAT.cdc to give users access to someone elses
+// FLOATEvents if they are on this shared list.
+
+// This contract is my way of saying I hate private capabilities, so I
+// implemented an alternative solution to private access.
+
 pub contract SharedAccount {
 
   pub let InfoStoragePath: StoragePath
