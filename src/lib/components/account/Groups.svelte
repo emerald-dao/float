@@ -12,7 +12,7 @@
   async function initialize() {
     return getResolvedName(addressObject);
   }
-  
+
   let resolvedName = initialize();
 
   let ipfsIsReady = false;
@@ -68,7 +68,10 @@
   uniqueId={+new Date()} />
 
 {#if $user?.addr === addressObject.address}
-  {#if open}
+  {#if !open}
+    <button on:click={() => (open = true)} class="create"
+      >Create a new Group</button>
+  {:else if open}
     <article>
       <header>
         <h3 class="m-0 text-center">Create a new Group</h3>
@@ -136,10 +139,7 @@
           {$addGroupStatus.error}
         </button>
       {:else}
-        <button
-          on:click|preventDefault={createGroup(
-            $draftGroup
-          )}>
+        <button on:click|preventDefault={createGroup($draftGroup)}>
           Create Group
         </button>
       {/if}
@@ -162,10 +162,9 @@
             description={group.description} />
         {/each}
       {:else}
-        <p class="text-center no-margin">This account has not created any groups yet.</p>
-
-        <button on:click={() => (open = true)} class="create"
-          >Create a new Group</button>
+        <p class="text-center no-margin">
+          This account has not created any groups yet.
+        </p>
       {/if}
     {/await}
   {/await}
