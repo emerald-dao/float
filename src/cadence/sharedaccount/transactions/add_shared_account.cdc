@@ -1,18 +1,18 @@
-import SharedAccount from "../SharedAccount.cdc"
+import GrantedAccountAccess from "../GrantedAccountAccess.cdc"
 
 transaction (receiver: Address) {
 
-  let Info: &SharedAccount.Info
+  let Info: &GrantedAccountAccess.Info
   
   prepare(acct: AuthAccount) {
     // set up the FLOAT Collection where users will store their FLOATs
-    if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-        acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-        acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+    if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+        acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+        acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
     }
 
-    self.Info = acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath)!
+    self.Info = acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath)!
   }
 
   execute {

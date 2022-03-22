@@ -1,11 +1,11 @@
-import SharedAccount from "../SharedAccount.cdc"
+import GrantedAccountAccess from "../GrantedAccountAccess.cdc"
 
 transaction(user: Address) {
 
-  let Info: &SharedAccount.Info
+  let Info: &GrantedAccountAccess.Info
 
   prepare(acct: AuthAccount) {
-    self.Info = acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath)
+    self.Info = acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath)
                   ?? panic("Could not borrow the Info from the signer.")
   }
 

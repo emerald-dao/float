@@ -11,7 +11,7 @@
     "removeFM": "flow accounts remove-contract FLOATMetadataViews --network=testnet --signer=testnet-account",
     "removeFV": "flow accounts remove-contract FLOATVerifiers --network=testnet --signer=testnet-account",
     "removeMDV": "flow accounts remove-contract MetadataViews --network=testnet --signer=testnet-account",
-    "removeS": "flow accounts remove-contract SharedAccount --network=testnet --signer=testnet-account",
+    "removeG": "flow accounts remove-contract GrantedAccountAccess --network=testnet --signer=testnet-account",
     "deploy": "flow project deploy --network=testnet"
   },
   "devDependencies": {

@@ -93,7 +93,7 @@ export const createEvent = async (forHost, draftFloat) => {
       import FLOATVerifiers from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
 
@@ -115,10 +115,10 @@ export const createEvent = async (forHost, draftFloat) => {
           }
       
           // SETUP SHARED MINTING
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
           
           if forHost != acct.address {
@@ -221,7 +221,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(eventId: UInt64, host: Address, secret: String?) {
  
@@ -244,10 +244,10 @@ export const claimFLOAT = async (eventId, host, secret) => {
           }
       
           // SETUP SHARED MINTING
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
       
           let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
@@ -323,7 +323,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64, recipient: Address) {
 
@@ -347,10 +347,10 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
           }
 
           // SETUP SHARED MINTING
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
 
           if forHost != acct.address {
@@ -423,7 +423,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64, recipients: [Address]) {
 
@@ -447,10 +447,10 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
           }
       
           // SETUP SHARED MINTING
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
       
           if forHost != acct.address {
@@ -783,7 +783,7 @@ export const deleteEvent = async (forHost, eventId) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64) {
 
@@ -805,10 +805,10 @@ export const deleteEvent = async (forHost, eventId) => {
           }
       
           // SETUP SHARED MINTING
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
       
           if forHost != acct.address {
@@ -872,21 +872,21 @@ export const addSharedMinter = async (receiver) => {
   try {
     transactionId = await fcl.mutate({
       cadence: `
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction (receiver: Address) {
 
-        let Info: &SharedAccount.Info
+        let Info: &GrantedAccountAccess.Info
         
         prepare(acct: AuthAccount) {
           // set up the FLOAT Collection where users will store their FLOATs
-          if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-              acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-              acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                      (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
           }
 
-          self.Info = acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath)!
+          self.Info = acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath)!
         }
 
         execute {
@@ -936,14 +936,14 @@ export const removeSharedMinter = async (user) => {
   try {
     transactionId = await fcl.mutate({
       cadence: `
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(user: Address) {
 
-        let Info: &SharedAccount.Info
+        let Info: &GrantedAccountAccess.Info
       
         prepare(acct: AuthAccount) {
-          self.Info = acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath)
+          self.Info = acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath)
                         ?? panic("Could not borrow the Info from the signer.")
         }
       
@@ -994,7 +994,7 @@ export const createGroup = async (draftGroup) => {
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       transaction(groupName: String, image: String, description: String) {
 
@@ -1016,10 +1016,10 @@ export const createGroup = async (draftGroup) => {
             }
 
             // SETUP SHARED MINTING
-            if acct.borrow<&SharedAccount.Info>(from: SharedAccount.InfoStoragePath) == nil {
-                acct.save(<- SharedAccount.createInfo(), to: SharedAccount.InfoStoragePath)
-                acct.link<&SharedAccount.Info{SharedAccount.InfoPublic}>
-                        (SharedAccount.InfoPublicPath, target: SharedAccount.InfoStoragePath)
+            if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+                acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+                acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                        (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
             }
 
             self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
@@ -1658,11 +1658,11 @@ export const getAllowed = async (address) => {
   try {
     let queryResult = await fcl.query({
       cadence: `
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       pub fun main(address: Address): [Address] {
-        let infoPublic = getAccount(address).getCapability(SharedAccount.InfoPublicPath)
-                                    .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>()
+        let infoPublic = getAccount(address).getCapability(GrantedAccountAccess.InfoPublicPath)
+                                    .borrow<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>()
                                     ?? panic("Could not borrow the InfoPublic from the account.")
         return infoPublic.getAllowed()
       }
@@ -1716,11 +1716,11 @@ export const isSharedWithUser = async (account, user) => {
   try {
     let queryResult = await fcl.query({
       cadence: `
-      import SharedAccount from 0xFLOAT
+      import GrantedAccountAccess from 0xFLOAT
 
       pub fun main(account: Address, user: Address): Bool {
-        let infoPublic = getAccount(account).getCapability(SharedAccount.InfoPublicPath)
-                                    .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>()
+        let infoPublic = getAccount(account).getCapability(GrantedAccountAccess.InfoPublicPath)
+                                    .borrow<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>()
                                     ?? panic("Could not borrow the InfoPublic from the account.")
         return infoPublic.isAllowed(account: user) || account == user
       }

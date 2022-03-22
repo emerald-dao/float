@@ -18,18 +18,18 @@
 
 // For a whole list of verifiers, see FLOATVerifiers.cdc 
 
-// Lastly, we implemented SharedAccount.cdc, which allows you to specify
+// Lastly, we implemented GrantedAccountAccess.cdc, which allows you to specify
 // someone else can control your account (in the context of FLOAT). This 
 // is specifically designed for teams to be able to handle one "host" on the
 // FLOAT platform so all the company's events are under one account.
 // This is mainly used to give other people access to your FLOATEvents resource,
 // and allow them to mint for you and control Admin operations on your events.  
 
-// For more info on SharedAccount, see SharedAccount.cdc
+// For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
-import SharedAccount from "../sharedaccount/SharedAccount.cdc"
+import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -53,7 +53,6 @@ pub contract FLOAT: NonFungibleToken {
     pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, lastOwner: Address)
     pub event FLOATTransferred(id: UInt64, from: Address, to: Address, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
-    pub event FLOATEventCreatedBySharedMinter(forHost: Address, bySharedMinter: Address, eventId: UInt64)
     pub event FLOATEventDestroyed(eventId: UInt64, host: Address, name: String)
 
     pub event Deposit(id: UInt64, to: Address?)
@@ -839,11 +838,11 @@ pub contract FLOAT: NonFungibleToken {
 
         // Only accessible to people who share your account. 
         // If `fromHost` has allowed you to share your account
-        // in the SharedAccount.cdc contract, you can get a reference
+        // in the GrantedAccountAccess.cdc contract, you can get a reference
         // to their FLOATEvents here and do pretty much whatever you want.
         pub fun borrowSharedRef(fromHost: Address): &FLOATEvents {
-            let sharedInfo = getAccount(fromHost).getCapability(SharedAccount.InfoPublicPath)
-                                .borrow<&SharedAccount.Info{SharedAccount.InfoPublic}>() 
+            let sharedInfo = getAccount(fromHost).getCapability(GrantedAccountAccess.InfoPublicPath)
+                                .borrow<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>() 
                                 ?? panic("Cannot borrow the InfoPublic from the host")
             assert(
                 sharedInfo.isAllowed(account: self.owner!.address),
@@ -921,10 +920,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath00001
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath00001
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath00001
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath00001
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath00001
     }
 }

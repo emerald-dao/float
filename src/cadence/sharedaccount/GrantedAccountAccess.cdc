@@ -11,7 +11,7 @@
 // This contract is my way of saying I hate private capabilities, so I
 // implemented an alternative solution to private access.
 
-pub contract SharedAccount {
+pub contract GrantedAccountAccess {
 
   pub let InfoStoragePath: StoragePath
   pub let InfoPublicPath: PublicPath
@@ -53,8 +53,8 @@ pub contract SharedAccount {
   }
 
   init() {
-    self.InfoStoragePath = /storage/SharedAccountInfo003
-    self.InfoPublicPath = /public/SharedAccountInfo003
+    self.InfoStoragePath = /storage/GrantedAccountAccessInfo00001
+    self.InfoPublicPath = /public/GrantedAccountAccessInfo00001
   }
 
 }
