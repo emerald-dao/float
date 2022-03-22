@@ -29,6 +29,7 @@
     removeEventFromGroup,
     resolveAddressObject,
     distributeDirectlyMany,
+    getCurrentHolder,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -59,7 +60,12 @@
       $page.params.eventId,
       $user.addr
     );
-    let data = { ...eventData, hasClaimed };
+    let currentOwner = await getCurrentHolder(
+      resolvedNameObject.address,
+      $page.params.eventId,
+      hasClaimed.serial
+    );
+    let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
       data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
     console.log(data);
@@ -126,7 +132,7 @@
         <Float
           float={{
             id: floatEvent.hasClaimed.id,
-            owner: floatEvent.hasClaimed.address,
+            owner: floatEvent.currentOwner.address,
             eventHost: floatEvent.host,
             eventImage: floatEvent.image,
             eventName: floatEvent.name,
