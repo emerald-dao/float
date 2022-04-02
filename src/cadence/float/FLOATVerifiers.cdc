@@ -20,7 +20,7 @@
 // of the secret code through. For Limited, we need to know the totalSupply of the event,
 // so we pass it through as well.
 
-import FLOAT from "./FLOAT.cdc"
+import FLOAT from 0x2d4c3caffbeab845
 
 pub contract FLOATVerifiers {
 
