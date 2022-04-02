@@ -72,6 +72,7 @@ const convertDraftFloat = (draftFloat) => {
     secrets: secrets,
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
+    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : []
   };
 }
 
@@ -95,7 +96,7 @@ export const createEvent = async (forHost, draftFloat) => {
       import MetadataViews from 0xCORE
       import GrantedAccountAccess from 0xFLOAT
 
-      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64) {
+      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64, initialGroups: [String]) {
 
         let FLOATEvents: &FLOAT.FLOATEvents
       
@@ -154,7 +155,7 @@ export const createEvent = async (forHost, draftFloat) => {
             Limited = FLOATVerifiers.Limited(_capacity: capacity)
             verifiers.append(Limited!)
           }
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {})
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
           log("Started a new event for host.")
         }
       }  
@@ -174,6 +175,7 @@ export const createEvent = async (forHost, draftFloat) => {
         arg(floatObject.secrets, t.Array(t.String)),
         arg(floatObject.limited, t.Bool),
         arg(floatObject.capacity, t.UInt64),
+        arg(floatObject.initialGroups, t.Array(t.String))
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -1761,6 +1763,7 @@ export const getGroups = async (account) => {
         arg(account, t.Address)
       ]
     })
+    console.log(queryResult)
     return queryResult || {};
   } catch (e) {
     console.log(e);

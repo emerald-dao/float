@@ -28,12 +28,8 @@
   {#await floatEvents()}
     <Loading />
   {:then floatEvents}
-    {#if floatEvents.length > 10}
+    {#if floatEvents.length > 0}
     <EventsTable {floatEvents} />
-    {:else if floatEvents.length > 0}
-      {#each getEventsArray(floatEvents) as floatEvent}
-        <Event {floatEvent} />
-      {/each}
     {:else}
       <p class="text-center">This account has not created any FLOAT events yet.</p>
       {#if $user?.addr == addressObject.address}

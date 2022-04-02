@@ -14,7 +14,8 @@ export const draftFloat = writable({
   claimCodeEnabled: false,
   claimCode: '',
   transferrable: true,
-  multipleSecretsEnabled: false
+  multipleSecretsEnabled: false,
+  initialGroup: ""
 });
 
 export const draftGroup = writable({
