@@ -53,8 +53,8 @@ pub contract GrantedAccountAccess {
   }
 
   init() {
-    self.InfoStoragePath = /storage/GrantedAccountAccessInfo00001
-    self.InfoPublicPath = /public/GrantedAccountAccessInfo00001
+    self.InfoStoragePath = /storage/GrantedAccountAccessInfo
+    self.InfoPublicPath = /public/GrantedAccountAccessInfo
   }
 
 }
