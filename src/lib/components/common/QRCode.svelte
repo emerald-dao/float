@@ -10,8 +10,8 @@
   function onLoaded() {
 
     QRCode = new QRCodeStyling({
-        width: 400,
-        height: 400,
+        width: 250,
+        height: 250,
         type: "svg",
         data: data,
         image: image ?  "https://ipfs.infura.io/ipfs/" + image : "/emeraldCityLogo.png",
@@ -31,6 +31,9 @@
             imageSize: 0.6,
             crossOrigin: "anonymous",
             margin: 8
+        },
+        downloadOptions: {
+          name: "QRCode",
         }
     });
     QRCode.append(qrCodeDiv)
@@ -52,5 +55,9 @@
 <button on:click="{onClick}">Download QRCode</button>
 
 <style>
-  div, button { margin: 1rem 0 0.5rem 0 } 
+  div { margin: 1rem 0 1rem 0 }
+  button { 
+    margin: 0.5rem auto ;
+    max-width: 250px;
+  } 
 </style>
