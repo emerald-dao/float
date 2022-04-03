@@ -41,6 +41,7 @@
   import ClaimsTable from "$lib/components/common/table/ClaimsTable.svelte";
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
+  import QrCode from "$lib/components/common/QRCode.svelte";
 
   let claimsTableInView;
   let limitedVerifier;
@@ -119,6 +120,7 @@
         <a href={floatEvent?.url} target="_blank">
           <h1>{floatEvent?.name}</h1>
         </a>
+        <QrCode data="{$page.host}/{floatEvent?.host}/{$page.params.eventId}" image="{floatEvent?.image}"/>
         <p>FLOAT Event #{$page.params.eventId}</p>
         <p>
           <small class="muted"
