@@ -1,8 +1,6 @@
 import { config } from "@samatech/onflow-fcl-esm";
 
 config({
-  "app.detail.title": "FLOAT",
-  "app.detail.icon": "https://i.imgur.com/WJMROey.png",
   "accessNode.api": import.meta.env.VITE_ACCESS_NODE_API,
   "discovery.wallet": import.meta.env.VITE_DISCOVERY_WALLET,
   "0xFLOAT": "0x0afe396ebc8eee65",
