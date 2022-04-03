@@ -51,6 +51,9 @@
         <th>
           Groups
         </th>
+        <th>
+          Claimed
+        </th>
       </tr>
     </thead>
     <tbody>
@@ -78,6 +81,9 @@
             <a href="{$page.params.address}/group/{group}"><div class="group-badge small">{group}</div></a>
             {/each}
           </span>
+        </td>
+        <td data-label="Claimed">
+          <span>{row.totalSupply}</span>
         </td>
       </Row>
       {/each}

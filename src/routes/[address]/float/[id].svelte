@@ -117,8 +117,10 @@
         <h3>FLOAT #{data.id}</h3>
         <p>
           Owned by {floatOwner}
-          <small>(originally claimed by {floatOriginalOwner})</small>
         </p>
+        {#if floatOwner !== floatOriginalOwner}
+        <small>originally claimed by {floatOriginalOwner}</small>
+        {/if}
       </header>
 
       <div class="whole">
@@ -273,7 +275,6 @@
 
   small {
     font-size: 13px;
-    margin-left: 10px;
   }
 
   .whole {

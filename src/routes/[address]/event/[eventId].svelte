@@ -120,7 +120,7 @@
         <a href={floatEvent?.url} target="_blank">
           <h1>{floatEvent?.name}</h1>
         </a>
-        <QrCode data="{$page.host}/{floatEvent?.host}/{$page.params.eventId}" image="{floatEvent?.image}"/>
+        <QrCode data="{window.location.href}" image="{floatEvent?.image}"/>
         <p>FLOAT Event #{$page.params.eventId}</p>
         <p>
           <small class="muted"
