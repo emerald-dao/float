@@ -91,7 +91,8 @@
       var fr = new FileReader();
       fr.onload = (e) => {
         let stuff = e.target.result;
-        listOfAddresses = stuff.split("\n\r");
+        listOfAddresses = stuff.split(/\n|\r/);
+        console.log(listOfAddresses)
       };
 
       fr.readAsText(file);

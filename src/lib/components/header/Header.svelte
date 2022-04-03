@@ -115,7 +115,7 @@
     <li>
       {#await resolvedName then resolvedName}
       {#if $user?.loggedIn}
-        <a href="/{resolvedName}" role="button" class="outline">
+        <a href="/{resolvedName}?tab=account" role="button" class="outline">
           <UserAddress address={$user?.addr} />
         </a>
       {:else}

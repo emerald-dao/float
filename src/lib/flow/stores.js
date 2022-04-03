@@ -9,6 +9,9 @@ export const transactionInProgress = writable(false);
 export const eventCreationInProgress = writable(false);
 export const eventCreatedStatus = writable(false);
 
+export const setupAccountInProgress = writable(false);
+export const setupAccountStatus = writable(false);
+
 export const floatClaimingInProgress = writable(false);
 export const floatClaimedStatus = writable(false);
 
