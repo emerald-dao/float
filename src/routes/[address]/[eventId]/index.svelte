@@ -22,6 +22,7 @@
   import Meta from "$lib/components/common/Meta.svelte";
 
   import ClaimsTable from '$lib/components/common/table/ClaimsTable.svelte';
+  import QrCode from "$lib/components/common/QRCode.svelte";
 
   let floatEvent = getFLOATEvent($page.params.address, $page.params.eventId);
 
@@ -49,6 +50,7 @@
       <header>
         <a href={floatEvent?.url} target="_blank"><h1>{floatEvent?.name}</h1></a
         >
+        <QrCode data="{$page.host}/{floatEvent?.host}/{$page.params.eventId}" image="{floatEvent?.image}"/>
         <p>FLOAT Event #{$page.params.eventId}</p>
         <p>
           <small class="muted"
