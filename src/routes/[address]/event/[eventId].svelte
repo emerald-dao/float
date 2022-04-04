@@ -391,7 +391,7 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
 
 <style>
   #connect {
-    background: white;
+    background: var(--contrast);
     border: 0;
   }
   h4 {
