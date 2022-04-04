@@ -42,6 +42,7 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
+import { authenticate } from "@samatech/onflow-fcl-esm";
 
   let claimsTableInView;
   let limitedVerifier;
@@ -61,11 +62,14 @@
       $page.params.eventId,
       $user.addr
     );
-    let currentOwner = await getCurrentHolder(
-      resolvedNameObject.address,
-      $page.params.eventId,
-      hasClaimed.serial
-    );
+    let currentOwner;
+    if (hasClaimed) {
+      currentOwner = await getCurrentHolder(
+        resolvedNameObject.address,
+        $page.params.eventId,
+        hasClaimed.serial
+      );
+    }
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
       data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
@@ -180,7 +184,11 @@
         </p>
       {/if}
       <footer>
-        <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+        {#if $user?.loggedIn}
+          <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+        {:else}
+          <button id="connect" on:click={authenticate}>Connect Wallet</button>
+        {/if}
       </footer>
     </article>
 
@@ -384,6 +392,10 @@
 </div>
 
 <style>
+  #connect {
+    background: white;
+    border: 0;
+  }
   h4 {
     margin: 0px;
     margin-bottom: 10px;
