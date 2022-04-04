@@ -53,8 +53,12 @@
   uniqueId={+new Date()}
 />
 
-<div bind:this={qrCodeDiv} on:click="{onClick}"></div>
+<div title="Click to download SVG" bind:this={qrCodeDiv} on:click="{onClick}"></div>
 
 <style>
-  div { margin: 1rem 0 1rem 0; border-radius:4px; }
+  div { 
+    margin: 1rem 0 1rem 0; 
+    border-radius:4px; 
+    cursor:pointer;
+  }
 </style>
