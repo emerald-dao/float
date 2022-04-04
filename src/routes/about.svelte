@@ -38,6 +38,12 @@
 		the user purchases the NFT.
 	</p>
 
+	<h2 id="distribute-directly">Configure your events however you want.</h2>
+	<p>
+		Want to prevent users from transferring your FLOATs? Want to put a time limit or max capacity
+		on your event? Configure your events however you want on the <code>/create</code> page.
+	</p>
+
 	<h2>FLOAT == "Flow Attendance"</h2>
 	<p>
 		Developed by your <i>best</i> friends at
