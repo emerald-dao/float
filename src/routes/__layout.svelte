@@ -71,15 +71,17 @@
       </span>
     </small>
   </p>
-  <p><small>Preferred name service</small>
-    <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
-      {#if $resolver === 'fn'}
-        <span>.fn</span>
-      {:else}
-        <span>.find</span>
-      {/if}
-    </button>
-  </p>
+  {#if $page.path !== "/live"}
+    <p><small>Preferred name service</small>
+      <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
+        {#if $resolver === 'fn'}
+          <span>.fn</span>
+        {:else}
+          <span>.find</span>
+        {/if}
+      </button>
+    </p>
+  {/if}
 </footer>
 
 <style>
