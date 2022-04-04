@@ -1,4 +1,4 @@
-<script>
+<!-- <script>
   import Lantern from "$lib/components/Lantern.svelte";
   //import LibLoader from '$lib/components/LibLoader.svelte';
   import GraffleSDK from "$lib/graffle.js";
@@ -32,7 +32,7 @@
     console.log("Creating the stream");
     streamSDK.stream(receiveEvent);
   });
-</script>
+</script> -->
 
 <!-- 
 <LibLoader
@@ -43,9 +43,9 @@
 
 <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
-  {#each Object.keys(claimedEvents) as id (id)}
+  <!-- {#each Object.keys(claimedEvents) as id (id)}
     <Lantern ipfsHash={claimedEvents[id]} />
-  {/each}
+  {/each} -->
 </div>
 
 <style>
