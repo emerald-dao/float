@@ -47,7 +47,7 @@
 	<h2>FLOAT == "Flow Attendance"</h2>
 	<p>
 		Developed by your <i>best</i> friends at
-		<a href="https://discord.gg/emeraldcity" target="_blank"
+		<a href="https://ecdao.org" target="_blank"
 			><img
 				style="height:20px;width:auto;margin-right:4px;"
 				src="/emeraldcitylogo.png"

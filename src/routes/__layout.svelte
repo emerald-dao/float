@@ -48,7 +48,7 @@
   <p>
     <small>
       Created by
-      <a href="https://discord.gg/emeraldcity" target="_blank"
+      <a href="https://ecdao.org" target="_blank"
         >Emerald City DAO</a>
       <br />
       <span class="contribute"
