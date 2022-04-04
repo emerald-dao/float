@@ -17,6 +17,7 @@
   import { getResolvedName } from "$lib/flow/utils";
   import Loading from "$lib/components/common/Loading.svelte";
   import CopyBadge from "$lib/components/common/CopyBadge.svelte";
+
   let ownerAddr;
   let floatOwner;
   let floatOriginalOwner;
@@ -25,6 +26,7 @@
     let floatOwnerObject = await resolveAddressObject($page.params.address);
     ownerAddr = floatOwnerObject.address;
     floatOwner = getResolvedName(floatOwnerObject);
+
     let float = await getFLOAT(ownerAddr, $page.params.id);
     if (!float) {
       return "deleted";
@@ -43,6 +45,7 @@
   };
   let recipientAddr = "";
   let data = floatCallback();
+
   // JS STUFF
   let card;
   let container;
@@ -50,23 +53,27 @@
   let image;
   let createdBy;
   let serial;
+
   $: if ((card, container, title, image, createdBy, serial)) {
     // once dom elements are loaded, fire animate
     animate(container);
     // then delete animate as it would keep firing
     animate = () => {};
   }
+
   function animate(container) {
     container.addEventListener("mousemove", (e) => {
       let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
       let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
+
     container.addEventListener("touchmove", (e) => {
       let xAxis = (window.innerWidth / 2 - e.pageX) / 50;
       let yAxis = (window.innerHeight / 2 - e.pageY) / 50;
       card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
     });
+
     container.addEventListener("mouseenter", (e) => {
       setTimeout(() => {
         card.style.transition = "none";
@@ -76,6 +83,7 @@
       createdBy.style.transform = "translateZ(125px)";
       serial.style.transform = "translateZ(100px)";
     });
+
     container.addEventListener("mouseleave", (e) => {
       card.style.transition = "all 0.5s ease";
       card.style.transform = `rotateY(0deg) rotateX(0deg)`;
@@ -108,8 +116,10 @@
         <h3>FLOAT #{data.id}</h3>
         <p>
           Owned by {floatOwner}
-          <small>(originally claimed by {floatOriginalOwner})</small>
         </p>
+        {#if floatOwner !== floatOriginalOwner}
+          <small>originally claimed by {floatOriginalOwner}</small>
+        {/if}
       </header>
 
       <div class="whole">
@@ -248,10 +258,11 @@
     justify-content: center;
     align-items: center;
   }
+
   small {
     font-size: 13px;
-    margin-left: 10px;
   }
+
   .whole {
     position: relative;
     display: flex;
@@ -265,6 +276,7 @@
     left: 0;
     z-index: 10000;
   }
+
   .wrap {
     /* Body Stuff */
     width: 50%;
@@ -275,6 +287,7 @@
     perspective: 1000px;
     text-decoration: none;
   }
+
   .float {
     transform-style: preserve-3d;
     width: 20rem;
@@ -285,34 +298,42 @@
     box-shadow: 0 20px 20px rgb(0, 0, 0, 0.2), 0 0px 50px rgb(0, 0, 0, 0.2);
     background-color: var(--card-background-color);
   }
+
   .image {
     min-height: 35vh;
     display: flex;
     align-items: center;
     justify-content: center;
   }
+
   .image img {
     max-width: 200px;
     max-height: 200px;
   }
+
   .info {
     text-align: center;
     transform-style: preserve-3d;
   }
+
   .info h1 {
     font-size: 1.5rem;
   }
+
   .credit {
     margin-top: 20px;
     display: block;
   }
+
   .host {
     font-family: monospace;
   }
+
   article {
     text-align: center;
     align-items: center;
   }
+
   .muted {
     font-size: 0.7rem;
     opacity: 0.7;
@@ -320,6 +341,7 @@
   blockquote {
     text-align: left;
   }
+
   .transition {
     transition-property: transform;
     transition-duration: 1s;
