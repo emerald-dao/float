@@ -137,6 +137,12 @@
     padding: 50px;
   }
 
+  @media screen and (max-width: 410px) {
+    .user-info {
+      padding:50px 10px;
+    }
+  }
+
   .user-info h4 {
     display: inline-block;
     margin-bottom: 50px;

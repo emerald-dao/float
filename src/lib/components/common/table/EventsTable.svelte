@@ -60,7 +60,7 @@
       {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
         <td data-label="Event">
-          <div class="d-flex">
+          <div class="event-block d-flex">
             <div style="margin-right:10px;">
               <a href="/{$page.params.address}/event/{row.eventId}">
                 <img alt="" class="table-image" src="https://ipfs.infura.io/ipfs/{row.image}" />
@@ -74,7 +74,9 @@
             </div>
           </div>
         </td>
-        <td data-lable="Created">{formatter.format(row.dateCreated * 1000)}</td>
+        <td data-label="Created">
+          <span>{formatter.format(row.dateCreated * 1000)}</span>
+        </td>
         <td data-label="Groups">
           <span>{row.groups.length > 0 ? "" : " - " } 
             {#each row.groups as group}
@@ -92,8 +94,8 @@
   
   <style>
     .table-image {
-      max-width: 100px;
-      max-height: 50px;
+      max-width: 80px;
+      max-height: 40px;
     }
     
     .event-description {
@@ -105,6 +107,12 @@
     
     td:hover {
       opacity:0.8;
+    }
+
+    @media screen and (max-width: 520px) {
+      .event-block {
+        justify-content:right;
+      }
     }
     
   </style>

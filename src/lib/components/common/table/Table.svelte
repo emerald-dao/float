@@ -67,6 +67,15 @@
 
 
 <style>
+  /* .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table :global(th), .table :global(td) {
+    position: relative;
+  } */
+
   .table {
     width: 100%;
     border-collapse: collapse;
@@ -74,6 +83,79 @@
 
   .table :global(th), .table :global(td) {
     position: relative;
+  }
+
+  .center {
+    text-align: center;
+    font-style: italic;
+  }
+
+  .center > span {
+    padding: 10px 10px;
+    float: left;
+    width: 100%;
+  }
+
+  .slot-top,
+  .slot-bottom {
+    float: left;
+    width: 100%;
+    margin-top: 1em;
+  }
+
+  @media screen and (max-width: 520px) {
+    table.responsive {
+      border: 0;
+    }
+
+    table.responsive :global(thead) {
+      border: none;
+      clip: rect(0 0 0 0);
+      height: 1px;
+      margin: -1px;
+      overflow: hidden;
+      padding: 0;
+      position: absolute;
+      width: 1px;
+    }
+
+    table.responsive :global(tr) {
+      display: block;
+      padding-bottom: 0.3em;
+      margin-bottom: 0.3em;
+    }
+
+    table.responsive :global(td) {
+      display: block;
+      font-size: 0.8em;
+      text-align: right;
+    }
+
+    table :global(.table-image) {
+      max-width: 50px;
+      max-height: 25px;
+    }
+
+    table.responsive :global(td::before) {
+      /*
+	* aria-label has no advantage, it won't be read inside a table content: attr(aria-label);
+	*/
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+    }
+
+    table.responsive :global(td[data-label-normal]::before) {
+      font-weight: normal;
+    }
+
+    table.responsive :global(td[data-label-upper]::before) {
+      text-transform: uppercase;
+    }
+
+    table.responsive :global(td:last-child) {
+      border-bottom: 0;
+    }
   }
 
 </style>
