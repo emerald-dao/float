@@ -8,3 +8,5 @@ node_modules
 .output
 package-lock.json
 flow.json
+.env.development
+.env.production
