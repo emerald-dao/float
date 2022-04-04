@@ -22,17 +22,17 @@
     console.log(message);
     renderImage(message.id, message.blockEventData.eventImage);
   };
-  // function createStream() {
-  //   const streamSDK = new GraffleSDK();
-  //   streamSDK.stream(receiveEvent);
-  // }
-  
-  
-  const streamSDK = new GraffleSDK();
-  onMount(async () => {
-    console.log("Creating the stream");
+  function createStream() {
+    const streamSDK = new GraffleSDK();
     streamSDK.stream(receiveEvent);
-  });
+  }
+  
+  
+  // const streamSDK = new GraffleSDK();
+  // onMount(async () => {
+  //   console.log("Creating the stream");
+  //   streamSDK.stream(receiveEvent);
+  // });
 </script>
 
 
