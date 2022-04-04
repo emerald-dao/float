@@ -14,7 +14,6 @@
     deleteGroupStatus,
     user,
   } from "$lib/flow/stores";
-
   let events;
   let group;
   async function initialize() {
@@ -26,7 +25,6 @@
     group = await getGroup(addressObject.address, $page.params.groupName);
     return addressObject;
   }
-
   let addressObject = initialize();
 </script>
 

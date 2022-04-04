@@ -7,7 +7,7 @@
   import {
     authenticate,
     createEvent,
-    // getGroups,
+    getGroups,
     isSharedWithUser,
   } from "$lib/flow/actions";
 
@@ -20,7 +20,7 @@
   import Float from "$lib/components/Float.svelte";
   import { distributeCode } from "$lib/flow/utils";
   import { slide } from "svelte/transition";
-  // import Loading from "$lib/components/common/Loading.svelte";
+  import Loading from "$lib/components/common/Loading.svelte";
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
@@ -141,7 +141,7 @@
         bind:value={$draftFloat.description} />
     </label>
 
-    <!-- {#await getGroups($user?.addr)}
+    {#await getGroups($user?.addr)}
       <Loading />
     {:then groupsWeCanAddTo}
       {#if Object.keys(groupsWeCanAddTo).length > 0}
@@ -159,7 +159,7 @@
           </div>
         </div>
       {/if}
-    {/await} -->
+    {/await}
 
     <br />
 
