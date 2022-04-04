@@ -23,7 +23,7 @@
   description="FLOATs owned by {$page.params.address}"
   url={$page.url} />
 
-<div class="container">
+<div class="">
   <ul class="tabs">
     <li
       on:click={() => {
