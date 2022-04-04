@@ -3,7 +3,6 @@
   //import LibLoader from '$lib/components/LibLoader.svelte';
   import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
-
   
   let claimedEvents = {};
   
@@ -22,7 +21,6 @@
     console.log(message);
     renderImage(message.id, message.blockEventData.eventImage);
   };
-
   // function createStream() {
   //   const streamSDK = new GraffleSDK();
   //   streamSDK.stream(receiveEvent);
@@ -43,24 +41,22 @@
   uniqueId={+new Date()}
 /> -->
 
- <div id="spawner">
+<div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
   {#each Object.keys(claimedEvents) as id (id)}
     <Lantern ipfsHash={claimedEvents[id]} />
   {/each}
-</div> 
+</div>
 
 <style>
   div {
     text-align: center;
   }
-
   .island {
     position: relative;
     width: 50%;
     animation: 8s float linear infinite;
   }
-
   @keyframes float {
     0% {
       transform: translateY(0);
