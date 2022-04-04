@@ -1,8 +1,8 @@
 # Emerald DAO FLOAT App
 This repo contains the source code for Emerald City's FLOAT system (POAP equivalent for Flow)
-<p align="center"><a href="https://ec-float.vercel.app/"><img src="https://ec-float.vercel.app/floatlogowebpage.png" width="600px" height="auto" /></a></p>
+<p align="center"><a href="https://floats.city/"><img src="https://floats.city/floatlogowebpage.png" width="600px" height="auto" /></a></p>
 
-<p align="center"><strong><a href="https://ec-float.vercel.app/create">>>> Create a FLOAT <<<</a></strong></p>
+<p align="center"><strong><a href="https://floats.city/create">>>> Create a FLOAT <<<</a></strong></p>
   
 ## Developing
 
