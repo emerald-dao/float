@@ -10,6 +10,8 @@
   let isSignalrReady = false;
   let streamCreated = false;
 
+  let addition = 0;
+
   const renderImage = (id, ipfsHash) => {
     claimedEvents[id] = ipfsHash;
     
@@ -24,6 +26,7 @@
     // `message` is the event
     console.log(message);
     renderImage(message.id, message.blockEventData.eventImage);
+    addition++;
   };
 
   function createStream() {
@@ -60,7 +63,7 @@
   <br />
   {#await getStats() then stats}
     <div class="info">
-      <p>Total # of FLOATs: {stats[0]}</p>
+      <p>Total # of FLOATs: {stats[0] + addition}</p>
       <p>Total # of Events: {stats[1]}</p>
     </div>
   {/await}
