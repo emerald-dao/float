@@ -20,6 +20,7 @@
     animation-duration: 5s;
     animation-iteration-count: 1;
     animation-timing-function: ease-in;
+    z-index: 10;
   }
 
   img.lantern {

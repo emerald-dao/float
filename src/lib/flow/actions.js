@@ -2008,6 +2008,28 @@ export const getGroup = async (account, groupName) => {
   }
 }
 
+export const getStats = async () => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOAT from 0xFLOAT
+
+      pub fun main(): [UInt64] {
+        let info: [UInt64] = []
+        info.append(FLOAT.totalSupply)
+        info.append(FLOAT.totalFLOATEvents)
+        return info
+      }
+      `,
+      args: (arg, t) => [
+      ]
+    })
+    return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export const resolveAddressObject = async (lookup) => {
   let answer = {
     resolvedNames: {

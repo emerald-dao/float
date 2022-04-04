@@ -1,6 +1,7 @@
 <script>
   import Lantern from "$lib/components/Lantern.svelte";
   import LibLoader from '$lib/components/LibLoader.svelte';
+  import { getStats } from "$lib/flow/actions";
   import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
   
@@ -54,14 +55,34 @@
 
 <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
+  <br />
+  <br />
+  <br />
+  {#await getStats() then stats}
+    <div class="info">
+      <p>Total # of FLOATs: {stats[0]}</p>
+      <p>Total # of Events: {stats[1]}</p>
+    </div>
+  {/await}
   {#each Object.keys(claimedEvents) as id (id)}
     <Lantern ipfsHash={claimedEvents[id]} />
   {/each}
 </div>
 
 <style>
-  div {
+  #spawner {
     text-align: center;
+  }
+  .info {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  .info p {
+    border: 1px dotted var(--primary);
+    width: 250px;
+    color: var(--contrast);
   }
   .island {
     position: relative;
