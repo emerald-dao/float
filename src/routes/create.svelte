@@ -248,11 +248,11 @@
       </button>
     </div>
 
-    {#if !$draftFloat.claimable}
+    <!-- {#if !$draftFloat.claimable}
       <h5>This is how you would distribute your FLOAT to a user in Cadence:</h5>
       <xmp class={$theme === "light" ? "xmp-light" : "xmp-dark"}
         >{distributeCode}</xmp>
-    {/if}
+    {/if} -->
 
     <h5>Cannot be changed later.</h5>
     <!-- QUANTITY -->
