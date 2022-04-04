@@ -41,14 +41,14 @@
   uniqueId={+new Date()}
 /> -->
 
-<div id="spawner">
+<!-- <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
-  <!-- {#each Object.keys(claimedEvents) as id (id)}
+  {#each Object.keys(claimedEvents) as id (id)}
     <Lantern ipfsHash={claimedEvents[id]} />
-  {/each} -->
-</div>
+  {/each}
+</div> -->
 
-<style>
+<!-- <style>
   div {
     text-align: center;
   }
@@ -86,4 +86,4 @@
       transform: translateY(0);
     }
   }
-</style> 
+</style> -->
