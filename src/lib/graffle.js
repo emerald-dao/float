@@ -1,4 +1,4 @@
-import { HubConnectionBuilder } from '@microsoft/signalr'
+// import { HubConnectionBuilder } from '@microsoft/signalr'
 export default function GraffleSDK() {
 
   let negotiateResult;
