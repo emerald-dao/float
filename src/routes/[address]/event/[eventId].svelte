@@ -72,7 +72,7 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
     }
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
-      data.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
+      data.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Limited"];
 
     groups = await getGroups(resolvedNameObject.address);
     groupsWeCanAddTo = Object.keys(groups).filter(

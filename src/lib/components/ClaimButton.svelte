@@ -5,10 +5,10 @@
   import { claimFLOAT } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
 
-  const secretModule = floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Secret"];
-  const limitedModule = floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Limited"];
-  const timelockModule = floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.Timelock"];
-  const multipleSecretModule = floatEvent?.verifiers["A.0afe396ebc8eee65.FLOATVerifiers.MultipleSecret"];
+  const secretModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Secret"];
+  const limitedModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Limited"];
+  const timelockModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Timelock"];
+  const multipleSecretModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.MultipleSecret"];
 
   let claimCode = "";
   $: currentUnixTime = +new Date() / 1000;
