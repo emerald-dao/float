@@ -97,5 +97,7 @@
     font-size: 13px;
     margin-left: 10px;
   }
-  footer {}
+  footer {
+    margin-top: 120px;
+  }
 </style>
