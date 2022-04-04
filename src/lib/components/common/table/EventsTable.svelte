@@ -92,8 +92,8 @@
   
   <style>
     .table-image {
-      max-width: 75px;
-      height:auto;
+      max-width: 100px;
+      max-height: 50px;
     }
     
     .event-description {
