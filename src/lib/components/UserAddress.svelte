@@ -23,6 +23,12 @@
     height: 14px;
     border-radius: 14px;
   }
+
+  @media screen and (max-width: 500px) {
+    .led-green {
+      display: none;
+    }
+  }
 </style>
 
 {#await resolvedName}

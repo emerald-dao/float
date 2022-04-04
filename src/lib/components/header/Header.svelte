@@ -69,14 +69,11 @@
     img {
       max-width: 100px;
     }
-    .float-logo {
-      display: none;
-    }
   }
 </style>
 
 <nav class="container">
-  <ul class="float-logo">
+  <ul>
     <li>
       <!-- when on mainnnet, replace this line with the one below-->
       <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1>
@@ -99,15 +96,7 @@
         {/if}
       </a>
     </li>
-    <!-- <li style="padding: 0px;">
-      <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
-        {#if $resolver === 'fn'}
-          <span>.fn</span>
-        {:else}
-          <span>.find</span>
-        {/if}
-      </button>
-    </li> -->
+
     <li>
       <a href="/about">About</a>
     </li>
