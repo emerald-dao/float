@@ -50,7 +50,7 @@
     <span class="tag-line">Unlock a unique identifier to show that you attended an event.</span>
 
     <div class="grid mt-2 no-break align-center">
-      <a role="button" href="#findAddress" class="outline small-button mb-1">Find your event</a>
+      <a role="button" href="/live" class="outline small-button mb-1">Watch live feed</a>
       <a role="button" href="/create" class="small-button mb-1">Create an event</a>
     </div>
   </div>

@@ -243,8 +243,7 @@
         on:click={() => ($draftFloat.claimable = false)}>
         Not Claimable
         <span
-          >You will be responsible for distributing the FLOAT to accounts in
-          your own custom transactions.</span>
+          >You will be responsible for distributing the FLOAT to accounts.</span>
       </button>
     </div>
 
