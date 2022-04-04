@@ -200,7 +200,7 @@
           </svg>
           <span class="command">/float {floatOwner} {data.id}</span>
         </div>
-        <CopyBadge text={`/float address:${floatOwner} floatid:${data.id}`} />
+        <CopyBadge text={`/float account:${floatOwner} floatid:${data.id}`} />
       </blockquote>
       {#if !data.totalSupply}
         <p class="red">The Event this FLOAT is from has been deleted.</p>
