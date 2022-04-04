@@ -1,6 +1,6 @@
 {
-  "name": "fcl-sveltekit",
-  "version": "0.0.1",
+  "name": "float",
+  "version": "1.0.0",
   "scripts": {
     "dev": "svelte-kit dev",
     "build": "svelte-kit build",
@@ -9,7 +9,9 @@
     "getEvents": "flow scripts execute ./src/cadence/scripts/get_float_event_ids.cdc 0x958526fe01b782a0 --network=testnet",
     "removeF": "flow accounts remove-contract FLOAT --network=testnet --signer=testnet-account",
     "removeFM": "flow accounts remove-contract FLOATMetadataViews --network=testnet --signer=testnet-account",
+    "removeFV": "flow accounts remove-contract FLOATVerifiers --network=testnet --signer=testnet-account",
     "removeMDV": "flow accounts remove-contract MetadataViews --network=testnet --signer=testnet-account",
+    "removeG": "flow accounts remove-contract GrantedAccountAccess --network=testnet --signer=testnet-account",
     "deploy": "flow project deploy --network=testnet"
   },
   "devDependencies": {
@@ -24,7 +26,11 @@
     "canvas-confetti": "^1.5.1",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
-    "svelte": "^3.44.3"
+    "svelte": "^3.44.3",
+    "svelte-intersection-observer": "^0.10.0"
   },
-  "type": "module"
+  "type": "module",
+  "dependencies": {
+    "copy-to-clipboard": "^3.3.1"
+  }
 }

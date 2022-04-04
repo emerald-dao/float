@@ -1,6 +1,15 @@
 <script>
+  import { resolveAddressObject } from "$lib/flow/actions";
+  import { getResolvedName } from "$lib/flow/utils";
+
   export let address;
-  export let abbreviated = false;
+  export let abbreviated = true;
+
+  async function initialize(address) {
+    let addressObject = await resolveAddressObject(address);
+    return getResolvedName(addressObject)
+  }
+  let resolvedName = initialize(address || "");
 </script>
 
 <style>
@@ -16,7 +25,13 @@
   }
 </style>
 
-<div>
-  <span class="led-green"></span>
-  <span class="mono">{abbreviated ? '0x...' + address.slice(address.length - 4) : address}</span>
-</div>
+{#await resolvedName}
+  <a aria-busy="true"></a>
+{:then resolvedName}
+  {#if !abbreviated}
+    <span class="mono">{resolvedName}</span>
+  {:else}
+    <span class="led-green"></span>
+    <span class="mono">{resolvedName.split('.')[0].length > 14 ? '0x...' + resolvedName.slice(resolvedName.length - 4) : resolvedName.length > 14 ? "..." + resolvedName.slice(resolvedName.length - 6) : resolvedName}</span>
+  {/if}
+{/await}
