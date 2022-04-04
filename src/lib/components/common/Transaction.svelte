@@ -35,7 +35,7 @@
           finalized in a block.</small
         ></span
       >
-      <progress indeterminate>Executing</progress>
+      <progress indeterminate>Finalizing...</progress>
     {:else if $transactionStatus === 2}
       <span class="txId">
         <a
@@ -51,7 +51,7 @@
           included in.</small
         ></span
       >
-      <progress min="0" max="100" value="80">Executing...</progress>
+      <progress min="0" max="100" value="60">Executing...</progress>
     {:else if $transactionStatus === 3}
       <span class="txId">
         <a

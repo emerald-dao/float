@@ -4,13 +4,28 @@
 
   import Table, { Row, Sort } from "./Table.svelte";
   import { sortNumber } from "./sorting.js";
+  import { page } from "$app/stores";
 
-  export let rows = [];
-  let page = 0; //first page
+  import {
+    getHoldersInEvent
+  } from "$lib/flow/actions.js";
+
+  export let address = "";
+  export let eventId = "";
+
+  let getRows = async () => {
+    console.log("potato");
+    let event = await getHoldersInEvent(address, eventId);
+    return Object.values(event);
+  };
+
+  let promise = getRows();
+
+  let pageCount = 0; //first page
   let pageSize = 25; 
 
   function onCellClick(row) {
-    window.location = `/${row.address}`
+    return; // window.location = `/${row.address}`
   }
 
   function onSortNumber(event) {
@@ -22,7 +37,10 @@
   }
 </script>
 
-<Table {page} {pageSize} {rows} let:rows={rows2}>
+{#await promise}
+<article aria-busy=true></article>
+{:then rows}
+<Table {pageCount} {pageSize} {rows} let:rows={rows2} labels={{ empty: "This FLOAT has not been claimed yet."}}>
   <thead slot="head">
     <tr>
       <th>
@@ -37,9 +55,10 @@
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Serial"><code>#{row.serial}</code></td>
+        <td data-label="Serial"><a href="/{row.address}/float/{row.id}"><code>#{row.serial}</code></a></td>
         <td data-label="Address"><span class="mono"><a href="/{row.address}">{row.address}</a></span></td>
       </Row>
     {/each}
   </tbody>
 </Table>
+{/await}

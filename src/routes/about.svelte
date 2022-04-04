@@ -17,7 +17,7 @@
 	<p>
 		Whether it be a <span class="twitter">Twitter space</span>,
 		<span class="discord">Discord call</span>,
-		<span class="youtube">YouTube livestream</span>, or anything at all, you can
+		<span class="youtube">YouTube livestream</span>, IRL event, or anything at all, you can
 		create a FLOAT Event so participants can remember and have proof that they
 		were there.
 	</p>
@@ -50,7 +50,7 @@
 		>, the first DAO on Flow. You may have seen us develop other fun stuff like
 		the
 		<a
-			href="https://emeraldcity.gitbook.io/emerald-city/building-guild/emerald-bot"
+			href="https://emeralddao.notion.site/emeralddao/Emerald-bot-962a1d4c22a5417baad56ba5c79fdfcd"
 			target="_blank"
 			><img
 				style="height:20px;width:auto;margin-right:4px;"
