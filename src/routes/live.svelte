@@ -58,13 +58,11 @@
 
 <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
-  <br />
-  <br />
-  <br />
+
   {#await getStats() then stats}
-    <div class="info">
-      <p>Total # of FLOATs: {stats[0] + addition}</p>
-      <p>Total # of Events: {stats[1]}</p>
+    <div class="grid info">
+      <p>FLOATs Claimed<br/><span>{(stats[0] + addition).toLocaleString()}</span></p>
+      <p>Events Created<br/><span>{(stats[1]).toLocaleString()}</span></p>
     </div>
   {/await}
   {#each Object.keys(claimedEvents) as id (id)}
@@ -77,15 +75,17 @@
     text-align: center;
   }
   .info {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+    margin-top: 30px;
   }
   .info p {
-    border: 1px dotted var(--primary);
-    width: 250px;
+    line-height:1.1;
+    font-size:0.8rem;
+  }
+  
+  .info span {
     color: var(--contrast);
+    font-size: 2.3rem;
+    font-weight:900;
   }
   .island {
     position: relative;

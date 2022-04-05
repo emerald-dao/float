@@ -69,6 +69,7 @@
     display:flex;
     text-align:center;
     margin: 0 auto;
+    align-items: center;
   }
   
   @media screen and (max-width: 500px) {
@@ -77,7 +78,7 @@
     }
   }
   
-  @media screen and (max-width: 410px) {
+  @media screen and (max-width: 780px) {
     nav {
       flex-direction:column;
       justify-content: center;
@@ -86,7 +87,7 @@
       margin-bottom:2rem;
     }
 
-    nav ol:last-of-type, nav ul:last-of-type  {
+    nav li:last-child  {
       margin:0;
     }
 
@@ -121,7 +122,7 @@
       <a href="/about">About</a>
     </li>
   </ul>
-  <ul>
+  <ul class="text-center">
     <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
     
     <li class="block">
