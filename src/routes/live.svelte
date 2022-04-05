@@ -64,7 +64,7 @@
   on:loaded={() => createStream()}
   uniqueId={+new Date()} />
 
-<a id="spawner">
+<div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
 
   {#await getStats() then stats}
@@ -81,7 +81,7 @@
       <Lantern ipfsHash={claimedEvents[id].ipfsHash} />
     </a>
   {/each}
-</a>
+</div>
 
 <style>
   #spawner {
