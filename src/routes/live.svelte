@@ -4,6 +4,8 @@
   import { getStats } from "$lib/flow/actions";
   import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
+  import { PAGE_TITLE_EXTENSION } from '$lib/constants';
+
   
   let claimedEvents = {};
   
@@ -49,7 +51,10 @@
   // });
 </script>
 
- 
+<svelte:head>
+	<title>Live Feed {PAGE_TITLE_EXTENSION}</title>
+</svelte:head>
+
 <LibLoader
   url="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.2/signalr.min.js"
   on:loaded={() => createStream() }
