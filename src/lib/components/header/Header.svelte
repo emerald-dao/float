@@ -91,7 +91,7 @@
     }
 
     li h1 a {
-      padding-bottom:0;
+      padding:0;
     }
   }
 </style>
@@ -103,9 +103,6 @@
       <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1>
       <!-- <h1><a href="/"><img src="/floatlogowebpage.png" alt="Emerald City FLOAT" /></a></h1> -->
     </li>
-  </ul>
-  <ul>
-    <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
     <li>
       <a class="theme-toggle" href="/" on:click|preventDefault={toggleTheme}>
         {#if $theme === 'light'}
@@ -123,6 +120,9 @@
     <li>
       <a href="/about">About</a>
     </li>
+  </ul>
+  <ul>
+    <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
     
     <li class="block">
       {#await resolvedName then resolvedName}

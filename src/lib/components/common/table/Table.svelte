@@ -123,6 +123,7 @@
       display: block;
       padding-bottom: 0.3em;
       margin-bottom: 0.3em;
+      border-bottom: 1px solid var(--form-element-border-color);
     }
 
     table.responsive :global(td) {
@@ -153,7 +154,7 @@
       text-transform: uppercase;
     }
 
-    table.responsive :global(td:last-child) {
+    table.responsive :global(td:last-child),table.responsive :global(tr:last-child) {
       border-bottom: 0;
     }
   }
