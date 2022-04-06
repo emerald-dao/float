@@ -47,15 +47,23 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
 
   execute {
     let params: {String: AnyStruct} = {}
+
+    // If the FLOAT has a secret phrase on it
     if let unwrappedSecret = secret {
       params["secretPhrase"] = unwrappedSecret
     }
-    log(FLOATVerifiers.FlowTokenPurchase.getType().identifier)
-    if self.FLOATEvent.getVerifiers().containsKey(FLOATVerifiers.FlowTokenPurchase.getType().identifier) {
-      params["flowTokenVault"] = self.FlowTokenVault
+ 
+    // If the FLOAT costs something
+    if let prices = self.FLOATEvent.getPrices() {
+      let payment <- self.FlowTokenVault.withdraw(amount: prices["flowToken"]!)
+      self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
+      log("Purchased the FLOAT.")
     }
-    self.FLOATEvent.claim(recipient: self.Collection, params: params)
-    log("Claimed the FLOAT.")
+    // If the FLOAT is free 
+    else {
+      self.FLOATEvent.claim(recipient: self.Collection, params: params)
+      log("Claimed the FLOAT.")
+    }
   }
 }
  

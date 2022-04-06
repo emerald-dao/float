@@ -47,7 +47,7 @@
 
   let claimsTableInView;
   let limitedVerifier;
-  let flowTokenPurchaseVerifier;
+  let flowTokenCost;
   let confirmed = false;
 
   let groups;
@@ -76,8 +76,10 @@
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
       data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.Limited"];
-    flowTokenPurchaseVerifier =
-      data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.FlowTokenPurchase"];
+    let prices = data.extraMetadata["prices"];
+    if (prices) {
+      flowTokenCost = prices["flowToken"];
+    }
 
     groups = await getGroups(resolvedNameObject.address);
     groupsWeCanAddTo = Object.keys(groups).filter(
@@ -182,36 +184,35 @@
         </blockquote>
       {/if}
 
-      <blockquote>
-        <strong><small class="muted">COST</small></strong>
-        <br />
-        {#await getFlowTokenBalance($user?.addr) then balance}
-          {#if flowTokenPurchaseVerifier && flowTokenPurchaseVerifier[0] && $user.loggedIn}
-            This FLOAT costs
-            <span class="emphasis">
-              {parseFloat(flowTokenPurchaseVerifier[0].cost).toFixed(2)}
-            </span>
-            to claim, and you have
-            <span class="emphasis">
-              {parseFloat(balance).toFixed(2)}
-            </span>
-            FlowToken.
-            <br />
-            {#if (parseFloat(balance) - parseFloat(flowTokenPurchaseVerifier[0].cost)).toFixed(2) > 0}
-              Your final balance will be
+      {#if flowTokenCost}
+        <blockquote>
+          <strong><small class="muted">COST</small></strong>
+          <br />
+          {#await getFlowTokenBalance($user?.addr) then balance}
+            {#if flowTokenCost && $user.loggedIn}
+              This FLOAT costs
               <span class="emphasis">
-                {(
-                  parseFloat(balance) -
-                  parseFloat(flowTokenPurchaseVerifier[0].cost)
-                ).toFixed(2)}
+                {parseFloat(flowTokenCost).toFixed(2)}
+              </span>
+              to claim, and you have
+              <span class="emphasis">
+                {parseFloat(balance).toFixed(2)}
               </span>
               FlowToken.
-            {:else}
-              You cannot afford this FLOAT.
+              <br />
+              {#if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) > 0}
+                Your final balance will be
+                <span class="emphasis">
+                  {(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}
+                </span>
+                FlowToken.
+              {:else}
+                You cannot afford this FLOAT.
+              {/if}
             {/if}
-          {/if}
-        {/await}
-      </blockquote>
+          {/await}
+        </blockquote>
+      {/if}
 
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
@@ -226,11 +227,10 @@
 
       <footer>
         {#if $user?.loggedIn}
-          {#if flowTokenPurchaseVerifier && flowTokenPurchaseVerifier[0] && !confirmed && !floatEvent?.hasClaimed}
+          {#if flowTokenCost && !confirmed && !floatEvent?.hasClaimed}
             <button class="important" on:click={() => (confirmed = true)}
-              >This costs {parseFloat(
-                flowTokenPurchaseVerifier[0].cost
-              ).toFixed(2)} FlowToken. Click to confim.</button
+              >This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click
+              to confim.</button
             >
           {:else}
             <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />

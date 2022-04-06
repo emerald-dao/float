@@ -21,7 +21,7 @@ transaction(
   capacity: UInt64, 
   initialGroups: [String], 
   flowTokenPurchase: Bool, 
-  cost: UFix64
+  flowTokenCost: UFix64
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -63,7 +63,6 @@ transaction(
     var Secret: FLOATVerifiers.Secret? = nil
     var Limited: FLOATVerifiers.Limited? = nil
     var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
-    var FlowTokenPurchase: FLOATVerifiers.FlowTokenPurchase? = nil
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -82,11 +81,11 @@ transaction(
       Limited = FLOATVerifiers.Limited(_capacity: capacity)
       verifiers.append(Limited!)
     }
+    let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchase {
-      FlowTokenPurchase = FLOATVerifiers.FlowTokenPurchase(_cost: cost)
-      verifiers.append(FlowTokenPurchase!)
+      extraMetadata["prices"] = {"flowToken": flowTokenCost}
     }
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
     log("Started a new event for host.")
   }
 }  

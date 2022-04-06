@@ -30,6 +30,8 @@
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
+import FungibleToken from "../core-contracts/FungibleToken.cdc"
+import FlowToken from "../core-contracts/FlowToken.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -365,12 +367,14 @@ pub contract FLOAT: NonFungibleToken {
         pub var transferrable: Bool
         pub let url: String
         pub fun claim(recipient: &Collection, params: {String: AnyStruct})
+        pub fun purchase(recipient: &Collection, params: {String: AnyStruct}, payment: @FungibleToken.Vault)
         pub fun getClaimed(): {Address: TokenIdentifier}
         pub fun getCurrentHolders(): {UInt64: TokenIdentifier}
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier?
         pub fun getExtraMetadata(): {String: AnyStruct}
         pub fun getVerifiers(): {String: [{IVerifier}]}
         pub fun getGroups(): [String]
+        pub fun getPrices(): {String: UFix64}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
 
         access(account) fun accountDeletedFLOAT(serial: UInt64)
@@ -428,6 +432,10 @@ pub contract FLOAT: NonFungibleToken {
 
         // Toggles transferring on/off
         pub fun toggleTransferrable(): Bool {
+            pre {
+                !self.extraMetadata.containsKey("prices"):
+                    "You can't make this FLOAT non-transferrable if it costs something."
+            }
             self.transferrable = !self.transferrable
             return self.transferrable
         }
@@ -436,7 +444,11 @@ pub contract FLOAT: NonFungibleToken {
         // to add something. Not currently used for anything
         // on FLOAT, so it's empty.
         pub fun updateMetadata(newExtraMetadata: {String: AnyStruct}) {
-            self.extraMetadata = newExtraMetadata
+            for key in newExtraMetadata.keys {
+                if !self.extraMetadata.containsKey(key) {
+                    self.extraMetadata[key] = newExtraMetadata[key]
+                }
+            }
         }
 
         /***************** Setters for the Contract Only *****************/
@@ -527,6 +539,13 @@ pub contract FLOAT: NonFungibleToken {
             ]
         }
 
+        pub fun getPrices(): {String: UFix64}? {
+            if self.extraMetadata["prices"] != nil {
+                return self.extraMetadata["prices"]! as! {String: UFix64}
+            }
+            return nil
+        }
+
         pub fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.Display>():
@@ -598,19 +617,12 @@ pub contract FLOAT: NonFungibleToken {
             return id
         }
 
-        // For the public to claim FLOATs. Must be claimable to do so.
-        // You can pass in `params` that will be forwarded to the
-        // customized `verify` function of the verifier.  
-        //
-        // For example, the FLOAT platform allows event hosts
-        // to specify a secret phrase. That secret phrase will 
-        // be passed in the `params`.
-        pub fun claim(recipient: &Collection, params: {String: AnyStruct}) {
+        access(account) fun verifyAndMint(recipient: &Collection, params: {String: AnyStruct}) {
             pre {
                 self.claimable: 
                     "This FLOATEvent is not claimable, and thus not currently active."
             }
-            
+    
             params["event"] = &self as &FLOATEvent{FLOATEventPublic}
             params["claimee"] = recipient.owner!.address
             
@@ -639,6 +651,56 @@ pub contract FLOAT: NonFungibleToken {
                 recipient: recipient.owner!.address,
                 serial: self.totalSupply - 1
             )
+        }
+
+        // For the public to claim FLOATs. Must be claimable to do so.
+        // You can pass in `params` that will be forwarded to the
+        // customized `verify` function of the verifier.  
+        //
+        // For example, the FLOAT platform allows event hosts
+        // to specify a secret phrase. That secret phrase will 
+        // be passed in the `params`.
+        pub fun claim(recipient: &Collection, params: {String: AnyStruct}) {
+            pre {
+                self.getPrices() == nil:
+                    "You need to purchase this FLOAT."
+            }
+            
+            self.verifyAndMint(recipient: recipient, params: params)
+        }
+ 
+        pub fun purchase(recipient: &Collection, params: {String: AnyStruct}, payment: @FungibleToken.Vault) {
+            pre {
+                self.getPrices() != nil:
+                    "Don't call this function. The FLOAT is free."
+                self.getPrices()!["flowToken"] != nil:
+                    "This FLOAT does not support purchasing in FlowToken."
+                payment.balance == self.getPrices()!["flowToken"]!:
+                    "You did not pass in the correct amount of FlowToken."
+            }
+            let flowTokenPayment <- payment as! @FlowToken.Vault
+            let royalty = 0.05
+            let flowTokenCost = self.getPrices()!["flowToken"]!
+
+            assert(
+                flowTokenPayment.balance >= flowTokenCost,
+                message: "This FlowToken.Vault does not have enough FlowToken to pay."
+            )
+
+            let EventHostVault = getAccount(self.host).getCapability(/public/flowTokenReceiver)
+                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
+                                    ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
+            
+            let EmeraldCityVault = getAccount(0xf8d6e0586b0a20c7).getCapability(/public/flowTokenReceiver)
+                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
+                                    ?? panic("Could not borrow the Capability to Emerald City's Vault.")
+
+            let emeraldCityCut <- flowTokenPayment.withdraw(amount: flowTokenPayment.balance * royalty)
+
+            EmeraldCityVault.deposit(from: <- emeraldCityCut)
+            EventHostVault.deposit(from: <- flowTokenPayment)
+
+            self.verifyAndMint(recipient: recipient, params: params)
         }
 
         init (
@@ -743,6 +805,10 @@ pub contract FLOAT: NonFungibleToken {
             _ extraMetadata: {String: AnyStruct},
             initialGroups: [String]
         ): UInt64 {
+            pre {
+                transferrable || extraMetadata["prices"] == nil:
+                    "Your FLOAT cannot be transferrable if it costs something."
+            }
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
                 let identifier = verifier.getType().identifier

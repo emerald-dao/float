@@ -219,7 +219,10 @@
       <button
         class:secondary={$draftFloat.transferrable}
         class="outline"
-        on:click={() => ($draftFloat.transferrable = false)}>
+        on:click={() => {
+          $draftFloat.transferrable = false;
+          $draftFloat.flowTokenPurchase = false;
+        }}>
         Non-Transferrable
         <span>
           This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).

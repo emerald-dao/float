@@ -76,7 +76,7 @@ const convertDraftFloat = (draftFloat) => {
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
     flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
-    cost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
+    flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
   };
 }
 
@@ -198,7 +198,7 @@ export const createEvent = async (forHost, draftFloat) => {
         capacity: UInt64, 
         initialGroups: [String], 
         flowTokenPurchase: Bool, 
-        cost: UFix64
+        flowTokenCost: UFix64
       ) {
       
         let FLOATEvents: &FLOAT.FLOATEvents
@@ -240,7 +240,6 @@ export const createEvent = async (forHost, draftFloat) => {
           var Secret: FLOATVerifiers.Secret? = nil
           var Limited: FLOATVerifiers.Limited? = nil
           var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
-          var FlowTokenPurchase: FLOATVerifiers.FlowTokenPurchase? = nil
           var verifiers: [{FLOAT.IVerifier}] = []
           if timelock {
             Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -259,11 +258,11 @@ export const createEvent = async (forHost, draftFloat) => {
             Limited = FLOATVerifiers.Limited(_capacity: capacity)
             verifiers.append(Limited!)
           }
+          let extraMetadata: {String: AnyStruct} = {}
           if flowTokenPurchase {
-            FlowTokenPurchase = FLOATVerifiers.FlowTokenPurchase(_cost: cost)
-            verifiers.append(FlowTokenPurchase!)
+            extraMetadata["prices"] = {"flowToken": flowTokenCost}
           }
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
+          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
           log("Started a new event for host.")
         }
       }  
@@ -285,7 +284,7 @@ export const createEvent = async (forHost, draftFloat) => {
         arg(floatObject.capacity, t.UInt64),
         arg(floatObject.initialGroups, t.Array(t.String)),
         arg(floatObject.flowTokenPurchase, t.Bool),
-        arg(floatObject.cost, t.UFix64)
+        arg(floatObject.flowTokenCost, t.UFix64)
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -379,16 +378,25 @@ export const claimFLOAT = async (eventId, host, secret) => {
       
         execute {
           let params: {String: AnyStruct} = {}
+      
+          // If the FLOAT has a secret phrase on it
           if let unwrappedSecret = secret {
             params["secretPhrase"] = unwrappedSecret
           }
-          if self.FLOATEvent.getVerifiers().containsKey("A.f8d6e0586b0a20c7.FLOATVerifiers.FlowTokenPurchase") {
-            params["flowTokenVault"] = self.FlowTokenVault
+       
+          // If the FLOAT costs something
+          if let prices = self.FLOATEvent.getPrices() {
+            let payment <- self.FlowTokenVault.withdraw(amount: prices["flowToken"]!)
+            self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
+            log("Purchased the FLOAT.")
           }
-          self.FLOATEvent.claim(recipient: self.Collection, params: params)
-          log("Claimed the FLOAT.")
+          // If the FLOAT is free 
+          else {
+            self.FLOATEvent.claim(recipient: self.Collection, params: params)
+            log("Claimed the FLOAT.")
+          }
         }
-      }
+      }      
       `,
       args: (arg, t) => [
         arg(parseInt(eventId), t.UInt64),
