@@ -668,7 +668,7 @@ export const deleteFLOAT = async (id) => {
         }
       
         execute {
-          self.Collection.destroyFLOAT(id: id)
+          destroy self.Collection.withdraw(withdrawID: id)
           log("Destroyed the FLOAT.")
         }
       }
@@ -723,7 +723,7 @@ export const transferFLOAT = async (id, recipient) => {
 
         let Collection: &FLOAT.Collection
         let RecipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic}
-
+      
         prepare(acct: AuthAccount) {
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
@@ -731,9 +731,18 @@ export const transferFLOAT = async (id, recipient) => {
                                     .borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
                                     ?? panic("Could not borrow the recipient's public FLOAT Collection.")
         }
-
+      
+        pre {
+          self.Collection.borrowFLOAT(id: id) != nil:
+            "You do not own this FLOAT."
+          self.Collection.borrowFLOAT(id: id)!.getEventMetadata() != nil:
+            "Could not borrow the public FLOAT Event data."
+          self.Collection.borrowFLOAT(id: id)!.getEventMetadata()!.transferrable:
+            "This FLOAT is not giftable on the FLOAT platform."
+        }
+      
         execute {
-          self.Collection.transfer(withdrawID: id, recipient: self.RecipientCollection)
+          self.RecipientCollection.deposit(token: <- self.Collection.withdraw(withdrawID: id))
           log("Transferred the FLOAT.")
         }
       }

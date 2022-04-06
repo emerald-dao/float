@@ -435,7 +435,7 @@
 
     <article>
       <header>
-        <h3>Owned by</h3>
+        <h3>Claimed by</h3>
       </header>
       <IntersectionObserver once element={claimsTableInView} let:intersecting>
         <div bind:this={claimsTableInView}>

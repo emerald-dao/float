@@ -207,25 +207,24 @@
     <h3 class="mb-1">Configure your FLOAT</h3>
 
     <h5>Can be changed later.</h5>
-    <!-- TRANSFERRABLE -->
+    <!-- GIFTABLE -->
     <div class="grid no-break mb-1">
       <button
         class:secondary={!$draftFloat.transferrable}
         class="outline"
         on:click={() => ($draftFloat.transferrable = true)}>
-        Transferrable
-        <span>This FLOAT can be transferred to other accounts.</span>
+        Gifting
+        <span>This FLOAT can be gifted to other accounts on the FLOAT platform.</span>
       </button>
       <button
         class:secondary={$draftFloat.transferrable}
         class="outline"
         on:click={() => {
           $draftFloat.transferrable = false;
-          $draftFloat.flowTokenPurchase = false;
         }}>
-        Non-Transferrable
+        No Gifting
         <span>
-          This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).
+          This FLOAT <strong>cannot</strong> be gifted to others on the FLOAT platform (can be transferred elsewhere).
         </span>
       </button>
     </div>
@@ -401,7 +400,6 @@
         class="outline"
         on:click={() => {
           $draftFloat.flowTokenPurchase = true;
-          $draftFloat.transferrable = true;
         }}>
         Payment
         <span>This FLOAT costs FlowToken to claim. Suitable for things like tickets.</span>

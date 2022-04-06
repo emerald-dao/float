@@ -27,11 +27,16 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
-import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
-import FungibleToken from "../core-contracts/FungibleToken.cdc"
-import FlowToken from "../core-contracts/FlowToken.cdc"
+import NonFungibleToken from 0x631e88ae7f1d7c20
+import MetadataViews from 0x631e88ae7f1d7c20
+import GrantedAccountAccess from 0x0afe396ebc8eee65
+import FungibleToken from 0x9a0766d93b6608b7
+import FlowToken from 0x7e60df042a9c0868
+// import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+// import MetadataViews from "../core-contracts/MetadataViews.cdc"
+// import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
+// import FungibleToken from "../core-contracts/FungibleToken.cdc"
+// import FlowToken from "../core-contracts/FlowToken.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -52,13 +57,12 @@ pub contract FLOAT: NonFungibleToken {
     pub event ContractInitialized()
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, recipient: Address, serial: UInt64)
     pub event FLOATClaimed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, eventName: String, recipient: Address, serial: UInt64)
-    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64, lastOwner: Address)
-    pub event FLOATTransferred(id: UInt64, from: Address, to: Address, eventHost: Address, eventId: UInt64, serial: UInt64)
+    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
+    pub event FLOATTransferred(id: UInt64, newOwner: Address?, eventHost: Address, eventId: UInt64, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
     pub event FLOATEventDestroyed(eventId: UInt64, host: Address, name: String)
 
     pub event Deposit(id: UInt64, to: Address?)
-    // Throw away for standard
     pub event Withdraw(id: UInt64, from: Address?)
 
     /***********************************************/
@@ -177,6 +181,22 @@ pub contract FLOAT: NonFungibleToken {
 
             FLOAT.totalSupply = FLOAT.totalSupply + 1
         }
+
+        destroy() {
+            // If the FLOATEvent owner decided to unlink their public reference
+            // for some reason (heavily recommend against it), their records
+            // of who owns the FLOAT is going to be messed up. But that is their
+            // fault. We shouldn't let that prevent the user from deleting the FLOAT.
+            if let floatEvent: &FLOATEvent{FLOATEventPublic} = self.getEventMetadata() {
+                floatEvent.updateFLOATHome(id: self.id, serial: self.serial, owner: nil)
+            }
+            emit FLOATDestroyed(
+                id: self.id, 
+                eventHost: self.eventHost, 
+                eventId: self.eventId, 
+                serial: self.serial
+            )
+        }
     }
 
     // A public interface for people to call into our Collection
@@ -188,7 +208,6 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getIDs(): [UInt64]
         pub fun getAllIDs(): [UInt64]
         pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64]
-        pub fun ownedFLOATsFromEvent(eventId: UInt64): [&NFT]
     }
 
     // A Collection that holds all of the users FLOATs.
@@ -197,7 +216,9 @@ pub contract FLOAT: NonFungibleToken {
         // Maps a FLOAT id to the FLOAT itself
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
         // Maps an eventId to the ids of FLOATs that
-        // this user owns from that event
+        // this user owns from that event. It's possible
+        // for it to be out of sync, but it is used merely
+        // as a helper.
         access(account) var events: {UInt64: {UInt64: Bool}}
 
         // Deposits a FLOAT to the collection
@@ -205,42 +226,44 @@ pub contract FLOAT: NonFungibleToken {
             let nft <- token as! @NFT
             let id = nft.id
             let eventId = nft.eventId
-            emit Deposit(id: id, to: self.owner!.address)
+        
+            // Update self.events[eventId] to have
+            // this FLOAT's id in it
             if self.events[eventId] == nil {
                 self.events[eventId] = {id: true}
             } else {
                 self.events[eventId]!.insert(key: id, true)
             }
+
+            // Try to update the FLOATEvent's current holders. This will
+            // not work if they unlinked their FLOATEvent to the public,
+            // and the data will go out of sync. But that is their fault.
+            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
+                floatEvent.updateFLOATHome(id: id, serial: nft.serial, owner: self.owner!.address)
+            }
+
+            emit Deposit(id: id, to: self.owner!.address)
             self.ownedNFTs[id] <-! nft
         }
 
-        // Function is disabled, but here to fit the NonFungibleToken standard.
         pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
-            pre {
-                false: "The withdraw function is disabled on FLOAT."
-            }
-            return <- self.ownedNFTs.remove(key: 0)!
-        }
-
-        // Only works if the FLOAT Event the FLOAT is from
-        // has transferring enabled.
-        pub fun transfer(withdrawID: UInt64, recipient: &Collection{NonFungibleToken.CollectionPublic}) {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
-            
-            let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() ?? panic("The FLOAT Evemt host unlinked their FLOAT Events")
+            let id = nft.id
 
-            // Checks to see if this FLOAT is transferrable.
-            assert(floatEvent.transferrable, message: "This FLOAT is not transferrable.")
-            
-            // Updates who the current holder is in the FLOATEvent.
-            floatEvent.transferred(id: nft.id, serial: nft.serial, to: recipient.owner!.address)
-            emit FLOATTransferred(id: nft.id, from: self.owner!.address, to: recipient.owner!.address, eventHost: nft.eventHost, eventId: nft.eventId, serial: nft.serial)
+            // Update self.events[eventId] to not
+            // have this FLOAT's id in it
+            self.events[nft.eventId]!.remove(key: id)
 
-            self.events[nft.eventId]!.remove(key: nft.id)
+            // Try to update the FLOATEvent's current holders. This will
+            // not work if they unlinked their FLOATEvent to the public,
+            // and the data will go out of sync. But that is their fault.
+            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
+                floatEvent.updateFLOATHome(id: nft.id, serial: nft.serial, owner: nil)
+            }
 
-            // Transfers the FLOAT
-            recipient.deposit(token: <- nft)
+            emit Withdraw(id: id, from: self.owner!.address)
+            return <- nft
         }
 
         // Only returns the FLOATs for which we can still
@@ -264,19 +287,13 @@ pub contract FLOAT: NonFungibleToken {
         // Returns an array of ids that belong to
         // the passed in eventId
         pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
-            if self.events[eventId] != nil {
-                return self.events[eventId]!.keys
-            }
-            return []
-        }
-
-        // Returns an array of FLOATs that belong to
-        // the passed in eventId
-        pub fun ownedFLOATsFromEvent(eventId: UInt64): [&NFT] {
-            let answer: [&NFT] = []
-            let ids = self.ownedIdsFromEvent(eventId: eventId)
-            for id in ids {
-                answer.append(self.borrowFLOAT(id: id)!)
+            let answer: [UInt64] = []
+            if let idsInEvent = self.events[eventId]?.keys {
+                for id in idsInEvent {
+                    if self.ownedNFTs[id] != nil {
+                        answer.append(id)
+                    }
+                }
             }
             return answer
         }
@@ -299,45 +316,12 @@ pub contract FLOAT: NonFungibleToken {
             return nftRef as &{MetadataViews.Resolver}
         }
 
-        // Since you can't withdraw FLOATs, this allows you
-        // to delete a FLOAT if you wish.
-        // The reason we don't put this logic inside the
-        // destroy function is because we want to know
-        // who the `lastOwner` is, and `self.owner!.address`
-        // does not exist in the NFT resource when it's being
-        // moved around (aka destroyed).
-        pub fun destroyFLOAT(id: UInt64) {
-            let token <- self.ownedNFTs.remove(key: id) ?? panic("You do not own this FLOAT in your collection")
-            let nft <- token as! @NFT
-
-            // If the FLOATEvent owner decided to unlink their public reference
-            // for some reason (heavily recommend against it), their records
-            // of who owns the FLOAT is going to be messed up. But that is their
-            // fault. We shouldn't let that prevent the user from deleting the FLOAT.
-            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
-                floatEvent.accountDeletedFLOAT(serial: nft.serial)
-            }
-        
-            emit FLOATDestroyed(
-                id: nft.id, 
-                eventHost: nft.eventHost, 
-                eventId: nft.eventId, 
-                serial: nft.serial,
-                lastOwner: self.owner!.address
-            )
-            self.events[nft.eventId]!.remove(key: nft.id)
-            destroy nft
-        }
-
         init() {
             self.ownedNFTs <- {}
             self.events = {}
         }
 
         destroy() {
-            for id in self.getIDs() {
-                self.destroyFLOAT(id: id)
-            }
             destroy self.ownedNFTs
         }
     }
@@ -377,8 +361,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getPrices(): {String: UFix64}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
 
-        access(account) fun accountDeletedFLOAT(serial: UInt64)
-        access(account) fun transferred(id: UInt64, serial: UInt64, to: Address)
+        access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?)
     }
 
     //
@@ -412,8 +395,9 @@ pub contract FLOAT: NonFungibleToken {
         // minted from this event
         pub var totalSupply: UInt64
         // Whether or not the FLOATs that users own
-        // from this event can be transferred (can be
-        // toggled at any point)
+        // from this event can be transferred on the
+        // FLOAT platform itself (transferring allowed
+        // elsewhere)
         pub var transferrable: Bool
         // A url of where the event took place
         pub let url: String
@@ -432,10 +416,6 @@ pub contract FLOAT: NonFungibleToken {
 
         // Toggles transferring on/off
         pub fun toggleTransferrable(): Bool {
-            pre {
-                !self.extraMetadata.containsKey("prices"):
-                    "You can't make this FLOAT non-transferrable if it costs something."
-            }
             self.transferrable = !self.transferrable
             return self.transferrable
         }
@@ -455,19 +435,17 @@ pub contract FLOAT: NonFungibleToken {
 
         // Called if a user transfers their FLOAT to another user.
         // Needed so we can keep track of who currently has it.
-        access(account) fun transferred(id: UInt64, serial: UInt64, to: Address) {
-            self.currentHolders[serial] = TokenIdentifier(
-                _id: id,
-                _address: to,
-                _serial: serial
-            )
-        }
-
-        // Called if a user deletes their FLOAT.
-        // Removes the FLOAT's serial from the 
-        // `currentHolders` dictionary.
-        access(account) fun accountDeletedFLOAT(serial: UInt64) {
-            self.currentHolders.remove(key: serial)
+        access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?) {
+            if owner == nil {
+                self.currentHolders.remove(key: serial)
+            } else {
+                self.currentHolders[serial] = TokenIdentifier(
+                    _id: id,
+                    _address: owner!,
+                    _serial: serial
+                )
+            }
+            emit FLOATTransferred(id: id, newOwner: owner, eventHost: self.host, eventId: self.eventId, serial: serial)
         }
 
         // Adds this FLOAT Event to a group
@@ -691,7 +669,7 @@ pub contract FLOAT: NonFungibleToken {
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
                                     ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
             
-            let EmeraldCityVault = getAccount(0xf8d6e0586b0a20c7).getCapability(/public/flowTokenReceiver)
+            let EmeraldCityVault = getAccount(0x0afe396ebc8eee65).getCapability(/public/flowTokenReceiver)
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
                                     ?? panic("Could not borrow the Capability to Emerald City's Vault.")
 
@@ -805,10 +783,6 @@ pub contract FLOAT: NonFungibleToken {
             _ extraMetadata: {String: AnyStruct},
             initialGroups: [String]
         ): UInt64 {
-            pre {
-                transferrable || extraMetadata["prices"] == nil:
-                    "Your FLOAT cannot be transferrable if it costs something."
-            }
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
                 let identifier = verifier.getType().identifier
@@ -991,10 +965,10 @@ pub contract FLOAT: NonFungibleToken {
         self.totalFLOATEvents = 0
         emit ContractInitialized()
 
-        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath
-        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath
-        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath
-        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath
-        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath
+        self.FLOATCollectionStoragePath = /storage/FLOATCollectionStoragePath00000037
+        self.FLOATCollectionPublicPath = /public/FLOATCollectionPublicPath00000037
+        self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath00000037
+        self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath00000037
+        self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath00000037
     }
 }

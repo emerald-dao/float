@@ -226,7 +226,7 @@
     {#if $user?.addr == ownerAddr && data.transferrable}
       <article>
         <label for="recipientAddr">
-          Copy the recipient's address below.
+          Gift this FLOAT to an account by pasting in their address.
           <input
             type="text"
             name="recipientAddr"
@@ -234,16 +234,16 @@
             placeholder="0x00000000000" />
         </label>
         {#if $floatTransferInProgress}
-          <button aria-busy="true" disabled>Transferring FLOAT</button>
+          <button aria-busy="true" disabled>Gifting FLOAT</button>
         {:else if $floatTransferStatus.success}
-          <button>FLOAT transferred successfully.</button>
+          <button>FLOAT gifted successfully.</button>
         {:else if !$floatTransferStatus.success && $floatTransferStatus.error}
           <button disabled>
             {$floatTransferStatus.error}
           </button>
         {:else}
           <button on:click={transferFLOAT(data.id, recipientAddr)}>
-            Transfer this FLOAT
+            Gift this FLOAT
           </button>
         {/if}
       </article>

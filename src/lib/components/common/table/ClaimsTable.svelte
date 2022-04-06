@@ -4,10 +4,9 @@
 
   import Table, { Row, Sort } from "./Table.svelte";
   import { sortNumber } from "./sorting.js";
-  import { page } from "$app/stores";
 
   import {
-    getHoldersInEvent
+    getClaimedInEvent
   } from "$lib/flow/actions.js";
 
   export let address = "";
@@ -15,7 +14,8 @@
 
   let getRows = async () => {
     console.log("potato");
-    let event = await getHoldersInEvent(address, eventId);
+    let event = await getClaimedInEvent(address, eventId);
+    console.log(event)
     return Object.values(event);
   };
 
@@ -55,7 +55,7 @@
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Serial"><a href="/{row.address}/float/{row.id}"><code>#{row.serial}</code></a></td>
+        <td data-label="Serial"><a href="/{row.address}"><code>#{row.serial}</code></a></td>
         <td data-label="Address"><span class="mono"><a href="/{row.address}">{row.address}</a></span></td>
       </Row>
     {/each}
