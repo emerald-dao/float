@@ -411,7 +411,7 @@
       <div class="grid">
         <!-- Date -->
         <label for="cost"
-          >Cost (<i>Emerald City takes 5% royalty of this sale.</i>)
+          >Cost (in FLOW)
           <input
             type="number"
             id="cost"
@@ -420,6 +420,7 @@
             placeholder="ex. 100.0"
             step="0.01"
             bind:value={$draftFloat.flowTokenPurchase} />
+            <small>Note: 5% of each purchase will go to the Emerald City DAO treasury.</small>
         </label>
       </div>
       <hr />
