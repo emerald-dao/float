@@ -10,6 +10,11 @@
   background:  var(--secondary-focus);
 }
 
+/* add line breaks to event description */  
+blockquote {
+  white-space: pre-line;
+}
+
 /* Green Light scheme (Default) */
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
