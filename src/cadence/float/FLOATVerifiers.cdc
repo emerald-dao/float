@@ -20,7 +20,9 @@
 // of the secret code through. For Limited, we need to know the totalSupply of the event,
 // so we pass it through as well.
 
-import FLOAT from 0x2d4c3caffbeab845
+import FLOAT from "./FLOAT.cdc"
+import FlowToken from "../core-contracts/FlowToken.cdc"
+import FungibleToken from "../core-contracts/FungibleToken.cdc"
 
 pub contract FLOATVerifiers {
 
@@ -123,6 +125,45 @@ pub contract FLOATVerifiers {
             for secret in _secrets {
                 self.secrets[secret] = true
             }
+        }
+    }
+
+    //
+    // FlowToken
+    //
+    // Checks to see if the user's FlowToken Vault
+    // contains enough FlowToken to make the purchase,
+    // and then makes the purchase of `cost` amount.
+    pub struct FlowTokenPurchase: FLOAT.IVerifier {
+        pub let cost: UFix64
+
+        pub fun verify(_ params: {String: AnyStruct}) {
+            let flowTokenVault = params["flowTokenVault"]! as! &FlowToken.Vault
+            let event = params["event"]! as! &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
+            let eventHost = event.host
+            let royalty = 0.05
+
+            assert(
+                flowTokenVault.balance >= self.cost,
+                message: "This FlowToken.Vault does not have enough FlowToken to pay."
+            )
+
+            let EventHostVault = getAccount(eventHost).getCapability(/public/flowTokenReceiver)
+                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
+                                    ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
+            let EmeraldCityVault = getAccount(0xf8d6e0586b0a20c7).getCapability(/public/flowTokenReceiver)
+                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
+                                    ?? panic("Could not borrow the Capability to Emerald City's Vault.")
+
+            let payment <- flowTokenVault.withdraw(amount: self.cost)
+            let emeraldCityCut <- payment.withdraw(amount: payment.balance * royalty)
+
+            EmeraldCityVault.deposit(from: <- emeraldCityCut)
+            EventHostVault.deposit(from: <- payment)
+        }
+
+        init(_cost: UFix64) {
+            self.cost = _cost
         }
     }
 }

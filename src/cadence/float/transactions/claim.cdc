@@ -1,12 +1,15 @@
 import FLOAT from "../FLOAT.cdc"
+import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
+import FlowToken from "../../core-contracts/FlowToken.cdc"
 
 transaction(eventId: UInt64, host: Address, secret: String?) {
  
   let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
   let Collection: &FLOAT.Collection
+  let FlowTokenVault: &FlowToken.Vault
 
   prepare(acct: AuthAccount) {
     // SETUP COLLECTION
@@ -37,12 +40,19 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
 
     self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                         ?? panic("Could not get the Collection from the signer.")
+    
+    self.FlowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+                            ?? panic("Could not borrow the FlowToken.Vault from the signer.")
   }
 
   execute {
     let params: {String: AnyStruct} = {}
     if let unwrappedSecret = secret {
       params["secretPhrase"] = unwrappedSecret
+    }
+    log(FLOATVerifiers.FlowTokenPurchase.getType().identifier)
+    if self.FLOATEvent.getVerifiers().containsKey(FLOATVerifiers.FlowTokenPurchase.getType().identifier) {
+      params["flowTokenVault"] = self.FlowTokenVault
     }
     self.FLOATEvent.claim(recipient: self.Collection, params: params)
     log("Claimed the FLOAT.")

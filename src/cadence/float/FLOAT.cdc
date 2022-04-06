@@ -27,9 +27,9 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-import NonFungibleToken from 0x1d7e57aa55817448
-import MetadataViews from 0x1d7e57aa55817448
-import GrantedAccountAccess from 0x2d4c3caffbeab845
+import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 

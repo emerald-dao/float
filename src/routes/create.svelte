@@ -384,6 +384,44 @@
       <hr />
     {/if}
 
+    <!-- FLOWTOKEN PURCHASE -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.flowTokenPurchase}
+        class="outline"
+        on:click={() => ($draftFloat.flowTokenPurchase = false)}>
+        Free
+        <span>This FLOAT is free for users to claim.</span>
+      </button>
+      <button
+        class:secondary={!$draftFloat.flowTokenPurchase}
+        class="outline"
+        on:click={() => {
+          $draftFloat.flowTokenPurchase = true;
+          $draftFloat.transferrable = true;
+        }}>
+        Payment
+        <span>This FLOAT costs FlowToken to claim. Suitable for things like tickets.</span>
+      </button>
+    </div>
+    {#if $draftFloat.flowTokenPurchase}
+      <div class="grid">
+        <!-- Date -->
+        <label for="cost"
+          >Cost (<i>Emerald City takes 5% royalty of this sale.</i>)
+          <input
+            type="number"
+            id="cost"
+            name="cost"
+            min="1.00"
+            placeholder="ex. 100.0"
+            step="0.01"
+            bind:value={$draftFloat.flowTokenPurchase} />
+        </label>
+      </div>
+      <hr />
+    {/if}
+
     {#if advancedOptions}
       <div transition:slide>
         <h4 class="">Create on behalf of another account (shared minting)</h4>

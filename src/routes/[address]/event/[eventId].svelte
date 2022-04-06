@@ -30,6 +30,7 @@
     resolveAddressObject,
     distributeDirectlyMany,
     getCurrentHolder,
+    getFlowTokenBalance,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -42,10 +43,12 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
-import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate } from "@samatech/onflow-fcl-esm";
 
   let claimsTableInView;
   let limitedVerifier;
+  let flowTokenPurchaseVerifier;
+  let confirmed = false;
 
   let groups;
   let groupsWeCanAddTo;
@@ -72,13 +75,16 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
     }
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
-      data.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Limited"];
+      data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.Limited"];
+    flowTokenPurchaseVerifier =
+      data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.FlowTokenPurchase"];
 
     groups = await getGroups(resolvedNameObject.address);
     groupsWeCanAddTo = Object.keys(groups).filter(
       (groupName) => !data.groups.includes(groupName)
     );
     isSharedWithMe = isSharedWithUser(resolvedNameObject.address, $user?.addr);
+    console.log(data);
     return data;
   };
 
@@ -116,20 +122,22 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
       title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
       author={floatEvent?.host}
       description={floatEvent?.description}
-      url={$page.url} />
+      url={$page.url}
+    />
 
     <article>
       <header>
         <a href={floatEvent?.url} target="_blank">
           <h1>{floatEvent?.name}</h1>
         </a>
-        <QrCode data="{window.location.href}" image="{floatEvent?.image}"/>
+        <QrCode data={window.location.href} image={floatEvent?.image} />
         <p>FLOAT Event #{$page.params.eventId}</p>
         <p>
           <small class="muted"
             >Created on {new Date(
               floatEvent?.dateCreated * 1000
-            ).toLocaleString()}</small>
+            ).toLocaleString()}</small
+          >
         </p>
       </header>
       {#if floatEvent?.hasClaimed}
@@ -144,7 +152,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
             totalSupply: floatEvent.totalSupply,
             serial: floatEvent.hasClaimed.serial,
           }}
-          claimed={true} />
+          claimed={true}
+        />
       {:else}
         <Float
           float={{
@@ -152,12 +161,13 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
             eventImage: floatEvent.image,
             eventName: floatEvent.name,
             totalSupply: floatEvent.totalSupply,
-          }} />
+          }}
+        />
       {/if}
 
       <blockquote>
-        <strong><small class="muted">DESCRIPTION</small></strong
-        ><br />{floatEvent?.description}
+        <strong><small class="muted">DESCRIPTION</small></strong><br
+        />{floatEvent?.description}
       </blockquote>
 
       {#if floatEvent?.groups.length > 0}
@@ -166,10 +176,42 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
           <br />
           {#each floatEvent?.groups as group}
             <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"
-              ><div class="group-badge">{group}</div></a>
+              ><div class="group-badge">{group}</div></a
+            >
           {/each}
         </blockquote>
       {/if}
+
+      <blockquote>
+        <strong><small class="muted">COST</small></strong>
+        <br />
+        {#await getFlowTokenBalance($user?.addr) then balance}
+          {#if flowTokenPurchaseVerifier && flowTokenPurchaseVerifier[0] && $user.loggedIn}
+            This FLOAT costs
+            <span class="emphasis">
+              {parseFloat(flowTokenPurchaseVerifier[0].cost).toFixed(2)}
+            </span>
+            to claim, and you have
+            <span class="emphasis">
+              {parseFloat(balance).toFixed(2)}
+            </span>
+            FlowToken.
+            <br />
+            {#if (parseFloat(balance) - parseFloat(flowTokenPurchaseVerifier[0].cost)).toFixed(2) > 0}
+              Your final balance will be
+              <span class="emphasis">
+                {(
+                  parseFloat(balance) -
+                  parseFloat(flowTokenPurchaseVerifier[0].cost)
+                ).toFixed(2)}
+              </span>
+              FlowToken.
+            {:else}
+              You cannot afford this FLOAT.
+            {/if}
+          {/if}
+        {/await}
+      </blockquote>
 
       <p>
         <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
@@ -181,9 +223,18 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
           exist.
         </p>
       {/if}
+
       <footer>
         {#if $user?.loggedIn}
-          <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+          {#if flowTokenPurchaseVerifier && flowTokenPurchaseVerifier[0] && !confirmed && !floatEvent?.hasClaimed}
+            <button class="important" on:click={() => (confirmed = true)}
+              >This costs {parseFloat(
+                flowTokenPurchaseVerifier[0].cost
+              ).toFixed(2)} FlowToken. Click to confim.</button
+            >
+          {:else}
+            <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+          {/if}
         {:else}
           <button id="connect" on:click={authenticate}>Connect Wallet</button>
         {/if}
@@ -203,7 +254,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                 toggleClaimable(
                   resolvedNameObject.address,
                   floatEvent?.eventId
-                )}>
+                )}
+            >
               {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
             </button>
             <button
@@ -214,7 +266,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                 toggleTransferrable(
                   resolvedNameObject.address,
                   floatEvent?.eventId
-                )}>
+                )}
+            >
               {floatEvent?.transferrable ? "Stop transfers" : "Allow transfers"}
             </button>
             {#if $deleteEventInProgress}
@@ -229,7 +282,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
               <button
                 class="outline red"
                 on:click={() =>
-                  deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}>
+                  deleteEvent(resolvedNameObject.address, floatEvent?.eventId)}
+              >
                 Delete this event
               </button>
             {/if}
@@ -243,7 +297,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                 id="address"
                 name="address"
                 placeholder="0x00000000000"
-                bind:value={recipientAddr} />
+                bind:value={recipientAddr}
+              />
               {#if $floatDistributingInProgress}
                 <button aria-busy="true" disabled> Award </button>
               {:else if $floatDistributingStatus.success}
@@ -274,7 +329,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                 id="list"
                 name="list"
                 placeholder="0x00000000000"
-                on:change={uploadList} />
+                on:change={uploadList}
+              />
               {#if $floatDistributingManyInProgress}
                 <button aria-busy="true" disabled> Award </button>
               {:else if $floatDistributingManyStatus.success}
@@ -299,11 +355,14 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
               <small>Minting to: {listOfAddresses.toString()}</small>
             {:else if listOfAddresses === "error"}
               <small class="red"
-                >This file is not supported. Please upload a .txt file.</small>
+                >This file is not supported. Please upload a .txt file.</small
+              >
             {:else}
               <small
                 >Upload a .txt file <a href="/example.txt" download
-                  >(here is an example)</a> of addresses, each on their own line.</small>
+                  >(here is an example)</a
+                > of addresses, each on their own line.</small
+              >
             {/if}
           </div>
 
@@ -331,7 +390,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                         resolvedNameObject.address,
                         groupName,
                         floatEvent?.eventId
-                      )}>Add</button>
+                      )}>Add</button
+                  >
                 {/if}
               </div>
               <small>Add to a pre-existing Group.</small>
@@ -362,7 +422,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
                         resolvedNameObject.address,
                         groupName,
                         floatEvent?.eventId
-                      )}>Remove</button>
+                      )}>Remove</button
+                  >
                 {/if}
               </div>
               <small>Remove from a Group.</small>
@@ -381,7 +442,8 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
           {#if intersecting}
             <ClaimsTable
               address={floatEvent?.host}
-              eventId={floatEvent?.eventId} />
+              eventId={floatEvent?.eventId}
+            />
           {/if}
         </div>
       </IntersectionObserver>
@@ -390,6 +452,12 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
 </div>
 
 <style>
+  .important {
+    background: yellow;
+    border: 0;
+    color: black;
+  }
+
   #connect {
     background: var(--contrast);
     border: 0;

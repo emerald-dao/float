@@ -4,7 +4,25 @@ import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
 
-transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64, initialGroups: [String]) {
+transaction(
+  forHost: Address, 
+  claimable: Bool, 
+  name: String, 
+  description: String, 
+  image: String, 
+  url: String, 
+  transferrable: Bool, 
+  timelock: Bool, 
+  dateStart: UFix64, 
+  timePeriod: UFix64, 
+  secret: Bool, 
+  secrets: [String], 
+  limited: Bool, 
+  capacity: UInt64, 
+  initialGroups: [String], 
+  flowTokenPurchase: Bool, 
+  cost: UFix64
+) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
 
@@ -45,6 +63,7 @@ transaction(forHost: Address, claimable: Bool, name: String, description: String
     var Secret: FLOATVerifiers.Secret? = nil
     var Limited: FLOATVerifiers.Limited? = nil
     var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
+    var FlowTokenPurchase: FLOATVerifiers.FlowTokenPurchase? = nil
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -62,6 +81,10 @@ transaction(forHost: Address, claimable: Bool, name: String, description: String
     if limited {
       Limited = FLOATVerifiers.Limited(_capacity: capacity)
       verifiers.append(Limited!)
+    }
+    if flowTokenPurchase {
+      FlowTokenPurchase = FLOATVerifiers.FlowTokenPurchase(_cost: cost)
+      verifiers.append(FlowTokenPurchase!)
     }
     self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
     log("Started a new event for host.")

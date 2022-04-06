@@ -67,14 +67,16 @@ const convertDraftFloat = (draftFloat) => {
     image: draftFloat.ipfsHash,
     url: draftFloat.url,
     transferrable: draftFloat.transferrable,
-    timelock: draftFloat.timelock,
-    dateStart: +new Date(draftFloat.startTime) / 1000,
-    timePeriod: (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000),
-    secret: draftFloat.claimCodeEnabled,
+    timelock: draftFloat.timelock ? true : false,
+    dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
+    timePeriod: draftFloat.startTime && draftFloat.endTime ? (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000) : 0,
+    secret: draftFloat.claimCodeEnabled ? true : false,
     secrets: secrets,
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
-    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : []
+    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
+    flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
+    cost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
   };
 }
 
@@ -163,6 +165,7 @@ export const setupAccount = async () => {
 export const createEvent = async (forHost, draftFloat) => {
 
   let floatObject = convertDraftFloat(draftFloat);
+  console.log(floatObject)
 
   eventCreationInProgress.set(true);
 
@@ -178,8 +181,26 @@ export const createEvent = async (forHost, draftFloat) => {
       import MetadataViews from 0xCORE
       import GrantedAccountAccess from 0xFLOAT
 
-      transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64, initialGroups: [String]) {
-
+      transaction(
+        forHost: Address, 
+        claimable: Bool, 
+        name: String, 
+        description: String, 
+        image: String, 
+        url: String, 
+        transferrable: Bool, 
+        timelock: Bool, 
+        dateStart: UFix64, 
+        timePeriod: UFix64, 
+        secret: Bool, 
+        secrets: [String], 
+        limited: Bool, 
+        capacity: UInt64, 
+        initialGroups: [String], 
+        flowTokenPurchase: Bool, 
+        cost: UFix64
+      ) {
+      
         let FLOATEvents: &FLOAT.FLOATEvents
       
         prepare(acct: AuthAccount) {
@@ -219,6 +240,7 @@ export const createEvent = async (forHost, draftFloat) => {
           var Secret: FLOATVerifiers.Secret? = nil
           var Limited: FLOATVerifiers.Limited? = nil
           var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
+          var FlowTokenPurchase: FLOATVerifiers.FlowTokenPurchase? = nil
           var verifiers: [{FLOAT.IVerifier}] = []
           if timelock {
             Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -236,6 +258,10 @@ export const createEvent = async (forHost, draftFloat) => {
           if limited {
             Limited = FLOATVerifiers.Limited(_capacity: capacity)
             verifiers.append(Limited!)
+          }
+          if flowTokenPurchase {
+            FlowTokenPurchase = FLOATVerifiers.FlowTokenPurchase(_cost: cost)
+            verifiers.append(FlowTokenPurchase!)
           }
           self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
           log("Started a new event for host.")
@@ -257,7 +283,9 @@ export const createEvent = async (forHost, draftFloat) => {
         arg(floatObject.secrets, t.Array(t.String)),
         arg(floatObject.limited, t.Bool),
         arg(floatObject.capacity, t.UInt64),
-        arg(floatObject.initialGroups, t.Array(t.String))
+        arg(floatObject.initialGroups, t.Array(t.String)),
+        arg(floatObject.flowTokenPurchase, t.Bool),
+        arg(floatObject.cost, t.UFix64)
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -303,14 +331,17 @@ export const claimFLOAT = async (eventId, host, secret) => {
     transactionId = await fcl.mutate({
       cadence: `
       import FLOAT from 0xFLOAT
+      import FLOATVerifiers from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
       import GrantedAccountAccess from 0xFLOAT
+      import FlowToken from 0xFLOWTOKEN
 
       transaction(eventId: UInt64, host: Address, secret: String?) {
  
         let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
         let Collection: &FLOAT.Collection
+        let FlowTokenVault: &FlowToken.Vault
       
         prepare(acct: AuthAccount) {
           // SETUP COLLECTION
@@ -341,12 +372,18 @@ export const claimFLOAT = async (eventId, host, secret) => {
       
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
+          
+          self.FlowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+                                  ?? panic("Could not borrow the FlowToken.Vault from the signer.")
         }
       
         execute {
           let params: {String: AnyStruct} = {}
           if let unwrappedSecret = secret {
             params["secretPhrase"] = unwrappedSecret
+          }
+          if self.FLOATEvent.getVerifiers().containsKey("A.f8d6e0586b0a20c7.FLOATVerifiers.FlowTokenPurchase") {
+            params["flowTokenVault"] = self.FlowTokenVault
           }
           self.FLOATEvent.claim(recipient: self.Collection, params: params)
           log("Claimed the FLOAT.")
@@ -2022,6 +2059,30 @@ export const getStats = async () => {
       }
       `,
       args: (arg, t) => [
+      ]
+    })
+    return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getFlowTokenBalance = async (account) => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FlowToken from 0xFLOWTOKEN
+      import FungibleToken from 0xFUNGIBLETOKEN
+
+      pub fun main(account: Address): UFix64 {
+        let vault = getAccount(account).getCapability(/public/flowTokenBalance)
+                      .borrow<&FlowToken.Vault{FungibleToken.Balance}>()
+                      ?? panic("Does not have a FlowToken Vault")
+        return vault.balance
+      }
+      `,
+      args: (arg, t) => [
+        fcl.arg(account, t.Address)
       ]
     })
     return queryResult || [];
