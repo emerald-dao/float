@@ -27,16 +27,16 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-import NonFungibleToken from 0x631e88ae7f1d7c20
-import MetadataViews from 0x631e88ae7f1d7c20
-import GrantedAccountAccess from 0x0afe396ebc8eee65
-import FungibleToken from 0x9a0766d93b6608b7
-import FlowToken from 0x7e60df042a9c0868
-// import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
-// import MetadataViews from "../core-contracts/MetadataViews.cdc"
-// import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
-// import FungibleToken from "../core-contracts/FungibleToken.cdc"
-// import FlowToken from "../core-contracts/FlowToken.cdc"
+// import NonFungibleToken from 0x631e88ae7f1d7c20
+// import MetadataViews from 0x631e88ae7f1d7c20
+// import GrantedAccountAccess from 0x0afe396ebc8eee65
+// import FungibleToken from 0x9a0766d93b6608b7
+// import FlowToken from 0x7e60df042a9c0868
+import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
+import MetadataViews from "../core-contracts/MetadataViews.cdc"
+import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
+import FungibleToken from "../core-contracts/FungibleToken.cdc"
+import FlowToken from "../core-contracts/FlowToken.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -258,7 +258,16 @@ pub contract FLOAT: NonFungibleToken {
             // Try to update the FLOATEvent's current holders. This will
             // not work if they unlinked their FLOATEvent to the public,
             // and the data will go out of sync. But that is their fault.
+            //
+            // Additionally, this checks if the FLOATEvent host wanted this
+            // FLOAT to be transferrable. Secondary marketplaces will use this
+            // withdraw function, so if the FLOAT is not transferrable,
+            // you can't sell it there.
             if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
+                assert(
+                    floatEvent.transferrable, 
+                    message: "This FLOAT is not transferrable, meaning you can't sell it on secondary marketplaces."
+                )
                 floatEvent.updateFLOATHome(id: nft.id, serial: nft.serial, owner: nil)
             }
 
