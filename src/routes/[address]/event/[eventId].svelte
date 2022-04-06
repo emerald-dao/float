@@ -74,8 +74,7 @@
       );
     }
     let data = { ...eventData, hasClaimed, currentOwner };
-    limitedVerifier =
-      data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.Limited"];
+    limitedVerifier = data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.Limited"];
     let prices = data.extraMetadata["prices"];
     if (prices) {
       flowTokenCost = prices["flowToken"];
