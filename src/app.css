@@ -5,6 +5,11 @@
   --green: #00cf00;
 }
 
+/* Make copy&paste text seclection visible */
+::selection {
+  background:  var(--secondary-focus);
+}
+
 /* Green Light scheme (Default) */
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
