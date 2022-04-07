@@ -58,7 +58,8 @@ pub contract FLOAT: NonFungibleToken {
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, recipient: Address, serial: UInt64)
     pub event FLOATClaimed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, eventName: String, recipient: Address, serial: UInt64)
     pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
-    pub event FLOATTransferred(id: UInt64, newOwner: Address?, eventHost: Address, eventId: UInt64, serial: UInt64)
+    pub event FLOATTransferred(id: UInt64, eventHost: Address, eventId: UInt64, newOwner: Address?, serial: UInt64)
+    pub event FLOATPurchased(id: UInt64, eventHost: Address, eventId: UInt64, recipient: Address, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
     pub event FLOATEventDestroyed(eventId: UInt64, host: Address, name: String)
 
@@ -276,7 +277,7 @@ pub contract FLOAT: NonFungibleToken {
             if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
                 assert(
                     floatEvent.transferrable, 
-                    message: "This FLOAT is not transferrable, meaning you can't sell it on secondary marketplaces."
+                    message: "This FLOAT is not transferrable."
                 )
                 floatEvent.updateFLOATHome(id: nft.id, serial: nft.serial, owner: nil)
             }
@@ -469,7 +470,7 @@ pub contract FLOAT: NonFungibleToken {
                     _serial: serial
                 )
             }
-            emit FLOATTransferred(id: id, newOwner: owner, eventHost: self.host, eventId: self.eventId, serial: serial)
+            emit FLOATTransferred(id: id, eventHost: self.host, eventId: self.eventId, newOwner: owner, serial: serial)
         }
 
         // Adds this FLOAT Event to a group
@@ -619,7 +620,7 @@ pub contract FLOAT: NonFungibleToken {
             return id
         }
 
-        access(account) fun verifyAndMint(recipient: &Collection, params: {String: AnyStruct}) {
+        access(account) fun verifyAndMint(recipient: &Collection, params: {String: AnyStruct}): UInt64 {
             pre {
                 self.claimable: 
                     "This FLOATEvent is not claimable, and thus not currently active."
@@ -653,6 +654,7 @@ pub contract FLOAT: NonFungibleToken {
                 recipient: recipient.owner!.address,
                 serial: self.totalSupply - 1
             )
+            return id
         }
 
         // For the public to claim FLOATs. Must be claimable to do so.
@@ -708,7 +710,9 @@ pub contract FLOAT: NonFungibleToken {
             EmeraldCityVault.deposit(from: <- emeraldCityCut)
             EventHostVault.deposit(from: <- payment)
 
-            self.verifyAndMint(recipient: recipient, params: params)
+            let id = self.verifyAndMint(recipient: recipient, params: params)
+
+            emit FLOATPurchased(id: id, eventHost: self.host, eventId: self.eventId, recipient: recipient.owner!.address, serial: self.totalSupply - 1)
         }
 
         init (
