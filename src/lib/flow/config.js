@@ -10,3 +10,6 @@ config({
   "0xFN": "", // "0x233eb012d34b0070",
   "0xFIND": "", // "0x097bafa4e0b48eef"
 })
+
+export const verifiersIdentifier = 'A.f8d6e0586b0a20c7';
+export const flowTokenIdentifier = 'A.0ae53cb6e3f42a79';

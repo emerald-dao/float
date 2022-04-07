@@ -44,6 +44,7 @@
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
   import { authenticate } from "@samatech/onflow-fcl-esm";
+import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
 
   let claimsTableInView;
   let limitedVerifier;
@@ -75,10 +76,10 @@
     }
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
-      data.verifiers["A.f8d6e0586b0a20c7.FLOATVerifiers.Limited"];
+      data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
     let prices = data.extraMetadata["prices"];
     if (prices) {
-      flowTokenCost = prices["flowToken"];
+      flowTokenCost = prices[`${flowTokenIdentifier}.FlowToken.Vault`]?.price;
     }
 
     groups = await getGroups(resolvedNameObject.address);

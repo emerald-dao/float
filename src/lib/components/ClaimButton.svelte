@@ -4,11 +4,12 @@
   import { floatClaimedStatus, floatClaimingInProgress, user } from "$lib/flow/stores";
   import { claimFLOAT } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
+  import { verifiersIdentifier } from "$lib/flow/config";
 
-  const secretModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Secret"];
-  const limitedModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Limited"];
-  const timelockModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Timelock"];
-  const multipleSecretModule = floatEvent?.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.MultipleSecret"];
+  const secretModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Secret`];
+  const limitedModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
+  const timelockModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Timelock`];
+  const multipleSecretModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.MultipleSecret`];
 
   let claimCode = "";
   $: currentUnixTime = +new Date() / 1000;

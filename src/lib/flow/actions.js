@@ -3,6 +3,7 @@ import { browser } from '$app/env';
 import * as fcl from "@samatech/onflow-fcl-esm";
 
 import "./config.js";
+import { flowTokenIdentifier } from './config.js';
 import {
   user,
   txId,
@@ -260,7 +261,8 @@ export const createEvent = async (forHost, draftFloat) => {
           }
           let extraMetadata: {String: AnyStruct} = {}
           if flowTokenPurchase {
-            extraMetadata["prices"] = {"flowToken": flowTokenCost}
+            let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
+            extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
           }
           self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
           log("Started a new event for host.")
@@ -386,7 +388,8 @@ export const claimFLOAT = async (eventId, host, secret) => {
        
           // If the FLOAT costs something
           if let prices = self.FLOATEvent.getPrices() {
-            let payment <- self.FlowTokenVault.withdraw(amount: prices["flowToken"]!)
+            log(prices)
+            let payment <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
             self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
             log("Purchased the FLOAT.")
           }

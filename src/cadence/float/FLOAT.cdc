@@ -95,12 +95,10 @@ pub contract FLOAT: NonFungibleToken {
     }
 
     pub struct TokenInfo {
-        pub let identifier: String
         pub let path: PublicPath
         pub let price: UFix64
 
-        init(_identifier: String, _path: PublicPath, _price: UFix64) {
-            self.identifier = _identifier
+        init(_path: PublicPath, _price: UFix64) {
             self.path = _path
             self.price = _price
         }
@@ -229,8 +227,8 @@ pub contract FLOAT: NonFungibleToken {
         pub var ownedNFTs: @{UInt64: NonFungibleToken.NFT}
         // Maps an eventId to the ids of FLOATs that
         // this user owns from that event. It's possible
-        // for it to be out of sync, but it is used merely
-        // as a helper.
+        // for it to be out of sync until June 2022 spork, 
+        // but it is used merely as a helper, so that's okay.
         access(account) var events: {UInt64: {UInt64: Bool}}
 
         // Deposits a FLOAT to the collection
@@ -310,7 +308,8 @@ pub contract FLOAT: NonFungibleToken {
         //
         // It's possible for FLOAT ids to be present that
         // shouldn't be if people tried to withdraw directly
-        // from `ownedNFTs`, but this makes sure the returned
+        // from `ownedNFTs` (not possible after June 2022 spork), 
+        // but this makes sure the returned
         // ids are all actually owned by this account.
         pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
             let answer: [UInt64] = []
@@ -543,8 +542,8 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun getPrices(): {String: TokenInfo}? {
-            if self.extraMetadata["prices"] != nil {
-                return self.extraMetadata["prices"]! as! {String: TokenInfo}
+            if let prices = self.extraMetadata["prices"] {
+                return prices as! {String: TokenInfo}
             }
             return nil
         }
@@ -677,20 +676,21 @@ pub contract FLOAT: NonFungibleToken {
                 self.getPrices() != nil:
                     "Don't call this function. The FLOAT is free."
                 self.getPrices()![payment.getType().identifier] != nil:
-                    "This FLOAT does not support purchasing in the passed in price."
+                    "This FLOAT does not support purchasing in the passed in token."
                 payment.balance == self.getPrices()![payment.getType().identifier]!.price:
                     "You did not pass in the correct amount of tokens."
             }
             let royalty: UFix64 = 0.05
             let emeraldCityTreasury: Address = 0xf8d6e0586b0a20c7
-            let tokenInfo: TokenInfo = self.getPrices()![payment.getType().identifier]!
+            let paymentType: String = payment.getType().identifier
+            let tokenInfo: TokenInfo = self.getPrices()![paymentType]!
 
             let EventHostVault = getAccount(self.host).getCapability(tokenInfo.path)
                                     .borrow<&{FungibleToken.Receiver}>()
                                     ?? panic("Could not borrow the &{FungibleToken.Receiver} from the event host.")
 
             assert(
-                EventHostVault.getType().identifier == tokenInfo.identifier,
+                EventHostVault.getType().identifier == paymentType,
                 message: "The event host's path is not associated with the intended token."
             )
             
@@ -699,7 +699,7 @@ pub contract FLOAT: NonFungibleToken {
                                     ?? panic("Could not borrow the &{FungibleToken.Receiver} from Emerald City's Vault.")
 
             assert(
-                EmeraldCityVault.getType().identifier == tokenInfo.identifier,
+                EmeraldCityVault.getType().identifier == paymentType,
                 message: "Emerald City's path is not associated with the intended token."
             )
 

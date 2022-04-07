@@ -83,7 +83,8 @@ transaction(
     }
     let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchase {
-      extraMetadata["prices"] = {"flowToken": flowTokenCost}
+      let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
+      extraMetadata["prices"] = {"A.0ae53cb6e3f42a79.FlowToken.Vault": tokenInfo}
     }
     self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
     log("Started a new event for host.")
