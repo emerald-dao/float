@@ -213,8 +213,10 @@
         class:secondary={!$draftFloat.transferrable}
         class="outline"
         on:click={() => ($draftFloat.transferrable = true)}>
-        Gifting
-        <span>This FLOAT can be gifted to other accounts on the FLOAT platform.</span>
+        Tradeable
+        <span
+          >This FLOAT can be traded on popular secondary marketplaces and can be
+          gifted on the FLOAT platform.</span>
       </button>
       <button
         class:secondary={$draftFloat.transferrable}
@@ -222,9 +224,11 @@
         on:click={() => {
           $draftFloat.transferrable = false;
         }}>
-        No Gifting
+        Non-Tradeable
         <span>
-          This FLOAT <strong>cannot</strong> be gifted to others on the FLOAT platform (can be transferred elsewhere).
+          This FLOAT <strong>cannot</strong> be traded on popular secondary marketplaces
+          or gifted to others on the FLOAT platform (warning: can potentially be
+          traded elsewhere).
         </span>
       </button>
     </div>
@@ -402,7 +406,9 @@
           $draftFloat.flowTokenPurchase = true;
         }}>
         Payment
-        <span>This FLOAT costs FlowToken to claim. Suitable for things like tickets.</span>
+        <span
+          >This FLOAT costs FlowToken to claim. Suitable for things like
+          tickets.</span>
       </button>
     </div>
     {#if $draftFloat.flowTokenPurchase}
@@ -418,7 +424,8 @@
             placeholder="ex. 100.0"
             step="0.01"
             bind:value={$draftFloat.flowTokenPurchase} />
-            <small>Note: 5% of each purchase will go to the Emerald City DAO treasury.</small>
+          <small
+            >Note: 5% of each purchase will go to the Emerald City DAO treasury.</small>
         </label>
       </div>
       <hr />

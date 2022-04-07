@@ -672,7 +672,7 @@ pub contract FLOAT: NonFungibleToken {
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
                                     ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
             
-            let EmeraldCityVault = getAccount(0x0afe396ebc8eee65).getCapability(/public/flowTokenReceiver)
+            let EmeraldCityVault = getAccount(0xf8d6e0586b0a20c7).getCapability(/public/flowTokenReceiver)
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
                                     ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from Emerald City's Vault.")
 
