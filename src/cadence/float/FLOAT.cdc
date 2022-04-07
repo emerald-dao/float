@@ -430,8 +430,7 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         // Updates the metadata in case you want
-        // to add something. Not currently used for anything
-        // on FLOAT, so it's empty.
+        // to add something. 
         pub fun updateMetadata(newExtraMetadata: {String: AnyStruct}) {
             for key in newExtraMetadata.keys {
                 if !self.extraMetadata.containsKey(key) {
@@ -442,7 +441,7 @@ pub contract FLOAT: NonFungibleToken {
 
         /***************** Setters for the Contract Only *****************/
 
-        // Called if a user transfers their FLOAT to another user.
+        // Called if a user moves their FLOAT to another location.
         // Needed so we can keep track of who currently has it.
         access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?) {
             if owner == nil {
@@ -669,18 +668,13 @@ pub contract FLOAT: NonFungibleToken {
             let royalty = 0.05
             let flowTokenCost = self.getPrices()!["flowToken"]!
 
-            assert(
-                flowTokenPayment.balance >= flowTokenCost,
-                message: "This FlowToken.Vault does not have enough FlowToken to pay."
-            )
-
             let EventHostVault = getAccount(self.host).getCapability(/public/flowTokenReceiver)
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
                                     ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
             
             let EmeraldCityVault = getAccount(0x0afe396ebc8eee65).getCapability(/public/flowTokenReceiver)
                                     .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
-                                    ?? panic("Could not borrow the Capability to Emerald City's Vault.")
+                                    ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from Emerald City's Vault.")
 
             let emeraldCityCut <- flowTokenPayment.withdraw(amount: flowTokenPayment.balance * royalty)
 
