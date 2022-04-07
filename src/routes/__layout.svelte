@@ -26,12 +26,12 @@
   }
 </script>
 
-<div class="alert alert-info text-center info">
+<!-- <div class="alert alert-info text-center info">
   FLOAT is temporarily unavailable due to <a
     style="color:inherit !important; text-decoration:underline;"
     href="https://forum.onflow.org/t/flow-mainnet-spork-on-2022-04-06-08-00am-pt/2956"
     >scheduled maintainance</a> on Flow mainnet. We will be back soon!
-</div>
+</div> -->
 <Header />
 
 <main class="container">
