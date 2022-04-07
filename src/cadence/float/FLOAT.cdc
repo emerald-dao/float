@@ -94,6 +94,18 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
+    pub struct TokenInfo {
+        pub let identifier: String
+        pub let path: PublicPath
+        pub let price: UFix64
+
+        init(_identifier: String, _path: PublicPath, _price: UFix64) {
+            self.identifier = _identifier
+            self.path = _path
+            self.price = _price
+        }
+    }
+
     // Represents a FLOAT
     pub resource NFT: NonFungibleToken.INFT, MetadataViews.Resolver {
         // The `uuid` of this resource
@@ -295,6 +307,11 @@ pub contract FLOAT: NonFungibleToken {
 
         // Returns an array of ids that belong to
         // the passed in eventId
+        //
+        // It's possible for FLOAT ids to be present that
+        // shouldn't be if people tried to withdraw directly
+        // from `ownedNFTs`, but this makes sure the returned
+        // ids are all actually owned by this account.
         pub fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
             let answer: [UInt64] = []
             if let idsInEvent = self.events[eventId]?.keys {
@@ -367,7 +384,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getExtraMetadata(): {String: AnyStruct}
         pub fun getVerifiers(): {String: [{IVerifier}]}
         pub fun getGroups(): [String]
-        pub fun getPrices(): {String: UFix64}?
+        pub fun getPrices(): {String: TokenInfo}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
 
         access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?)
@@ -525,9 +542,9 @@ pub contract FLOAT: NonFungibleToken {
             ]
         }
 
-        pub fun getPrices(): {String: UFix64}? {
+        pub fun getPrices(): {String: TokenInfo}? {
             if self.extraMetadata["prices"] != nil {
-                return self.extraMetadata["prices"]! as! {String: UFix64}
+                return self.extraMetadata["prices"]! as! {String: TokenInfo}
             }
             return nil
         }
@@ -659,27 +676,37 @@ pub contract FLOAT: NonFungibleToken {
             pre {
                 self.getPrices() != nil:
                     "Don't call this function. The FLOAT is free."
-                self.getPrices()!["flowToken"] != nil:
-                    "This FLOAT does not support purchasing in FlowToken."
-                payment.balance == self.getPrices()!["flowToken"]!:
-                    "You did not pass in the correct amount of FlowToken."
+                self.getPrices()![payment.getType().identifier] != nil:
+                    "This FLOAT does not support purchasing in the passed in price."
+                payment.balance == self.getPrices()![payment.getType().identifier]!.price:
+                    "You did not pass in the correct amount of tokens."
             }
-            let flowTokenPayment <- payment as! @FlowToken.Vault
-            let royalty = 0.05
-            let flowTokenCost = self.getPrices()!["flowToken"]!
+            let royalty: UFix64 = 0.05
+            let emeraldCityTreasury: Address = 0xf8d6e0586b0a20c7
+            let tokenInfo: TokenInfo = self.getPrices()![payment.getType().identifier]!
 
-            let EventHostVault = getAccount(self.host).getCapability(/public/flowTokenReceiver)
-                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()
-                                    ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from the event host.")
+            let EventHostVault = getAccount(self.host).getCapability(tokenInfo.path)
+                                    .borrow<&{FungibleToken.Receiver}>()
+                                    ?? panic("Could not borrow the &{FungibleToken.Receiver} from the event host.")
+
+            assert(
+                EventHostVault.getType().identifier == tokenInfo.identifier,
+                message: "The event host's path is not associated with the intended token."
+            )
             
-            let EmeraldCityVault = getAccount(0xf8d6e0586b0a20c7).getCapability(/public/flowTokenReceiver)
-                                    .borrow<&FlowToken.Vault{FungibleToken.Receiver}>() 
-                                    ?? panic("Could not borrow the FlowToken.Vault{FungibleToken.Receiver} from Emerald City's Vault.")
+            let EmeraldCityVault = getAccount(emeraldCityTreasury).getCapability(tokenInfo.path)
+                                    .borrow<&{FungibleToken.Receiver}>() 
+                                    ?? panic("Could not borrow the &{FungibleToken.Receiver} from Emerald City's Vault.")
 
-            let emeraldCityCut <- flowTokenPayment.withdraw(amount: flowTokenPayment.balance * royalty)
+            assert(
+                EmeraldCityVault.getType().identifier == tokenInfo.identifier,
+                message: "Emerald City's path is not associated with the intended token."
+            )
+
+            let emeraldCityCut <- payment.withdraw(amount: payment.balance * royalty)
 
             EmeraldCityVault.deposit(from: <- emeraldCityCut)
-            EventHostVault.deposit(from: <- flowTokenPayment)
+            EventHostVault.deposit(from: <- payment)
 
             self.verifyAndMint(recipient: recipient, params: params)
         }
