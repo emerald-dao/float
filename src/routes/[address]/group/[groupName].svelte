@@ -42,7 +42,7 @@
     <EventsTable floatEvents={events} />
 
     <footer>
-      <blockquote>
+      <!-- <blockquote>
         <strong><small class="muted">PASTE INTO DISCORD</small></strong><br />
         <div class="command-badge mono" data-tooltip="Paste into Discord">
           <svg
@@ -66,7 +66,7 @@
         <CopyBadge
           text={`/groupverifier creator:${$page.params.address} groupname:${group.name} role:`}
         />
-      </blockquote>
+      </blockquote> -->
       {#if $user?.addr == addressObject.address}
         {#if $deleteGroupInProgress}
           <button class="outline red" aria-busy="true" disabled
