@@ -30,6 +30,7 @@
     resolveAddressObject,
     distributeDirectlyMany,
     getCurrentHolder,
+getClaimedInEvent,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -102,6 +103,18 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
       listOfAddresses = "error";
     }
   };
+
+  const downloadList = async () => {
+    const listOfClaimers = await getClaimedInEvent($page.params.address, $page.params.eventId);
+    const arrayOfClaimers = Object.keys(listOfClaimers);
+    let csvContent = "data:text/csv;charset=utf-8,";
+    for (let i = 0; i < arrayOfClaimers.length; i++) {
+      csvContent += arrayOfClaimers[i] + "\r\n";
+      i++;
+    }
+    var encodedUri = encodeURI(csvContent);
+    window.open(encodedUri);
+  }
 </script>
 
 <svelte:head>
@@ -375,6 +388,7 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
     <article>
       <header>
         <h3>Owned by</h3>
+        <button id="download" on:click={downloadList}>Download list of claimers</button>
       </header>
       <IntersectionObserver once element={claimsTableInView} let:intersecting>
         <div bind:this={claimsTableInView}>
@@ -390,6 +404,9 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
 </div>
 
 <style>
+  #download {
+    margin-top: 20px;
+  }
   #connect {
     background: var(--contrast);
     border: 0;
