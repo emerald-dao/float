@@ -204,7 +204,7 @@
 
     {#await isSharedWithMe then isSharedWithMe}
       {#if isSharedWithMe}
-        <article>
+        <article class="admin-dashboard">
           <h1>Admin Dashboard</h1>
           <div class="toggle">
             <button
@@ -404,9 +404,12 @@
 </div>
 
 <style>
-  /* #download {
-    margin-bottom: 20px;
-  } */
+  .admin-dashboard {
+    padding-bottom: 30px;
+  }
+  #download {
+    margin-top: 40px;
+  }
   #connect {
     background: var(--contrast);
     border: 0;
