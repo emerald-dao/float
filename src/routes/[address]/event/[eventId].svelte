@@ -30,7 +30,7 @@
     resolveAddressObject,
     distributeDirectlyMany,
     getCurrentHolder,
-getClaimedInEvent,
+    getClaimedInEvent,
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -43,7 +43,7 @@ getClaimedInEvent,
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
-import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate } from "@samatech/onflow-fcl-esm";
 
   let claimsTableInView;
   let limitedVerifier;
@@ -105,7 +105,7 @@ import { authenticate } from "@samatech/onflow-fcl-esm";
   };
 
   const downloadList = async () => {
-    const listOfClaimers = await getClaimedInEvent($page.params.address, $page.params.eventId);
+    const listOfClaimers = await getClaimedInEvent(resolvedNameObject.address, $page.params.eventId);
     const arrayOfClaimers = Object.keys(listOfClaimers);
     let csvContent = "data:text/csv;charset=utf-8,";
     for (let i = 0; i < arrayOfClaimers.length; i++) {
