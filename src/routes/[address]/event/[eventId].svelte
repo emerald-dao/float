@@ -110,7 +110,6 @@
     let csvContent = "data:text/csv;charset=utf-8,";
     for (let i = 0; i < arrayOfClaimers.length; i++) {
       csvContent += arrayOfClaimers[i] + "\r\n";
-      i++;
     }
     var encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
