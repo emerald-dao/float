@@ -31,7 +31,7 @@
 	<p>
 		FLOATs can be configured to only be distributed by the creator. You can do
 		this by selecting <span class="emphasis">Not Claimable</span> on the
-		<code>/create</code>
+		<a href="/create">/create</a>
 		page. This means the creator can send FLOATs in their own custom transactions
 		to reward their community. Want to give people proof that they participated in
 		your token drop? Give them a FLOAT automatically in your transaction code when
@@ -41,7 +41,7 @@
 	<h2 id="distribute-directly">Configure your events however you want.</h2>
 	<p>
 		Want to prevent users from transferring your FLOATs? Want to put a time limit or max capacity
-		on your event? Configure your events however you want on the <code>/create</code> page.
+		on your event? Configure your events however you want on the <a href="/create">/create</a> page.
 	</p>
 
 	<h2>FLOAT == "Flow Attendance"</h2>
@@ -70,6 +70,8 @@
 		Flow ecosystem (like FLOAT), and pave the way for DAOs on Flow. We'd love to
 		have you!
 	</p>
+
+  <a role="button" class="bold"  href="/create" style="display:block; margin: 0 auto;">Create a FLOAT Event!</a>
 </div>
 
 <style>

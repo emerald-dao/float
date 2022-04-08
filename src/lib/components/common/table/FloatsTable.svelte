@@ -9,16 +9,15 @@
 
   export let floats;
   let rows = floats;
-  
+
   let pageCount = 0;
-  let pageSize = 25; 
+  let pageSize = 25;
 
   function onCellClick(row) {
     return;
   }
 
   function onSortNumber(event) {
-    console.log(event.detail);
     event.detail.rows = sortNumber(
       event.detail.rows,
       event.detail.dir,
@@ -27,7 +26,6 @@
   }
 
   function onSortString(event) {
-    console.log(event.detail);
     event.detail.rows = sortString(
       event.detail.rows,
       event.detail.dir,
@@ -36,12 +34,18 @@
   }
 </script>
 
-<Table {pageCount} {pageSize} {rows} let:rows={rows2} labels={{ empty: "This account has not claimed any FLOATs.", loading: "Loading FLOATs..."}}>
+<Table
+  {pageCount}
+  {pageSize}
+  {rows}
+  let:rows={rows2}
+  labels={{
+    empty: "This account has not claimed any FLOATs.",
+    loading: "Loading FLOATs...",
+  }}>
   <thead slot="head">
     <tr>
-      <th>
-        Image
-      </th>
+      <th> Image </th>
       <th>
         Name
         <Sort key="eventName" on:sort={onSortString} />
@@ -59,10 +63,21 @@
   <tbody>
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
-        <td data-label="Image"><a href="{$page.path}/float/{row.id}"><img alt="" class="table-image" src="https://ipfs.infura.io/ipfs/{row.eventImage}" /></a></td>
-        <td data-label="Name"><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a></td>
-        <td data-label="Serial"><a href="{$page.path}/float/{row.id}"><code>#{row.serial}</code></a></td>
-        <td data-label="Received">{formatter.format(row.dateReceived * 1000)}</td>
+        <td data-label="Image"
+          ><a href="{$page.path}/float/{row.id}"
+            ><img
+              alt=""
+              class="table-image"
+              src="https://ipfs.infura.io/ipfs/{row.eventImage}" /></a
+          ></td>
+        <td data-label="Name"
+          ><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a
+          ></td>
+        <td data-label="Serial"
+          ><a href="{$page.path}/float/{row.id}"><code>#{row.serial}</code></a
+          ></td>
+        <td data-label="Received"
+          >{formatter.format(row.dateReceived * 1000)}</td>
       </Row>
     {/each}
   </tbody>
@@ -73,5 +88,4 @@
     max-width: 100px;
     max-height: 50px;
   }
-
 </style>
