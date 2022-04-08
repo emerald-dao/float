@@ -386,8 +386,8 @@
 
     <article>
       <header>
-        <h3>Owned by</h3>
         <button id="download" on:click={downloadList}>Download list of claimers</button>
+        <h3>Owned by</h3>
       </header>
       <IntersectionObserver once element={claimsTableInView} let:intersecting>
         <div bind:this={claimsTableInView}>
@@ -404,7 +404,7 @@
 
 <style>
   #download {
-    margin-top: 20px;
+    margin-bottom: 20px;
   }
   #connect {
     background: var(--contrast);
