@@ -380,13 +380,14 @@
               <small>Remove from a Group.</small>
             </div>
           {/if}
+
+          <button id="download" on:click={downloadList}>Download list of claimers</button>
         </article>
       {/if}
     {/await}
 
     <article>
       <header>
-        <button id="download" on:click={downloadList}>Download list of claimers</button>
         <h3>Owned by</h3>
       </header>
       <IntersectionObserver once element={claimsTableInView} let:intersecting>
@@ -403,9 +404,9 @@
 </div>
 
 <style>
-  #download {
+  /* #download {
     margin-bottom: 20px;
-  }
+  } */
   #connect {
     background: var(--contrast);
     border: 0;
