@@ -87,5 +87,7 @@
   .table-image {
     max-width: 100px;
     max-height: 50px;
+    display:block;
+    margin: 0 auto;
   }
 </style>

@@ -135,6 +135,7 @@
     table :global(.table-image) {
       max-width: 50px;
       max-height: 25px;
+      display:inline;
     }
 
     table.responsive :global(td::before) {
