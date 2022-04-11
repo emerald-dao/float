@@ -1,13 +1,12 @@
 <script>
   import Header from "$lib/components/header/Header.svelte";
   import Transaction from "$lib/components/common/Transaction.svelte";
-  import Notifications from '$lib/components/common/Notifications.svelte';
+  import Notifications from "$lib/components/common/Notifications.svelte";
 
   import "../app.css";
   import { onMount } from "svelte";
   import { page } from "$app/stores";
-  import { resolver } from '$lib/stores.js';
-
+  import { resolver } from "$lib/stores.js";
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -18,16 +17,21 @@
     }
   });
 
-
   function toggleResolver() {
-    if ($resolver === 'fn') {
-      $resolver = 'find';
+    if ($resolver === "fn") {
+      $resolver = "find";
     } else {
-      $resolver = 'fn';
+      $resolver = "fn";
     }
   }
 </script>
 
+<!-- <div class="alert alert-info text-center info">
+  FLOAT is temporarily unavailable due to <a
+    style="color:inherit !important; text-decoration:underline;"
+    href="https://forum.onflow.org/t/flow-mainnet-spork-on-2022-04-06-08-00am-pt/2956"
+    >scheduled maintainance</a> on Flow mainnet. We will be back soon!
+</div> -->
 <Header />
 
 <main class="container">
@@ -48,8 +52,7 @@
   <p>
     <small>
       Created by
-      <a href="https://ecdao.org" target="_blank"
-        >Emerald City DAO</a>
+      <a href="https://ecdao.org" target="_blank">Emerald City DAO</a>
       <br />
       <span class="contribute"
         >Contribute on
@@ -72,9 +75,10 @@
     </small>
   </p>
   {#if $page.path !== "/live"}
-    <p><small>Preferred name service</small>
+    <p>
+      <small>Preferred name service</small>
       <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>
-        {#if $resolver === 'fn'}
+        {#if $resolver === "fn"}
           <span>.fn</span>
         {:else}
           <span>.find</span>
@@ -128,11 +132,11 @@
     font-size: 0.5rem;
     background-color: var(--primary-focus);
     text-align: center;
-    display:inline-block;
+    display: inline-block;
     vertical-align: middle;
     align-items: center;
     color: var(--primary);
     font-weight: normal;
-    width:auto;
+    width: auto;
   }
 </style>

@@ -417,7 +417,6 @@ export const claimFLOAT = async (eventId, host, secret) => {
     fcl.tx(transactionId).subscribe(res => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
-        console.log(res);
         if (res.statusCode === 0) {
           floatClaimedStatus.set(respondWithSuccess());
         } else {
@@ -1530,7 +1529,6 @@ export const getEvent = async (addr, eventId) => {
         arg(parseInt(eventId), t.UInt64)
       ]
     })
-    // console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -1622,7 +1620,6 @@ export const getEvents = async (addr) => {
         arg(addr, t.Address)
       ]
     })
-    console.log(queryResult)
     return queryResult || {};
   } catch (e) {
   }
@@ -1719,7 +1716,6 @@ export const getFLOAT = async (addr, id) => {
         arg(parseInt(id), t.UInt64)
       ]
     })
-    // console.log(queryResult)
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -1744,7 +1740,6 @@ export const getHoldersInEvent = async (addr, eventId) => {
         arg(parseInt(eventId), t.UInt64)
       ]
     })
-    // console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -1769,7 +1764,6 @@ export const getClaimedInEvent = async (addr, eventId) => {
         arg(parseInt(eventId), t.UInt64)
       ]
     })
-    // console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -1825,7 +1819,6 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
         arg(parseInt(serial), t.UInt64)
       ]
     })
-    // console.log(queryResult);
     return queryResult;
   } catch (e) {
     console.log(e);
@@ -1849,7 +1842,6 @@ export const getAllowed = async (address) => {
         arg(address, t.Address)
       ]
     })
-    // console.log(queryResult);
     return queryResult || [];
   } catch (e) {
     console.log(e);
@@ -1883,7 +1875,6 @@ export const resolveVerifier = async (address, eventId) => {
         arg(parseInt(eventId), t.UInt64)
       ]
     })
-    // console.log(queryResult);
     return queryResult || {};
   } catch (e) {
     console.log(e);
@@ -1939,7 +1930,6 @@ export const getGroups = async (account) => {
         arg(account, t.Address)
       ]
     })
-    console.log(queryResult)
     return queryResult || {};
   } catch (e) {
     console.log(e);

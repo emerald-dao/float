@@ -125,6 +125,7 @@
   text-transform: uppercase;
   font-weight: bold;
   cursor:pointer;
+  padding: 0px 10px;
 }
 
 .tabs li.selected {

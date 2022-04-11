@@ -5,6 +5,20 @@
   --green: #00cf00;
 }
 
+/* Make copy&paste text seclection visible */
+::selection {
+  background:  var(--secondary-focus);
+}
+
+/* add line breaks to event description */  
+blockquote {
+  white-space: pre-line;
+}
+
+img, image {
+  border-radius: 4px;
+}
+
 /* Green Light scheme (Default) */
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
