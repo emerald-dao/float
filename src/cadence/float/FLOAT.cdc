@@ -668,6 +668,8 @@ pub contract FLOAT: NonFungibleToken {
             pre {
                 self.getPrices() == nil:
                     "You need to purchase this FLOAT."
+                self.claimed[recipient.owner!.address] == nil:
+                    "This person already claimed their FLOAT!"
             }
             
             self.verifyAndMint(recipient: recipient, params: params)
@@ -681,6 +683,8 @@ pub contract FLOAT: NonFungibleToken {
                     "This FLOAT does not support purchasing in the passed in token."
                 payment.balance == self.getPrices()![payment.getType().identifier]!.price:
                     "You did not pass in the correct amount of tokens."
+                self.claimed[recipient.owner!.address] == nil:
+                    "This person already claimed their FLOAT!"
             }
             let royalty: UFix64 = 0.05
             let emeraldCityTreasury: Address = 0xf8d6e0586b0a20c7
