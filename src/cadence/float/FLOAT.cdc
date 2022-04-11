@@ -621,11 +621,6 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         access(account) fun verifyAndMint(recipient: &Collection, params: {String: AnyStruct}): UInt64 {
-            pre {
-                self.claimable: 
-                    "This FLOATEvent is not claimable, and thus not currently active."
-            }
-    
             params["event"] = &self as &FLOATEvent{FLOATEventPublic}
             params["claimee"] = recipient.owner!.address
             
@@ -670,6 +665,8 @@ pub contract FLOAT: NonFungibleToken {
                     "You need to purchase this FLOAT."
                 self.claimed[recipient.owner!.address] == nil:
                     "This person already claimed their FLOAT!"
+                self.claimable: 
+                    "This FLOATEvent is not claimable, and thus not currently active."
             }
             
             self.verifyAndMint(recipient: recipient, params: params)
@@ -685,6 +682,8 @@ pub contract FLOAT: NonFungibleToken {
                     "You did not pass in the correct amount of tokens."
                 self.claimed[recipient.owner!.address] == nil:
                     "This person already claimed their FLOAT!"
+                self.claimable: 
+                    "This FLOATEvent is not claimable, and thus not currently active."
             }
             let royalty: UFix64 = 0.05
             let emeraldCityTreasury: Address = 0xf8d6e0586b0a20c7
