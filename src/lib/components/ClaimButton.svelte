@@ -1,17 +1,29 @@
 <script>
   export let floatEvent;
   export let hasClaimed;
-  import { floatClaimedStatus, floatClaimingInProgress, user } from "$lib/flow/stores";
+  export let flowTokenCost;
+  import {
+    floatClaimedStatus,
+    floatClaimingInProgress,
+    user,
+  } from "$lib/flow/stores";
   import { claimFLOAT } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
   import { verifiersIdentifier } from "$lib/flow/config";
 
-  const secretModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Secret`];
-  const limitedModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
-  const timelockModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Timelock`];
-  const multipleSecretModule = floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.MultipleSecret`];
+  const secretModule =
+    floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Secret`];
+  const limitedModule =
+    floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
+  const timelockModule =
+    floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Timelock`];
+  const multipleSecretModule =
+    floatEvent?.verifiers[
+      `${verifiersIdentifier}.FLOATVerifiers.MultipleSecret`
+    ];
 
   let claimCode = "";
+  let confirmed = false;
   $: currentUnixTime = +new Date() / 1000;
 </script>
 
@@ -19,15 +31,19 @@
   <button class="secondary outline" disabled>
     ✓ You already claimed this FLOAT.
   </button>
+{:else if flowTokenCost && !confirmed}
+  <button class="important" on:click={() => (confirmed = true)}
+    >This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click to confim.</button
+  >
 {:else if floatEvent?.claimable}
-  {#if limitedModule && (limitedModule[0].capacity <= floatEvent?.totalSupply)}
+  {#if limitedModule && limitedModule[0].capacity <= floatEvent?.totalSupply}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br /> All
       <span class="emphasis">
         {floatEvent?.totalSupply}/{limitedModule[0].capacity}
       </span> have been claimed.
     </button>
-  {:else if timelockModule && (timelockModule[0].dateStart > currentUnixTime)}
+  {:else if timelockModule && timelockModule[0].dateStart > currentUnixTime}
     <button class="secondary outline" disabled>
       This FLOAT Event has not started yet.<br />
       Starting in
@@ -35,11 +51,11 @@
         <Countdown unix={timelockModule[0].dateStart} />
       </span>
     </button>
-  {:else if multipleSecretModule && (Object.keys(multipleSecretModule[0].secrets).length === 0)}
+  {:else if multipleSecretModule && Object.keys(multipleSecretModule[0].secrets).length === 0}
     <button class="secondary outline" disabled>
       This FLOAT Event has run out of secret codes.
     </button>
-  {:else if timelockModule && (timelockModule[0].dateEnding < currentUnixTime)}
+  {:else if timelockModule && timelockModule[0].dateEnding < currentUnixTime}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br />This event has ended.
     </button>
@@ -70,15 +86,23 @@
       </label>
     {/if}
     <button
-      class={((secretModule || multipleSecretModule) && claimCode == "") ? "secondary outline" : null}
-      disabled={$floatClaimingInProgress || ((secretModule || multipleSecretModule) && claimCode == "")}
+      class={(secretModule || multipleSecretModule) && claimCode == ""
+        ? "secondary outline"
+        : null}
+      disabled={$floatClaimingInProgress ||
+        ((secretModule || multipleSecretModule) && claimCode == "")}
       on:click={() =>
         claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)}
-      >{((secretModule || multipleSecretModule) && claimCode == "") ? "You must input a secret phrase" : "Claim this FLOAT"}
-  </button>
+      >{(secretModule || multipleSecretModule) && claimCode == ""
+        ? "You must input a secret phrase"
+        : flowTokenCost
+        ? "Purchase this FLOAT"
+        : "Claim this FLOAT"}
+    </button>
   {/if}
 {:else}
   <button class="secondary outline" disabled>
-    This FLOAT is not claimable.<br />The host has done this either to distribute it manually or halt claiming.
+    This FLOAT is not claimable.<br />The host has done this either to
+    distribute it manually or halt claiming.
   </button>
 {/if}

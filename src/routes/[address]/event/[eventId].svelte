@@ -225,13 +225,7 @@ import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
 
       <footer>
         {#if $user?.loggedIn}
-          {#if flowTokenCost && !confirmed && !floatEvent?.hasClaimed}
-            <button class="important" on:click={() => (confirmed = true)}
-              >This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click
-              to confim.</button>
-          {:else}
-            <ClaimButton {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
-          {/if}
+          <ClaimButton {flowTokenCost} {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
         {:else}
           <button id="connect" on:click={authenticate}>Connect Wallet</button>
         {/if}
@@ -438,7 +432,7 @@ import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
 </div>
 
 <style>
-  .important {
+   .important {
     background: yellow;
     border: 0;
     color: black;
@@ -462,10 +456,6 @@ import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
   }
   blockquote {
     text-align: left;
-  }
-
-  .secondary.outline {
-    font-weight: 300;
   }
 
   p {
