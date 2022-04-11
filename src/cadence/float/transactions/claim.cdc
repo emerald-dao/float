@@ -55,7 +55,6 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
  
     // If the FLOAT costs something
     if let prices = self.FLOATEvent.getPrices() {
-      log(prices)
       let payment <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
       self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
       log("Purchased the FLOAT.")
