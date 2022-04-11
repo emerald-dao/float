@@ -4,7 +4,25 @@ import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
 
-transaction(forHost: Address, claimable: Bool, name: String, description: String, image: String, url: String, transferrable: Bool, timelock: Bool, dateStart: UFix64, timePeriod: UFix64, secret: Bool, secrets: [String], limited: Bool, capacity: UInt64, initialGroups: [String]) {
+transaction(
+  forHost: Address, 
+  claimable: Bool, 
+  name: String, 
+  description: String, 
+  image: String, 
+  url: String, 
+  transferrable: Bool, 
+  timelock: Bool, 
+  dateStart: UFix64, 
+  timePeriod: UFix64, 
+  secret: Bool, 
+  secrets: [String], 
+  limited: Bool, 
+  capacity: UInt64, 
+  initialGroups: [String], 
+  flowTokenPurchase: Bool, 
+  flowTokenCost: UFix64
+) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
 
@@ -63,7 +81,12 @@ transaction(forHost: Address, claimable: Bool, name: String, description: String
       Limited = FLOATVerifiers.Limited(_capacity: capacity)
       verifiers.append(Limited!)
     }
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, {}, initialGroups: initialGroups)
+    let extraMetadata: {String: AnyStruct} = {}
+    if flowTokenPurchase {
+      let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
+      extraMetadata["prices"] = {"A.0ae53cb6e3f42a79.FlowToken.Vault": tokenInfo}
+    }
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
     log("Started a new event for host.")
   }
 }  

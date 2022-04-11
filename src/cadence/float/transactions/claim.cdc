@@ -1,12 +1,15 @@
 import FLOAT from "../FLOAT.cdc"
+import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
+import FlowToken from "../../core-contracts/FlowToken.cdc"
 
 transaction(eventId: UInt64, host: Address, secret: String?) {
  
   let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
   let Collection: &FLOAT.Collection
+  let FlowTokenVault: &FlowToken.Vault
 
   prepare(acct: AuthAccount) {
     // SETUP COLLECTION
@@ -37,15 +40,30 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
 
     self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                         ?? panic("Could not get the Collection from the signer.")
+    
+    self.FlowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+                            ?? panic("Could not borrow the FlowToken.Vault from the signer.")
   }
 
   execute {
     let params: {String: AnyStruct} = {}
+
+    // If the FLOAT has a secret phrase on it
     if let unwrappedSecret = secret {
       params["secretPhrase"] = unwrappedSecret
     }
-    self.FLOATEvent.claim(recipient: self.Collection, params: params)
-    log("Claimed the FLOAT.")
+ 
+    // If the FLOAT costs something
+    if let prices = self.FLOATEvent.getPrices() {
+      let payment <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
+      self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
+      log("Purchased the FLOAT.")
+    }
+    // If the FLOAT is free 
+    else {
+      self.FLOATEvent.claim(recipient: self.Collection, params: params)
+      log("Claimed the FLOAT.")
+    }
   }
 }
  

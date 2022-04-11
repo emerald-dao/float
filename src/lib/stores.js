@@ -15,7 +15,8 @@ export const draftFloat = writable({
   claimCode: '',
   transferrable: true,
   multipleSecretsEnabled: false,
-  initialGroup: ""
+  initialGroup: "",
+  flowTokenPurchase: false,
 });
 
 export const draftGroup = writable({

@@ -14,8 +14,17 @@ transaction(id: UInt64, recipient: Address) {
                               ?? panic("Could not borrow the recipient's public FLOAT Collection.")
   }
 
+  pre {
+    self.Collection.borrowFLOAT(id: id) != nil:
+      "You do not own this FLOAT."
+    self.Collection.borrowFLOAT(id: id)!.getEventMetadata() != nil:
+      "Could not borrow the public FLOAT Event data."
+    self.Collection.borrowFLOAT(id: id)!.getEventMetadata()!.transferrable:
+      "This FLOAT is not giftable on the FLOAT platform."
+  }
+
   execute {
-    self.Collection.transfer(withdrawID: id, recipient: self.RecipientCollection)
+    self.RecipientCollection.deposit(token: <- self.Collection.withdraw(withdrawID: id))
     log("Transferred the FLOAT.")
   }
 }

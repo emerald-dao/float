@@ -207,22 +207,28 @@
     <h3 class="mb-1">Configure your FLOAT</h3>
 
     <h5>Can be changed later.</h5>
-    <!-- TRANSFERRABLE -->
+    <!-- GIFTABLE -->
     <div class="grid no-break mb-1">
       <button
         class:secondary={!$draftFloat.transferrable}
         class="outline"
         on:click={() => ($draftFloat.transferrable = true)}>
-        Transferrable
-        <span>This FLOAT can be transferred to other accounts.</span>
+        Tradeable
+        <span
+          >This FLOAT can be traded on popular secondary marketplaces and can be
+          gifted on the FLOAT platform.</span>
       </button>
       <button
         class:secondary={$draftFloat.transferrable}
         class="outline"
-        on:click={() => ($draftFloat.transferrable = false)}>
-        Non-Transferrable
+        on:click={() => {
+          $draftFloat.transferrable = false;
+        }}>
+        Non-Tradeable
         <span>
-          This FLOAT <strong>cannot</strong> be transferred to others (i.e. soul-bound).
+          This FLOAT <strong>cannot</strong> be traded on popular secondary marketplaces
+          or gifted to others on the FLOAT platform (warning: can potentially be
+          traded elsewhere).
         </span>
       </button>
     </div>
@@ -381,6 +387,47 @@
             ? "ex. code1, code2, code3, code4"
             : "ex. mySecretCode"} />
       </label>
+      <hr />
+    {/if}
+
+    <!-- FLOWTOKEN PURCHASE -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.flowTokenPurchase}
+        class="outline"
+        on:click={() => ($draftFloat.flowTokenPurchase = false)}>
+        Free
+        <span>This FLOAT is free for users to claim.</span>
+      </button>
+      <button
+        class:secondary={!$draftFloat.flowTokenPurchase}
+        class="outline"
+        on:click={() => {
+          $draftFloat.flowTokenPurchase = true;
+        }}>
+        Payment
+        <span
+          >This FLOAT costs FlowToken to claim. Suitable for things like
+          tickets.</span>
+      </button>
+    </div>
+    {#if $draftFloat.flowTokenPurchase}
+      <div class="grid">
+        <!-- Date -->
+        <label for="cost"
+          >Cost (in FLOW)
+          <input
+            type="number"
+            id="cost"
+            name="cost"
+            min="1.00"
+            placeholder="ex. 100.0"
+            step="0.01"
+            bind:value={$draftFloat.flowTokenPurchase} />
+          <small
+            >Note: 5% of each purchase will go to the Emerald City DAO treasury.</small>
+        </label>
+      </div>
       <hr />
     {/if}
 

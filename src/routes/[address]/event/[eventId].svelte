@@ -31,6 +31,7 @@
     distributeDirectlyMany,
     getCurrentHolder,
     getClaimedInEvent,
+    getFlowTokenBalance
   } from "$lib/flow/actions.js";
 
   import IntersectionObserver from "svelte-intersection-observer";
@@ -44,9 +45,12 @@
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
   import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
 
   let claimsTableInView;
   let limitedVerifier;
+  let flowTokenCost;
+  let confirmed = false;
 
   let groups;
   let groupsWeCanAddTo;
@@ -76,13 +80,18 @@
     }
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
-      data.verifiers["A.2d4c3caffbeab845.FLOATVerifiers.Limited"];
+      data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
+    let prices = data.extraMetadata["prices"];
+    if (prices) {
+      flowTokenCost = prices[`${flowTokenIdentifier}.FlowToken.Vault`]?.price;
+    }
 
     groups = await getGroups(resolvedNameObject.address);
     groupsWeCanAddTo = Object.keys(groups).filter(
       (groupName) => !data.groups.includes(groupName)
     );
     isSharedWithMe = isSharedWithUser(resolvedNameObject.address, $user?.addr);
+    console.log(data);
     return data;
   };
 
@@ -175,12 +184,54 @@
               totalSupply: floatEvent.totalSupply,
             }} />
         {/if}
+    <article>
+      <header>
+        <a href={floatEvent?.url} target="_blank">
+          <h1>{floatEvent?.name}</h1>
+        </a>
+        <QrCode data={window.location.href} image={floatEvent?.image} />
+        <p>FLOAT Event #{$page.params.eventId}</p>
+        <p>
+          <small class="muted"
+            >Created on {new Date(
+              floatEvent?.dateCreated * 1000
+            ).toLocaleString()}</small>
+        </p>
+      </header>
+      {#if floatEvent?.hasClaimed}
+        <div class="claimed-badge">✓ You claimed this FLOAT</div>
+        <Float
+          float={{
+            id: floatEvent.hasClaimed.id,
+            owner: floatEvent.currentOwner.address,
+            eventHost: floatEvent.host,
+            eventImage: floatEvent.image,
+            eventName: floatEvent.name,
+            totalSupply: floatEvent.totalSupply,
+            serial: floatEvent.hasClaimed.serial,
+          }}
+          claimed={true} />
+      {:else}
+        <Float
+          float={{
+            eventHost: floatEvent.host,
+            eventImage: floatEvent.image,
+            eventName: floatEvent.name,
+            totalSupply: floatEvent.totalSupply,
+          }} />
+      {/if}
 
+      <blockquote>
+        <strong><small class="muted">DESCRIPTION</small></strong
+        ><br />{floatEvent?.description}
+      </blockquote>
+
+      {#if floatEvent?.groups.length > 0}
         <blockquote>
           <strong><small class="muted">DESCRIPTION</small></strong
           ><br />{floatEvent?.description}
         </blockquote>
-
+      
         {#if floatEvent?.groups.length > 0}
           <blockquote>
             <strong><small class="muted">GROUPS</small></strong>
@@ -191,6 +242,41 @@
             {/each}
           </blockquote>
         {/if}
+      <blockquote>
+        <strong><small class="muted">COST</small></strong>
+        <br />
+        {#if flowTokenCost}
+          {#await getFlowTokenBalance($user?.addr) then balance}
+            {#if flowTokenCost && $user.loggedIn}
+              This FLOAT costs
+              <span class="emphasis">
+                {parseFloat(flowTokenCost).toFixed(2)}
+              </span>
+              to claim, and you have
+              <span class="emphasis">
+                {parseFloat(balance).toFixed(2)}
+              </span>
+              FlowToken.
+              <br />
+              {#if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) > 0}
+                Your final balance will be
+                <span class="emphasis">
+                  {(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}
+                </span>
+                FlowToken.
+              {:else}
+                You cannot afford this FLOAT.
+              {/if}
+            {/if}
+          {/await}
+        {:else}
+          Free
+        {/if}
+      </blockquote>
+
+      <p>
+        <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
+      </p>
 
         <p>
           <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
@@ -201,6 +287,13 @@
             Only <span class="emphasis">{limitedVerifier[0].capacity}</span> will
             ever exist.
           </p>
+      {/if}
+
+      <footer>
+        {#if $user?.loggedIn}
+          <ClaimButton {flowTokenCost} {floatEvent} hasClaimed={floatEvent?.hasClaimed} />
+        {:else}
+          <button id="connect" on:click={authenticate}>Connect Wallet</button>
         {/if}
         <footer>
           {#if $user?.loggedIn}
@@ -426,6 +519,11 @@
   #download {
     margin-top: 40px;
   }
+   .important {
+    background: yellow;
+    border: 0;
+    color: black;
+  }
   #connect {
     background: var(--contrast);
     border: 0;
@@ -444,10 +542,6 @@
   }
   blockquote {
     text-align: left;
-  }
-
-  .secondary.outline {
-    font-weight: 300;
   }
 
   p {
