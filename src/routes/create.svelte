@@ -421,7 +421,7 @@
             id="cost"
             name="cost"
             min="1.00"
-            placeholder="ex. 100.0"
+            placeholder="ex. 10.0"
             step="0.01"
             bind:value={$draftFloat.flowTokenPurchase} />
           <small
