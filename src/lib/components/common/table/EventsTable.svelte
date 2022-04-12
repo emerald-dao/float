@@ -82,7 +82,7 @@
           <span
             >{row.groups.length > 0 ? "" : " - "}
             {#each row.groups as group}
-              <a href="{$page.params.address}/group/{group}"
+              <a href="/{$page.params.address}/group/{group}"
                 ><div class="group-badge small">{group}</div></a>
             {/each}
           </span>
