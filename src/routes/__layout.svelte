@@ -26,9 +26,9 @@
   }
 </script>
 
-<div class="alert alert-info text-center info">
+<!-- <div class="alert alert-info text-center info">
   Blocto is currently experiencing downtime, so you will be unable to login. We will be back once Blocto resolves the issue. Thank you!
-</div>
+</div> -->
 
 <Header />
 
