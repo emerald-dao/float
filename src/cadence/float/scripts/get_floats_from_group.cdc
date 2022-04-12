@@ -1,5 +1,5 @@
 import FLOAT from "../FLOAT.cdc"
-pub fun main(host: Address, groupName: String, user: Address): Bool {
+pub fun main(host: Address, groupName: String, user: Address): {UInt64: [UInt64]} {
   let eventsCollection = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                         .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                         ?? panic("Could not borrow the FLOATEventsPublic from the host.")
@@ -10,11 +10,10 @@ pub fun main(host: Address, groupName: String, user: Address): Bool {
                         .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
                         ?? panic("Could not borrow the CollectionPublic from the user.")
   
+  let answer: {UInt64: [UInt64]} = {}
   for eventId in eventsInGroup {
-    if floatsCollection.ownedIdsFromEvent(eventId: eventId).length > 0 {
-      return true
-    }
+    answer[eventId] = floatsCollection.ownedIdsFromEvent(eventId: eventId)
   } 
 
-  return false
+  return answer
 }

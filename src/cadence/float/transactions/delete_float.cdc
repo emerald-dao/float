@@ -10,7 +10,7 @@ transaction(id: UInt64) {
   }
 
   execute {
-    self.Collection.destroyFLOAT(id: id)
+    destroy self.Collection.withdraw(withdrawID: id)
     log("Destroyed the FLOAT.")
   }
 }

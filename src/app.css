@@ -276,7 +276,7 @@ main {
 }
 
 .emphasis {
-  font-weight: 400;
+  font-weight: 600;
   color: var(--primary);
 }
 
@@ -408,4 +408,10 @@ main {
 .command {
   font-family:monospace;
   margin-left: 8px;
+}
+
+.important {
+  background: yellow;
+  border: 0;
+  color: black;
 }
