@@ -190,11 +190,9 @@
         {#if flowTokenCost}
           {#await getFlowTokenBalance($user?.addr) then balance}
             This FLOAT costs <span class="emphasis">{parseFloat(flowTokenCost).toFixed(2)}</span> FlowToken to claim.
-            {#if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
-              <br />
+            {#if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
               You have <span class="emphasis">{parseFloat(balance).toFixed(2)}</span> FlowToken. After purchasing, your final balance will be <span class="emphasis">{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}</span> FlowToken.
-            {:else if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
-              <br />  
+            {:else if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
               You cannot afford this FLOAT.
             {/if}
           {/await}
