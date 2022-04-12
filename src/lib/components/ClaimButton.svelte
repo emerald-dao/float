@@ -56,9 +56,9 @@
       This FLOAT is no longer available.<br />This event has ended.
     </button>
   {:else if flowTokenCost && !confirmed}
-    <button class="important" on:click={() => (confirmed = true)}
-      >This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click to confim.</button
-    >
+    <button class="important" on:click={() => (confirmed = true)}>
+      This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click to confim.
+    </button>
   {:else if $floatClaimingInProgress}
     <button aria-busy="true" disabled>Claiming FLOAT</button>
   {:else if $floatClaimedStatus.success}
