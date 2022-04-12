@@ -32,12 +32,14 @@
     href="https://forum.onflow.org/t/flow-mainnet-spork-on-2022-04-06-08-00am-pt/2956"
     >scheduled maintainance</a> on Flow mainnet. We will be back soon!
 </div> -->
-<Header />
+<!-- <Header /> -->
 
 <main class="container">
-  <Notifications />
+  <!-- <Notifications />
   <slot />
-  <Transaction />
+  <Transaction /> -->
+  <h1>Hello beautiful Flow friends!</h1>
+  <p>FLOAT is currently down because we are adding Paid FLOATs. It will be back in under 30 minutes. Hope you're all having a great day/night!</p>
 </main>
 
 <footer>
