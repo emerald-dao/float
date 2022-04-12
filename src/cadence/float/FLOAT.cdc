@@ -27,16 +27,11 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-// import NonFungibleToken from 0x631e88ae7f1d7c20
-// import MetadataViews from 0x631e88ae7f1d7c20
-// import GrantedAccountAccess from 0x0afe396ebc8eee65
-// import FungibleToken from 0x9a0766d93b6608b7
-// import FlowToken from 0x7e60df042a9c0868
-import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
-import MetadataViews from "../core-contracts/MetadataViews.cdc"
-import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
-import FungibleToken from "../core-contracts/FungibleToken.cdc"
-import FlowToken from "../core-contracts/FlowToken.cdc"
+import NonFungibleToken from 0x1d7e57aa55817448
+import MetadataViews from 0x1d7e57aa55817448
+import GrantedAccountAccess from 0x2d4c3caffbeab845
+import FungibleToken from 0xf233dcee88fe0abe
+import FlowToken from 0x1654653399040a61
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -686,7 +681,7 @@ pub contract FLOAT: NonFungibleToken {
                     "This FLOATEvent is not claimable, and thus not currently active."
             }
             let royalty: UFix64 = 0.05
-            let emeraldCityTreasury: Address = 0xf8d6e0586b0a20c7
+            let emeraldCityTreasury: Address = 0x5643fd47a29770e7
             let paymentType: String = payment.getType().identifier
             let tokenInfo: TokenInfo = self.getPrices()![paymentType]!
 
