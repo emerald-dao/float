@@ -13,7 +13,6 @@
   let getRows = async () => {
     console.log("potato");
     let event = await getHoldersInEvent(address, eventId);
-    console.log(event);
     return Object.values(event);
   };
 

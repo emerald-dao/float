@@ -166,7 +166,6 @@ export const setupAccount = async () => {
 export const createEvent = async (forHost, draftFloat) => {
 
   let floatObject = convertDraftFloat(draftFloat);
-  console.log(floatObject)
 
   eventCreationInProgress.set(true);
 

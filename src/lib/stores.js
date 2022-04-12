@@ -44,7 +44,6 @@ export function persistentWritable(key, defaultValue) {
   // Determine resolved value.
   const resolvedValue = (storedValue === null) ? defaultValue : storedValue;
 
-  console.log('persistentWritable', key, defaultValue, storedValue, resolvedValue)
   // Set resolved value.
   set(resolvedValue);
 
