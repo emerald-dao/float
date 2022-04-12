@@ -67,14 +67,16 @@ const convertDraftFloat = (draftFloat) => {
     image: draftFloat.ipfsHash,
     url: draftFloat.url,
     transferrable: draftFloat.transferrable,
-    timelock: draftFloat.timelock,
-    dateStart: +new Date(draftFloat.startTime) / 1000,
-    timePeriod: (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000),
-    secret: draftFloat.claimCodeEnabled,
+    timelock: draftFloat.timelock ? true : false,
+    dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
+    timePeriod: draftFloat.startTime && draftFloat.endTime ? (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000) : 0,
+    secret: draftFloat.claimCodeEnabled ? true : false,
     secrets: secrets,
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
-    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : []
+    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
+    flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
+    flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
   };
 }
 
