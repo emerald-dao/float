@@ -188,17 +188,16 @@
         <strong><small class="muted">COST</small></strong>
         <br />
         {#if flowTokenCost}
-        {#await getFlowTokenBalance($user?.addr) then balance}
-        {#if flowTokenCost && $user.loggedIn}
-          This FLOAT costs <span class="emphasis">{parseFloat(flowTokenCost).toFixed(2)}</span> to claim, and you have <span class="emphasis">{parseFloat(balance).toFixed(2)}</span> FlowToken.
-          <br />
-          {#if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) > 0}
-            Your final balance will be <span class="emphasis">{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}</span> FlowToken.
-          {:else}
-            You cannot afford this FLOAT.
-          {/if}
-        {/if}
-      {/await}
+          {#await getFlowTokenBalance($user?.addr) then balance}
+            This FLOAT costs <span class="emphasis">{parseFloat(flowTokenCost).toFixed(2)}</span> to claim.
+            {#if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
+              <br />
+              You have <span class="emphasis">{parseFloat(balance).toFixed(2)}</span> FlowToken. After purchasing, your final balance will be <span class="emphasis">{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}</span> FlowToken.
+            {:else if (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
+              <br />  
+              You cannot afford this FLOAT.
+            {/if}
+          {/await}
         {:else}
           Free
         {/if}
