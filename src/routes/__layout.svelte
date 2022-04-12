@@ -33,14 +33,14 @@
     >scheduled maintainance</a> on Flow mainnet. We will be back soon!
 </div> -->
 
-<!-- <Header /> -->
+<Header />
 
 <main class="container">
-  <!-- <Notifications />
+  <Notifications />
   <slot />
-  <Transaction /> -->
-  <h1>Hello beautiful Flow friends!</h1>
-  <p>FLOAT is currently down because we are adding Paid FLOATs. We will be back in less than 30 minutes. Thank you for waiting :D </p>
+  <Transaction />
+  <!-- <h1>Hello beautiful Flow friends!</h1>
+  <p>FLOAT is currently down because we are adding Paid FLOATs. We will be back in less than 30 minutes. Thank you for waiting :D </p> -->
 </main>
 
 <footer>
