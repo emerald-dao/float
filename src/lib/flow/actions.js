@@ -619,7 +619,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 9999
     })
 
     txId.set(transactionId);
