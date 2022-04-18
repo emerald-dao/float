@@ -28,7 +28,7 @@ export const draftGroup = writable({
 
 export const theme = persistentWritable('theme', 'dark');
 
-export const resolver = persistentWritable('preferredNameResolver', 'fn');
+export const resolver = persistentWritable('preferredNameResolver', 'find');
 
 // Make any writable store persistent.
 export function persistentWritable(key, defaultValue) {
