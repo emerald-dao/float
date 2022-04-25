@@ -43,6 +43,7 @@ import {
 import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
+import { notifications } from "$lib/notifications";
 
 if (browser) {
   // set Svelte $user store to currentUser, 
@@ -522,6 +523,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingStatus.set(respondWithSuccess());
+          notifications.info(`You successfuly distributed a FLOAT!`);
         } else {
           floatDistributingStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
@@ -629,6 +631,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingManyStatus.set(respondWithSuccess());
+          notifications.info(`You successfuly distributed FLOATs!`);
         } else {
           floatDistributingManyStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }

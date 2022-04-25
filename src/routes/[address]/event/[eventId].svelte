@@ -311,8 +311,6 @@
               />
               {#if $floatDistributingManyInProgress}
                 <button aria-busy="true" disabled> Award </button>
-              {:else if $floatDistributingManyStatus.success}
-                <button disabled>Awarded</button>
               {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
                 <button class="error" disabled> Error </button>
               {:else}
@@ -354,8 +352,6 @@
                 </select>
                 {#if $addEventToGroupInProgress}
                   <button aria-busy="true" disabled>Adding</button>
-                {:else if $addEventToGroupStatus.success}
-                  <button disabled>Added</button>
                 {:else if !$addEventToGroupStatus.success && $addEventToGroupStatus.error}
                   <button class="error" disabled>
                     {$addEventToGroupStatus.error}
