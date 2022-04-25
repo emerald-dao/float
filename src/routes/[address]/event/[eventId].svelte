@@ -336,7 +336,7 @@
               >
             {:else}
               <small
-                >Upload a .txt file <a href="/example.txt" download
+                >Upload a .txt file <a href="/example.csv" download
                   >(here is an example)</a
                 > of addresses, each on their own line.</small
               >
