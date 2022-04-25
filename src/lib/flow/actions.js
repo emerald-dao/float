@@ -1323,6 +1323,7 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         if (res.statusCode === 0) {
+          notifications.info(`You successfuly added this event to a Group!`);
           addEventToGroupStatus.set(respondWithSuccess());
         } else {
           addEventToGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
