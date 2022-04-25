@@ -281,8 +281,6 @@
               />
               {#if $floatDistributingInProgress}
                 <button aria-busy="true" disabled> Award </button>
-              {:else if $floatDistributingStatus.success}
-                <button disabled>Awarded</button>
               {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
                 <button class="error" disabled> Error </button>
               {:else}
