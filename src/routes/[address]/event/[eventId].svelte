@@ -332,11 +332,11 @@
               <small>Minting to: {listOfAddresses.toString()}</small>
             {:else if listOfAddresses === "error"}
               <small class="red"
-                >This file is not supported. Please upload a .txt file.</small
+                >This file is not supported. Please upload a .csv file.</small
               >
             {:else}
               <small
-                >Upload a .txt file <a href="/example.csv" download
+                >Upload a .csv file <a href="/example.csv" download
                   >(here is an example)</a
                 > of addresses, each on their own line.</small
               >
