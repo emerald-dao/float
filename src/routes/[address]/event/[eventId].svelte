@@ -90,11 +90,12 @@
   let listOfAddresses;
   const uploadList = (e) => {
     const file = e.target.files[0];
-    if (file.type === "text/plain") {
+    if (file.type === "text/csv") {
       var fr = new FileReader();
       fr.onload = (e) => {
         let stuff = e.target.result;
-        listOfAddresses = stuff.split(/\n|\r/);
+        stuff = stuff.replaceAll(" ", "");
+        listOfAddresses = stuff.split(/\r\n/);
       };
       fr.readAsText(file);
     } else {
