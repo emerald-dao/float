@@ -2118,7 +2118,7 @@ export const resolveAddressObject = async (lookup) => {
   //   return Promise.resolve(findCache[lookup]);
   // }
   try {
-    if (rootLookup.length > 14) {
+    if (rootLookup.length === 18 && rootLookup.substring(0, 2) === '0x') {
       answer.address = lookup;
       answer.resolvedNames.find = await fcl.query({
         cadence: `
