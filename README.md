@@ -6,13 +6,9 @@ This repo contains the source code for Emerald City's FLOAT system (POAP equival
 
 ## Contracts
 
-FLOAT MainNet Contract Addresses: `0x2d4c3caffbeab845`
-
-NonFungibleToken/MetadataViews MainNet Contract Addresses: `0x1d7e57aa55817448`
-
-FIND MainNet Contract Address: `0x097bafa4e0b48eef`
-
-FN MainNet Contract Address: `0x233eb012d34b0070`
+FLOAT Contract Addresses: 
+- MainNet: `0x2d4c3caffbeab845`
+- TestNet: `0x0afe396ebc8eee65`
 
 ## Developing
 
