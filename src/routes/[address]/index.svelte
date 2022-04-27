@@ -11,7 +11,7 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import { goto } from "$app/navigation";
 
-  let addressObject = resolveAddressObject($page.params.address);
+  $: addressObject = resolveAddressObject($page.params.address);
 
   $: tab = $page.query.get('tab') || 'floats';
   let query = new URLSearchParams($page.query.toString());
