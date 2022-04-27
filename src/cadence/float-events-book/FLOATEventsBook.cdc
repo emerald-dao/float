@@ -154,12 +154,16 @@ pub contract FLOATEventsBook {
         // ---- Methods ----
         // get book id
         pub fun getID(): UInt64
+        // get all slots data
+        pub fun getSlots(): [{EventSlot}]
     }
 
     // A private interface to write for EventsBook
     pub resource interface EventsBookPrivate {
         // update basic information
         pub fun updateBasics(name: String, description: String, image: String)
+        // update slot identifier information
+        pub fun updateSlotData(idx: Int, identifier: EventIdentifier)
     }
 
     // The events book defination
@@ -216,12 +220,26 @@ pub contract FLOATEventsBook {
             return self.uuid
         }
 
+        pub fun getSlots(): [{EventSlot}] {
+            return self.slots
+        }
+
         // --- Setters - Private Interfaces ---
 
         pub fun updateBasics(name: String, description: String, image: String) {
             self.name = name
             self.description = description
             self.image = image
+        }
+
+        pub fun updateSlotData(idx: Int, identifier: EventIdentifier) {
+            pre {
+                idx < self.slots.length: "The idx is out of Slots size."
+            }
+            let slot = self.slots[idx]
+            assert(slot.isInstance(Type<OptionalEventSlot>()) || slot.isInstance(Type<EmptyEventSlot>()), message: "The slot should be writable")
+            // update identifier information
+            (slot as! &{WritableEventSlot}).setIdentifier(identifier)
         }
 
         // --- Setters - Contract Only ---
@@ -293,6 +311,21 @@ pub contract FLOATEventsBook {
 
         pub fun isRevoked(bookId: UInt64): Bool {
             return self.revoked[bookId] != nil
+        }
+        
+        // Maps the eventId to the name of that
+        // events book. Just a kind helper.
+        pub fun getAllEventsBooks(_ revoked: Bool): {UInt64: String} {
+            let answer: {UInt64: String} = {}
+            let keys = revoked ? self.revoked.keys : self.books.keys
+            for id in keys {
+                if revoked {
+                    answer[id] = (&self.revoked[id] as &EventsBook).name
+                } else {
+                    answer[id] = (&self.books[id] as &EventsBook).name
+                }
+            }
+            return answer
         }
 
         // --- Setters - Private Interfaces ---
