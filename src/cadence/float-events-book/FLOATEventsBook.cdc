@@ -42,6 +42,7 @@ pub contract FLOATEventsBook {
 
     // ---- data For Curators ----
     
+    // identifier of an Event
     pub struct EventIdentifier {
         pub let creator: Address
         pub let id: UInt64
@@ -52,14 +53,21 @@ pub contract FLOATEventsBook {
         }
     }
 
+    // a readable interface of Event slot
     pub struct interface EventSlot {
+        // get the event identifier
         pub fun getIdentifier(): EventIdentifier?
+        // if the event is required for achievement
+        pub fun isEventRequired(): Bool
     }
 
+    // a writable interface of Event slot
     pub struct interface WritableEventSlot {
+        // set the event identifier
         access(account) fun setIdentifier (_ identifier: EventIdentifier)
     }
 
+    // set a required event slot of some specific event
     pub struct RequiredEventSlot: EventSlot {
         pub let identifier: EventIdentifier
 
@@ -70,8 +78,13 @@ pub contract FLOATEventsBook {
         pub fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
-    }
 
+        pub fun isEventRequired(): Bool {
+            return true
+        }
+    }
+    
+    // set an optional event slot of some specific event
     pub struct OptionalEventSlot: EventSlot, WritableEventSlot {
         pub var identifier: EventIdentifier?
 
@@ -84,12 +97,18 @@ pub contract FLOATEventsBook {
         pub fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
+        pub fun isEventRequired(): Bool {
+            return false
+        }
     }
 
+    // set an event slot for unknown events
     pub struct EmptyEventSlot: EventSlot, WritableEventSlot {
+        pub let isRequired: Bool
         pub var identifier: EventIdentifier?
 
-        init() {
+        init(_ isRequired: Bool) {
+            self.isRequired = isRequired
             self.identifier = nil
         }
         access(account) fun setIdentifier (_ identifier: EventIdentifier) {
@@ -98,38 +117,154 @@ pub contract FLOATEventsBook {
         pub fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
+        pub fun isEventRequired(): Bool {
+            return self.isRequired
+        }
     }
-    
-    pub resource EventsBook {
+
+    // A public interface to read EventsBook
+    pub resource interface EventsBookPublic {
+        // event basic display info
+        pub var name: String
+        pub var description: String
+        pub var image: String
+
+    }
+
+    // A private interface to write for EventsBook
+    pub resource interface EventsBookPrivate {
+
+    }
+
+    // The events book defination
+    pub resource EventsBook: EventsBookPublic, EventsBookPrivate, MetadataViews.Resolver {
+        pub var name: String
+        pub var description: String
+        pub var image: String
+
         access(account) let slots: [{EventSlot}]
 
-        init() {
+        init(
+            name: String,
+            description: String,
+            image: String,
+        ) {
+            self.name = self.name
+            self.description = description
+            self.image = image
+
             self.slots = []
         }
 
+        // --- Getters - Public Interfaces ---
+
+        pub fun getViews(): [Type] {
+             return [
+                Type<MetadataViews.Display>()
+            ]
+        }
+
+        pub fun resolveView(_ view: Type): AnyStruct? {
+            switch view {
+                case Type<MetadataViews.Display>():
+                    return MetadataViews.Display(
+                        name: self.name, 
+                        description: self.description, 
+                        thumbnail: MetadataViews.IPFSFile(cid: self.image, path: nil)
+                    )
+            }
+            return nil
+        }
+
+        // --- Setters - Private Interfaces ---
+
+        pub fun updateBasics(name: String, description: String, image: String) {
+            self.name = name
+            self.description = description
+            self.image = image
+        }
+
+        // --- Setters - Contract Only ---
+
+        // --- Self Only ---
+
     }
 
-    pub resource EventsBookshelf {
+    // A public interface to read EventsBookshelf
+    pub resource interface EventsBookshelfPublic {
+        // TODO
+    }
+
+    // A private interface to write for EventsBookshelf
+    pub resource interface EventsBookshelfPrivate {
+        // TODO
+    }
+
+    // the events book resource collection
+    pub resource EventsBookshelf: EventsBookshelfPublic, EventsBookshelfPrivate, MetadataViews.ResolverCollection {
+        access(account) var books: @{UInt64: EventsBook}
 
         init() {
-
+            self.books <- {}
         }
+
+        destroy() {
+            destroy self.books
+        }
+
+        // --- Getters - Public Interfaces ---
+        
+        pub fun getIDs(): [UInt64] {
+            return self.books.keys
+        }
+
+        pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
+            return &self.books[id] as &{MetadataViews.Resolver}
+        }
+
+
+        // --- Setters - Private Interfaces ---
+
+        // --- Setters - Contract Only ---
+
+        // --- Self Only ---
+
     }
 
+    // Treasury resource of each EventsBook (Optional)
     pub resource Treasury {
 
         init() {
 
         }
+
+        // --- Getters - Public Interfaces ---
+
+        // --- Setters - Private Interfaces ---
+
+        // --- Setters - Contract Only ---
+
+        // --- Self Only ---
+
     }
 
     // ---- data For Endusers ----
 
-    pub resource Achievements {
+    // Users' Achievement board
+    pub resource AchievementBoard {
 
         init() {
 
         }
+
+        // --- Getters - Public Interfaces ---
+
+        // --- Setters - Private Interfaces ---
+
+        // --- Setters - Contract Only ---
+
+        // --- Self Only ---
+
     }
 
     // ---- contract methods ----
@@ -138,8 +273,8 @@ pub contract FLOATEventsBook {
         return <- create EventsBookshelf()
     }
 
-    pub fun createAchievements(): @Achievements {
-        return <- create Achievements()
+    pub fun createAchievementBoard(): @AchievementBoard {
+        return <- create AchievementBoard()
     }
 
     init() {
