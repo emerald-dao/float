@@ -15,7 +15,9 @@ pub contract FLOATEventsBook {
          *************************/
     
     pub let FLOATEventsBookshelfStoragePath: StoragePath
+    pub let FLOATEventsBookshelfPrivatePath: PrivatePath
     pub let FLOATEventsBookshelfPublicPath: PublicPath
+
     pub let FLOATAchievementsStoragePath: StoragePath
     pub let FLOATAchievementsPublicPath: PublicPath
 
@@ -27,13 +29,20 @@ pub contract FLOATEventsBook {
     // emitted when contract initialized
     pub event ContractInitialized()
 
+    pub event FLOATEventsBookCreated(bookId: UInt64) // TODO(Event)
+    pub event FLOATEventsBookRevoked(bookId: UInt64)
+
+    pub event FLOATEventsBookshelfCreated(sequence: UInt64)
+
     /**    ____ ___ ____ ___ ____
        *   [__   |  |__|  |  |___
         *  ___]  |  |  |  |  |___
          ************************/
     
-    // total event books amount
+    // total events books amount
     pub var totalEventsBooks: UInt64
+    // total events bookshelf amount
+    pub var totalEventsBookshelf: UInt64
 
     /**    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ _    _ ___ _   _
        *   |___ |  | |\ | |     |  | |  | |\ | |__| |    |  |   \_/
@@ -44,12 +53,23 @@ pub contract FLOATEventsBook {
     
     // identifier of an Event
     pub struct EventIdentifier {
+        // event owner address
         pub let creator: Address
+        // event id
         pub let id: UInt64
 
         init(_ address: Address, _ id: UInt64) {
             self.creator = address
             self.id = id
+        }
+
+        // get the reference of the given event
+        pub fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}? {
+            let ownerEvents = getAccount(self.creator)
+                .getCapability(FLOAT.FLOATEventsPublicPath)
+                .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                ?? panic("Could not borrow the public FLOATEvents.")
+            return ownerEvents.borrowPublicEventRef(eventId: self.id)
         }
     }
 
@@ -124,20 +144,28 @@ pub contract FLOATEventsBook {
 
     // A public interface to read EventsBook
     pub resource interface EventsBookPublic {
+        // ---- Members ----
+        pub let sequence: UInt64
         // event basic display info
         pub var name: String
         pub var description: String
         pub var image: String
 
+        // ---- Methods ----
+        // get book id
+        pub fun getID(): UInt64
     }
 
     // A private interface to write for EventsBook
     pub resource interface EventsBookPrivate {
-
+        // update basic information
+        pub fun updateBasics(name: String, description: String, image: String)
     }
 
     // The events book defination
     pub resource EventsBook: EventsBookPublic, EventsBookPrivate, MetadataViews.Resolver {
+        pub let sequence: UInt64
+
         pub var name: String
         pub var description: String
         pub var image: String
@@ -149,11 +177,19 @@ pub contract FLOATEventsBook {
             description: String,
             image: String,
         ) {
-            self.name = self.name
+            self.sequence = FLOATEventsBook.totalEventsBooks
+
+            self.name = name
             self.description = description
             self.image = image
 
             self.slots = []
+
+            emit FLOATEventsBookCreated(
+                bookId: self.uuid
+            )
+
+            FLOATEventsBook.totalEventsBooks = FLOATEventsBook.totalEventsBooks + 1
         }
 
         // --- Getters - Public Interfaces ---
@@ -176,6 +212,10 @@ pub contract FLOATEventsBook {
             return nil
         }
 
+        pub fun getID(): UInt64 {
+            return self.uuid
+        }
+
         // --- Setters - Private Interfaces ---
 
         pub fun updateBasics(name: String, description: String, image: String) {
@@ -192,24 +232,49 @@ pub contract FLOATEventsBook {
 
     // A public interface to read EventsBookshelf
     pub resource interface EventsBookshelfPublic {
-        // TODO
+        // ---- Members ----
+        pub let sequence: UInt64
+        // ---- Methods ----
+        pub fun isRevoked(bookId: UInt64): Bool
+        pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
+
+        access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook?
+        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
     }
 
     // A private interface to write for EventsBookshelf
     pub resource interface EventsBookshelfPrivate {
-        // TODO
+        // create a new events book
+        pub fun createEventsBook(
+            name: String,
+            description: String,
+            image: String
+        ): UInt64
+        // revoke a events book.
+        pub fun revokeEventsBook(bookId: UInt64)
     }
 
     // the events book resource collection
     pub resource EventsBookshelf: EventsBookshelfPublic, EventsBookshelfPrivate, MetadataViews.ResolverCollection {
+        pub let sequence: UInt64
+
         access(account) var books: @{UInt64: EventsBook}
+        access(account) var revoked: @{UInt64: EventsBook}
 
         init() {
             self.books <- {}
+            self.revoked <- {}
+
+            self.sequence = FLOATEventsBook.totalEventsBookshelf
+
+            emit FLOATEventsBookshelfCreated(sequence: self.sequence)
+
+            FLOATEventsBook.totalEventsBookshelf = FLOATEventsBook.totalEventsBookshelf + 1
         }
 
         destroy() {
             destroy self.books
+            destroy self.revoked
         }
 
         // --- Getters - Public Interfaces ---
@@ -222,10 +287,49 @@ pub contract FLOATEventsBook {
             return &self.books[id] as &{MetadataViews.Resolver}
         }
 
+        pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}? {
+            return &self.books[bookId] as? &EventsBook{EventsBookPublic}
+        }
+
+        pub fun isRevoked(bookId: UInt64): Bool {
+            return self.revoked[bookId] != nil
+        }
 
         // --- Setters - Private Interfaces ---
 
+        pub fun createEventsBook(
+            name: String,
+            description: String,
+            image: String
+        ): UInt64 {
+
+            let eventsBook <- create EventsBook(
+                name: name,
+                description: description,
+                image: image
+            )
+            let bookId = eventsBook.uuid
+            self.books[bookId] <-! eventsBook
+
+            return bookId
+        }
+
+        pub fun revokeEventsBook(bookId: UInt64) {
+            let book <- self.books.remove(key: bookId) ?? panic("The events book does not exist")
+            self.revoked[bookId] <-! book
+            
+            emit FLOATEventsBookRevoked(bookId: bookId)
+        }
+
         // --- Setters - Contract Only ---
+
+        access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook? {
+            return &self.books[bookId] as? &EventsBook
+        }
+
+        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
+            return &self as &EventsBookshelf
+        }
 
         // --- Self Only ---
 
@@ -279,11 +383,14 @@ pub contract FLOATEventsBook {
 
     init() {
         self.totalEventsBooks = 0
+        self.totalEventsBookshelf = 0
 
-        self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfStoragePath
-        self.FLOATEventsBookshelfPublicPath = /public/FLOATEventsBookshelfPublicPath
-        self.FLOATAchievementsStoragePath = /storage/FLOATAchievementsStoragePath
-        self.FLOATAchievementsPublicPath = /public/FLOATAchievementsPublicPath
+        self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfPath
+        self.FLOATEventsBookshelfPrivatePath = /private/FLOATEventsBookshelfPath
+        self.FLOATEventsBookshelfPublicPath = /public/FLOATEventsBookshelfPath
+
+        self.FLOATAchievementsStoragePath = /storage/FLOATAchievementsPath
+        self.FLOATAchievementsPublicPath = /public/FLOATAchievementsPath
 
         emit ContractInitialized()
     }
