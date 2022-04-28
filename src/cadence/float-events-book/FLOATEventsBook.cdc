@@ -26,13 +26,16 @@ pub contract FLOATEventsBook {
         *  |___  \/  |___ | \|  |  ___]
          ******************************/
     
-    // emitted when contract initialized
     pub event ContractInitialized()
+    pub event ContractTokenDefintionUpdated(identifier: String, path: PublicPath, isNFT: Bool)
 
-    pub event FLOATEventsBookCreated(bookId: UInt64, name: String, description: String, image: String)
-    pub event FLOATEventsBookRevoked(bookId: UInt64)
-    pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, name: String, description: String, image: String)
-    pub event FLOATEventsBookSlotUpdated(bookId: UInt64, index: Int, eventCreator: Address, eventId: UInt64)
+    pub event FLOATEventsBookCreated(bookId: UInt64, host: Address, name: String, description: String, image: String)
+    pub event FLOATEventsBookRevoked(bookId: UInt64, host: Address)
+    pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, host: Address, name: String, description: String, image: String)
+    pub event FLOATEventsBookSlotUpdated(bookId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
+
+    pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
+    pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
 
     pub event FLOATEventsBookshelfCreated(sequence: UInt64)
 
@@ -74,6 +77,7 @@ pub contract FLOATEventsBook {
             path: path,
             isNFT: isNFT
         )
+        emit ContractTokenDefintionUpdated(identifier: tokenType, path: path, isNFT: isNFT)
     }
 
     access(account) fun getTokenDefintion(_ tokenIdentifier: String): TokenDefinition? {
@@ -85,22 +89,44 @@ pub contract FLOATEventsBook {
     // identifier of an Event
     pub struct EventIdentifier {
         // event owner address
-        pub let creator: Address
+        pub let host: Address
         // event id
         pub let id: UInt64
 
         init(_ address: Address, _ id: UInt64) {
-            self.creator = address
+            self.host = address
             self.id = id
         }
 
         // get the reference of the given event
         pub fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}? {
-            let ownerEvents = getAccount(self.creator)
+            let ownerEvents = getAccount(self.host)
                 .getCapability(FLOAT.FLOATEventsPublicPath)
                 .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                 ?? panic("Could not borrow the public FLOATEvents.")
             return ownerEvents.borrowPublicEventRef(eventId: self.id)
+        }
+    }
+
+    // identifier of a EventsBook
+    pub struct EventsBookIdentifier {
+        // book owner address
+        pub let host: Address
+        // book id
+        pub let id: UInt64
+
+        init(_ address: Address, _ id: UInt64) {
+            self.host = address
+            self.id = id
+        }
+
+        // get the reference of the given book
+        pub fun getEventsBookPublic(): &{EventsBookPublic}? {
+            let ref = getAccount(self.host)
+                .getCapability(FLOATEventsBook.FLOATEventsBookshelfPublicPath)
+                .borrow<&EventsBookshelf{EventsBookshelfPublic}>()
+                ?? panic("Could not borrow the public EventsBookshelfPublic.")
+            return ref.borrowEventsBook(bookId: self.id)
         }
     }
 
@@ -185,6 +211,8 @@ pub contract FLOATEventsBook {
 
     // Treasury resource of each EventsBook (Optional)
     pub resource Treasury: TreasuryPublic {
+        // Treasury bookID
+        access(self) let bookId: UInt64
         // generic tokens will be dropped to this address, when treasury destory
         access(self) let receiver: Address
 
@@ -195,7 +223,11 @@ pub contract FLOATEventsBook {
         // non-fungible token pool {identifier: Collection}
         access(self) var genericNFTPool: @{String: NonFungibleToken.Collection}
 
-        init(_ dropReceiver: Address) {
+        init(
+            bookId: UInt64,
+            dropReceiver: Address
+        ) {
+            self.bookId = bookId
             self.receiver = dropReceiver
 
             self.floatCollection <- FLOAT.createEmptyCollection()
@@ -218,7 +250,8 @@ pub contract FLOATEventsBook {
             for identifier in self.genericNFTPool.keys {
                 let receiverCollection = self.getNFTCollectionPublic(address: self.receiver, tokenIdentifier: identifier)
                 let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
-                for id in collection.getIDs() {
+                let keys = collection.getIDs()
+                for id in keys {
                     receiverCollection.deposit(token: <- collection.withdraw(withdrawID: id))
                 }
             }
@@ -240,6 +273,62 @@ pub contract FLOATEventsBook {
         }
 
         // --- Setters - Private Interfaces ---
+
+        // deposit ft to treasury
+        pub fun depositFungibleToken(from: @FungibleToken.Vault) {
+            let fromIdentifier = from.getType().identifier
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(fromIdentifier)
+                ?? panic("This token is not defined.")
+            assert(!tokenInfo.isNFT, message: "This token should be FT.")
+            assert(fromIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
+
+            let amount = from.balance
+            var vaultRef = &self.genericFTPool[tokenInfo.type] as? &{FungibleToken.Receiver}
+            if vaultRef == nil  {
+                self.genericFTPool[tokenInfo.type] <-! from
+            } else {
+                vaultRef.deposit(from: <- from)
+            }
+
+            emit FLOATEventsBookTreasuryTokenDeposit(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                identifier: fromIdentifier,
+                amount: amount
+            )
+        }
+
+        // deposit nft to treasury
+        pub fun depositNFTs(collection: @NonFungibleToken.Collection) {
+            let keys = collection.getIDs()
+            assert(keys.length > 0, message: "Empty collection.")
+
+            let nftIdentifier = collection.borrowNFT(id: keys[0]).getType().identifier
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(nftIdentifier)
+                ?? panic("This token is not defined.")
+            assert(tokenInfo.isNFT, message: "This token should be NFT.")
+            assert(nftIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
+
+            let ids: [UInt64] = []
+            var collectionRef = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
+            if collectionRef == nil {
+                self.genericNFTPool[nftIdentifier] <-! collection
+            } else {
+                for id in keys {
+                    ids.append(id)
+                    collectionRef.deposit(token: <- collection.withdraw(withdrawID: id))
+                }
+                // delete empty collection
+                destroy collection
+            }
+
+            emit FLOATEventsBookTreasuryNFTDeposit(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                identifier: nftIdentifier,
+                ids: ids
+            )
+        }
 
         // --- Setters - Contract Only ---
 
@@ -314,7 +403,7 @@ pub contract FLOATEventsBook {
         pub var image: String
 
         access(account) let slots: [{EventSlot}]
-        access(account) let treasury: @Treasury?
+        access(account) var treasury: @Treasury?
         access(account) var extra: {String: AnyStruct}
 
         init(
@@ -333,13 +422,6 @@ pub contract FLOATEventsBook {
             self.treasury <- nil
             self.extra = extra
 
-            emit FLOATEventsBookCreated(
-                bookId: self.uuid,
-                name: name,
-                description: description,
-                image: image
-            )
-
             FLOATEventsBook.totalEventsBooks = FLOATEventsBook.totalEventsBooks + 1
         }
 
@@ -350,8 +432,9 @@ pub contract FLOATEventsBook {
         // --- Getters - Public Interfaces ---
 
         pub fun getViews(): [Type] {
-             return [
-                Type<MetadataViews.Display>()
+            return [
+                Type<MetadataViews.Display>(),
+                Type<EventsBookIdentifier>()
             ]
         }
 
@@ -363,6 +446,8 @@ pub contract FLOATEventsBook {
                         description: self.description, 
                         thumbnail: MetadataViews.IPFSFile(cid: self.image, path: nil)
                     )
+                case Type<EventsBookIdentifier>():
+                    return EventsBookIdentifier(self.owner!.address, self.uuid)
             }
             return nil
         }
@@ -384,6 +469,7 @@ pub contract FLOATEventsBook {
 
             emit FLOATEventsBookBasicsUpdated(
                 bookId: self.uuid,
+                host: self.owner!.address,
                 name: name,
                 description: description,
                 image: image
@@ -401,8 +487,9 @@ pub contract FLOATEventsBook {
 
             emit FLOATEventsBookSlotUpdated(
                 bookId: self.uuid,
+                host: self.owner!.address,
                 index: idx,
-                eventCreator: identifier.creator,
+                eventHost: identifier.host,
                 eventId: identifier.id
             )
         }
@@ -436,6 +523,8 @@ pub contract FLOATEventsBook {
         ): UInt64
         // revoke a events book.
         pub fun revokeEventsBook(bookId: UInt64)
+        // registor a token info for general usage
+        pub fun registerToken(path: PublicPath, isNFT: Bool)
     }
 
     // the events book resource collection
@@ -512,6 +601,14 @@ pub contract FLOATEventsBook {
             let bookId = eventsBook.uuid
             self.books[bookId] <-! eventsBook
 
+            emit FLOATEventsBookCreated(
+                bookId: self.uuid,
+                host: self.owner!.address,
+                name: name,
+                description: description,
+                image: image
+            )
+
             return bookId
         }
 
@@ -519,7 +616,21 @@ pub contract FLOATEventsBook {
             let book <- self.books.remove(key: bookId) ?? panic("The events book does not exist")
             self.revoked[bookId] <-! book
             
-            emit FLOATEventsBookRevoked(bookId: bookId)
+            emit FLOATEventsBookRevoked(bookId: bookId, host: self.owner!.address)
+        }
+
+        pub fun registerToken(path: PublicPath, isNFT: Bool) {
+            // register token from owner's capability
+            let tokenCap = self.owner!.getCapability(path)
+            if isNFT {
+                let nft = tokenCap.borrow<&{NonFungibleToken.CollectionPublic}>()
+                    ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic}")
+                FLOATEventsBook.setTokenDefintion(token: nft.getType(), path: path, isNFT: true)
+            } else {
+                let ft = tokenCap.borrow<&{FungibleToken.Receiver}>()
+                    ?? panic("Could not borrow the &{FungibleToken.Receiver}")
+                FLOATEventsBook.setTokenDefintion(token: ft.getType(), path: path, isNFT: false)
+            }
         }
 
         // --- Setters - Contract Only ---
