@@ -29,8 +29,10 @@ pub contract FLOATEventsBook {
     // emitted when contract initialized
     pub event ContractInitialized()
 
-    pub event FLOATEventsBookCreated(bookId: UInt64) // TODO(Event)
+    pub event FLOATEventsBookCreated(bookId: UInt64, name: String, description: String, image: String)
     pub event FLOATEventsBookRevoked(bookId: UInt64)
+    pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, name: String, description: String, image: String)
+    pub event FLOATEventsBookSlotUpdated(bookId: UInt64, index: Int, eventCreator: Address, eventId: UInt64)
 
     pub event FLOATEventsBookshelfCreated(sequence: UInt64)
 
@@ -190,7 +192,10 @@ pub contract FLOATEventsBook {
             self.slots = []
 
             emit FLOATEventsBookCreated(
-                bookId: self.uuid
+                bookId: self.uuid,
+                name: name,
+                description: description,
+                image: image
             )
 
             FLOATEventsBook.totalEventsBooks = FLOATEventsBook.totalEventsBooks + 1
@@ -230,6 +235,13 @@ pub contract FLOATEventsBook {
             self.name = name
             self.description = description
             self.image = image
+
+            emit FLOATEventsBookBasicsUpdated(
+                bookId: self.uuid,
+                name: name,
+                description: description,
+                image: image
+            )
         }
 
         pub fun updateSlotData(idx: Int, identifier: EventIdentifier) {
@@ -240,6 +252,13 @@ pub contract FLOATEventsBook {
             assert(slot.isInstance(Type<OptionalEventSlot>()) || slot.isInstance(Type<EmptyEventSlot>()), message: "The slot should be writable")
             // update identifier information
             (slot as! &{WritableEventSlot}).setIdentifier(identifier)
+
+            emit FLOATEventsBookSlotUpdated(
+                bookId: self.uuid,
+                index: idx,
+                eventCreator: identifier.creator,
+                eventId: identifier.id
+            )
         }
 
         // --- Setters - Contract Only ---
