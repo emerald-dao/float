@@ -46,10 +46,39 @@ pub contract FLOATEventsBook {
     // total events bookshelf amount
     pub var totalEventsBookshelf: UInt64
 
+    // a registory of FT or NFT
+    access(account) var tokenDefinitions: {String: TokenDefinition}
+
     /**    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ _    _ ___ _   _
        *   |___ |  | |\ | |     |  | |  | |\ | |__| |    |  |   \_/
         *  |    |__| | \| |___  |  | |__| | \| |  | |___ |  |    |
          ***********************************************************/
+
+    // the Token define struct of FT or NFT
+    pub struct TokenDefinition {
+        pub let type: String
+        pub let path: PublicPath
+        pub let isNFT: Bool
+
+        init(type: String, path: PublicPath, isNFT: Bool) {
+            self.type = type
+            self.path = path
+            self.isNFT = isNFT
+        }
+    }
+
+    access(account) fun setTokenDefintion(token: Type, path: PublicPath, isNFT: Bool) {
+        let tokenType = token.identifier
+        self.tokenDefinitions[tokenType] = TokenDefinition(
+            type: tokenType,
+            path: path,
+            isNFT: isNFT
+        )
+    }
+
+    access(account) fun getTokenDefintion(_ tokenIdentifier: String): TokenDefinition? {
+        return self.tokenDefinitions[tokenIdentifier]
+    }
 
     // ---- data For Curators ----
     
@@ -144,6 +173,114 @@ pub contract FLOATEventsBook {
         }
     }
 
+    // Treasury public interface
+    pub resource interface TreasuryPublic {
+        // get float collection
+        pub fun getTreasuryFLOATCollection(): &{FLOAT.CollectionPublic}
+        // get token balance from the token identifier
+        pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}?
+        // get nft collection public 
+        pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}?
+    }
+
+    // Treasury resource of each EventsBook (Optional)
+    pub resource Treasury: TreasuryPublic {
+        // generic tokens will be dropped to this address, when treasury destory
+        access(self) let receiver: Address
+
+        // float collection of the treasury
+        access(self) var floatCollection: @FLOAT.Collection
+        // fungible token pool {identifier: Vault}
+        access(self) var genericFTPool: @{String: FungibleToken.Vault}
+        // non-fungible token pool {identifier: Collection}
+        access(self) var genericNFTPool: @{String: NonFungibleToken.Collection}
+
+        init(_ dropReceiver: Address) {
+            self.receiver = dropReceiver
+
+            self.floatCollection <- FLOAT.createEmptyCollection()
+            self.genericFTPool <- {}
+            self.genericNFTPool <- {}
+        }
+
+        destroy() {
+            // directly destroy float collection
+            destroy self.floatCollection
+
+            // FT will be withdrawed to owner
+            for identifier in self.genericFTPool.keys {
+                let receiverReciever = self.getFungibleTokenReceiver(address: self.receiver, tokenIdentifier: identifier)
+                receiverReciever.deposit(from: <- self.genericFTPool.remove(key: identifier)!)
+            }
+            destroy self.genericFTPool
+
+            // NFT Token will be withdraw to owner
+            for identifier in self.genericNFTPool.keys {
+                let receiverCollection = self.getNFTCollectionPublic(address: self.receiver, tokenIdentifier: identifier)
+                let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
+                for id in collection.getIDs() {
+                    receiverCollection.deposit(token: <- collection.withdraw(withdrawID: id))
+                }
+            }
+            destroy self.genericNFTPool
+        }
+
+        // --- Getters - Public Interfaces ---
+
+        pub fun getTreasuryFLOATCollection(): &{FLOAT.CollectionPublic} {
+            return &self.floatCollection as &{FLOAT.CollectionPublic}
+        }
+
+        pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}? {
+            return &self.genericFTPool[tokenIdentifier] as? &{FungibleToken.Balance}
+        }
+
+        pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}? {
+            return &self.genericNFTPool[tokenIdentifier] as? &{NonFungibleToken.CollectionPublic}
+        }
+
+        // --- Setters - Private Interfaces ---
+
+        // --- Setters - Contract Only ---
+
+        // --- Self Only ---
+
+        // get ft receiver by address and identifier
+        access(self) fun getFungibleTokenReceiver(address: Address, tokenIdentifier: String): &{FungibleToken.Receiver} {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(tokenIdentifier) ?? panic("Unknown token")
+            assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
+
+            let receiverVault = getAccount(address)
+                .getCapability(tokenInfo.path)
+                .borrow<&{FungibleToken.Receiver}>()
+                ?? panic("Could not borrow the &{FungibleToken.Receiver} from ".concat(address.toString()))
+
+            assert(
+                receiverVault.getType().identifier == tokenInfo.type,
+                message: "The receiver's path is not associated with the intended token."
+            )
+            return receiverVault
+        }
+
+        // get nft collection by address and identifier
+        access(self) fun getNFTCollectionPublic(address: Address, tokenIdentifier: String): &{NonFungibleToken.CollectionPublic} {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(tokenIdentifier) ?? panic("Unknown token")
+            assert(tokenInfo.isNFT, message: "The token should be Non-Fungiable Token")
+
+            let collection = getAccount(address)
+                .getCapability(tokenInfo.path)
+                .borrow<&{NonFungibleToken.CollectionPublic}>()
+                ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic} from ".concat(address.toString()))
+            
+            assert(
+                collection.getType().identifier == tokenInfo.type,
+                message: "The collection's path is not associated with the nft."
+            )
+            return collection
+        }
+
+    }
+
     // A public interface to read EventsBook
     pub resource interface EventsBookPublic {
         // ---- Members ----
@@ -177,11 +314,14 @@ pub contract FLOATEventsBook {
         pub var image: String
 
         access(account) let slots: [{EventSlot}]
+        access(account) let treasury: @Treasury?
+        access(account) var extra: {String: AnyStruct}
 
         init(
             name: String,
             description: String,
             image: String,
+            _ extra: {String: AnyStruct}
         ) {
             self.sequence = FLOATEventsBook.totalEventsBooks
 
@@ -190,6 +330,8 @@ pub contract FLOATEventsBook {
             self.image = image
 
             self.slots = []
+            self.treasury <- nil
+            self.extra = extra
 
             emit FLOATEventsBookCreated(
                 bookId: self.uuid,
@@ -199,6 +341,10 @@ pub contract FLOATEventsBook {
             )
 
             FLOATEventsBook.totalEventsBooks = FLOATEventsBook.totalEventsBooks + 1
+        }
+
+        destroy() {
+            destroy self.treasury
         }
 
         // --- Getters - Public Interfaces ---
@@ -285,7 +431,8 @@ pub contract FLOATEventsBook {
         pub fun createEventsBook(
             name: String,
             description: String,
-            image: String
+            image: String,
+            extra: {String: AnyStruct}
         ): UInt64
         // revoke a events book.
         pub fun revokeEventsBook(bookId: UInt64)
@@ -352,13 +499,15 @@ pub contract FLOATEventsBook {
         pub fun createEventsBook(
             name: String,
             description: String,
-            image: String
+            image: String,
+            extra: {String: AnyStruct}
         ): UInt64 {
 
             let eventsBook <- create EventsBook(
                 name: name,
                 description: description,
-                image: image
+                image: image,
+                extra
             )
             let bookId = eventsBook.uuid
             self.books[bookId] <-! eventsBook
@@ -382,23 +531,6 @@ pub contract FLOATEventsBook {
         access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
             return &self as &EventsBookshelf
         }
-
-        // --- Self Only ---
-
-    }
-
-    // Treasury resource of each EventsBook (Optional)
-    pub resource Treasury {
-
-        init() {
-
-        }
-
-        // --- Getters - Public Interfaces ---
-
-        // --- Setters - Private Interfaces ---
-
-        // --- Setters - Contract Only ---
 
         // --- Self Only ---
 
@@ -436,6 +568,7 @@ pub contract FLOATEventsBook {
     init() {
         self.totalEventsBooks = 0
         self.totalEventsBookshelf = 0
+        self.tokenDefinitions = {}
 
         self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfPath
         self.FLOATEventsBookshelfPrivatePath = /private/FLOATEventsBookshelfPath
