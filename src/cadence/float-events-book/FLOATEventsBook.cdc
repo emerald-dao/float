@@ -199,10 +199,23 @@ pub contract FLOATEventsBook {
         }
     }
 
+    // Achievement public interface
+    pub resource interface AchievementPublic {
+
+    }
+
+    // An interface that every "achievement goal " must implement
+    pub resource interface IAchievementGoal {
+
+    }
+
+    // An interface that every "strategy" must implement.
+    pub resource interface ITreasuryStrategy {
+        // access(account) fun 
+    }
+
     // Treasury public interface
     pub resource interface TreasuryPublic {
-        // get float collection
-        pub fun getTreasuryFLOATCollection(): &{FLOAT.CollectionPublic}
         // get token balance from the token identifier
         pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}?
         // get nft collection public 
@@ -216,8 +229,6 @@ pub contract FLOATEventsBook {
         // generic tokens will be dropped to this address, when treasury destory
         access(self) let receiver: Address
 
-        // float collection of the treasury
-        access(self) var floatCollection: @FLOAT.Collection
         // fungible token pool {identifier: Vault}
         access(self) var genericFTPool: @{String: FungibleToken.Vault}
         // non-fungible token pool {identifier: Collection}
@@ -230,15 +241,11 @@ pub contract FLOATEventsBook {
             self.bookId = bookId
             self.receiver = dropReceiver
 
-            self.floatCollection <- FLOAT.createEmptyCollection()
             self.genericFTPool <- {}
             self.genericNFTPool <- {}
         }
 
         destroy() {
-            // directly destroy float collection
-            destroy self.floatCollection
-
             // FT will be withdrawed to owner
             for identifier in self.genericFTPool.keys {
                 let receiverReciever = self.getFungibleTokenReceiver(address: self.receiver, tokenIdentifier: identifier)
@@ -259,10 +266,6 @@ pub contract FLOATEventsBook {
         }
 
         // --- Getters - Public Interfaces ---
-
-        pub fun getTreasuryFLOATCollection(): &{FLOAT.CollectionPublic} {
-            return &self.floatCollection as &{FLOAT.CollectionPublic}
-        }
 
         pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}? {
             return &self.genericFTPool[tokenIdentifier] as? &{FungibleToken.Balance}
@@ -329,6 +332,8 @@ pub contract FLOATEventsBook {
                 ids: ids
             )
         }
+
+        // TODO claim
 
         // --- Setters - Contract Only ---
 
@@ -397,14 +402,15 @@ pub contract FLOATEventsBook {
     // The events book defination
     pub resource EventsBook: EventsBookPublic, EventsBookPrivate, MetadataViews.Resolver {
         pub let sequence: UInt64
-
+        // --- basics ---
         pub var name: String
         pub var description: String
         pub var image: String
 
+        access(account) var extra: {String: AnyStruct}
+        // --- data ---
         access(account) let slots: [{EventSlot}]
         access(account) var treasury: @Treasury?
-        access(account) var extra: {String: AnyStruct}
 
         init(
             name: String,
@@ -648,6 +654,11 @@ pub contract FLOATEventsBook {
     }
 
     // ---- data For Endusers ----
+
+    // Users' Achevement of one EventsBook
+    pub resource Achievement {
+
+    }
 
     // Users' Achievement board
     pub resource AchievementBoard {

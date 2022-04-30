@@ -1,5 +1,5 @@
 
-pub contract TreasuryStrategy {
+pub contract FLOATStrategies {
 
     /**    ____ _  _ ____ _  _ ___ ____
        *   |___ |  | |___ |\ |  |  [__
