@@ -42,6 +42,11 @@ pub contract FLOATEventsBook {
 
     pub event FLOATEventsBookshelfCreated(sequence: UInt64)
 
+    pub event FLOATAchievementRecordInitialized(bookId: UInt64, host: Address, owner: Address)
+    pub event FLOATAchievementGoalAccomplished(bookId: UInt64, host: Address, owner: Address, goalIdx: Int)
+
+    pub event FLOATAchievementBoardCreated(sequence: UInt64, owner: Address)
+
     /**    ____ ___ ____ ___ ____
        *   [__   |  |__|  |  |___
         *  ___]  |  |  |  |  |___
@@ -50,7 +55,9 @@ pub contract FLOATEventsBook {
     // total events books amount
     pub var totalEventsBooks: UInt64
     // total events bookshelf amount
-    pub var totalEventsBookshelf: UInt64
+    pub var totalEventsBookshelfs: UInt64
+    // total achievement board amount
+    pub var totalAchievementBoards: UInt64
 
     // a registory of FT or NFT
     access(account) var tokenDefinitions: {String: TokenDefinition}
@@ -160,6 +167,11 @@ pub contract FLOATEventsBook {
                 ?? panic("Could not borrow the public FLOATEvents.")
             return ownerEvents.borrowPublicEventRef(eventId: self.id)
         }
+
+        // convert identifier to string
+        pub fun toString(): String {
+            return self.host.toString().concat("#").concat(self.id.toString())
+        }
     }
 
     // identifier of a EventsBook
@@ -181,6 +193,11 @@ pub contract FLOATEventsBook {
                 .borrow<&EventsBookshelf{EventsBookshelfPublic}>()
                 ?? panic("Could not borrow the public EventsBookshelfPublic.")
             return ref.borrowEventsBook(bookId: self.id)
+        }
+
+        // convert identifier to string
+        pub fun toString(): String {
+            return self.host.toString().concat("#").concat(self.id.toString())
         }
     }
 
@@ -253,41 +270,25 @@ pub contract FLOATEventsBook {
         }
     }
 
-    // Achievement public interface
-    pub resource interface AchievementPublic {
-        // get total score
-        pub fun getTotalScore(): UInt64
-        // get current comsumable score
-        pub fun getConsumableScore(): UInt64
-        // get all finished goals
-        pub fun getFinishedGoals(): [&{IAchievementGoal}]
-        // point to the events book
-        pub fun getTargetEventsBook(): &{EventsBookPublic}
-
-        // Update treasury claimed information
-        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) // ToCall
-    }
-
-    // Achievement private interface
-    pub resource interface AchievementWritable {
-        // current achievement score
-        access(account) var score: UInt64
-        // current consumable achievement score
-        access(account) var consumableScore: UInt64
-        // Achieve the goal and add to score
-        access(account) fun accomplishGoal(goal: &{IAchievementGoal}) // ToCall
-    }
-
     // An interface that every "achievement goal" must implement
     pub struct interface IAchievementGoal {
         // achievement title
         pub let title: String
 
         // how many points will be obtain when reach this goal
-        pub fun getPoints(): UInt64
+        pub fun getPoints(): UInt64 {
+            post {
+                result > 0: "Point should be greater than zero."
+            }
+        }
+
         // Will have `assert`s in it to make sure
         // the user fits some criteria.
-        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address) // ToCall
+        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address): Bool {
+            post {
+                result: "Failed to verify"
+            }
+        }
     }
 
     // Declare an enum to describe status
@@ -635,8 +636,12 @@ pub contract FLOATEventsBook {
         pub fun getLastSlotIdx(): Int
         // get all slots data
         pub fun getSlots(): [{EventSlot}]
+        // get a event slot by index
+        pub fun getSlot(idx: Int): {EventSlot}
         // get all goals data
         pub fun getGoals(): [{IAchievementGoal}]
+        // get an achievement goal by index
+        pub fun getGoal(idx: Int): {IAchievementGoal}
         // get treasury public
         pub fun getTreasury(): &Treasury{TreasuryPublic}
     }
@@ -735,8 +740,22 @@ pub contract FLOATEventsBook {
             return self.slots
         }
 
+        pub fun getSlot(idx: Int): {EventSlot} {
+            pre {
+                idx >= 0 && idx < self.slots.length: "Slot does not exist."
+            }
+            return self.slots[idx]
+        }
+
         pub fun getGoals(): [{IAchievementGoal}] {
             return self.goals
+        }
+
+        pub fun getGoal(idx: Int): {IAchievementGoal} {
+            pre {
+                idx >= 0 && idx < self.goals.length: "Goal does not exist."
+            }
+            return self.goals[idx]
         }
 
         pub fun getTreasury(): &Treasury{TreasuryPublic} {
@@ -834,11 +853,11 @@ pub contract FLOATEventsBook {
             self.books <- {}
             self.revoked <- {}
 
-            self.sequence = FLOATEventsBook.totalEventsBookshelf
+            self.sequence = FLOATEventsBook.totalEventsBookshelfs
 
             emit FLOATEventsBookshelfCreated(sequence: self.sequence)
 
-            FLOATEventsBook.totalEventsBookshelf = FLOATEventsBook.totalEventsBookshelf + 1
+            FLOATEventsBook.totalEventsBookshelfs = FLOATEventsBook.totalEventsBookshelfs + 1
         }
 
         destroy() {
@@ -951,21 +970,191 @@ pub contract FLOATEventsBook {
 
     // ---- data For Endusers ----
 
-    // Users' Achevement of one EventsBook
-    pub resource Achievement {
+    // Achievement public interface
+    pub resource interface AchievementPublic {
+        // get total score
+        pub fun getTotalScore(): UInt64
+        // get current comsumable score
+        pub fun getConsumableScore(): UInt64
+        // get all finished goals
+        pub fun getFinishedGoals(): [{IAchievementGoal}]
+        // point to the events book
+        pub fun getTargetEventsBook(): &{EventsBookPublic}
 
+        // Update treasury claimed information
+        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) // ToCall
     }
 
-    // Users' Achievement board
-    pub resource AchievementBoard {
+    // Achievement private interface
+    pub resource interface AchievementWritable {
+        // execute verify and accomplish 
+        pub fun verifyAndAccomplishGoal(goalIdx: Int)
+    }
 
-        init() {
+    // Users' Achevement of one EventsBook
+    pub resource Achievement: AchievementPublic, AchievementWritable {
+        // target to event identifier
+        access(self) let target: EventsBookIdentifier
+        // current achievement score
+        access(account) var score: UInt64
+        // current consumable achievement score
+        access(account) var consumableScore: UInt64
+        // all finished goals 
+        access(account) var finishedGoals: [Int]
 
+        init(
+            host: Address,
+            bookId: UInt64
+        ) {
+            self.score = 0
+            self.consumableScore = 0
+            self.finishedGoals = []
+
+            self.target = EventsBookIdentifier(host, bookId)
         }
 
         // --- Getters - Public Interfaces ---
 
+        // get total score
+        pub fun getTotalScore(): UInt64 {
+            return self.score
+        }
+
+        // get current comsumable score
+        pub fun getConsumableScore(): UInt64 {
+            return self.consumableScore
+        }
+
+        // point to the events book
+        pub fun getTargetEventsBook(): &{EventsBookPublic} {
+            let ref = self.target.getEventsBookPublic()
+                ?? panic("Failed to get events book reference.")
+            return ref
+        }
+
+        // get all finished goals
+        pub fun getFinishedGoals(): [{IAchievementGoal}] {
+            let eventsBookRef = self.getTargetEventsBook()
+
+            var ret: [{IAchievementGoal}] = []
+            for idx in self.finishedGoals {
+                ret.append(eventsBookRef.getGoal(idx: idx))
+            }
+            return ret
+        }
+
         // --- Setters - Private Interfaces ---
+
+        // Achieve the goal and add to score
+        pub fun verifyAndAccomplishGoal(goalIdx: Int) {
+            pre {
+                !self.finishedGoals.contains(goalIdx): "The goal is already accomplished."
+            }
+
+            // fetch the events book reference
+            let eventsBookRef = self.getTargetEventsBook()
+            let goal = eventsBookRef.getGoal(idx: goalIdx)
+
+            // verify first. if not allowed, the method will panic
+            goal.verify(eventsBookRef, user: self.owner!.address)
+
+            // add to score
+            let point = goal.getPoints()
+            self.score = self.score.saturatingAdd(point)
+            self.consumableScore = self.consumableScore.saturatingAdd(point)
+
+            // add to finished goal
+            self.finishedGoals.append(goalIdx)
+
+            // emit event
+            emit FLOATAchievementGoalAccomplished(
+                bookId: eventsBookRef.getID(),
+                host: eventsBookRef.owner!.address,
+                owner: self.owner!.address,
+                goalIdx: goalIdx
+            )
+        }
+
+        // --- Setters - Contract Only ---
+
+        // Update treasury claimed information
+        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) {
+            // only consumable strategy will update score
+            if strategy.consumable {
+                let info = strategy.controller.getInfo()
+                assert(self.consumableScore >= info.threshold, message: "Consumable score is not enough.")
+
+                self.consumableScore = self.consumableScore.saturatingSubtract(info.threshold)
+            }
+        }
+
+        // --- Self Only ---
+
+    }
+
+    // A public interface to read AchievementBoard
+    pub resource interface AchievementBoardPublic {
+        // get the achievement reference by event identifier
+        pub fun borrowAchievementRecordRef(target: EventsBookIdentifier): &{AchievementPublic}?
+    }
+
+    // A private interface to write AchievementBoard
+    pub resource interface AchievementBoardPrivate {
+        // create achievement by host and id
+        pub fun createAchievementRecord(host: Address, id: UInt64): EventsBookIdentifier
+    }
+
+    // Users' Achievement board
+    pub resource AchievementBoard: AchievementBoardPublic, AchievementBoardPrivate {
+        pub let sequence: UInt64
+        // all achievement resources
+        access(account) var achievements: @{String: Achievement}
+
+        init() {
+            self.sequence = FLOATEventsBook.totalAchievementBoards
+            self.achievements <- {}
+
+            emit FLOATAchievementBoardCreated(
+                sequence: self.sequence,
+                owner: self.owner!.address
+            )
+
+            FLOATEventsBook.totalAchievementBoards = FLOATEventsBook.totalAchievementBoards + 1
+        }
+
+        destroy() {
+            destroy self.achievements
+        }
+
+        // --- Getters - Public Interfaces ---
+
+        pub fun borrowAchievementRecordRef(target: EventsBookIdentifier): &{AchievementPublic}? {
+            let key = target.toString()
+            return &self.achievements[key] as? &{AchievementPublic}
+        }
+
+        // --- Setters - Private Interfaces ---
+
+        // create achievement by host and id
+        pub fun createAchievementRecord(host: Address, id: UInt64): EventsBookIdentifier {
+            let identifier = EventsBookIdentifier(host, id)
+            let key = identifier.toString()
+
+            assert(self.achievements[key] == nil, message: "Achievement of the event book should be empty.")
+            assert(identifier.getEventsBookPublic() != nil , message: "The events book should exist")
+
+            self.achievements[key] <-! create Achievement(
+                host: host,
+                bookId: id
+            )
+
+            emit FLOATAchievementRecordInitialized(
+                bookId: id,
+                host: host,
+                owner: self.owner!.address
+            )
+            return identifier
+        }
 
         // --- Setters - Contract Only ---
 
@@ -985,7 +1174,8 @@ pub contract FLOATEventsBook {
 
     init() {
         self.totalEventsBooks = 0
-        self.totalEventsBookshelf = 0
+        self.totalEventsBookshelfs = 0
+        self.totalAchievementBoards = 0
         self.tokenDefinitions = {}
 
         self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfPath
