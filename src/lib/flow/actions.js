@@ -526,6 +526,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
           notifications.info(`You successfuly distributed a FLOAT!`);
         } else {
           floatDistributingStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+          notifications.info(parseErrorMessageFromFCL(res.errorMessage));
         }
         floatDistributingInProgress.set(false);
 
@@ -537,6 +538,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
     transactionStatus.set(99)
     floatDistributingStatus.set(respondWithError(e));
     floatDistributingInProgress.set(false);
+    notifications.info(parseErrorMessageFromFCL(e));
 
     console.log(e)
   }
