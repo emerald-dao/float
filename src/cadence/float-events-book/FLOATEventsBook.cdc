@@ -33,6 +33,7 @@ pub contract FLOATEventsBook {
     pub event FLOATEventsBookRevoked(bookId: UInt64, host: Address)
     pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, host: Address, name: String, description: String, image: String)
     pub event FLOATEventsBookSlotUpdated(bookId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
+    pub event FLOATEventsBookGoalAdded(bookId: UInt64, host: Address, goalTitle: String, points: UInt64)
 
     pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
     pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
@@ -84,6 +85,57 @@ pub contract FLOATEventsBook {
 
     access(account) fun getTokenDefintion(_ tokenIdentifier: String): TokenDefinition? {
         return self.tokenDefinitions[tokenIdentifier]
+    }
+
+    // a helper to get token recipient
+    pub struct TokenRecipient {
+        pub let address: Address
+        pub let identifier: String
+
+        init(address: Address, identifier: String) {
+            self.address = address
+            self.identifier = identifier
+        }
+
+        // check if the token is NFT
+        access(contract) fun isNFT(): Bool {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            return tokenInfo.isNFT
+        }
+
+        // get ft receiver by address and identifier
+        access(contract) fun getFungibleTokenReceiver(): &{FungibleToken.Receiver} {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
+
+            let receiverVault = getAccount(self.address)
+                .getCapability(tokenInfo.path)
+                .borrow<&{FungibleToken.Receiver}>()
+                ?? panic("Could not borrow the &{FungibleToken.Receiver} from ".concat(self.address.toString()))
+
+            assert(
+                receiverVault.getType().identifier == tokenInfo.type,
+                message: "The receiver's path is not associated with the intended token."
+            )
+            return receiverVault
+        }
+
+        // get nft collection by address and identifier
+        access(contract) fun getNFTCollectionPublic(): &{NonFungibleToken.CollectionPublic} {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            assert(tokenInfo.isNFT, message: "The token should be Non-Fungiable Token")
+
+            let collection = getAccount(self.address)
+                .getCapability(tokenInfo.path)
+                .borrow<&{NonFungibleToken.CollectionPublic}>()
+                ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic} from ".concat(self.address.toString()))
+            
+            assert(
+                collection.getType().identifier == tokenInfo.type,
+                message: "The collection's path is not associated with the nft."
+            )
+            return collection
+        }
     }
 
     // ---- data For Curators ----
@@ -203,14 +255,17 @@ pub contract FLOATEventsBook {
 
     // Achievement public interface
     pub resource interface AchievementPublic {
-        // get current score
-        pub fun getScore(): UInt64
+        // get total score
+        pub fun getTotalScore(): UInt64
+        // get current comsumable score
+        pub fun getConsumableScore(): UInt64
         // get all finished goals
         pub fun getFinishedGoals(): [&{IAchievementGoal}]
         // point to the events book
         pub fun getTargetEventsBook(): &{EventsBookPublic}
+
         // Update treasury claimed information
-        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
+        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) // ToCall
     }
 
     // Achievement private interface
@@ -220,16 +275,19 @@ pub contract FLOATEventsBook {
         // current consumable achievement score
         access(account) var consumableScore: UInt64
         // Achieve the goal and add to score
-        access(account) fun accomplishGoal(goal: &{IAchievementGoal})
+        access(account) fun accomplishGoal(goal: &{IAchievementGoal}) // ToCall
     }
 
     // An interface that every "achievement goal" must implement
     pub struct interface IAchievementGoal {
+        // achievement title
+        pub let title: String
+
         // how many points will be obtain when reach this goal
         pub fun getPoints(): UInt64
         // Will have `assert`s in it to make sure
         // the user fits some criteria.
-        access(account) fun verify(_ eventsBook: &{EventsBookPublic})
+        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address) // ToCall
     }
 
     // Declare an enum to describe status
@@ -240,8 +298,7 @@ pub contract FLOATEventsBook {
         pub case closed
     }
 
-    // the general strategy controller
-    pub resource StrategyController {
+    pub struct StrategyInformation {
         // minimium threshold of achievement score
         pub let threshold: UInt64
         // how many claimable shares
@@ -257,10 +314,10 @@ pub contract FLOATEventsBook {
         pub var claimedAmount: UInt64
 
         init(
-            threshold: UInt64,
-            maxClaimableAmount: UInt64,
-            oneShareOfClaimableFT: {String: Fix64},
-            oneShareOfClaimableNFT: {String: UInt64}
+            _ threshold: UInt64,
+            _ maxClaimableAmount: UInt64,
+            _ oneShareOfClaimableFT: {String: Fix64},
+            _ oneShareOfClaimableNFT: {String: UInt64}
         ) {
             pre {
                 threshold > 0: "Threshold must be bigger than zero"
@@ -277,22 +334,49 @@ pub contract FLOATEventsBook {
             self.claimedAmount = 0
         }
 
+        access(contract) fun setCurrentState(value: StrategyState) {
+            self.currentState = value
+        }
+
+        access(contract) fun setClaimedAmount(value: UInt64) {
+            self.claimedAmount = value
+        }
+    }
+
+    // the general strategy controller
+    pub resource StrategyController {
+        access(self) let info: StrategyInformation
+
+        init(
+            threshold: UInt64,
+            maxClaimableAmount: UInt64,
+            oneShareOfClaimableFT: {String: Fix64},
+            oneShareOfClaimableNFT: {String: UInt64}
+        ) {
+            self.info = StrategyInformation(threshold, maxClaimableAmount, oneShareOfClaimableFT, oneShareOfClaimableNFT)
+        }
+
+        // get strategy information
+        access(contract) fun getInfo(): StrategyInformation {
+            return self.info
+        }
+
         // execute and go next
-        access(contract) fun nextStage(): StrategyState {
+        access(contract) fun nextStage(): StrategyState { // ToCall
             pre {
-                self.currentState != StrategyState.closed: "Strategy is closed"
+                self.info.currentState != StrategyState.closed: "Strategy is closed"
             }
-            self.currentState = StrategyState(rawValue: self.currentState.rawValue + 1)!
-            return self.currentState
+            self.info.setCurrentState(value: StrategyState(rawValue: self.info.currentState.rawValue + 1)!)
+            return self.info.currentState
         }
 
         // claim one share
-        access(contract) fun claimOneShare() {
+        access(contract) fun claimOneShare() { // ToCall
             pre {
-                self.currentState == StrategyState.claimable: "Strategy should be claimable"
-                self.claimedAmount < self.maxClaimableAmount: "Reach max claimable"
+                self.info.currentState == StrategyState.claimable: "Strategy should be claimable"
+                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
             }
-            self.claimedAmount = self.claimedAmount + 1
+            self.info.setClaimedAmount(value: self.info.claimedAmount + 1)
         }
     }
 
@@ -308,7 +392,7 @@ pub contract FLOATEventsBook {
             consumable: Bool,
         ) {
             post {
-                self.controller.currentState == StrategyState.preparing: "CurrentState should be preparing"
+                self.controller.getInfo().currentState == StrategyState.preparing: "CurrentState should be preparing"
                 self.consumable == consumable: "Consumable must be initialized to the initial value"
             }
         }
@@ -316,21 +400,21 @@ pub contract FLOATEventsBook {
         // check if strategy can go to claimable
         pub fun checkReadyToClaimable(): Bool {
             pre {
-                self.controller.currentState == StrategyState.opening: "Ensure current stage is opening."
+                self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
         }
 
         // update user's achievement
-        access(account) fun updateAchievement(user: Capability<&{AchievementPublic}>) {
+        access(account) fun updateAchievement(user: Capability<&{AchievementPublic}>) { // ToCall
             pre {
-                self.controller.currentState == StrategyState.opening: "Ensure current stage is opening."
+                self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
         }
 
         // verify if the user match the strategy
-        pub fun verifyClaimable(user: Capability<&{AchievementPublic}>): Bool {
+        pub fun verifyClaimable(user: Capability<&{AchievementPublic}>): Bool { // ToCall
             pre {
-                self.controller.currentState == StrategyState.claimable: "Ensure current stage is claimable."
+                self.controller.getInfo().currentState == StrategyState.claimable: "Ensure current stage is claimable."
             }
         }
     }
@@ -341,11 +425,10 @@ pub contract FLOATEventsBook {
         pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}?
         // get nft collection public 
         pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}?
-
-        // get ft receiver by address and identifier
-        access(contract) fun getFungibleTokenReceiver(address: Address, tokenIdentifier: String): &{FungibleToken.Receiver}
-        // get nft receiver by address and identifier
-        access(contract) fun getNFTCollectionPublic(address: Address, tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}
+        // get all strategy information
+        pub fun getStrategies(): [StrategyInformation]
+        // For the public to claim rewards
+        pub fun claim(strategyIndex: Int, recipients: [TokenRecipient])
     }
 
     // Treasury private interface
@@ -388,14 +471,16 @@ pub contract FLOATEventsBook {
         destroy() {
             // FT will be withdrawed to owner
             for identifier in self.genericFTPool.keys {
-                let receiverReciever = self.getFungibleTokenReceiver(address: self.receiver, tokenIdentifier: identifier)
+                let recipient = TokenRecipient(address: self.receiver, identifier: identifier)
+                let receiverReciever = recipient.getFungibleTokenReceiver()
                 receiverReciever.deposit(from: <- self.genericFTPool.remove(key: identifier)!)
             }
             destroy self.genericFTPool
 
             // NFT Token will be withdraw to owner
             for identifier in self.genericNFTPool.keys {
-                let receiverCollection = self.getNFTCollectionPublic(address: self.receiver, tokenIdentifier: identifier)
+                let recipient = TokenRecipient(address: self.receiver, identifier: identifier)
+                let receiverCollection = recipient.getNFTCollectionPublic()
                 let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
                 let keys = collection.getIDs()
                 for id in keys {
@@ -418,10 +503,23 @@ pub contract FLOATEventsBook {
             return &self.genericNFTPool[tokenIdentifier] as? &{NonFungibleToken.CollectionPublic}
         }
 
+        // get all strategy information
+        pub fun getStrategies(): [StrategyInformation] {
+            let infos: [StrategyInformation] = []
+            let len = self.strategies.length
+            var i = 0
+            while i < len {
+                let strategyRef = &self.strategies[i] as &{ITreasuryStrategy}
+                infos.append(strategyRef.controller.getInfo())
+                i = i + 1
+            }
+            return infos
+        }
+
         // execute claiming
         pub fun claim(
             strategyIndex: Int,
-            recipient: &{NonFungibleToken.CollectionPublic}
+            recipients: [TokenRecipient],
         ) {
             // pre {
             //     self.currentState == StrategyState.claimable: "Ensure current stage is claimable."
@@ -500,7 +598,8 @@ pub contract FLOATEventsBook {
 
         // add a new strategy
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool) {
-            if autoStart && strategy.controller.currentState == StrategyState.preparing {
+            // if autoStart is true and preparing, go next stage
+            if autoStart && strategy.controller.getInfo().currentState == StrategyState.preparing {
                 strategy.controller.nextStage()
             }
 
@@ -515,40 +614,6 @@ pub contract FLOATEventsBook {
         }
 
         // --- Setters - Contract Only ---
-
-        // get ft receiver by address and identifier
-        access(contract) fun getFungibleTokenReceiver(address: Address, tokenIdentifier: String): &{FungibleToken.Receiver} {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(tokenIdentifier) ?? panic("Unknown token")
-            assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
-
-            let receiverVault = getAccount(address)
-                .getCapability(tokenInfo.path)
-                .borrow<&{FungibleToken.Receiver}>()
-                ?? panic("Could not borrow the &{FungibleToken.Receiver} from ".concat(address.toString()))
-
-            assert(
-                receiverVault.getType().identifier == tokenInfo.type,
-                message: "The receiver's path is not associated with the intended token."
-            )
-            return receiverVault
-        }
-
-        // get nft collection by address and identifier
-        access(contract) fun getNFTCollectionPublic(address: Address, tokenIdentifier: String): &{NonFungibleToken.CollectionPublic} {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(tokenIdentifier) ?? panic("Unknown token")
-            assert(tokenInfo.isNFT, message: "The token should be Non-Fungiable Token")
-
-            let collection = getAccount(address)
-                .getCapability(tokenInfo.path)
-                .borrow<&{NonFungibleToken.CollectionPublic}>()
-                ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic} from ".concat(address.toString()))
-            
-            assert(
-                collection.getType().identifier == tokenInfo.type,
-                message: "The collection's path is not associated with the nft."
-            )
-            return collection
-        }
 
         // --- Self Only ---
 
@@ -566,8 +631,12 @@ pub contract FLOATEventsBook {
         // ---- Methods ----
         // get book id
         pub fun getID(): UInt64
+        // get last slot index
+        pub fun getLastSlotIdx(): Int
         // get all slots data
         pub fun getSlots(): [{EventSlot}]
+        // get all goals data
+        pub fun getGoals(): [{IAchievementGoal}]
         // get treasury public
         pub fun getTreasury(): &Treasury{TreasuryPublic}
     }
@@ -578,6 +647,8 @@ pub contract FLOATEventsBook {
         pub fun updateBasics(name: String, description: String, image: String)
         // update slot identifier information
         pub fun updateSlotData(idx: Int, identifier: EventIdentifier)
+        // add a new achievement goal to the events book
+        pub fun addAchievementGoal(goal: {IAchievementGoal})
     }
 
     // The events book defination
@@ -591,7 +662,10 @@ pub contract FLOATEventsBook {
 
         access(account) var extra: {String: AnyStruct}
         // --- data ---
+        // FLOAT slots
         access(account) let slots: [{EventSlot}]
+        // Achievement goals
+        access(account) let goals: [{IAchievementGoal}]
         // nest resource for the EventsBook treasury
         access(account) var treasury: @Treasury
 
@@ -600,6 +674,8 @@ pub contract FLOATEventsBook {
             name: String,
             description: String,
             image: String,
+            slots: [{EventSlot}],
+            goals: [{IAchievementGoal}],
             _ extra: {String: AnyStruct}
         ) {
             self.sequence = FLOATEventsBook.totalEventsBooks
@@ -609,7 +685,8 @@ pub contract FLOATEventsBook {
             self.description = description
             self.image = image
 
-            self.slots = []
+            self.goals = goals
+            self.slots = slots
             self.treasury <- create Treasury(
                 bookId: self.uuid,
                 dropReceiver: host
@@ -650,8 +727,16 @@ pub contract FLOATEventsBook {
             return self.uuid
         }
 
+        pub fun getLastSlotIdx(): Int {
+            return self.slots.length
+        }
+
         pub fun getSlots(): [{EventSlot}] {
             return self.slots
+        }
+
+        pub fun getGoals(): [{IAchievementGoal}] {
+            return self.goals
         }
 
         pub fun getTreasury(): &Treasury{TreasuryPublic} {
@@ -692,6 +777,17 @@ pub contract FLOATEventsBook {
             )
         }
 
+        pub fun addAchievementGoal(goal: {IAchievementGoal}) {
+            self.goals.append(goal)
+
+            emit FLOATEventsBookGoalAdded(
+                bookId: self.uuid,
+                host: self.host,
+                goalTitle: goal.title,
+                points: goal.getPoints()
+            )
+        }
+
         // --- Setters - Contract Only ---
 
         // --- Self Only ---
@@ -705,7 +801,7 @@ pub contract FLOATEventsBook {
         // ---- Methods ----
         pub fun isRevoked(bookId: UInt64): Bool
         pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
-
+        // internal full reference borrowing
         access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook?
         access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
     }
@@ -717,6 +813,8 @@ pub contract FLOATEventsBook {
             name: String,
             description: String,
             image: String,
+            slots: [{EventSlot}],
+            goals: [{IAchievementGoal}],
             extra: {String: AnyStruct}
         ): UInt64
         // revoke a events book.
@@ -787,6 +885,8 @@ pub contract FLOATEventsBook {
             name: String,
             description: String,
             image: String,
+            slots: [{EventSlot}],
+            goals: [{IAchievementGoal}],
             extra: {String: AnyStruct}
         ): UInt64 {
             let host = self.owner!.address
@@ -796,6 +896,8 @@ pub contract FLOATEventsBook {
                 name: name,
                 description: description,
                 image: image,
+                slots: slots,
+                goals: goals,
                 extra
             )
             let bookId = eventsBook.uuid
