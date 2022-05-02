@@ -38,7 +38,9 @@ pub contract FLOATEventsBook {
     pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
     pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
     pub event FLOATEventsBookTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
-    pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String)
+    pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
+    pub event FLOATEventsBookTreasuryStrategyNextStage(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
+    pub event FLOATEventsBookTreasuryClaimed() // TODO
 
     pub event FLOATEventsBookshelfCreated(sequence: UInt64)
 
@@ -160,12 +162,13 @@ pub contract FLOATEventsBook {
         }
 
         // get the reference of the given event
-        pub fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}? {
+        pub fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} {
             let ownerEvents = getAccount(self.host)
                 .getCapability(FLOAT.FLOATEventsPublicPath)
                 .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                 ?? panic("Could not borrow the public FLOATEvents.")
             return ownerEvents.borrowPublicEventRef(eventId: self.id)
+                ?? panic("Failed to get event reference.")
         }
 
         // convert identifier to string
@@ -187,12 +190,13 @@ pub contract FLOATEventsBook {
         }
 
         // get the reference of the given book
-        pub fun getEventsBookPublic(): &{EventsBookPublic}? {
+        pub fun getEventsBookPublic(): &{EventsBookPublic} {
             let ref = getAccount(self.host)
                 .getCapability(FLOATEventsBook.FLOATEventsBookshelfPublicPath)
                 .borrow<&EventsBookshelf{EventsBookshelfPublic}>()
                 ?? panic("Could not borrow the public EventsBookshelfPublic.")
             return ref.borrowEventsBook(bookId: self.id)
+                ?? panic("Failed to get events book reference.")
         }
 
         // convert identifier to string
@@ -363,7 +367,7 @@ pub contract FLOATEventsBook {
         }
 
         // execute and go next
-        access(contract) fun nextStage(): StrategyState { // ToCall
+        access(contract) fun nextStage(): StrategyState {
             pre {
                 self.info.currentState != StrategyState.closed: "Strategy is closed"
             }
@@ -399,7 +403,7 @@ pub contract FLOATEventsBook {
         }
 
         // check if strategy can go to claimable
-        pub fun checkReadyToClaimable(): Bool {
+        pub fun isReadyToClaimable(): Bool {
             pre {
                 self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
@@ -413,7 +417,7 @@ pub contract FLOATEventsBook {
         }
 
         // update user's achievement
-        access(account) fun updateAchievement(user: &{AchievementPublic}) {
+        access(contract) fun updateAchievement(user: &{AchievementPublic}) {
             pre {
                 self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
@@ -429,22 +433,26 @@ pub contract FLOATEventsBook {
         // get all strategy information
         pub fun getStrategies(state: StrategyState?): [StrategyInformation]
         // For the public to claim rewards
-        pub fun claim(strategyIndex: Int, recipients: [TokenRecipient])
+        pub fun claim(strategyIndex: Int, user: &{AchievementPublic})
 
         // borrow strategy reference
-        access(account) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy}
+        access(contract) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy}
         // borrow strategies by state reference
-        access(account) fun borrowStrategiesRef(state: StrategyState?): [&{ITreasuryStrategy}]
+        access(contract) fun borrowStrategiesRef(state: StrategyState?): [&{ITreasuryStrategy}]
     }
 
     // Treasury private interface
     pub resource interface TreasuryPrivate {
+        // update drop receiver
+        pub fun updateDropReceiver(receiver: Address)
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault)
         // deposit nft to treasury
         pub fun depositNFTs(collection: @NonFungibleToken.Collection)
         // add new strategy to the treasury
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool)
+        // update strategy status
+        pub fun nextStrategyStage(idx: Int): StrategyState
     }
 
     // Treasury resource of each EventsBook (Optional)
@@ -528,12 +536,16 @@ pub contract FLOATEventsBook {
         // execute claiming
         pub fun claim(
             strategyIndex: Int,
-            recipients: [TokenRecipient],
+            user: &{AchievementPublic}
         ) {
+            let strategy = self.borrowStrategyRef(idx: strategyIndex)
+
             // TODO
+
             // pre {
             //     self.currentState == StrategyState.claimable: "Ensure current stage is claimable."
             // }
+            emit FLOATEventsBookTreasuryClaimed()
         }
 
         // --- Setters - Private Interfaces ---
@@ -618,14 +630,38 @@ pub contract FLOATEventsBook {
             emit FLOATEventsBookTreasuryStrategyAdded(
                 bookId: self.bookId,
                 host: self.owner!.address,
-                strategyIdentifier: id
+                strategyIdentifier: id,
+                index: self.strategies.length - 1
             )
+        }
+
+        // go next strategy stage
+        pub fun nextStrategyStage(idx: Int): StrategyState {
+            let strategy = self.borrowStrategyRef(idx: idx)
+            let currentState = strategy.controller.getInfo().currentState
+
+            // if opening to claimable, we should check if claimable
+            if currentState == StrategyState.opening {
+                assert(strategy.isReadyToClaimable(), message: "Strategy should be ready to claimable")
+            }
+
+            // go to next stage
+            let ret = strategy.controller.nextStage()
+
+            emit FLOATEventsBookTreasuryStrategyNextStage(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                strategyIdentifier: strategy.getType().identifier,
+                index: idx,
+                stage: ret.rawValue
+            )
+            return ret
         }
 
         // --- Setters - Contract Only ---
 
         // borrow strategy reference
-        access(account) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy} {
+        access(contract) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy} {
             pre {
                 idx >= 0 && idx < self.strategies.length: "Strategy does not exist."
             }
@@ -633,7 +669,7 @@ pub contract FLOATEventsBook {
         }
 
         // borrow strategies by state reference
-        access(account) fun borrowStrategiesRef(state: StrategyState?): [&{ITreasuryStrategy}] {
+        access(contract) fun borrowStrategiesRef(state: StrategyState?): [&{ITreasuryStrategy}] {
             let ret: [&{ITreasuryStrategy}] = []
             let len = self.strategies.length
             var i = 0
@@ -650,6 +686,10 @@ pub contract FLOATEventsBook {
 
         // --- Self Only ---
 
+        // get identifier
+        access(self) fun getParentIdentifier(): EventsBookIdentifier {
+            return EventsBookIdentifier(self.owner!.address, self.bookId)
+        }
     }
 
     // A public interface to read EventsBook
@@ -664,6 +704,8 @@ pub contract FLOATEventsBook {
         // ---- Methods ----
         // get book id
         pub fun getID(): UInt64
+        // get book identifier
+        pub fun getIdentifier(): EventsBookIdentifier
         // get last slot index
         pub fun getLastSlotIdx(): Int
         // get all slots data
@@ -674,8 +716,10 @@ pub contract FLOATEventsBook {
         pub fun getGoals(): [{IAchievementGoal}]
         // get an achievement goal by index
         pub fun getGoal(idx: Int): {IAchievementGoal}
-        // get treasury public
-        pub fun getTreasury(): &Treasury{TreasuryPublic}
+        // borrow the treasury public reference
+        pub fun borrowTreasury(): &Treasury{TreasuryPublic}
+        // borrow the treasury private reference
+        access(contract) fun borrowTreasuryPrivate(): &Treasury{TreasuryPrivate}
     }
 
     // A private interface to write for EventsBook
@@ -704,7 +748,7 @@ pub contract FLOATEventsBook {
         // Achievement goals
         access(account) let goals: [{IAchievementGoal}]
         // nest resource for the EventsBook treasury
-        access(account) var treasury: @Treasury
+        access(contract) var treasury: @Treasury
 
         init(
             host: Address,
@@ -755,13 +799,17 @@ pub contract FLOATEventsBook {
                         thumbnail: MetadataViews.IPFSFile(cid: self.image, path: nil)
                     )
                 case Type<EventsBookIdentifier>():
-                    return EventsBookIdentifier(self.owner!.address, self.uuid)
+                    return self.getIdentifier()
             }
             return nil
         }
 
         pub fun getID(): UInt64 {
             return self.uuid
+        }
+        
+        pub fun getIdentifier(): EventsBookIdentifier {
+            return EventsBookIdentifier(self.owner!.address, self.uuid)
         }
 
         pub fun getLastSlotIdx(): Int {
@@ -790,7 +838,7 @@ pub contract FLOATEventsBook {
             return self.goals[idx]
         }
 
-        pub fun getTreasury(): &Treasury{TreasuryPublic} {
+        pub fun borrowTreasury(): &Treasury{TreasuryPublic} {
             return &self.treasury as &Treasury{TreasuryPublic}
         }
 
@@ -840,6 +888,11 @@ pub contract FLOATEventsBook {
         }
 
         // --- Setters - Contract Only ---
+
+        // borrow the treasury private reference
+        access(contract) fun borrowTreasuryPrivate(): &Treasury{TreasuryPrivate} {
+            return &self.treasury as &Treasury{TreasuryPrivate}
+        }
 
         // --- Self Only ---
 
@@ -1006,14 +1059,14 @@ pub contract FLOATEventsBook {
     pub resource interface AchievementPublic {
         // get achievement record owner
         pub fun getOwner(): Address
+        // get achievement record target
+        pub fun getTarget(): EventsBookIdentifier
         // get total score
         pub fun getTotalScore(): UInt64
         // get current comsumable score
         pub fun getConsumableScore(): UInt64
         // get all finished goals
         pub fun getFinishedGoals(): [{IAchievementGoal}]
-        // point to the events book
-        pub fun getTargetEventsBook(): &{EventsBookPublic}
 
         // Update treasury claimed information
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) // ToCall
@@ -1054,6 +1107,11 @@ pub contract FLOATEventsBook {
             return self.owner!.address
         }
 
+        // get achievement record target
+        pub fun getTarget(): EventsBookIdentifier {
+            return self.target
+        }
+
         // get total score
         pub fun getTotalScore(): UInt64 {
             return self.score
@@ -1064,16 +1122,9 @@ pub contract FLOATEventsBook {
             return self.consumableScore
         }
 
-        // point to the events book
-        pub fun getTargetEventsBook(): &{EventsBookPublic} {
-            let ref = self.target.getEventsBookPublic()
-                ?? panic("Failed to get events book reference.")
-            return ref
-        }
-
         // get all finished goals
         pub fun getFinishedGoals(): [{IAchievementGoal}] {
-            let eventsBookRef = self.getTargetEventsBook()
+            let eventsBookRef = self.getTarget().getEventsBookPublic()
 
             var ret: [{IAchievementGoal}] = []
             for idx in self.finishedGoals {
@@ -1091,23 +1142,23 @@ pub contract FLOATEventsBook {
             }
 
             // fetch the events book reference
-            let eventsBookRef = self.getTargetEventsBook()
+            let eventsBookRef = self.getTarget().getEventsBookPublic()
             let goal = eventsBookRef.getGoal(idx: goalIdx)
 
             // verify first. if not allowed, the method will panic
             goal.verify(eventsBookRef, user: self.owner!.address)
 
-            // update achievement to all opening treasury strategies
-            let treasury = eventsBookRef.getTreasury()
-            let openingStrategies = treasury.borrowStrategiesRef(state: StrategyState.opening)
-            for strategy in openingStrategies {
-                strategy.updateAchievement(user: &self as &{AchievementPublic})
-            }
-
             // add to score
             let point = goal.getPoints()
             self.score = self.score.saturatingAdd(point)
             self.consumableScore = self.consumableScore.saturatingAdd(point)
+
+            // update achievement to all opening treasury strategies
+            let treasury = eventsBookRef.borrowTreasury()
+            let openingStrategies = treasury.borrowStrategiesRef(state: StrategyState.opening)
+            for strategy in openingStrategies {
+                strategy.updateAchievement(user: &self as &{AchievementPublic})
+            }
 
             // add to finished goal
             self.finishedGoals.append(goalIdx)
