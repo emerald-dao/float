@@ -40,7 +40,7 @@ pub contract FLOATEventsBook {
     pub event FLOATEventsBookTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
     pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
     pub event FLOATEventsBookTreasuryStrategyNextStage(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
-    pub event FLOATEventsBookTreasuryClaimed() // TODO
+    pub event FLOATEventsBookTreasuryClaimed(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
 
     pub event FLOATEventsBookshelfCreated(sequence: UInt64)
 
@@ -101,7 +101,7 @@ pub contract FLOATEventsBook {
         pub let address: Address
         pub let identifier: String
 
-        init(address: Address, identifier: String) {
+        init(_ address: Address, _ identifier: String) {
             self.address = address
             self.identifier = identifier
         }
@@ -304,12 +304,14 @@ pub contract FLOATEventsBook {
     }
 
     pub struct StrategyInformation {
+        // when claimed, if score will be consumed
+        pub let consumable: Bool
         // minimium threshold of achievement score
         pub let threshold: UInt64
         // how many claimable shares
         pub let maxClaimableAmount: UInt64
         // how much FTs to claim for one share
-        pub let oneShareOfClaimableFT: {String: Fix64}
+        pub let oneShareOfClaimableFT: {String: UFix64}
         // how much NFTs to claim for one share
         pub let oneShareOfClaimableNFT: {String: UInt64}
 
@@ -319,9 +321,10 @@ pub contract FLOATEventsBook {
         pub var claimedAmount: UInt64
 
         init(
+            _ consumable: Bool,
             _ threshold: UInt64,
             _ maxClaimableAmount: UInt64,
-            _ oneShareOfClaimableFT: {String: Fix64},
+            _ oneShareOfClaimableFT: {String: UFix64},
             _ oneShareOfClaimableNFT: {String: UInt64}
         ) {
             pre {
@@ -330,6 +333,7 @@ pub contract FLOATEventsBook {
                 oneShareOfClaimableFT.keys.length > 0 || oneShareOfClaimableNFT.keys.length > 0
                     : "at least one share of FT or NFTs to claim"
             }
+            self.consumable = consumable
             self.threshold = threshold
             self.maxClaimableAmount = maxClaimableAmount
             self.oneShareOfClaimableFT = oneShareOfClaimableFT
@@ -339,31 +343,64 @@ pub contract FLOATEventsBook {
             self.claimedAmount = 0
         }
 
+        // set current state
         access(contract) fun setCurrentState(value: StrategyState) {
             self.currentState = value
         }
 
+        // set current amount
         access(contract) fun setClaimedAmount(value: UInt64) {
             self.claimedAmount = value
+        }
+
+        // clone an object
+        access(contract) fun clone(): StrategyInformation {
+            let ret = StrategyInformation(
+                self.consumable,
+                self.threshold,
+                self.maxClaimableAmount,
+                self.oneShareOfClaimableFT,
+                self.oneShareOfClaimableNFT
+            )
+            ret.currentState = self.currentState
+            ret.claimedAmount = self.claimedAmount
+            return ret
         }
     }
 
     // the general strategy controller
     pub resource StrategyController {
+        // basic info
         access(self) let info: StrategyInformation
 
         init(
+            consumable: Bool,
             threshold: UInt64,
             maxClaimableAmount: UInt64,
-            oneShareOfClaimableFT: {String: Fix64},
+            oneShareOfClaimableFT: {String: UFix64},
             oneShareOfClaimableNFT: {String: UInt64}
         ) {
-            self.info = StrategyInformation(threshold, maxClaimableAmount, oneShareOfClaimableFT, oneShareOfClaimableNFT)
+            self.info = StrategyInformation(consumable, threshold, maxClaimableAmount, oneShareOfClaimableFT, oneShareOfClaimableNFT)
         }
 
-        // get strategy information
+        // get a copy of strategy information
         access(contract) fun getInfo(): StrategyInformation {
-            return self.info
+            return self.info.clone()
+        }
+
+        // verify if user can claim this
+        access(contract) fun verifyClaimable(user: &{AchievementPublic}): Bool {
+            pre {
+                self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
+                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
+            }
+            let thresholdScore = self.info.threshold
+            if self.info.consumable {
+                assert(thresholdScore <= user.getConsumableScore(), message: "Consumable score is not enough.")
+            } else {
+                assert(thresholdScore <= user.getTotalScore(), message: "Total score is not enough.")
+            }
+            return true
         }
 
         // execute and go next
@@ -376,9 +413,9 @@ pub contract FLOATEventsBook {
         }
 
         // claim one share
-        access(contract) fun claimOneShare() { // ToCall
+        access(contract) fun claimOneShare() {
             pre {
-                self.info.currentState == StrategyState.claimable: "Strategy should be claimable"
+                self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
                 self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
             }
             self.info.setClaimedAmount(value: self.info.claimedAmount + 1)
@@ -387,18 +424,14 @@ pub contract FLOATEventsBook {
 
     // An interface that every "strategy" must implement.
     pub resource interface ITreasuryStrategy {
-        // when claimed, if score will be consumed
-        pub let consumable: Bool
         // strategy general controler
         access(account) let controller: @StrategyController
 
         init(
-            controller: @StrategyController,
-            consumable: Bool,
+            controller: @StrategyController
         ) {
             post {
                 self.controller.getInfo().currentState == StrategyState.preparing: "CurrentState should be preparing"
-                self.consumable == consumable: "Consumable must be initialized to the initial value"
             }
         }
 
@@ -410,9 +443,9 @@ pub contract FLOATEventsBook {
         }
 
         // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{AchievementPublic}): Bool { // ToCall
+        pub fun verifyClaimable(user: &{AchievementPublic}): Bool {
             pre {
-                self.controller.getInfo().currentState == StrategyState.claimable: "Ensure current stage is claimable."
+                self.controller.verifyClaimable(user: user): "The user cannot to claim for now"
             }
         }
 
@@ -485,7 +518,7 @@ pub contract FLOATEventsBook {
         destroy() {
             // FT will be withdrawed to owner
             for identifier in self.genericFTPool.keys {
-                let recipient = TokenRecipient(address: self.receiver, identifier: identifier)
+                let recipient = TokenRecipient(self.receiver, identifier)
                 let receiverReciever = recipient.getFungibleTokenReceiver()
                 receiverReciever.deposit(from: <- self.genericFTPool.remove(key: identifier)!)
             }
@@ -493,7 +526,7 @@ pub contract FLOATEventsBook {
 
             // NFT Token will be withdraw to owner
             for identifier in self.genericNFTPool.keys {
-                let recipient = TokenRecipient(address: self.receiver, identifier: identifier)
+                let recipient = TokenRecipient(self.receiver, identifier)
                 let receiverCollection = recipient.getNFTCollectionPublic()
                 let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
                 let keys = collection.getIDs()
@@ -538,14 +571,51 @@ pub contract FLOATEventsBook {
             strategyIndex: Int,
             user: &{AchievementPublic}
         ) {
+            // ensure achievement record should be same
+            let achievementIdentifier = user.getTarget().toString()
+            let bookIdentifier = self.getParentIdentifier().toString()
+            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as events book identifier")
+
+            // verify if user can claim
             let strategy = self.borrowStrategyRef(idx: strategyIndex)
+            assert(strategy.verifyClaimable(user: user), message: "Currently the user cannot to do claiming.")
 
-            // TODO
+            // execute claim one share
+            strategy.controller.claimOneShare()
 
-            // pre {
-            //     self.currentState == StrategyState.claimable: "Ensure current stage is claimable."
-            // }
-            emit FLOATEventsBookTreasuryClaimed()
+            // distribute tokens
+            let strategyInfo = strategy.controller.getInfo()
+            let claimer = user.getOwner()
+
+            // FT rewards
+            let ftRewards = strategyInfo.oneShareOfClaimableFT
+            for ftIdentifier in ftRewards.keys {
+                let amount = ftRewards[ftIdentifier]!
+                let recipient = TokenRecipient(claimer, ftIdentifier).getFungibleTokenReceiver()
+                // transfer FT rewards
+                self.verifyAndTransferFT(identifer: ftIdentifier, amount: amount, recipient: recipient)
+            }
+
+            // NFT rewards
+            let nftRewards = strategyInfo.oneShareOfClaimableNFT
+            for nftIdentifier in nftRewards.keys {
+                let amount = nftRewards[nftIdentifier]!
+                let recipient = TokenRecipient(claimer, nftIdentifier).getNFTCollectionPublic()
+                // transfer NFT rewards
+                self.verifyAndTransferNFT(identifer: nftIdentifier, amount: amount, recipient: recipient)
+            }
+
+            // update achievement record
+            user.treasuryClaimed(strategy: strategy)
+
+            // emit claimed event
+            emit FLOATEventsBookTreasuryClaimed(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                strategyIdentifier: strategy.getType().identifier,
+                index: strategyIndex,
+                claimer: user.getOwner()
+            )
         }
 
         // --- Setters - Private Interfaces ---
@@ -590,7 +660,7 @@ pub contract FLOATEventsBook {
             let keys = collection.getIDs()
             assert(keys.length > 0, message: "Empty collection.")
 
-            let nftIdentifier = collection.borrowNFT(id: keys[0]).getType().identifier
+            let nftIdentifier = collection.getType().identifier
             let tokenInfo = FLOATEventsBook.getTokenDefintion(nftIdentifier)
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
@@ -685,6 +755,49 @@ pub contract FLOATEventsBook {
         }
 
         // --- Self Only ---
+
+        // withdraw FT from treasury and transfer to recipient
+        access(self) fun verifyAndTransferFT(identifer: String, amount: UFix64, recipient: &{FungibleToken.Receiver}) {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(identifer)
+                ?? panic("This token is not defined.")
+            assert(!tokenInfo.isNFT, message: "This token should be FT.")
+
+            // ensure type is same
+            let recipientIdentifier = recipient.getType().identifier
+            assert(recipientIdentifier == tokenInfo.type, message: "Recipient identifier should be same as definition")
+            assert(self.genericFTPool[tokenInfo.type] != nil, message: "There is no ft in the treasury.")
+
+            // ensure amount enough
+            let treasuryRef = &self.genericFTPool[tokenInfo.type] as! &{FungibleToken.Provider, FungibleToken.Balance}
+            assert(treasuryRef.balance >= amount, message: "The balance is not enough.")
+
+            // do 'transfer' action
+            recipient.deposit(from: <- treasuryRef.withdraw(amount: amount))
+        }
+
+        // withdraw NFT from treasury and transfer to recipient
+        access(self) fun verifyAndTransferNFT(identifer: String, amount: UInt64, recipient: &{NonFungibleToken.CollectionPublic}) {
+            let tokenInfo = FLOATEventsBook.getTokenDefintion(identifer)
+                ?? panic("This token is not defined.")
+            assert(tokenInfo.isNFT, message: "This token should be NFT.")
+
+            // ensure type is same
+            let recipientIdentifier = recipient.getType().identifier
+            assert(recipientIdentifier == tokenInfo.type, message: "Recipient identifier should be same as definition")
+            assert(self.genericNFTPool[tokenInfo.type] != nil, message: "There is no nft in the treasury.")
+
+            // ensure amount enough
+            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as! &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
+            let ids = treasuryRef.getIDs()
+            assert(ids.length > 0 && UInt64(ids.length) >= amount, message: "NFTs is not enough.")
+
+            // do 'batch transfer' action
+            var i: UInt64 = 0
+            while i < amount {
+                recipient.deposit(token: <- treasuryRef.withdraw(withdrawID: ids.removeFirst()))
+                i = i + 1
+            }
+        }
 
         // get identifier
         access(self) fun getParentIdentifier(): EventsBookIdentifier {
@@ -1069,7 +1182,7 @@ pub contract FLOATEventsBook {
         pub fun getFinishedGoals(): [{IAchievementGoal}]
 
         // Update treasury claimed information
-        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) // ToCall
+        access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
     }
 
     // Achievement private interface
@@ -1176,9 +1289,9 @@ pub contract FLOATEventsBook {
 
         // Update treasury claimed information
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy}) {
+            let info = strategy.controller.getInfo()
             // only consumable strategy will update score
-            if strategy.consumable {
-                let info = strategy.controller.getInfo()
+            if info.consumable {
                 assert(self.consumableScore >= info.threshold, message: "Consumable score is not enough.")
 
                 self.consumableScore = self.consumableScore.saturatingSubtract(info.threshold)
