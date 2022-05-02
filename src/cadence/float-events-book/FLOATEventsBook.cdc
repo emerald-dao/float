@@ -286,8 +286,10 @@ pub contract FLOATEventsBook {
             }
         }
 
-        // Will have `assert`s in it to make sure
-        // the user fits some criteria.
+        // Fetch detail of the goal
+        pub fun getGoalDetail(): {String: AnyStruct}
+
+        // Check if user fits some criteria.
         access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address): Bool {
             post {
                 result: "Failed to verify"
