@@ -444,6 +444,9 @@ pub contract FLOATEventsBook {
             }
         }
 
+        // invoked when state changed
+        access(account) fun onStateChanged(state: StrategyState)
+
         // verify if the user match the strategy
         pub fun verifyClaimable(user: &{AchievementPublic}): Bool {
             pre {
@@ -452,7 +455,7 @@ pub contract FLOATEventsBook {
         }
 
         // update user's achievement
-        access(contract) fun updateAchievement(user: &{AchievementPublic}) {
+        access(account) fun updateAchievement(user: &{AchievementPublic}) {
             pre {
                 self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
@@ -719,6 +722,8 @@ pub contract FLOATEventsBook {
 
             // go to next stage
             let ret = strategy.controller.nextStage()
+            // execute on state changed
+            strategy.onStateChanged(state: ret)
 
             emit FLOATEventsBookTreasuryStrategyNextStage(
                 bookId: self.bookId,

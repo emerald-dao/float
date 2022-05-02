@@ -158,4 +158,75 @@ pub contract FLOATStrategies {
         }
     }
 
+    // distrute reward by Lottery
+    pub resource LotteryStrategy: FLOATEventsBook.ITreasuryStrategy {
+        // strategy general controler
+        access(account) let controller: @FLOATEventsBook.StrategyController
+
+        init(controller: @FLOATEventsBook.StrategyController) {
+            self.controller <- controller
+        }
+
+        destroy() {
+            destroy self.controller
+        }
+
+        // check if strategy can go to claimable
+        pub fun isReadyToClaimable(): Bool {
+            // TODO
+            return false
+        }
+
+        // invoked when state changed
+        access(account) fun onStateChanged(state: FLOATEventsBook.StrategyState) {
+            // TODO
+        }
+
+        // verify if the user match the strategy
+        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+            // TODO
+            return false
+        }
+
+        // update user's achievement
+        access(account) fun updateAchievement(user: &{FLOATEventsBook.AchievementPublic}) {
+            // TODO
+        }
+    }
+
+    // distrute reward by queue
+    pub resource ClaimingQueueStrategy: FLOATEventsBook.ITreasuryStrategy {
+        // strategy general controler
+        access(account) let controller: @FLOATEventsBook.StrategyController
+
+        init(controller: @FLOATEventsBook.StrategyController) {
+            self.controller <- controller
+        }
+
+        destroy() {
+            destroy self.controller
+        }
+
+        // check if strategy can go to claimable
+        pub fun isReadyToClaimable(): Bool {
+            // TODO
+            return false
+        }
+
+        // invoked when state changed
+        access(account) fun onStateChanged(state: FLOATEventsBook.StrategyState) {
+            // TODO
+        }
+
+        // verify if the user match the strategy
+        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+            // TODO
+            return false
+        }
+
+        // update user's achievement
+        access(account) fun updateAchievement(user: &{FLOATEventsBook.AchievementPublic}) {
+            // TODO
+        }
+    }
 }
