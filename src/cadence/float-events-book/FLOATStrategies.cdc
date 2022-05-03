@@ -235,21 +235,34 @@ pub contract FLOATStrategies {
 
         // invoked when state changed
         access(account) fun onStateChanged(state: FLOATEventsBook.StrategyState) {
-            // TODO
+            // TODO do lottery
         }
 
         // ---------- opening Stage ----------
 
         // check if strategy can go to claimable
         pub fun isReadyToClaimable(): Bool {
-            let validUserAmount = self.valid.length
-            let now = getCurrentBlock().timestamp
-            return UInt64(validUserAmount) >= self.minimiumValid && now <= (self.ending[FLOATEventsBook.StrategyState.opening] ?? now)
-        }
+            return UInt64(self.valid.length) >= self.minimiumValid
+        } 
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
-            // TODO
+            var isValid = false
+            let now = getCurrentBlock().timestamp
+            if now <= (self.ending[FLOATEventsBook.StrategyState.opening] ?? now) {
+                return
+            }
+
+            let info = self.controller.getInfo()
+            if info.consumable {
+                isValid = info.threshold <= user.getConsumableScore()
+            } else {
+                isValid = info.threshold <= user.getTotalScore()
+            }
+            // add to valid
+            if isValid {
+                self.valid.append(user.getOwner())
+            }
         }
 
         // ---------- claimable Stage ----------
