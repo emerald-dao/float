@@ -158,23 +158,79 @@ pub contract FLOATStrategies {
         }
     }
 
+    pub enum StrategyType: UInt8 {
+        pub case Lottery
+        pub case ClaimingQueue
+    }
+
+    // Strategy parameter
+    pub struct LotteryDetail {
+        // minimium valid users reached
+        pub let minimiumValid: UInt64
+        // datetimes ending to limit
+        pub let ending: {FLOATEventsBook.StrategyState: UFix64}
+        // valid users to do a lottery
+        pub let valid: [Address]
+        // lottery winners
+        pub let winners: [Address]
+        // winners who has claimed rewards
+        pub let claimed: [Address]
+
+        init(
+            _ minValid: UInt64,
+            _ ending: {FLOATEventsBook.StrategyState: UFix64},
+            _ valid: [Address],
+            _ winners: [Address],
+            _ claimed: [Address]
+        ) {
+            self.minimiumValid = minValid
+            self.ending = ending
+            self.valid = valid
+            self.winners = winners
+            self.claimed = claimed
+        }
+    }
+
     // distrute reward by Lottery
     pub resource LotteryStrategy: FLOATEventsBook.ITreasuryStrategy {
-        // strategy general controler
+        // strategy general controller
         access(account) let controller: @FLOATEventsBook.StrategyController
+        access(self) let params: {String: AnyStruct}
 
-        init(controller: @FLOATEventsBook.StrategyController) {
+        access(self) let minimiumValid: UInt64
+        access(self) let ending: {FLOATEventsBook.StrategyState: UFix64}
+        access(self) var valid: [Address]
+        access(self) var winners: [Address]
+        access(self) var claimed: [Address]
+
+        init(
+            controller: @FLOATEventsBook.StrategyController,
+            params: {String: AnyStruct}
+        ) {
             self.controller <- controller
+            self.params = params
+
+            let info = self.controller.getInfo()
+            if let value = params["minValid"] {
+                self.minimiumValid = value as! UInt64
+            } else {
+                self.minimiumValid = info.maxClaimableAmount
+            }
+
+            self.ending = FLOATStrategies.parseStrategyTime(params)
+
+            self.valid = []
+            self.winners = []
+            self.claimed = []
         }
 
         destroy() {
             destroy self.controller
         }
 
-        // check if strategy can go to claimable
-        pub fun isReadyToClaimable(): Bool {
-            // TODO
-            return false
+        // Fetch detail of the strategy
+        pub fun getStrategyDetail(): LotteryDetail {
+            return LotteryDetail(self.minimiumValid, self.ending, self.valid, self.winners, self.claimed)
         }
 
         // invoked when state changed
@@ -182,24 +238,48 @@ pub contract FLOATStrategies {
             // TODO
         }
 
-        // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
-            // TODO
-            return false
+        // ---------- opening Stage ----------
+
+        // check if strategy can go to claimable
+        pub fun isReadyToClaimable(): Bool {
+            let validUserAmount = self.valid.length
+            let now = getCurrentBlock().timestamp
+            return UInt64(validUserAmount) >= self.minimiumValid && now <= (self.ending[FLOATEventsBook.StrategyState.opening] ?? now)
         }
 
         // update user's achievement
-        access(account) fun updateAchievement(user: &{FLOATEventsBook.AchievementPublic}) {
+        access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
             // TODO
+        }
+
+        // ---------- claimable Stage ----------
+
+        // verify if the user match the strategy
+        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+            let now = getCurrentBlock().timestamp
+            assert(now <= (self.ending[FLOATEventsBook.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
+
+            return self.valid.contains(user.getOwner())
+        }
+    }
+    
+    // Strategy parameter
+    pub struct ClaimingQueueDetail {
+
+        init() {
+
         }
     }
 
     // distrute reward by queue
     pub resource ClaimingQueueStrategy: FLOATEventsBook.ITreasuryStrategy {
-        // strategy general controler
+        // strategy general controller
         access(account) let controller: @FLOATEventsBook.StrategyController
 
-        init(controller: @FLOATEventsBook.StrategyController) {
+        init( 
+            controller: @FLOATEventsBook.StrategyController,
+            params: {String: AnyStruct}
+        ) {
             self.controller <- controller
         }
 
@@ -207,10 +287,9 @@ pub contract FLOATStrategies {
             destroy self.controller
         }
 
-        // check if strategy can go to claimable
-        pub fun isReadyToClaimable(): Bool {
-            // TODO
-            return false
+        // Fetch detail of the strategy
+        pub fun getStrategyDetail(): ClaimingQueueDetail {
+            return ClaimingQueueDetail()
         }
 
         // invoked when state changed
@@ -218,15 +297,61 @@ pub contract FLOATStrategies {
             // TODO
         }
 
-        // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+        // ---------- opening Stage ----------
+
+        // check if strategy can go to claimable
+        pub fun isReadyToClaimable(): Bool {
             // TODO
             return false
         }
 
         // update user's achievement
-        access(account) fun updateAchievement(user: &{FLOATEventsBook.AchievementPublic}) {
+        access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
             // TODO
+        }
+        // ---------- claimable Stage ----------
+
+        // verify if the user match the strategy
+        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+            // TODO
+            return false
+        }
+    }
+
+    // parse strategy ending time from params
+    access(contract) fun parseStrategyTime(_ params: {String: AnyStruct}): {FLOATEventsBook.StrategyState: UFix64} {
+        let ending: {FLOATEventsBook.StrategyState: UFix64} = {}
+        let now = getCurrentBlock().timestamp
+
+        if let value = params["openingEnd"] {
+            let timestamp = value as! UFix64
+            assert(now <= timestamp, message: "Sorry! The openingEnd time has run out")
+            ending[FLOATEventsBook.StrategyState.opening] = timestamp
+        }
+
+        if let value = params["claimableEnd"] {
+            let timestamp = value as! UFix64
+            assert(now <= timestamp, message: "Sorry! The claimableEnd time has run out")
+            ending[FLOATEventsBook.StrategyState.claimable] = timestamp
+        }
+
+        return ending
+    }
+
+    // Strategy factory method
+    pub fun createStrategy(
+        type: StrategyType,
+        controller: @FLOATEventsBook.StrategyController,
+        params: {String: AnyStruct}
+    ): @{FLOATEventsBook.ITreasuryStrategy}? {
+        switch type {
+        case StrategyType.Lottery:
+            return <- create LotteryStrategy(controller: <- controller, params: params)
+        case StrategyType.ClaimingQueue:
+            return <- create ClaimingQueueStrategy(controller: <- controller, params: params)
+        default:
+            destroy controller
+            return nil
         }
     }
 }

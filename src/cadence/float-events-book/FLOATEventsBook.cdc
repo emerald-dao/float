@@ -386,9 +386,20 @@ pub contract FLOATEventsBook {
         }
 
         // get a copy of strategy information
-        access(contract) fun getInfo(): StrategyInformation {
+        pub fun getInfo(): StrategyInformation {
             return self.info.clone()
         }
+
+        // execute and go next
+        access(contract) fun nextStage(): StrategyState {
+            pre {
+                self.info.currentState != StrategyState.closed: "Strategy is closed"
+            }
+            self.info.setCurrentState(value: StrategyState(rawValue: self.info.currentState.rawValue + 1)!)
+            return self.info.currentState
+        }
+
+        // ---------- claimable Stage ----------
 
         // verify if user can claim this
         access(contract) fun verifyClaimable(user: &{AchievementPublic}): Bool {
@@ -405,22 +416,14 @@ pub contract FLOATEventsBook {
             return true
         }
 
-        // execute and go next
-        access(contract) fun nextStage(): StrategyState {
-            pre {
-                self.info.currentState != StrategyState.closed: "Strategy is closed"
-            }
-            self.info.setCurrentState(value: StrategyState(rawValue: self.info.currentState.rawValue + 1)!)
-            return self.info.currentState
-        }
-
         // claim one share
-        access(contract) fun claimOneShare() {
+        access(contract) fun oneShareClaimed(): UInt64 {
             pre {
                 self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
                 self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
             }
             self.info.setClaimedAmount(value: self.info.claimedAmount + 1)
+            return self.info.claimedAmount
         }
     }
 
@@ -430,12 +433,22 @@ pub contract FLOATEventsBook {
         access(account) let controller: @StrategyController
 
         init(
-            controller: @StrategyController
+            controller: @StrategyController,
+            params: {String: AnyStruct}
         ) {
             post {
                 self.controller.getInfo().currentState == StrategyState.preparing: "CurrentState should be preparing"
             }
         }
+
+        // Fetch detail of the strategy
+        pub fun getStrategyDetail(): AnyStruct
+
+
+        // invoked when state changed
+        access(account) fun onStateChanged(state: StrategyState)
+
+        // ---------- opening Stage ----------
 
         // check if strategy can go to claimable
         pub fun isReadyToClaimable(): Bool {
@@ -444,20 +457,19 @@ pub contract FLOATEventsBook {
             }
         }
 
-        // invoked when state changed
-        access(account) fun onStateChanged(state: StrategyState)
+        // update user's achievement
+        access(account) fun onGoalAccomplished(user: &{AchievementPublic}) {
+            pre {
+                self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
+            }
+        }
+
+        // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
         pub fun verifyClaimable(user: &{AchievementPublic}): Bool {
             pre {
                 self.controller.verifyClaimable(user: user): "The user cannot to claim for now"
-            }
-        }
-
-        // update user's achievement
-        access(account) fun updateAchievement(user: &{AchievementPublic}) {
-            pre {
-                self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
         }
     }
@@ -585,9 +597,6 @@ pub contract FLOATEventsBook {
             let strategy = self.borrowStrategyRef(idx: strategyIndex)
             assert(strategy.verifyClaimable(user: user), message: "Currently the user cannot to do claiming.")
 
-            // execute claim one share
-            strategy.controller.claimOneShare()
-
             // distribute tokens
             let strategyInfo = strategy.controller.getInfo()
             let claimer = user.getOwner()
@@ -610,6 +619,9 @@ pub contract FLOATEventsBook {
                 self.verifyAndTransferNFT(identifer: nftIdentifier, amount: amount, recipient: recipient)
             }
 
+            // execute claim one share
+            let currentClaimed = strategy.controller.oneShareClaimed()
+
             // update achievement record
             user.treasuryClaimed(strategy: strategy)
 
@@ -621,6 +633,11 @@ pub contract FLOATEventsBook {
                 index: strategyIndex,
                 claimer: user.getOwner()
             )
+
+            // check if all shares claimed, go next stage
+            if currentClaimed >= strategyInfo.maxClaimableAmount {
+                self.nextStrategyStage(idx: strategyIndex)
+            }
         }
 
         // --- Setters - Private Interfaces ---
@@ -1043,8 +1060,18 @@ pub contract FLOATEventsBook {
         ): UInt64
         // revoke a events book.
         pub fun revokeEventsBook(bookId: UInt64)
+
         // registor a token info for general usage
         pub fun registerToken(path: PublicPath, isNFT: Bool)
+
+        // create strategy controller
+        pub fun createStrategyController(
+            consumable: Bool,
+            threshold: UInt64,
+            maxClaimableAmount: UInt64,
+            oneShareOfClaimableFT: {String: UFix64},
+            oneShareOfClaimableNFT: {String: UInt64},
+        ): @StrategyController
     }
 
     // the events book resource collection
@@ -1157,6 +1184,23 @@ pub contract FLOATEventsBook {
                     ?? panic("Could not borrow the &{FungibleToken.Receiver}")
                 FLOATEventsBook.setTokenDefintion(token: ft.getType(), path: path, isNFT: false)
             }
+        }
+
+        // create the controller resource
+        pub fun createStrategyController(
+            consumable: Bool,
+            threshold: UInt64,
+            maxClaimableAmount: UInt64,
+            oneShareOfClaimableFT: {String: UFix64},
+            oneShareOfClaimableNFT: {String: UInt64},
+        ): @StrategyController {
+            return <- create StrategyController(
+                consumable: consumable,
+                threshold: threshold,
+                maxClaimableAmount: maxClaimableAmount,
+                oneShareOfClaimableFT: oneShareOfClaimableFT,
+                oneShareOfClaimableNFT: oneShareOfClaimableNFT
+            )
         }
 
         // --- Setters - Contract Only ---
@@ -1277,7 +1321,7 @@ pub contract FLOATEventsBook {
             let treasury = eventsBookRef.borrowTreasury()
             let openingStrategies = treasury.borrowStrategiesRef(state: StrategyState.opening)
             for strategy in openingStrategies {
-                strategy.updateAchievement(user: &self as &{AchievementPublic})
+                strategy.onGoalAccomplished(user: &self as &{AchievementPublic})
             }
 
             // add to finished goal
