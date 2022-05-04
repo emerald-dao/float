@@ -18,8 +18,8 @@ pub contract FLOATEventsBook {
     pub let FLOATEventsBookshelfPrivatePath: PrivatePath
     pub let FLOATEventsBookshelfPublicPath: PublicPath
 
-    pub let FLOATAchievementsStoragePath: StoragePath
-    pub let FLOATAchievementsPublicPath: PublicPath
+    pub let FLOATAchievementBoardStoragePath: StoragePath
+    pub let FLOATAchievementBoardPublicPath: PublicPath
 
     /**    ____ _  _ ____ _  _ ___ ____
        *   |___ |  | |___ |\ |  |  [__
@@ -1450,8 +1450,8 @@ pub contract FLOATEventsBook {
         self.FLOATEventsBookshelfPrivatePath = /private/FLOATEventsBookshelfPath
         self.FLOATEventsBookshelfPublicPath = /public/FLOATEventsBookshelfPath
 
-        self.FLOATAchievementsStoragePath = /storage/FLOATAchievementsPath
-        self.FLOATAchievementsPublicPath = /public/FLOATAchievementsPath
+        self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPath
+        self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPath
 
         emit ContractInitialized()
     }
