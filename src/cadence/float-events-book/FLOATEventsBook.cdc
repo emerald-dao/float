@@ -414,16 +414,21 @@ pub contract FLOATEventsBook {
         // ---------- claimable Stage ----------
 
         // verify if user can claim this
-        access(contract) fun verifyClaimable(user: &{AchievementPublic}): Bool {
-            pre {
-                self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
-                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
-            }
+        access(contract) fun verifyScore(user: &{AchievementPublic}): Bool {
             let thresholdScore = self.info.threshold
             if self.info.consumable {
                 assert(thresholdScore <= user.getConsumableScore(), message: "Consumable score is not enough.")
             } else {
                 assert(thresholdScore <= user.getTotalScore(), message: "Total score is not enough.")
+            }
+            return true
+        }
+
+        // verify if the state is claimable
+        access(contract) fun verifyClaimableState(): Bool {
+            pre {
+                self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
+                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
             }
             return true
         }
@@ -473,9 +478,10 @@ pub contract FLOATEventsBook {
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{AchievementPublic}): Bool {
+        access(account) fun verifyClaimable(user: &{AchievementPublic}): Bool {
             pre {
-                self.controller.verifyClaimable(user: user): "The user cannot to claim for now"
+                self.controller.verifyScore(user: user): "The user cannot to claim for now"
+                self.controller.verifyClaimableState(): "Verify if the strategy is claimable"
             }
         }
     }

@@ -309,7 +309,7 @@ pub contract FLOATStrategies {
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+        access(account) fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
             let now = getCurrentBlock().timestamp
             assert(now <= (self.ending[FLOATEventsBook.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
 
@@ -319,9 +319,13 @@ pub contract FLOATStrategies {
     
     // Strategy parameter
     pub struct ClaimingQueueDetail {
-
-        init() {
-
+        // datetimes ending to limit
+        pub let ending: {FLOATEventsBook.StrategyState: UFix64}
+        
+        init(
+            _ ending: {FLOATEventsBook.StrategyState: UFix64}
+        ) {
+            self.ending = ending
         }
     }
 
@@ -329,12 +333,19 @@ pub contract FLOATStrategies {
     pub resource ClaimingQueueStrategy: FLOATEventsBook.ITreasuryStrategy {
         // strategy general controller
         access(account) let controller: @FLOATEventsBook.StrategyController
+        access(self) let params: {String: AnyStruct}
+
+        access(self) let ending: {FLOATEventsBook.StrategyState: UFix64}
 
         init( 
             controller: @FLOATEventsBook.StrategyController,
             params: {String: AnyStruct}
         ) {
             self.controller <- controller
+            self.params = params
+
+            // user ending time
+            self.ending = FLOATStrategies.parseStrategyTime(params)
         }
 
         destroy() {
@@ -343,26 +354,28 @@ pub contract FLOATStrategies {
 
         // Fetch detail of the strategy
         pub fun getStrategyDetail(): ClaimingQueueDetail {
-            return ClaimingQueueDetail()
+            return ClaimingQueueDetail(self.ending)
         }
 
         // invoked when state changed
         access(account) fun onStateChanged(state: FLOATEventsBook.StrategyState) {
-            // TODO
+            // NOTHING
         }
 
         // ---------- opening Stage ----------
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
-            // TODO
+            // NOTHING
         }
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        pub fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
-            // TODO
-            return false
+        access(account) fun verifyClaimable(user: &{FLOATEventsBook.AchievementPublic}): Bool {
+            let now = getCurrentBlock().timestamp
+            assert(now <= (self.ending[FLOATEventsBook.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
+
+            return true
         }
     }
 
