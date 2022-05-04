@@ -374,6 +374,7 @@ pub contract FLOATEventsBook {
     pub resource StrategyController {
         // basic info
         access(self) let info: StrategyInformation
+        access(self) let claimed: [Address]
 
         init(
             consumable: Bool,
@@ -383,11 +384,22 @@ pub contract FLOATEventsBook {
             oneShareOfClaimableNFT: {String: UInt64}
         ) {
             self.info = StrategyInformation(consumable, threshold, maxClaimableAmount, oneShareOfClaimableFT, oneShareOfClaimableNFT)
+            self.claimed = []
         }
 
         // get a copy of strategy information
         pub fun getInfo(): StrategyInformation {
             return self.info.clone()
+        }
+
+        // get claimed addresses
+        pub fun getClaimedAddresses(): [Address] {
+            return self.claimed
+        }
+
+        // if user has claimed
+        pub fun hasClaimed(address: Address): Bool {
+            return self.claimed.contains(address)
         }
 
         // execute and go next
@@ -417,12 +429,14 @@ pub contract FLOATEventsBook {
         }
 
         // claim one share
-        access(contract) fun oneShareClaimed(): UInt64 {
+        access(contract) fun oneShareClaimed(user: &{AchievementPublic}): UInt64 {
             pre {
                 self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
                 self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
+                !self.hasClaimed(address: user.getOwner()): "The user has claimed one share."
             }
             self.info.setClaimedAmount(value: self.info.claimedAmount + 1)
+            self.claimed.append(user.getOwner())
             return self.info.claimedAmount
         }
     }
@@ -444,18 +458,10 @@ pub contract FLOATEventsBook {
         // Fetch detail of the strategy
         pub fun getStrategyDetail(): AnyStruct
 
-
         // invoked when state changed
         access(account) fun onStateChanged(state: StrategyState)
 
         // ---------- opening Stage ----------
-
-        // check if strategy can go to claimable
-        pub fun isReadyToClaimable(): Bool {
-            pre {
-                self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
-            }
-        }
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{AchievementPublic}) {
@@ -620,7 +626,7 @@ pub contract FLOATEventsBook {
             }
 
             // execute claim one share
-            let currentClaimed = strategy.controller.oneShareClaimed()
+            let currentClaimed = strategy.controller.oneShareClaimed(user: user)
 
             // update achievement record
             user.treasuryClaimed(strategy: strategy)
@@ -731,11 +737,6 @@ pub contract FLOATEventsBook {
         pub fun nextStrategyStage(idx: Int): StrategyState {
             let strategy = self.borrowStrategyRef(idx: idx)
             let currentState = strategy.controller.getInfo().currentState
-
-            // if opening to claimable, we should check if claimable
-            if currentState == StrategyState.opening {
-                assert(strategy.isReadyToClaimable(), message: "Strategy should be ready to claimable")
-            }
 
             // go to next stage
             let ret = strategy.controller.nextStage()

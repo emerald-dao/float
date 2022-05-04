@@ -2,6 +2,19 @@ import FLOATEventsBook from "./FLOATEventsBook.cdc"
 
 pub contract FLOATStrategies {
 
+    /**    ____ _  _ ____ _  _ ___ ____
+       *   |___ |  | |___ |\ |  |  [__
+        *  |___  \/  |___ | \|  |  ___]
+         ******************************/
+
+    pub event FLOATStrategyGoalAccomplished(strategyIdentifier: String, user: Address)
+    pub event FLOATStrategyLotteryDrawn(strategyIdentifier: String, winners: [Address])
+
+    /**    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ _    _ ___ _   _
+       *   |___ |  | |\ | |     |  | |  | |\ | |__| |    |  |   \_/
+        *  |    |__| | \| |___  |  | |__| | \| |  | |___ |  |    |
+         ***********************************************************/
+
     // Accomplish goal when a certain amount is collected
     pub struct CollectByAmountGoal: FLOATEventsBook.IAchievementGoal {
         // achievement title
@@ -173,21 +186,17 @@ pub contract FLOATStrategies {
         pub let valid: [Address]
         // lottery winners
         pub let winners: [Address]
-        // winners who has claimed rewards
-        pub let claimed: [Address]
 
         init(
             _ minValid: UInt64,
             _ ending: {FLOATEventsBook.StrategyState: UFix64},
             _ valid: [Address],
-            _ winners: [Address],
-            _ claimed: [Address]
+            _ winners: [Address]
         ) {
             self.minimiumValid = minValid
             self.ending = ending
             self.valid = valid
             self.winners = winners
-            self.claimed = claimed
         }
     }
 
@@ -201,7 +210,6 @@ pub contract FLOATStrategies {
         access(self) let ending: {FLOATEventsBook.StrategyState: UFix64}
         access(self) var valid: [Address]
         access(self) var winners: [Address]
-        access(self) var claimed: [Address]
 
         init(
             controller: @FLOATEventsBook.StrategyController,
@@ -216,12 +224,13 @@ pub contract FLOATStrategies {
             } else {
                 self.minimiumValid = info.maxClaimableAmount
             }
+            assert(self.minimiumValid >= info.maxClaimableAmount, message: "min valid amount should be greater then max claimable amount.")
 
+            // user ending time
             self.ending = FLOATStrategies.parseStrategyTime(params)
 
             self.valid = []
             self.winners = []
-            self.claimed = []
         }
 
         destroy() {
@@ -230,26 +239,52 @@ pub contract FLOATStrategies {
 
         // Fetch detail of the strategy
         pub fun getStrategyDetail(): LotteryDetail {
-            return LotteryDetail(self.minimiumValid, self.ending, self.valid, self.winners, self.claimed)
+            return LotteryDetail(self.minimiumValid, self.ending, self.valid, self.winners)
         }
 
         // invoked when state changed
         access(account) fun onStateChanged(state: FLOATEventsBook.StrategyState) {
-            // TODO do lottery
+            // if current is not `claimable`, return directly
+            if state != FLOATEventsBook.StrategyState.claimable {
+                return
+            }
+
+            // special for claimable
+            let isValidEnough = UInt64(self.valid.length) >= self.minimiumValid
+            assert(isValidEnough, message: "Valid addresses is not enough.")
+
+            let info = self.controller.getInfo()
+            let winnerAmount = info.maxClaimableAmount
+
+            // draw a lottery to pick winners
+            var amt: UInt64 = 0
+            while amt < winnerAmount {
+                let rand = unsafeRandom()
+                let pickedIndex = rand % UInt64(self.valid.length)
+                let pickedAddress = self.valid[pickedIndex]
+                if !self.winners.contains(pickedAddress) {
+                    // remove from valid
+                    self.valid.remove(at: pickedIndex)
+                    // add to winners
+                    self.winners.append(pickedAddress)
+                    amt = amt + 1
+                }
+            }
+
+            emit FLOATStrategyLotteryDrawn(
+                strategyIdentifier: self.getType().identifier,
+                winners: self.winners
+            )
         }
 
         // ---------- opening Stage ----------
-
-        // check if strategy can go to claimable
-        pub fun isReadyToClaimable(): Bool {
-            return UInt64(self.valid.length) >= self.minimiumValid
-        } 
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
             var isValid = false
             let now = getCurrentBlock().timestamp
-            if now <= (self.ending[FLOATEventsBook.StrategyState.opening] ?? now) {
+            // user should accomplish goals before opening ending
+            if now > (self.ending[FLOATEventsBook.StrategyState.opening] ?? now) {
                 return
             }
 
@@ -260,8 +295,14 @@ pub contract FLOATStrategies {
                 isValid = info.threshold <= user.getTotalScore()
             }
             // add to valid
-            if isValid {
-                self.valid.append(user.getOwner())
+            let address = user.getOwner()
+            if isValid && !self.valid.contains(address) {
+                self.valid.append(address)
+
+                emit FLOATStrategyGoalAccomplished(
+                    strategyIdentifier: self.getType().identifier,
+                    user: address
+                )
             }
         }
 
@@ -311,12 +352,6 @@ pub contract FLOATStrategies {
         }
 
         // ---------- opening Stage ----------
-
-        // check if strategy can go to claimable
-        pub fun isReadyToClaimable(): Bool {
-            // TODO
-            return false
-        }
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventsBook.AchievementPublic}) {
