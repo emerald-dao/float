@@ -862,12 +862,12 @@ pub contract FLOATEventsBook {
         pub fun getGoal(idx: Int): {IAchievementGoal}
         // borrow the treasury public reference
         pub fun borrowTreasury(): &Treasury{TreasuryPublic}
-        // borrow the treasury private reference
-        access(contract) fun borrowTreasuryPrivate(): &Treasury{TreasuryPrivate}
     }
 
     // A private interface to write for EventsBook
     pub resource interface EventsBookPrivate {
+        // borrow the treasury private reference
+        pub fun borrowTreasuryPrivate(): &Treasury{TreasuryPublic, TreasuryPrivate}
         // update basic information
         pub fun updateBasics(name: String, description: String, image: String)
         // update slot identifier information
@@ -988,6 +988,11 @@ pub contract FLOATEventsBook {
 
         // --- Setters - Private Interfaces ---
 
+        // borrow the treasury private reference
+        pub fun borrowTreasuryPrivate(): &Treasury{TreasuryPublic, TreasuryPrivate} {
+            return &self.treasury as &Treasury{TreasuryPublic, TreasuryPrivate}
+        }
+
         pub fun updateBasics(name: String, description: String, image: String) {
             self.name = name
             self.description = description
@@ -1033,11 +1038,6 @@ pub contract FLOATEventsBook {
 
         // --- Setters - Contract Only ---
 
-        // borrow the treasury private reference
-        access(contract) fun borrowTreasuryPrivate(): &Treasury{TreasuryPrivate} {
-            return &self.treasury as &Treasury{TreasuryPrivate}
-        }
-
         // --- Self Only ---
 
     }
@@ -1050,8 +1050,8 @@ pub contract FLOATEventsBook {
         pub fun isRevoked(bookId: UInt64): Bool
         pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
         // internal full reference borrowing
-        access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook?
-        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
+        // access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook?
+        // access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
     }
 
     // A private interface to write for EventsBookshelf
@@ -1212,13 +1212,13 @@ pub contract FLOATEventsBook {
 
         // --- Setters - Contract Only ---
 
-        access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook? {
-            return &self.books[bookId] as? &EventsBook
-        }
+        // access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook? {
+        //     return &self.books[bookId] as? &EventsBook
+        // }
 
-        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
-            return &self as &EventsBookshelf
-        }
+        // access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
+        //     return &self as &EventsBookshelf
+        // }
 
         // --- Self Only ---
 
