@@ -31,6 +31,7 @@ pub contract FLOATEventsBook {
 
     pub event FLOATEventsBookCreated(bookId: UInt64, host: Address, name: String, description: String, image: String)
     pub event FLOATEventsBookRevoked(bookId: UInt64, host: Address)
+    pub event FLOATEventsBookRecovered(bookId: UInt64, host: Address)
     pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, host: Address, name: String, description: String, image: String)
     pub event FLOATEventsBookSlotUpdated(bookId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
     pub event FLOATEventsBookGoalAdded(bookId: UInt64, host: Address, goalTitle: String, points: UInt64)
@@ -93,7 +94,7 @@ pub contract FLOATEventsBook {
         emit ContractTokenDefintionUpdated(identifier: tokenType, path: path, isNFT: isNFT)
     }
 
-    access(account) fun getTokenDefinition(_ tokenIdentifier: String): TokenDefinition? {
+    pub fun getTokenDefinition(_ tokenIdentifier: String): TokenDefinition? {
         return self.tokenDefinitions[tokenIdentifier]
     }
 
@@ -955,7 +956,15 @@ pub contract FLOATEventsBook {
             self.image = image
 
             self.goals = goals
+
+            for slot in slots {
+                // ensure required slot is valid
+                if slot.isInstance(RequiredEventSlot.getType()) {
+                    slot.getIdentifier()!.getEventPublic()
+                }
+            }
             self.slots = slots
+
             self.treasury <- create Treasury(
                 bookId: self.uuid,
                 dropReceiver: host
@@ -1056,7 +1065,10 @@ pub contract FLOATEventsBook {
                 idx < self.slots.length: "The idx is out of Slots size."
             }
             let slot = self.slots[idx]
-            assert(slot.isInstance(Type<OptionalEventSlot>()) || slot.isInstance(Type<EmptyEventSlot>()), message: "The slot should be writable")
+            assert(slot.isInstance(OptionalEventSlot.getType()) || slot.isInstance(EmptyEventSlot.getType()), message: "The slot should be writable")
+            // ensure event public exist
+            identifier.getEventPublic()
+
             // update identifier information
             (slot as! &{WritableEventSlot}).setIdentifier(identifier)
 
@@ -1091,7 +1103,11 @@ pub contract FLOATEventsBook {
         // ---- Members ----
         pub let sequence: UInt64
         // ---- Methods ----
+        // get all ids including revoked
+        pub fun getEventsBookIDs(): [UInt64]
+        // check if some id is revoked
         pub fun isRevoked(bookId: UInt64): Bool
+        // borrow the public interface of EventsBook
         pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
         // internal full reference borrowing
         access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
@@ -1110,6 +1126,8 @@ pub contract FLOATEventsBook {
         ): UInt64
         // revoke a events book.
         pub fun revokeEventsBook(bookId: UInt64)
+        // recover a events book.
+        pub fun recoverEventsBook(bookId: UInt64)
 
         // registor a token info for general usage
         pub fun registerToken(path: PublicPath, isNFT: Bool)
@@ -1124,7 +1142,7 @@ pub contract FLOATEventsBook {
         ): @StrategyController
 
         // borrow eventsbook private ref
-        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPrivate}?
+        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPublic, EventsBookPrivate}?
     }
 
     // the events book resource collection
@@ -1162,6 +1180,10 @@ pub contract FLOATEventsBook {
 
         pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}? {
             return &self.books[bookId] as? &EventsBook{EventsBookPublic}
+        }
+
+        pub fun getEventsBookIDs(): [UInt64] {
+            return self.books.keys.concat(self.revoked.keys)
         }
 
         pub fun isRevoked(bookId: UInt64): Bool {
@@ -1223,6 +1245,13 @@ pub contract FLOATEventsBook {
             self.revoked[bookId] <-! book
             
             emit FLOATEventsBookRevoked(bookId: bookId, host: self.owner!.address)
+        }
+
+        pub fun recoverEventsBook(bookId: UInt64) {
+            let book <- self.revoked.remove(key: bookId) ?? panic("The events book does not exist")
+            self.books[bookId] <-! book
+
+            emit FLOATEventsBookRecovered(bookId: bookId, host: self.owner!.address)
         }
 
         pub fun registerToken(path: PublicPath, isNFT: Bool) {
