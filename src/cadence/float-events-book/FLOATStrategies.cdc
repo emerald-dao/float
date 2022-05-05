@@ -120,7 +120,7 @@ pub contract FLOATStrategies {
     }
  
     // Accomplish goal when some FLOATs are collected
-    pub struct CollectSpecialFLOATsGoal: FLOATEventsBook.IAchievementGoal {
+    pub struct CollectSpecificFLOATsGoal: FLOATEventsBook.IAchievementGoal {
         // achievement title
         pub let title: String
         // variables
