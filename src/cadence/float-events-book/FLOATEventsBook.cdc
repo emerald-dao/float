@@ -1365,15 +1365,15 @@ pub contract FLOATEventsBook {
     // A public interface to read AchievementBoard
     pub resource interface AchievementBoardPublic {
         // get the achievement reference by events book identifier
-        pub fun borrowAchievementRecordRef(target: EventsBookIdentifier): &{AchievementPublic}?
+        pub fun borrowAchievementRecordRef(host: Address, bookId: UInt64): &{AchievementPublic}?
     }
 
     // A private interface to write AchievementBoard
     pub resource interface AchievementBoardPrivate {
         // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, id: UInt64): EventsBookIdentifier
+        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventsBookIdentifier
         // get the achievement record reference by events book identifier
-        pub fun borrowAchievementRecordWritable(target: EventsBookIdentifier): &{AchievementPublic, AchievementWritable}?
+        pub fun borrowAchievementRecordWritable(host: Address, bookId: UInt64): &{AchievementPublic, AchievementWritable}?
     }
 
     // Users' Achievement board
@@ -1400,7 +1400,8 @@ pub contract FLOATEventsBook {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun borrowAchievementRecordRef(target: EventsBookIdentifier): &{AchievementPublic}? {
+        pub fun borrowAchievementRecordRef(host: Address, bookId: UInt64): &{AchievementPublic}? {
+            let target = EventsBookIdentifier(host, bookId)
             let key = target.toString()
             return &self.achievements[key] as? &{AchievementPublic}
         }
@@ -1408,8 +1409,8 @@ pub contract FLOATEventsBook {
         // --- Setters - Private Interfaces ---
 
         // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, id: UInt64): EventsBookIdentifier {
-            let identifier = EventsBookIdentifier(host, id)
+        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventsBookIdentifier {
+            let identifier = EventsBookIdentifier(host, bookId)
             let key = identifier.toString()
 
             assert(self.achievements[key] == nil, message: "Achievement of the event book should be empty.")
@@ -1417,18 +1418,19 @@ pub contract FLOATEventsBook {
 
             self.achievements[key] <-! create Achievement(
                 host: host,
-                bookId: id
+                bookId: bookId
             )
 
             emit FLOATAchievementRecordInitialized(
-                bookId: id,
+                bookId: bookId,
                 host: host,
                 owner: self.owner!.address
             )
             return identifier
         }
 
-        pub fun borrowAchievementRecordWritable(target: EventsBookIdentifier): &{AchievementPublic, AchievementWritable}? {
+        pub fun borrowAchievementRecordWritable(host: Address, bookId: UInt64): &{AchievementPublic, AchievementWritable}? {
+            let target = EventsBookIdentifier(host, bookId)
             let key = target.toString()
             return &self.achievements[key] as? &{AchievementPublic, AchievementWritable}
         }
