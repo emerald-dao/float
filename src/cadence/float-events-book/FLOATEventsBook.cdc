@@ -38,6 +38,7 @@ pub contract FLOATEventsBook {
     pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
     pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
     pub event FLOATEventsBookTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
+    pub event FLOATEventsBookTreasuryDropped(bookId: UInt64, host: Address, receiver: Address)
     pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
     pub event FLOATEventsBookTreasuryStrategyNextStage(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
     pub event FLOATEventsBookTreasuryClaimed(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
@@ -92,7 +93,7 @@ pub contract FLOATEventsBook {
         emit ContractTokenDefintionUpdated(identifier: tokenType, path: path, isNFT: isNFT)
     }
 
-    access(account) fun getTokenDefintion(_ tokenIdentifier: String): TokenDefinition? {
+    access(account) fun getTokenDefinition(_ tokenIdentifier: String): TokenDefinition? {
         return self.tokenDefinitions[tokenIdentifier]
     }
 
@@ -108,13 +109,13 @@ pub contract FLOATEventsBook {
 
         // check if the token is NFT
         access(contract) fun isNFT(): Bool {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             return tokenInfo.isNFT
         }
 
         // get ft receiver by address and identifier
         access(contract) fun getFungibleTokenReceiver(): &{FungibleToken.Receiver} {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
 
             let receiverVault = getAccount(self.address)
@@ -131,7 +132,7 @@ pub contract FLOATEventsBook {
 
         // get nft collection by address and identifier
         access(contract) fun getNFTCollectionPublic(): &{NonFungibleToken.CollectionPublic} {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             assert(tokenInfo.isNFT, message: "The token should be Non-Fungiable Token")
 
             let collection = getAccount(self.address)
@@ -503,6 +504,8 @@ pub contract FLOATEventsBook {
     pub resource interface TreasuryPrivate {
         // update drop receiver
         pub fun updateDropReceiver(receiver: Address)
+        // drop all treasury, if no strategy alive
+        pub fun dropTreasury()
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault)
         // deposit nft to treasury
@@ -541,27 +544,10 @@ pub contract FLOATEventsBook {
         }
 
         destroy() {
-            // FT will be withdrawed to owner
-            for identifier in self.genericFTPool.keys {
-                let recipient = TokenRecipient(self.receiver, identifier)
-                let receiverReciever = recipient.getFungibleTokenReceiver()
-                receiverReciever.deposit(from: <- self.genericFTPool.remove(key: identifier)!)
-            }
+            self.dropTreasury()
+
             destroy self.genericFTPool
-
-            // NFT Token will be withdraw to owner
-            for identifier in self.genericNFTPool.keys {
-                let recipient = TokenRecipient(self.receiver, identifier)
-                let receiverCollection = recipient.getNFTCollectionPublic()
-                let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
-                let keys = collection.getIDs()
-                for id in keys {
-                    receiverCollection.deposit(token: <- collection.withdraw(withdrawID: id))
-                }
-            }
             destroy self.genericNFTPool
-
-            // destroy strategies
             destroy self.strategies
         }
 
@@ -661,10 +647,43 @@ pub contract FLOATEventsBook {
             )
         }
 
+        // drop all treasury, if no strategy alive
+        pub fun dropTreasury() {
+            pre {
+                self.strategies.length == self.getStrategies(state: StrategyState.closed).length
+                    : "All strategies should be closed"
+            }
+
+            // FT will be withdrawed to owner
+            for identifier in self.genericFTPool.keys {
+                let recipient = TokenRecipient(self.receiver, identifier)
+                let receiverReciever = recipient.getFungibleTokenReceiver()
+                receiverReciever.deposit(from: <- self.genericFTPool.remove(key: identifier)!)
+            }
+
+            // NFT Token will be withdraw to owner
+            for identifier in self.genericNFTPool.keys {
+                let recipient = TokenRecipient(self.receiver, identifier)
+                let receiverCollection = recipient.getNFTCollectionPublic()
+                let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
+                let keys = collection.getIDs()
+                for id in keys {
+                    receiverCollection.deposit(token: <- collection.withdraw(withdrawID: id))
+                }
+            }
+
+            // treasury dropped
+            emit FLOATEventsBookTreasuryDropped(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                receiver: self.receiver
+            )
+        }
+
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault) {
             let fromIdentifier = from.getType().identifier
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(fromIdentifier)
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(fromIdentifier)
                 ?? panic("This token is not defined.")
             assert(!tokenInfo.isNFT, message: "This token should be FT.")
             assert(fromIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
@@ -691,7 +710,7 @@ pub contract FLOATEventsBook {
             assert(keys.length > 0, message: "Empty collection.")
 
             let nftIdentifier = collection.getType().identifier
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(nftIdentifier)
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(nftIdentifier)
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
             assert(nftIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
@@ -725,6 +744,19 @@ pub contract FLOATEventsBook {
             }
 
             let id = strategy.getType().identifier
+            // ensure FTs and NFTs is enough in the treasury
+            let info = strategy.controller.getInfo()
+            for ftKey in info.oneShareOfClaimableFT.keys {
+                let amount = info.oneShareOfClaimableFT[ftKey]!.saturatingMultiply(UFix64(info.maxClaimableAmount))
+                self.ensureFTEnough(identifer: ftKey, amount: amount)
+            }
+
+            for nftKey in info.oneShareOfClaimableNFT.keys {
+                let amount = info.oneShareOfClaimableNFT[nftKey]!.saturatingMultiply(info.maxClaimableAmount)
+                self.ensureNFTEnough(identifer: nftKey, amount: amount)
+            }
+
+            // add to strategies
             self.strategies.append(<- strategy)
 
             emit FLOATEventsBookTreasuryStrategyAdded(
@@ -783,20 +815,42 @@ pub contract FLOATEventsBook {
 
         // --- Self Only ---
 
-        // withdraw FT from treasury and transfer to recipient
-        access(self) fun verifyAndTransferFT(identifer: String, amount: UFix64, recipient: &{FungibleToken.Receiver}) {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(identifer)
+        // ensure FT is enough
+        access(self) fun ensureFTEnough(identifer: String, amount: UFix64) {
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(identifer)
                 ?? panic("This token is not defined.")
             assert(!tokenInfo.isNFT, message: "This token should be FT.")
-
-            // ensure type is same
-            let recipientIdentifier = recipient.getType().identifier
-            assert(recipientIdentifier == tokenInfo.type, message: "Recipient identifier should be same as definition")
+            assert(tokenInfo.type == identifer, message: "The identifer of input and definition should be same")
             assert(self.genericFTPool[tokenInfo.type] != nil, message: "There is no ft in the treasury.")
 
             // ensure amount enough
-            let treasuryRef = &self.genericFTPool[tokenInfo.type] as! &{FungibleToken.Provider, FungibleToken.Balance}
+            let treasuryRef = &self.genericFTPool[tokenInfo.type] as! &{FungibleToken.Balance}
             assert(treasuryRef.balance >= amount, message: "The balance is not enough.")
+        }
+
+        // ensure NFT is enough
+        access(self) fun ensureNFTEnough(identifer: String, amount: UInt64) {
+            let tokenInfo = FLOATEventsBook.getTokenDefinition(identifer)
+                ?? panic("This token is not defined.")
+            assert(tokenInfo.isNFT, message: "This token should be NFT.")
+            assert(tokenInfo.type == identifer, message: "The identifer of input and definition should be same")
+            assert(self.genericNFTPool[tokenInfo.type] != nil, message: "There is no nft in the treasury.")
+
+            // ensure amount enough
+            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as! &{NonFungibleToken.CollectionPublic}
+            let ids = treasuryRef.getIDs()
+            assert(ids.length > 0 && UInt64(ids.length) >= amount, message: "NFTs is not enough.")
+        }
+
+        // withdraw FT from treasury and transfer to recipient
+        access(self) fun verifyAndTransferFT(identifer: String, amount: UFix64, recipient: &{FungibleToken.Receiver}) {
+            self.ensureFTEnough(identifer: identifer, amount: amount)
+
+            // ensure type is same
+            let recipientIdentifier = recipient.getType().identifier
+            assert(recipientIdentifier == identifer, message: "Recipient identifier should be same as definition")
+            
+            let treasuryRef = &self.genericFTPool[identifer] as! &{FungibleToken.Provider}
 
             // do 'transfer' action
             recipient.deposit(from: <- treasuryRef.withdraw(amount: amount))
@@ -804,20 +858,14 @@ pub contract FLOATEventsBook {
 
         // withdraw NFT from treasury and transfer to recipient
         access(self) fun verifyAndTransferNFT(identifer: String, amount: UInt64, recipient: &{NonFungibleToken.CollectionPublic}) {
-            let tokenInfo = FLOATEventsBook.getTokenDefintion(identifer)
-                ?? panic("This token is not defined.")
-            assert(tokenInfo.isNFT, message: "This token should be NFT.")
+            self.ensureNFTEnough(identifer: identifer, amount: amount)
 
             // ensure type is same
             let recipientIdentifier = recipient.getType().identifier
-            assert(recipientIdentifier == tokenInfo.type, message: "Recipient identifier should be same as definition")
-            assert(self.genericNFTPool[tokenInfo.type] != nil, message: "There is no nft in the treasury.")
-
-            // ensure amount enough
-            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as! &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
+            assert(recipientIdentifier == identifer, message: "Recipient identifier should be same as definition")
+            
+            let treasuryRef = &self.genericNFTPool[identifer] as! &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
             let ids = treasuryRef.getIDs()
-            assert(ids.length > 0 && UInt64(ids.length) >= amount, message: "NFTs is not enough.")
-
             // do 'batch transfer' action
             var i: UInt64 = 0
             while i < amount {
