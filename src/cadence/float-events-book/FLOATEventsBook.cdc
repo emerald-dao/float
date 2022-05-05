@@ -1050,8 +1050,7 @@ pub contract FLOATEventsBook {
         pub fun isRevoked(bookId: UInt64): Bool
         pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
         // internal full reference borrowing
-        // access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook?
-        // access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
+        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
     }
 
     // A private interface to write for EventsBookshelf
@@ -1079,6 +1078,9 @@ pub contract FLOATEventsBook {
             oneShareOfClaimableFT: {String: UFix64},
             oneShareOfClaimableNFT: {String: UInt64},
         ): @StrategyController
+
+        // borrow eventsbook private ref
+        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPrivate}?
     }
 
     // the events book resource collection
@@ -1210,15 +1212,15 @@ pub contract FLOATEventsBook {
             )
         }
 
+        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPublic, EventsBookPrivate}? {
+            return &self.books[bookId] as? &EventsBook{EventsBookPublic, EventsBookPrivate}
+        }
+
         // --- Setters - Contract Only ---
 
-        // access(account) fun borrowEventsBookFullRef(bookId: UInt64): &EventsBook? {
-        //     return &self.books[bookId] as? &EventsBook
-        // }
-
-        // access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
-        //     return &self as &EventsBookshelf
-        // }
+        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
+            return &self as &EventsBookshelf
+        }
 
         // --- Self Only ---
 
