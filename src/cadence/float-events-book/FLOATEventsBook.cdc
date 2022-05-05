@@ -414,29 +414,23 @@ pub contract FLOATEventsBook {
         // verify if user can claim this
         access(contract) fun verifyScore(user: &{AchievementPublic}): Bool {
             let thresholdScore = self.info.threshold
+            var valid = false
             if self.info.consumable {
-                assert(thresholdScore <= user.getConsumableScore(), message: "Consumable score is not enough.")
+                valid = thresholdScore <= user.getConsumableScore()
             } else {
-                assert(thresholdScore <= user.getTotalScore(), message: "Total score is not enough.")
+                valid = thresholdScore <= user.getTotalScore()
             }
-            return true
+            return valid
         }
 
-        // verify if the state is claimable
-        access(contract) fun verifyClaimableState(): Bool {
-            pre {
-                self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
-                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
-            }
-            return true
-        }
-
+        // verify if the state is claimable and 
         // claim one share
-        access(contract) fun oneShareClaimed(user: &{AchievementPublic}): UInt64 {
+        access(contract) fun ensureClaimOneShare(user: &{AchievementPublic}): UInt64 {
             pre {
                 self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
-                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable"
+                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable."
                 !self.hasClaimed(address: user.getOwner()): "The user has claimed one share."
+                self.verifyScore(user: user): "Score not enough! The user cannot to claim for now."
             }
             self.info.setClaimedAmount(value: self.info.claimedAmount + 1)
             self.claimed.append(user.getOwner())
@@ -478,8 +472,7 @@ pub contract FLOATEventsBook {
         // verify if the user match the strategy
         access(account) fun verifyClaimable(user: &{AchievementPublic}): Bool {
             pre {
-                self.controller.verifyScore(user: user): "The user cannot to claim for now"
-                self.controller.verifyClaimableState(): "Verify if the strategy is claimable"
+                self.controller.getInfo().currentState == StrategyState.claimable: "Ensure current stage is claimable."
             }
         }
     }
@@ -492,6 +485,8 @@ pub contract FLOATEventsBook {
         pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
         pub fun getStrategies(state: StrategyState?): [StrategyInformation]
+        // For the public to check if some strategy is claimable
+        pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool
         // For the public to claim rewards
         pub fun claim(strategyIndex: Int, user: &{AchievementPublic})
 
@@ -577,6 +572,18 @@ pub contract FLOATEventsBook {
             }
             return infos
         }
+        
+        // For the public to check if some strategy is claimable
+        pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool {
+            // ensure achievement record should be same
+            let achievementIdentifier = user.getTarget().toString()
+            let bookIdentifier = self.getParentIdentifier().toString()
+            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as events book identifier")
+
+            // verify if user can claim
+            let strategy = self.borrowStrategyRef(idx: strategyIndex)
+            return strategy.verifyClaimable(user: user) && strategy.controller.verifyScore(user: user)
+        }
 
         // execute claiming
         pub fun claim(
@@ -591,6 +598,9 @@ pub contract FLOATEventsBook {
             // verify if user can claim
             let strategy = self.borrowStrategyRef(idx: strategyIndex)
             assert(strategy.verifyClaimable(user: user), message: "Currently the user cannot to do claiming.")
+
+            // execute claim one share
+            let currentClaimed = strategy.controller.ensureClaimOneShare(user: user)
 
             // distribute tokens
             let strategyInfo = strategy.controller.getInfo()
@@ -613,9 +623,6 @@ pub contract FLOATEventsBook {
                 // transfer NFT rewards
                 self.verifyAndTransferNFT(identifer: nftIdentifier, amount: amount, recipient: recipient)
             }
-
-            // execute claim one share
-            let currentClaimed = strategy.controller.oneShareClaimed(user: user)
 
             // update achievement record
             user.treasuryClaimed(strategy: strategy)
@@ -1108,7 +1115,7 @@ pub contract FLOATEventsBook {
         // check if some id is revoked
         pub fun isRevoked(bookId: UInt64): Bool
         // borrow the public interface of EventsBook
-        pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}?
+        pub fun borrowEventsBook(bookId: UInt64): &EventsBook{EventsBookPublic}?
         // internal full reference borrowing
         access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
     }
@@ -1178,7 +1185,7 @@ pub contract FLOATEventsBook {
             return &self.books[id] as &{MetadataViews.Resolver}
         }
 
-        pub fun borrowEventsBook(bookId: UInt64): &{EventsBookPublic}? {
+        pub fun borrowEventsBook(bookId: UInt64): &EventsBook{EventsBookPublic}? {
             return &self.books[bookId] as? &EventsBook{EventsBookPublic}
         }
 
