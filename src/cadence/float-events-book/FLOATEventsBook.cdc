@@ -1283,9 +1283,9 @@ pub contract FLOATEventsBook {
         // get current comsumable score
         pub fun getConsumableScore(): UInt64
         // get all finished goals
-        pub fun getFinishedGoals(): [{IAchievementGoal}]
+        pub fun getFinishedGoals(): [Int]
         // check if goal can be accomplished
-        pub fun isGoalReached(goalIdx: Int): Bool
+        pub fun isGoalReady(goalIdx: Int): Bool
 
         // Update treasury claimed information
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
@@ -1342,18 +1342,12 @@ pub contract FLOATEventsBook {
         }
 
         // get all finished goals
-        pub fun getFinishedGoals(): [{IAchievementGoal}] {
-            let eventsBookRef = self.getTarget().getEventsBookPublic()
-
-            var ret: [{IAchievementGoal}] = []
-            for idx in self.finishedGoals {
-                ret.append(eventsBookRef.getGoal(idx: idx))
-            }
-            return ret
+        pub fun getFinishedGoals(): [Int] {
+            return self.finishedGoals
         }
 
         // check if goal can be accomplished
-        pub fun isGoalReached(goalIdx: Int): Bool {
+        pub fun isGoalReady(goalIdx: Int): Bool {
             // fetch the events book reference
             let eventsBookRef = self.getTarget().getEventsBookPublic()
             let goal = eventsBookRef.getGoal(idx: goalIdx)
