@@ -1364,7 +1364,7 @@ pub contract FLOATEventsBook {
 
     // A public interface to read AchievementBoard
     pub resource interface AchievementBoardPublic {
-        // get the achievement reference by event identifier
+        // get the achievement reference by events book identifier
         pub fun borrowAchievementRecordRef(target: EventsBookIdentifier): &{AchievementPublic}?
     }
 
@@ -1372,6 +1372,8 @@ pub contract FLOATEventsBook {
     pub resource interface AchievementBoardPrivate {
         // create achievement by host and id
         pub fun createAchievementRecord(host: Address, id: UInt64): EventsBookIdentifier
+        // get the achievement record reference by events book identifier
+        pub fun borrowAchievementRecordWritable(target: EventsBookIdentifier): &{AchievementPublic, AchievementWritable}?
     }
 
     // Users' Achievement board
@@ -1424,6 +1426,11 @@ pub contract FLOATEventsBook {
                 owner: self.owner!.address
             )
             return identifier
+        }
+
+        pub fun borrowAchievementRecordWritable(target: EventsBookIdentifier): &{AchievementPublic, AchievementWritable}? {
+            let key = target.toString()
+            return &self.achievements[key] as? &{AchievementPublic, AchievementWritable}
         }
 
         // --- Setters - Contract Only ---
