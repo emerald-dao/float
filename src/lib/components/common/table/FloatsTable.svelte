@@ -55,8 +55,8 @@
         <Sort key="serial" on:sort={onSortNumber} />
       </th>
       <th>
-        Received
-        <!-- <Sort key="dateReceived" on:sort={onSortNumber} /> -->
+        Date
+        <Sort key="dateReceived" on:sort={onSortNumber} />
       </th>
     </tr>
   </thead>
