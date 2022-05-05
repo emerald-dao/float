@@ -290,11 +290,7 @@ pub contract FLOATEventsBook {
         pub fun getGoalDetail(): {String: AnyStruct}
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address): Bool {
-            post {
-                result: "Failed to verify"
-            }
-        }
+        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address): Bool
     }
 
     // Declare an enum to describe status
@@ -1240,6 +1236,8 @@ pub contract FLOATEventsBook {
         pub fun getConsumableScore(): UInt64
         // get all finished goals
         pub fun getFinishedGoals(): [{IAchievementGoal}]
+        // check if goal can be accomplished
+        pub fun isGoalReached(goalIdx: Int): Bool
 
         // Update treasury claimed information
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
@@ -1248,7 +1246,7 @@ pub contract FLOATEventsBook {
     // Achievement private interface
     pub resource interface AchievementWritable {
         // execute verify and accomplish 
-        pub fun verifyAndAccomplishGoal(goalIdx: Int)
+        pub fun accomplishGoal(goalIdx: Int)
     }
 
     // Users' Achevement of one EventsBook
@@ -1306,10 +1304,19 @@ pub contract FLOATEventsBook {
             return ret
         }
 
+        // check if goal can be accomplished
+        pub fun isGoalReached(goalIdx: Int): Bool {
+            // fetch the events book reference
+            let eventsBookRef = self.getTarget().getEventsBookPublic()
+            let goal = eventsBookRef.getGoal(idx: goalIdx)
+
+            return goal.verify(eventsBookRef, user: self.owner!.address)
+        }
+
         // --- Setters - Private Interfaces ---
 
         // Achieve the goal and add to score
-        pub fun verifyAndAccomplishGoal(goalIdx: Int) {
+        pub fun accomplishGoal(goalIdx: Int) {
             pre {
                 !self.finishedGoals.contains(goalIdx): "The goal is already accomplished."
             }
@@ -1319,7 +1326,7 @@ pub contract FLOATEventsBook {
             let goal = eventsBookRef.getGoal(idx: goalIdx)
 
             // verify first. if not allowed, the method will panic
-            goal.verify(eventsBookRef, user: self.owner!.address)
+            assert(goal.verify(eventsBookRef, user: self.owner!.address), message: "Failed to verify goal")
 
             // add to score
             let point = goal.getPoints()
