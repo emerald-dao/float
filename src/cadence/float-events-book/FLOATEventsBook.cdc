@@ -37,7 +37,9 @@ pub contract FLOATEventsBook {
     pub event FLOATEventsBookGoalAdded(bookId: UInt64, host: Address, goalTitle: String, points: UInt64)
 
     pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
+    pub event FLOATEventsBookTreasuryTokenWithdraw(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
     pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
+    pub event FLOATEventsBookTreasuryNFTWithdraw(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
     pub event FLOATEventsBookTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
     pub event FLOATEventsBookTreasuryDropped(bookId: UInt64, host: Address, receiver: Address)
     pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
@@ -140,9 +142,9 @@ pub contract FLOATEventsBook {
                 .getCapability(tokenInfo.path)
                 .borrow<&{NonFungibleToken.CollectionPublic}>()
                 ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic} from ".concat(self.address.toString()))
-            
+            // currently there is no generic collection
             assert(
-                collection.getType().identifier == tokenInfo.type,
+                collection.getType().identifier.slice(from: 0, upTo: 18) == tokenInfo.type.slice(from: 0, upTo: 18),
                 message: "The collection's path is not associated with the nft."
             )
             return collection
@@ -477,6 +479,52 @@ pub contract FLOATEventsBook {
         }
     }
 
+    // Tresury Collection
+    //
+    pub resource TreasuryCollection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
+        // Dictionary to hold the NFTs in the Collection
+        pub var depositedNFTs: @{UInt64: NonFungibleToken.NFT}
+
+        init() {
+            self.depositedNFTs <- {}
+        }
+        destroy() {
+            destroy self.depositedNFTs
+        }
+
+        // withdraw removes an NFT from the collection and moves it to the caller
+        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+            let token <- self.depositedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
+            return <- token
+        }
+        // deposit takes a NFT and adds it to the collections dictionary
+        // and adds the ID to the id array
+        pub fun deposit(token: @NonFungibleToken.NFT) {
+            let id: UInt64 = token.id
+
+            // add the new token to the dictionary which removes the old one
+            let oldToken <- self.depositedNFTs[id] <- token
+
+            destroy oldToken
+        }
+
+        // getIDs returns an array of the IDs that are in the collection
+        pub fun getIDs(): [UInt64] {
+            return self.depositedNFTs.keys
+        }
+
+        // Returns a borrowed reference to an NFT in the collection
+        // so that the caller can read data and call methods from it
+        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
+            return (&self.depositedNFTs[id] as? &NonFungibleToken.NFT)!
+        }
+    }
+
+    // temp collection in the treasury
+    access(contract) fun createTreasuryCollection(): @TreasuryCollection {
+        return <- create TreasuryCollection()
+    }
+
     // Treasury public interface
     pub resource interface TreasuryPublic {
         // get token balance from the token identifier
@@ -505,7 +553,7 @@ pub contract FLOATEventsBook {
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault)
         // deposit nft to treasury
-        pub fun depositNFTs(collection: @NonFungibleToken.Collection)
+        pub fun depositNFTs(nfts: @[NonFungibleToken.NFT])
         // add new strategy to the treasury
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool)
         // update strategy status
@@ -522,7 +570,7 @@ pub contract FLOATEventsBook {
         // fungible token pool {identifier: Vault}
         access(self) var genericFTPool: @{String: FungibleToken.Vault}
         // non-fungible token pool {identifier: Collection}
-        access(self) var genericNFTPool: @{String: NonFungibleToken.Collection}
+        access(self) var genericNFTPool: @{String: {NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}}
         // all treasury strategies
         access(self) var strategies: @[{ITreasuryStrategy}]
 
@@ -713,28 +761,30 @@ pub contract FLOATEventsBook {
         }
 
         // deposit nft to treasury
-        pub fun depositNFTs(collection: @NonFungibleToken.Collection) {
-            let keys = collection.getIDs()
-            assert(keys.length > 0, message: "Empty collection.")
+        pub fun depositNFTs(nfts: @[NonFungibleToken.NFT]) {
+            assert(nfts.length > 0, message: "Empty collection.")
 
-            let nftIdentifier = collection.getType().identifier
+            let nftIdentifier = (&nfts[0] as &NonFungibleToken.NFT).getType().identifier
             let tokenInfo = FLOATEventsBook.getTokenDefinition(nftIdentifier)
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
             assert(nftIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
 
             let ids: [UInt64] = []
-            var collectionRef = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
+            var collectionRef: &{NonFungibleToken.CollectionPublic}? = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
             if collectionRef == nil {
-                self.genericNFTPool[nftIdentifier] <-! collection
-            } else {
-                for id in keys {
-                    ids.append(id)
-                    collectionRef.deposit(token: <- collection.withdraw(withdrawID: id))
-                }
-                // delete empty collection
-                destroy collection
+                self.genericNFTPool[nftIdentifier] <-! FLOATEventsBook.createTreasuryCollection()
+                collectionRef = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
             }
+
+            let len = nfts.length
+            var i = 0
+            while i < len {
+                collectionRef!.deposit(token: <- nfts.removeFirst())
+                i = i + 1
+            }
+            // delete empty collection
+            destroy nfts
 
             emit FLOATEventsBookTreasuryNFTDeposit(
                 bookId: self.bookId,
@@ -861,25 +911,41 @@ pub contract FLOATEventsBook {
             let treasuryRef = &self.genericFTPool[identifer] as! &{FungibleToken.Provider}
 
             // do 'transfer' action
-            recipient.deposit(from: <- treasuryRef.withdraw(amount: amount))
+            let ft <- treasuryRef.withdraw(amount: amount)
+            
+            emit FLOATEventsBookTreasuryTokenWithdraw(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                identifier: recipientIdentifier,
+                amount: amount
+            )
+
+            recipient.deposit(from: <- ft)
         }
 
         // withdraw NFT from treasury and transfer to recipient
         access(self) fun verifyAndTransferNFT(identifer: String, amount: UInt64, recipient: &{NonFungibleToken.CollectionPublic}) {
             self.ensureNFTEnough(identifer: identifer, amount: amount)
-
-            // ensure type is same
-            let recipientIdentifier = recipient.getType().identifier
-            assert(recipientIdentifier == identifer, message: "Recipient identifier should be same as definition")
             
             let treasuryRef = &self.genericNFTPool[identifer] as! &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
             let ids = treasuryRef.getIDs()
+
             // do 'batch transfer' action
+            let nftIdentifier = identifer
             var i: UInt64 = 0
             while i < amount {
-                recipient.deposit(token: <- treasuryRef.withdraw(withdrawID: ids.removeFirst()))
+                let nft <- treasuryRef.withdraw(withdrawID: ids.removeFirst())
+                assert(nft.getType().identifier == nftIdentifier, message: "Recipient identifier should be same as definition")
+                recipient.deposit(token: <- nft)
                 i = i + 1
             }
+
+            emit FLOATEventsBookTreasuryNFTWithdraw(
+                bookId: self.bookId,
+                host: self.owner!.address,
+                identifier: nftIdentifier,
+                ids: ids
+            )
         }
 
         // get identifier
@@ -1265,8 +1331,10 @@ pub contract FLOATEventsBook {
             // register token from owner's capability
             let tokenCap = self.owner!.getCapability(path)
             if isNFT {
-                let nft = tokenCap.borrow<&{NonFungibleToken.CollectionPublic}>()
+                let collection = tokenCap.borrow<&{NonFungibleToken.CollectionPublic}>()
                     ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic}")
+                let id = collection.getIDs().removeFirst()
+                let nft = collection.borrowNFT(id: id)
                 FLOATEventsBook.setTokenDefintion(token: nft.getType(), path: path, isNFT: true)
             } else {
                 let ft = tokenCap.borrow<&{FungibleToken.Receiver}>()
