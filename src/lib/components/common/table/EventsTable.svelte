@@ -49,7 +49,10 @@
         Event
         <Sort key="name" on:sort={onSortString} />
       </th>
-      <th> Created </th>
+      <th> 
+        Created 
+        <Sort key="dateCreated" on:sort={onSortNumber} />
+      </th>
       <th> Groups </th>
       <th> Claimed </th>
     </tr>
