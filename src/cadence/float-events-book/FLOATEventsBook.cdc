@@ -553,7 +553,7 @@ pub contract FLOATEventsBook {
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault)
         // deposit nft to treasury
-        pub fun depositNFTs(nfts: @[NonFungibleToken.NFT])
+        pub fun depositNonFungibleTokens(nfts: @[NonFungibleToken.NFT])
         // add new strategy to the treasury
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool)
         // update strategy status
@@ -761,7 +761,7 @@ pub contract FLOATEventsBook {
         }
 
         // deposit nft to treasury
-        pub fun depositNFTs(nfts: @[NonFungibleToken.NFT]) {
+        pub fun depositNonFungibleTokens(nfts: @[NonFungibleToken.NFT]) {
             assert(nfts.length > 0, message: "Empty collection.")
 
             let nftIdentifier = (&nfts[0] as &NonFungibleToken.NFT).getType().identifier
