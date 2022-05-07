@@ -516,7 +516,7 @@ pub contract FLOATEventsBook {
         // Returns a borrowed reference to an NFT in the collection
         // so that the caller can read data and call methods from it
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            return (&self.depositedNFTs[id] as? &NonFungibleToken.NFT)!
+            return (&self.depositedNFTs[id] as &NonFungibleToken.NFT?)!
         }
     }
 
@@ -598,11 +598,11 @@ pub contract FLOATEventsBook {
         // --- Getters - Public Interfaces ---
 
         pub fun getTreasuryTokenBalance(tokenIdentifier: String): &{FungibleToken.Balance}? {
-            return &self.genericFTPool[tokenIdentifier] as? &{FungibleToken.Balance}
+            return &self.genericFTPool[tokenIdentifier] as &{FungibleToken.Balance}?
         }
 
         pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}? {
-            return &self.genericNFTPool[tokenIdentifier] as? &{NonFungibleToken.CollectionPublic}
+            return &self.genericNFTPool[tokenIdentifier] as &{NonFungibleToken.CollectionPublic}?
         }
 
         // get all strategy information
@@ -721,7 +721,7 @@ pub contract FLOATEventsBook {
             for identifier in self.genericNFTPool.keys {
                 let recipient = TokenRecipient(self.receiver, identifier)
                 let receiverCollection = recipient.getNFTCollectionPublic()
-                let collection = &self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
+                let collection = (&self.genericNFTPool[identifier] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}?)!
                 let keys = collection.getIDs()
                 for id in keys {
                     receiverCollection.deposit(token: <- collection.withdraw(withdrawID: id))
@@ -745,11 +745,11 @@ pub contract FLOATEventsBook {
             assert(fromIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
 
             let amount = from.balance
-            var vaultRef = &self.genericFTPool[tokenInfo.type] as? &{FungibleToken.Receiver}
+            var vaultRef = &self.genericFTPool[tokenInfo.type] as &{FungibleToken.Receiver}?
             if vaultRef == nil  {
                 self.genericFTPool[tokenInfo.type] <-! from
             } else {
-                vaultRef.deposit(from: <- from)
+                vaultRef!.deposit(from: <- from)
             }
 
             emit FLOATEventsBookTreasuryTokenDeposit(
@@ -771,10 +771,10 @@ pub contract FLOATEventsBook {
             assert(nftIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
 
             let ids: [UInt64] = []
-            var collectionRef: &{NonFungibleToken.CollectionPublic}? = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
+            var collectionRef: &{NonFungibleToken.CollectionPublic}? = &self.genericNFTPool[nftIdentifier] as &{NonFungibleToken.CollectionPublic}?
             if collectionRef == nil {
                 self.genericNFTPool[nftIdentifier] <-! FLOATEventsBook.createTreasuryCollection()
-                collectionRef = &self.genericNFTPool[nftIdentifier] as? &{NonFungibleToken.CollectionPublic}
+                collectionRef = &self.genericNFTPool[nftIdentifier] as &{NonFungibleToken.CollectionPublic}?
             }
 
             let len = nfts.length
@@ -882,8 +882,8 @@ pub contract FLOATEventsBook {
             assert(self.genericFTPool[tokenInfo.type] != nil, message: "There is no ft in the treasury.")
 
             // ensure amount enough
-            let treasuryRef = &self.genericFTPool[tokenInfo.type] as! &{FungibleToken.Balance}
-            assert(treasuryRef.balance >= amount, message: "The balance is not enough.")
+            let treasuryRef = &self.genericFTPool[tokenInfo.type] as &{FungibleToken.Balance}?
+            assert(treasuryRef!.balance >= amount, message: "The balance is not enough.")
         }
 
         // ensure NFT is enough
@@ -895,8 +895,8 @@ pub contract FLOATEventsBook {
             assert(self.genericNFTPool[tokenInfo.type] != nil, message: "There is no nft in the treasury.")
 
             // ensure amount enough
-            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as! &{NonFungibleToken.CollectionPublic}
-            let ids = treasuryRef.getIDs()
+            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as &{NonFungibleToken.CollectionPublic}?
+            let ids = treasuryRef!.getIDs()
             assert(ids.length > 0 && UInt64(ids.length) >= amount, message: "NFTs is not enough.")
         }
 
@@ -908,10 +908,10 @@ pub contract FLOATEventsBook {
             let recipientIdentifier = recipient.getType().identifier
             assert(recipientIdentifier == identifer, message: "Recipient identifier should be same as definition")
             
-            let treasuryRef = &self.genericFTPool[identifer] as! &{FungibleToken.Provider}
+            let treasuryRef = &self.genericFTPool[identifer] as &{FungibleToken.Provider}?
 
             // do 'transfer' action
-            let ft <- treasuryRef.withdraw(amount: amount)
+            let ft <- treasuryRef!.withdraw(amount: amount)
             
             emit FLOATEventsBookTreasuryTokenWithdraw(
                 bookId: self.bookId,
@@ -927,14 +927,14 @@ pub contract FLOATEventsBook {
         access(self) fun verifyAndTransferNFT(identifer: String, amount: UInt64, recipient: &{NonFungibleToken.CollectionPublic}) {
             self.ensureNFTEnough(identifer: identifer, amount: amount)
             
-            let treasuryRef = &self.genericNFTPool[identifer] as! &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}
-            let ids = treasuryRef.getIDs()
+            let treasuryRef = &self.genericNFTPool[identifer] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}?
+            let ids = treasuryRef!.getIDs()
 
             // do 'batch transfer' action
             let nftIdentifier = identifer
             var i: UInt64 = 0
             while i < amount {
-                let nft <- treasuryRef.withdraw(withdrawID: ids.removeFirst())
+                let nft <- treasuryRef!.withdraw(withdrawID: ids.removeFirst())
                 assert(nft.getType().identifier == nftIdentifier, message: "Recipient identifier should be same as definition")
                 recipient.deposit(token: <- nft)
                 i = i + 1
@@ -1248,11 +1248,11 @@ pub contract FLOATEventsBook {
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
-            return &self.books[id] as &{MetadataViews.Resolver}
+            return (&self.books[id] as &{MetadataViews.Resolver}?) ?? panic("Faild to borrow ViewResolver.")
         }
 
         pub fun borrowEventsBook(bookId: UInt64): &EventsBook{EventsBookPublic}? {
-            return &self.books[bookId] as? &EventsBook{EventsBookPublic}
+            return &self.books[bookId] as &EventsBook{EventsBookPublic}?
         }
 
         pub fun getEventsBookIDs(): [UInt64] {
@@ -1270,9 +1270,9 @@ pub contract FLOATEventsBook {
             let keys = revoked ? self.revoked.keys : self.books.keys
             for id in keys {
                 if revoked {
-                    answer[id] = (&self.revoked[id] as &EventsBook).name
+                    answer[id] = (&self.revoked[id] as &EventsBook?)!.name
                 } else {
-                    answer[id] = (&self.books[id] as &EventsBook).name
+                    answer[id] = (&self.books[id] as &EventsBook?)!.name
                 }
             }
             return answer
@@ -1361,7 +1361,7 @@ pub contract FLOATEventsBook {
         }
 
         pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPublic, EventsBookPrivate}? {
-            return &self.books[bookId] as? &EventsBook{EventsBookPublic, EventsBookPrivate}
+            return &self.books[bookId] as &EventsBook{EventsBookPublic, EventsBookPrivate}?
         }
 
         // --- Setters - Contract Only ---
@@ -1556,7 +1556,7 @@ pub contract FLOATEventsBook {
         pub fun borrowAchievementRecordRef(host: Address, bookId: UInt64): &{AchievementPublic}? {
             let target = EventsBookIdentifier(host, bookId)
             let key = target.toString()
-            return &self.achievements[key] as? &{AchievementPublic}
+            return &self.achievements[key] as &{AchievementPublic}?
         }
 
         // --- Setters - Private Interfaces ---
@@ -1585,7 +1585,7 @@ pub contract FLOATEventsBook {
         pub fun borrowAchievementRecordWritable(host: Address, bookId: UInt64): &{AchievementPublic, AchievementWritable}? {
             let target = EventsBookIdentifier(host, bookId)
             let key = target.toString()
-            return &self.achievements[key] as? &{AchievementPublic, AchievementWritable}
+            return &self.achievements[key] as &{AchievementPublic, AchievementWritable}?
         }
 
         // --- Setters - Contract Only ---
