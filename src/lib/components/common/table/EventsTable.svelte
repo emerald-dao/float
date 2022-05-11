@@ -10,6 +10,10 @@
   export let floatEvents;
   let rows = floatEvents;
 
+  if(rows?.length > 0) {
+    rows = rows.sort((a,b) => b.dateCreated-a.dateCreated )
+  }
+
   let pageCount = 0; //first page
   let pageSize = 25;
 
@@ -51,7 +55,7 @@
       </th>
       <th> 
         Created 
-        <Sort key="dateCreated" on:sort={onSortNumber} />
+        <Sort key="dateCreated" dir="desc" on:sort={onSortNumber} />
       </th>
       <th> Groups </th>
       <th> Claimed </th>
