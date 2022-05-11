@@ -10,6 +10,10 @@
   export let floats;
   let rows = floats;
 
+  if(rows?.length > 0) {
+    rows = rows.sort((a,b) => b.dateReceived-a.dateReceived )
+  }
+
   let pageCount = 0;
   let pageSize = 25;
 
@@ -32,6 +36,7 @@
       event.detail.key
     );
   }
+
 </script>
 
 <Table
@@ -56,7 +61,7 @@
       </th>
       <th>
         Date
-        <Sort key="dateReceived" on:sort={onSortNumber} />
+        <Sort key="dateReceived" dir="desc" on:sort={onSortNumber} />
       </th>
     </tr>
   </thead>

@@ -2,6 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
+import FlowStorageFees from "../../core-contracts/FlowStorageFees.cdc"
 
 transaction(forHost: Address, eventId: UInt64, recipients: [Address]) {
 
@@ -43,8 +44,10 @@ transaction(forHost: Address, eventId: UInt64, recipients: [Address]) {
 		self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
 		self.RecipientCollections = []
     for recipient in recipients {
-      if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
-        self.RecipientCollections.append(recipientCollection)
+      if FlowStorageFees.defaultTokenAvailableBalance(recipient) > 0.02 {
+        if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
+          self.RecipientCollections.append(recipientCollection)
+        }
       }
     }
 	}

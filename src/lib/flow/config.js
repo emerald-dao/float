@@ -8,7 +8,8 @@ config({
   "0xFLOWTOKEN": "0x1654653399040a61",
   "0xFUNGIBLETOKEN": "0xf233dcee88fe0abe",
   "0xFN": "0x233eb012d34b0070",
-  "0xFIND": "0x097bafa4e0b48eef"
+  "0xFIND": "0x097bafa4e0b48eef",
+  "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df"
 })
 
 export const verifiersIdentifier = 'A.2d4c3caffbeab845';
