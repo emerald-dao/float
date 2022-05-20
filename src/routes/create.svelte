@@ -377,7 +377,7 @@
     {#if $draftFloat.claimCodeEnabled}
       <label for="claimCode"
         >{@html $draftFloat.multipleSecretsEnabled
-          ? "Enter your codes, separated by a comma ( , )"
+          ? "Enter your codes, separated by a comma (, )"
           : "Enter a claim code"} (<i>case-sensitive</i>)
         <input
           type="text"
