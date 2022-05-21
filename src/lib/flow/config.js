@@ -3,7 +3,7 @@ import { config } from "@onflow/config";
 config({
   "app.detail.title": "FLOAT", // Shows user what dapp is trying to connect
   "app.detail.icon": "https://floats.city/floatlogo_big.png", // shows image to the user to display your dapp brand
-  "accessNode.api": "https://access-mainnet-beta.onflow.org", 
+  "accessNode.api": "https://rest.onflow.org", 
   "discovery.wallet": "https://fcl-discovery.onflow.org/api/authn", // import.meta.env.VITE_DISCOVERY_WALLET,
   "0xFLOAT": "0x2d4c3caffbeab845",
   "0xCORE": "0x1d7e57aa55817448",
