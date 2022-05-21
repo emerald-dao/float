@@ -1,8 +1,10 @@
-import { config } from "@samatech/onflow-fcl-esm";
+import { config } from "@onflow/config";
 
 config({
-  "accessNode.api": "https://mainnet.onflow.org", // import.meta.env.VITE_ACCESS_NODE_API,
-  "discovery.wallet": "https://flow-wallet.blocto.app/authn", // import.meta.env.VITE_DISCOVERY_WALLET,
+  "app.detail.title": "FLOAT", // Shows user what dapp is trying to connect
+  "app.detail.icon": "https://floats.city/floatlogo_big.png", // shows image to the user to display your dapp brand
+  "accessNode.api": "https://access-mainnet-beta.onflow.org", 
+  "discovery.wallet": "https://fcl-discovery.onflow.org/api/authn", // import.meta.env.VITE_DISCOVERY_WALLET,
   "0xFLOAT": "0x2d4c3caffbeab845",
   "0xCORE": "0x1d7e57aa55817448",
   "0xFLOWTOKEN": "0x1654653399040a61",
