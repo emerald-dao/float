@@ -226,9 +226,7 @@
         }}>
         Non-Tradeable
         <span>
-          This FLOAT <strong>cannot</strong> be traded on popular secondary marketplaces
-          or gifted to others on the FLOAT platform (warning: can potentially be
-          traded elsewhere).
+          This FLOAT <strong>cannot</strong> be traded (soul-bound).
         </span>
       </button>
     </div>
