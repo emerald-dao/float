@@ -62,7 +62,8 @@
 <LibLoader
   url="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.2/signalr.min.js"
   on:loaded={() => createStream()}
-  uniqueId={+new Date()} />
+  uniqueId={+new Date()}
+/>
 
 <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />
@@ -70,16 +71,14 @@
   {#await getStats() then stats}
     <div class="grid info">
       <p>
-        FLOATs Claimed<br /><span
-          >{(stats[0] + addition).toLocaleString()}</span>
+        FLOATs Claimed<br /><span>{(stats[0] + addition).toLocaleString()}</span
+        >
       </p>
       <p>Events Created<br /><span>{stats[1].toLocaleString()}</span></p>
     </div>
   {/await}
   {#each Object.keys(claimedEvents) as id (id)}
-    <a href="/{claimedEvents[id].eventHost}/event/{claimedEvents[id].eventId}">
-      <Lantern ipfsHash={claimedEvents[id].ipfsHash} />
-    </a>
+    <Lantern ipfsHash={claimedEvents[id].ipfsHash} />
   {/each}
 </div>
 
