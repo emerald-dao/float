@@ -226,9 +226,7 @@
         }}>
         Non-Tradeable
         <span>
-          This FLOAT <strong>cannot</strong> be traded on popular secondary marketplaces
-          or gifted to others on the FLOAT platform (warning: can potentially be
-          traded elsewhere).
+          This FLOAT <strong>cannot</strong> be traded (soul-bound).
         </span>
       </button>
     </div>
@@ -377,7 +375,7 @@
     {#if $draftFloat.claimCodeEnabled}
       <label for="claimCode"
         >{@html $draftFloat.multipleSecretsEnabled
-          ? "Enter your codes, separated by a comma ( , )"
+          ? "Enter your codes, separated by a comma (, )"
           : "Enter a claim code"} (<i>case-sensitive</i>)
         <input
           type="text"
