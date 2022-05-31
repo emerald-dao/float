@@ -127,10 +127,9 @@ pub contract FLOATVerifiers {
     }
 
     //
-    // VerifySecret
+    // SecretV2
     //
-    // Specifies a secret code in order
-    // to claim a FLOAT (much more secure than Secret)
+    // Much more secure than Secret
     pub struct SecretV2: FLOAT.IVerifier {
         pub let publicKey: String
 
