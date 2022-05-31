@@ -10,7 +10,7 @@
   import { claimFLOAT, claimFLOATv2 } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
   import { verifiersIdentifier } from "$lib/flow/config";
-import { signWithClaimCode } from "$lib/flow/utils";
+  import { signWithClaimCode } from "$lib/flow/utils";
 
   const secretModule =
     floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Secret`];
@@ -30,12 +30,12 @@ import { signWithClaimCode } from "$lib/flow/utils";
   $: currentUnixTime = +new Date() / 1000;
 
   function claimTheFloat() {
-    const timeOfUpdate = 1653962236;
+    const timeOfUpdate = floatEvent.dateCreated;
     if (currentUnixTime > timeOfUpdate) {
       const secretSig = signWithClaimCode(claimCode);
-      claimFLOATv2(floatEvent?.eventId, floatEvent?.host, secretSig)
+      claimFLOATv2(floatEvent?.eventId, floatEvent?.host, secretSig);
     } else {
-      claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)
+      claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode);
     }
   }
 </script>
@@ -99,13 +99,16 @@ import { signWithClaimCode } from "$lib/flow/utils";
       </label>
     {/if}
     <button
-      class={(secretModule || secretv2Module || multipleSecretModule) && claimCode == ""
+      class={(secretModule || secretv2Module || multipleSecretModule) &&
+      claimCode == ""
         ? "secondary outline"
         : null}
       disabled={$floatClaimingInProgress ||
-        ((secretModule || secretv2Module || multipleSecretModule) && claimCode == "")}
+        ((secretModule || secretv2Module || multipleSecretModule) &&
+          claimCode == "")}
       on:click={claimTheFloat}
-      >{(secretModule || secretv2Module || multipleSecretModule) && claimCode == ""
+      >{(secretModule || secretv2Module || multipleSecretModule) &&
+      claimCode == ""
         ? "You must input a secret phrase"
         : flowTokenCost
         ? "Purchase this FLOAT"
