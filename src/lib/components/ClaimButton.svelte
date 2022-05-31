@@ -31,7 +31,7 @@
 
   function claimTheFloat() {
     const timeOfEventCreation = floatEvent.dateCreated;
-    const timeOfUpdate = floatEvent.dateCreated;
+    const timeOfUpdate = 1653965861;
     if (timeOfEventCreation >= timeOfUpdate) {
       const secretSig = signWithClaimCode(claimCode);
       claimFLOATv2(floatEvent?.eventId, floatEvent?.host, secretSig);
