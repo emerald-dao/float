@@ -125,4 +125,29 @@ pub contract FLOATVerifiers {
             }
         }
     }
+
+    //
+    // VerifySecret
+    //
+    // Specifies a secret code in order
+    // to claim a FLOAT (not very secure, but cool feature)
+    pub struct SecretV2: FLOAT.IVerifier {
+        pub let publicKey: String
+
+        pub fun verify(_ params: {String: AnyStruct}) {
+            let data: [UInt8] = (params["claimee"]! as! Address).toString().utf8
+            let sig: [UInt8] = (params["secretSig"]! as! String).decodeHex()
+            let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
+            let valid = publicKey.verify(signature: sig, signedData: data, domainSeparationTag: "FLOW-V0.0-user", hashAlgorithm: HashAlgorithm.SHA3_256)
+            
+            assert(
+                valid, 
+                message: "You did not input the correct secret phrase."
+            )
+        }
+
+        init(_publicKey: String) {
+            self.publicKey = _publicKey
+        }
+    }
 }

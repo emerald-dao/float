@@ -24,8 +24,11 @@
     "@sveltejs/kit": "1.0.0-next.202",
     "@sveltejs/vite-plugin-svelte": "^1.0.0-next.32",
     "canvas-confetti": "^1.5.1",
+    "elliptic": "^6.5.4",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
+    "scrypt-async": "^2.0.1",
+    "sha3": "^2.1.4",
     "svelte": "^3.44.3",
     "svelte-intersection-observer": "^0.10.0"
   },

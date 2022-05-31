@@ -7,12 +7,15 @@
     floatClaimingInProgress,
     user,
   } from "$lib/flow/stores";
-  import { claimFLOAT } from "$lib/flow/actions.js";
+  import { claimFLOAT, claimFLOATv2 } from "$lib/flow/actions.js";
   import Countdown from "$lib/components/common/Countdown.svelte";
   import { verifiersIdentifier } from "$lib/flow/config";
+import { signWithClaimCode } from "$lib/flow/utils";
 
   const secretModule =
     floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Secret`];
+  const secretv2Module =
+    floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.SecretV2`];
   const limitedModule =
     floatEvent?.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
   const timelockModule =
@@ -25,6 +28,16 @@
   let claimCode = "";
   let confirmed = false;
   $: currentUnixTime = +new Date() / 1000;
+
+  function claimTheFloat() {
+    const timeOfUpdate = 1653962236;
+    if (currentUnixTime > timeOfUpdate) {
+      const secretSig = signWithClaimCode(claimCode);
+      claimFLOATv2(floatEvent?.eventId, floatEvent?.host, secretSig)
+    } else {
+      claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)
+    }
+  }
 </script>
 
 {#if hasClaimed}
@@ -74,7 +87,7 @@
       {$floatClaimedStatus.error}
     </button>
   {:else}
-    {#if secretModule || multipleSecretModule}
+    {#if secretModule || secretv2Module || multipleSecretModule}
       <label for="claimCode">
         Enter the claim code below (<i>case sensitive</i>).
         <input
@@ -86,14 +99,13 @@
       </label>
     {/if}
     <button
-      class={(secretModule || multipleSecretModule) && claimCode == ""
+      class={(secretModule || secretv2Module || multipleSecretModule) && claimCode == ""
         ? "secondary outline"
         : null}
       disabled={$floatClaimingInProgress ||
-        ((secretModule || multipleSecretModule) && claimCode == "")}
-      on:click={() =>
-        claimFLOAT(floatEvent?.eventId, floatEvent?.host, claimCode)}
-      >{(secretModule || multipleSecretModule) && claimCode == ""
+        ((secretModule || secretv2Module || multipleSecretModule) && claimCode == "")}
+      on:click={claimTheFloat}
+      >{(secretModule || secretv2Module || multipleSecretModule) && claimCode == ""
         ? "You must input a secret phrase"
         : flowTokenCost
         ? "Purchase this FLOAT"
