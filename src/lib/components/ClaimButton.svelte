@@ -30,8 +30,9 @@
   $: currentUnixTime = +new Date() / 1000;
 
   function claimTheFloat() {
+    const timeOfEventCreation = floatEvent.dateCreated;
     const timeOfUpdate = floatEvent.dateCreated;
-    if (currentUnixTime > timeOfUpdate) {
+    if (timeOfEventCreation >= timeOfUpdate) {
       const secretSig = signWithClaimCode(claimCode);
       claimFLOATv2(floatEvent?.eventId, floatEvent?.host, secretSig);
     } else {
