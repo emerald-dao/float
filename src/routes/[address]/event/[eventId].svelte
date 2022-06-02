@@ -155,7 +155,7 @@
         <Float
           float={{
             id: floatEvent.hasClaimed.id,
-            owner: floatEvent.currentOwner.address,
+            owner: floatEvent.currentOwner?.address,
             eventHost: floatEvent.host,
             eventImage: floatEvent.image,
             eventName: floatEvent.name,

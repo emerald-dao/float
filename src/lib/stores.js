@@ -14,7 +14,6 @@ export const draftFloat = writable({
   claimCodeEnabled: false,
   claimCode: '',
   transferrable: true,
-  multipleSecretsEnabled: false,
   initialGroup: "",
   flowTokenPurchase: false,
 });

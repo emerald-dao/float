@@ -4,14 +4,10 @@ import {
 
 import { get } from 'svelte/store'
 import { resolver } from '$lib/stores.js';
-
-export function parseErrorMessageFromFCL(errorString) {
-  let newString = errorString?.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: assertion failed:', 'Error:')
-	newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: panic:', 'Error:')
-  newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: pre-condition failed:', 'Error')
-	newString = newString.replace(/-->.*/,'');
-  return newString;
-}
+import { SHA3 } from "sha3";
+import { ec } from "elliptic";
+import scrypt from "scrypt-async";
+import {secretSalt} from "./config";
 
 export let distributeCode = `
 import FLOAT from 0xFLOAT
@@ -49,6 +45,14 @@ transaction(eventId: UInt64, recipient: Address) {
 }
 `;
 
+export function parseErrorMessageFromFCL(errorString) {
+  let newString = errorString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: assertion failed:', 'Error:')
+	newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: panic:', 'Error:')
+  newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: pre-condition failed:', 'Error')
+	newString = newString.replace(/-->.*/,'');
+  return newString;
+}
+
 export function getResolvedName(addressObject, priority = get(resolver)) {
 	if (addressObject.resolvedNames[priority]) {
 		return addressObject.resolvedNames[priority];
@@ -63,3 +67,59 @@ export function getResolvedName(addressObject, priority = get(resolver)) {
 }
 
 export const formatter = new Intl.DateTimeFormat("en-US");
+
+export function getKeysFromClaimCode(claimCode) {
+	let keys;
+	console.log(secretSalt)
+	scrypt(
+		claimCode, //password
+		secretSalt, //use some salt for extra security
+		{
+			N: 16384, // iterations
+			r: 8, // block size
+			p: 1, // parallelism
+			dkLen: 32, // 256-bit key
+			encoding: "hex",
+		},
+		function (privateKey) {
+			var ec_p256 = new ec("p256");
+			let kp = ec_p256.keyFromPrivate(privateKey, "hex"); // hex string, array or Buffer
+			var publicKey = kp.getPublic().encode("hex").substr(2);
+			keys = {publicKey, privateKey};
+		}
+	);
+	console.log(keys)
+	return keys;
+}
+
+const rightPaddedHexBuffer = (value, pad) => {
+	return Buffer.from(value.padEnd(pad * 2, 0), "hex");
+};
+
+const USER_DOMAIN_TAG = rightPaddedHexBuffer(
+	Buffer.from("FLOW-V0.0-user").toString("hex"),
+	32
+).toString("hex");
+
+const sign = (message, privateKey) => {
+	var ec_p256 = new ec("p256");
+	const key = ec_p256.keyFromPrivate(Buffer.from(privateKey, "hex"));
+	const sig = key.sign(hash(message)); // hashMsgHex -> hash
+	const n = 32;
+	const r = sig.r.toArrayLike(Buffer, "be", n);
+	const s = sig.s.toArrayLike(Buffer, "be", n);
+	return Buffer.concat([r, s]).toString("hex");
+};
+
+const hash = (message) => {
+	const sha = new SHA3(256);
+	sha.update(Buffer.from(message, "hex"));
+	return sha.digest();
+};
+
+export function signWithClaimCode(claimCode) {
+	const { privateKey } = getKeysFromClaimCode(claimCode);
+	const data = Buffer.from(get(user).addr).toString("hex");
+  const sig = sign(USER_DOMAIN_TAG + data, privateKey);
+	return sig;
+}

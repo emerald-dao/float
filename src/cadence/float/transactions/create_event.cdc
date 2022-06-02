@@ -16,7 +16,7 @@ transaction(
   dateStart: UFix64, 
   timePeriod: UFix64, 
   secret: Bool, 
-  secrets: [String], 
+  secretPK: String, 
   limited: Bool, 
   capacity: UInt64, 
   initialGroups: [String], 
@@ -60,22 +60,16 @@ transaction(
 
   execute {
     var Timelock: FLOATVerifiers.Timelock? = nil
-    var Secret: FLOATVerifiers.Secret? = nil
+    var SecretV2: FLOATVerifiers.SecretV2? = nil
     var Limited: FLOATVerifiers.Limited? = nil
-    var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
       verifiers.append(Timelock!)
     }
     if secret {
-      if secrets.length == 1 {
-        Secret = FLOATVerifiers.Secret(_secretPhrase: secrets[0])
-        verifiers.append(Secret!)
-      } else {
-        MultipleSecret = FLOATVerifiers.MultipleSecret(_secrets: secrets)
-        verifiers.append(MultipleSecret!)
-      }
+      SecretV2 = FLOATVerifiers.SecretV2(_publicKey: secretPK)
+      verifiers.append(SecretV2!)
     }
     if limited {
       Limited = FLOATVerifiers.Limited(_capacity: capacity)

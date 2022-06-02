@@ -18,7 +18,7 @@
   import LibLoader from "$lib/components/LibLoader.svelte";
   import { onMount } from "svelte";
   import Float from "$lib/components/Float.svelte";
-  import { distributeCode } from "$lib/flow/utils";
+  import { getKeysFromClaimCode } from "$lib/flow/utils";
   import { slide } from "svelte/transition";
   import Loading from "$lib/components/common/Loading.svelte";
 
@@ -69,12 +69,17 @@
   }
 
   let minter = null;
+  let claimCode = null;
   async function initCreateFloat() {
     // check if all required inputs are correct
     let canCreateFloat = await checkInputs();
 
     if (!canCreateFloat) {
       return;
+    }
+    if (claimCode) {
+      const { publicKey } = getKeysFromClaimCode(claimCode);
+      $draftFloat.secretPK = publicKey;
     }
 
     createEvent(minter || $user?.addr, $draftFloat);
@@ -117,7 +122,8 @@
 <LibLoader
   url="https://cdn.jsdelivr.net/npm/ipfs-http-client@56.0.0/index.min.js"
   on:loaded={ipfsReady}
-  uniqueId={+new Date()} />
+  uniqueId={+new Date()}
+/>
 
 <div class="container">
   <article>
@@ -138,7 +144,8 @@
       <textarea
         id="description"
         name="description"
-        bind:value={$draftFloat.description} />
+        bind:value={$draftFloat.description}
+      />
     </label>
 
     {#await getGroups($user?.addr)}
@@ -151,7 +158,8 @@
             <select
               bind:value={$draftFloat.initialGroup}
               id="addToGroup"
-              required>
+              required
+            >
               {#each Object.keys(groupsWeCanAddTo) as groupName}
                 <option value={groupName}>{groupName}</option>
               {/each}
@@ -172,7 +180,8 @@
           type="file"
           id="image"
           name="image"
-          accept="image/png, image/gif, image/jpeg" />
+          accept="image/png, image/gif, image/jpeg"
+        />
         {#if uploading}
           <progress value={uploadingPercent * 100} max="100" />
         {/if}
@@ -193,7 +202,8 @@
           eventImage: $draftFloat.ipfsHash,
           totalSupply: "SERIAL_NUM",
           eventHost: $user?.addr || "0x0000000000",
-        }} />
+        }}
+      />
       <div class="mb-2" />
     {/if}
 
@@ -212,7 +222,8 @@
       <button
         class:secondary={!$draftFloat.transferrable}
         class="outline"
-        on:click={() => ($draftFloat.transferrable = true)}>
+        on:click={() => ($draftFloat.transferrable = true)}
+      >
         Tradeable
         <span>This FLOAT can be traded and/or transferred.</span>
       </button>
@@ -233,7 +244,8 @@
       <button
         class:secondary={!$draftFloat.claimable}
         class="outline"
-        on:click={() => ($draftFloat.claimable = true)}>
+        on:click={() => ($draftFloat.claimable = true)}
+      >
         Claimable
         <span>
           Users can mint their own FLOAT based on the parameters defined below.
@@ -242,10 +254,12 @@
       <button
         class:secondary={$draftFloat.claimable}
         class="outline"
-        on:click={() => ($draftFloat.claimable = false)}>
+        on:click={() => ($draftFloat.claimable = false)}
+      >
         Not Claimable
         <span
-          >You will be responsible for distributing the FLOAT to accounts.</span>
+          >You will be responsible for distributing the FLOAT to accounts.</span
+        >
       </button>
     </div>
 
@@ -261,18 +275,22 @@
       <button
         class:secondary={$draftFloat.quantity}
         class="outline"
-        on:click={() => ($draftFloat.quantity = false)}>
+        on:click={() => ($draftFloat.quantity = false)}
+      >
         Unlimited Quantity
         <span
-          >Select this if you don't want your FLOAT to have a limited quantity.</span>
+          >Select this if you don't want your FLOAT to have a limited quantity.</span
+        >
       </button>
       <button
         class:secondary={!$draftFloat.quantity}
         class="outline"
-        on:click={() => ($draftFloat.quantity = true)}>
+        on:click={() => ($draftFloat.quantity = true)}
+      >
         Limited Quantity
         <span
-          >You can set the maximum number of times the FLOAT can be minted.</span>
+          >You can set the maximum number of times the FLOAT can be minted.</span
+        >
       </button>
     </div>
     {#if $draftFloat.quantity}
@@ -283,7 +301,8 @@
           name="quantity"
           bind:value={$draftFloat.quantity}
           min="1"
-          placeholder="ex. 100" />
+          placeholder="ex. 100"
+        />
       </label>
       <hr />
     {/if}
@@ -293,14 +312,16 @@
       <button
         class:secondary={$draftFloat.timelock}
         class="outline"
-        on:click={() => ($draftFloat.timelock = false)}>
+        on:click={() => ($draftFloat.timelock = false)}
+      >
         No Time Limit
         <span>Can be minted at any point in the future.</span>
       </button>
       <button
         class:secondary={!$draftFloat.timelock}
         class="outline"
-        on:click={() => ($draftFloat.timelock = true)}>
+        on:click={() => ($draftFloat.timelock = true)}
+      >
         Time Limit
         <span>Can only be minted between a specific time interval.</span>
       </button>
@@ -314,7 +335,8 @@
             type="datetime-local"
             id="start"
             name="start"
-            bind:value={$draftFloat.startTime} />
+            bind:value={$draftFloat.startTime}
+          />
         </label>
 
         <!-- Date -->
@@ -324,7 +346,8 @@
             type="datetime-local"
             id="start"
             name="start"
-            bind:value={$draftFloat.endTime} />
+            bind:value={$draftFloat.endTime}
+          />
         </label>
       </div>
       <hr />
@@ -335,53 +358,32 @@
       <button
         class:secondary={$draftFloat.claimCodeEnabled}
         class="outline"
-        on:click={() => ($draftFloat.claimCodeEnabled = false)}>
+        on:click={() => ($draftFloat.claimCodeEnabled = false)}
+      >
         Anyone Can Claim
         <span>Your FLOAT can be minted freely by anyone.</span>
       </button>
       <button
         class:secondary={!$draftFloat.claimCodeEnabled}
         class="outline"
-        on:click={() => ($draftFloat.claimCodeEnabled = true)}>
-        Use Secret Code(s)
-        <span
-          >Your FLOAT can only be minted if people know the secret code(s).</span>
+        on:click={() => ($draftFloat.claimCodeEnabled = true)}
+      >
+        Use Secret Code
+        <span>
+          Your FLOAT can only be minted if people know the secret code.
+        </span>
       </button>
     </div>
 
-    <!-- ONE SECRET OR MULTIPLE -->
-    {#if $draftFloat.claimCodeEnabled}
-      <div class="grid no-break mb-1">
-        <button
-          class:secondary={$draftFloat.multipleSecretsEnabled}
-          class="outline"
-          on:click={() => ($draftFloat.multipleSecretsEnabled = false)}>
-          One Code for All
-          <span>Use the same secret code for everyone.</span>
-        </button>
-        <button
-          class:secondary={!$draftFloat.multipleSecretsEnabled}
-          class="outline"
-          on:click={() => ($draftFloat.multipleSecretsEnabled = true)}>
-          Multiple Secret Codes
-          <span
-            >Specify a bunch of secret codes, each of which can only be used
-            once.</span>
-        </button>
-      </div>
-    {/if}
     {#if $draftFloat.claimCodeEnabled}
       <label for="claimCode"
-        >{@html $draftFloat.multipleSecretsEnabled
-          ? "Enter your codes, separated by a comma (, )"
-          : "Enter a claim code"} (<i>case-sensitive</i>)
+        >Enter a claim code (<i>case-sensitive</i>)
         <input
           type="text"
           name="claimCode"
-          bind:value={$draftFloat.claimCode}
-          placeholder={$draftFloat.multipleSecretsEnabled
-            ? "ex. code1, code2, code3, code4"
-            : "ex. mySecretCode"} />
+          bind:value={claimCode}
+          placeholder="ex. mySecretCode"
+        />
       </label>
       <hr />
     {/if}
@@ -391,7 +393,8 @@
       <button
         class:secondary={$draftFloat.flowTokenPurchase}
         class="outline"
-        on:click={() => ($draftFloat.flowTokenPurchase = false)}>
+        on:click={() => ($draftFloat.flowTokenPurchase = false)}
+      >
         Free
         <span>This FLOAT is free for users to claim.</span>
       </button>
@@ -400,11 +403,13 @@
         class="outline"
         on:click={() => {
           $draftFloat.flowTokenPurchase = true;
-        }}>
+        }}
+      >
         Payment
         <span
           >This FLOAT costs FlowToken to claim. Suitable for things like
-          tickets.</span>
+          tickets.</span
+        >
       </button>
     </div>
     {#if $draftFloat.flowTokenPurchase}
@@ -419,9 +424,11 @@
             min="1.00"
             placeholder="ex. 10.0"
             step="0.01"
-            bind:value={$draftFloat.flowTokenPurchase} />
+            bind:value={$draftFloat.flowTokenPurchase}
+          />
           <small
-            >Note: 5% of each purchase will go to the Emerald City DAO treasury.</small>
+            >Note: 5% of each purchase will go to the Emerald City DAO treasury.</small
+          >
         </label>
       </div>
       <hr />
@@ -436,7 +443,8 @@
             type="text"
             id="minters"
             name="minters"
-            bind:value={minter} />
+            bind:value={minter}
+          />
         </div>
         <p class="small mt-1">
           Input an address to create an event as that account. This will only
@@ -447,13 +455,15 @@
     <button
       class="secondary outline text-center mt-2"
       on:click={() => (advancedOptions = !advancedOptions)}
-      >{advancedOptions ? "Hide" : "Show"} advanced options</button>
+      >{advancedOptions ? "Hide" : "Show"} advanced options</button
+    >
 
     <footer>
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
           <button class="contrast small-button" on:click={authenticate}
-            >Connect Wallet</button>
+            >Connect Wallet</button
+          >
         </div>
       {:else if $eventCreationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
@@ -462,7 +472,8 @@
           role="button"
           class="d-block"
           href="/{$user.addr}/?tab=events"
-          style="display:block">
+          style="display:block"
+        >
           Event created successfully!
         </a>
       {:else if !$eventCreatedStatus.success && $eventCreatedStatus.error}
