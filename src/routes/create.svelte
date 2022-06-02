@@ -225,21 +225,17 @@
         on:click={() => ($draftFloat.transferrable = true)}
       >
         Tradeable
-        <span
-          >This FLOAT can be traded on popular secondary marketplaces and can be
-          gifted on the FLOAT platform.</span
-        >
+        <span>This FLOAT can be traded and/or transferred.</span>
       </button>
       <button
         class:secondary={$draftFloat.transferrable}
         class="outline"
         on:click={() => {
           $draftFloat.transferrable = false;
-        }}
-      >
-        Non-Tradeable
+        }}>
+        Soulbound
         <span>
-          This FLOAT <strong>cannot</strong> be traded (soul-bound).
+          This FLOAT <strong>cannot</strong> be traded (soulbound).
         </span>
       </button>
     </div>
