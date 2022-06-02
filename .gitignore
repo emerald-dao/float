@@ -12,3 +12,4 @@ package-lock.json
 flow.json
 .env.development
 .env.production
+.vercel_build_output
