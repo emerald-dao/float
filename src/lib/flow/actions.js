@@ -67,7 +67,7 @@ const convertDraftFloat = (draftFloat) => {
     dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
     timePeriod: draftFloat.startTime && draftFloat.endTime ? (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000) : 0,
     secret: draftFloat.claimCodeEnabled ? true : false,
-    secretPK: draftFloat.secretPK,
+    secretPK: draftFloat.claimCodeEnabled ? draftFloat.secretPK : '',
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
