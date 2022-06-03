@@ -92,6 +92,12 @@ article header {
   margin-bottom: 30px;
 }
 
+.flex {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 button {
   font-weight: bold;
   margin-bottom: 0;

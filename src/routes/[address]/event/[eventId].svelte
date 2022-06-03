@@ -45,7 +45,7 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
-  import { authenticate } from "@onflow/fcl";
+  import { authenticate } from "$lib/flow/actions";
   import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
   let claimsTableInView;
   let limitedVerifier;

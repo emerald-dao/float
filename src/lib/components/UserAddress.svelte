@@ -38,6 +38,6 @@
     <span class="mono">{resolvedName}</span>
   {:else}
     <span class="led-green"></span>
-    <span class="mono">{resolvedName.split('.')[0].length > 14 ? '0x...' + resolvedName.slice(resolvedName.length - 4) : resolvedName.length > 14 ? "..." + resolvedName.slice(resolvedName.length - 6) : resolvedName}</span>
+    <span class="mono">{resolvedName.split('.')[0].length > 14 ? '0x...' + resolvedName.slice(resolvedName.length - 6) : resolvedName.length > 14 ? "..." + resolvedName.slice(resolvedName.length - 6) : resolvedName}</span>
   {/if}
 {/await}
