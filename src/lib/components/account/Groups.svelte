@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
   import Group from "../Group.svelte";
   import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
-  import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate } from "@onflow/fcl";
   import { getResolvedName } from "$lib/flow/utils";
   export let addressObject;
 

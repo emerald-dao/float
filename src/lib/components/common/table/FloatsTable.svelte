@@ -69,7 +69,7 @@
     {#each rows2 as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
         <td data-label="Image"
-          ><a href="{$page.path}/float/{row.id}"
+          ><a href="{$page.url.pathname}/float/{row.id}"
             ><img
               alt=""
               class="table-image"
@@ -79,7 +79,7 @@
           ><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a
           ></td>
         <td data-label="Serial"
-          ><a href="{$page.path}/float/{row.id}"><code>#{row.serial}</code></a
+          ><a href="{$page.url.pathname}/float/{row.id}"><code>#{row.serial}</code></a
           ></td>
         <td data-label="Received"
           >{formatter.format(row.dateReceived * 1000)}</td>

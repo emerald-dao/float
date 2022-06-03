@@ -15,7 +15,7 @@
     setupAccount,
   } from "$lib/flow/actions";
   import UserAddress from "../UserAddress.svelte";
-  import { authenticate, unauthenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate, unauthenticate } from "@onflow/fcl";
   import CopyBadge from "$lib/components/common/CopyBadge.svelte";
 
   let newSharedMinter = "";

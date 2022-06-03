@@ -1,3 +1,7 @@
+<script context="module">
+  export const prerender = true;
+</script>
+
 <script>
   import { page } from "$app/stores";
   import {
@@ -41,7 +45,7 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import QrCode from "$lib/components/common/QRCode.svelte";
-  import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate } from "@onflow/fcl";
   import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
   let claimsTableInView;
   let limitedVerifier;

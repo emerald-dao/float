@@ -39,7 +39,7 @@
 </main>
 
 <footer>
-  {#if $page.path === "/live"}
+  {#if $page.url.pathname === "/live"}
     <small class="graffle">
       Live claiming feed powered by
       <a href="https://graffle.io" target="_blank">
@@ -72,7 +72,7 @@
       </span>
     </small>
   </p>
-  {#if $page.path !== "/live"}
+  {#if $page.url.pathname !== "/live"}
     <p>
       <small>Preferred name service</small>
       <button class="resolver-toggle" on:click|preventDefault={toggleResolver}>

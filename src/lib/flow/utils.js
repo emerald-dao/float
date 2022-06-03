@@ -9,6 +9,8 @@ import { ec } from "elliptic";
 import scrypt from "scrypt-async";
 import {secretSalt} from "./config";
 
+import { Buffer } from 'buffer';
+
 export let distributeCode = `
 import FLOAT from 0xFLOAT
 import NonFungibleToken from 0xCORE

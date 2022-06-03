@@ -1,6 +1,6 @@
 import { browser } from '$app/env';
 
-import * as fcl from "@samatech/onflow-fcl-esm";
+import * as fcl from "@onflow/fcl";
 
 import "./config.js";
 import { flowTokenIdentifier } from './config.js';
