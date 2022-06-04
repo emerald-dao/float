@@ -726,7 +726,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
           self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollections = []
           for recipient in recipients {
-            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.003 {
+            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.001 {
               if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
                 self.RecipientCollections.append(recipientCollection)
               }
