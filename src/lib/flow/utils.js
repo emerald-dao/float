@@ -70,7 +70,6 @@ export const formatter = new Intl.DateTimeFormat("en-US");
 
 export function getKeysFromClaimCode(claimCode) {
 	let keys;
-	console.log(secretSalt)
 	scrypt(
 		claimCode, //password
 		secretSalt, //use some salt for extra security
@@ -88,7 +87,6 @@ export function getKeysFromClaimCode(claimCode) {
 			keys = {publicKey, privateKey};
 		}
 	);
-	console.log(keys)
 	return keys;
 }
 
@@ -119,7 +117,8 @@ const hash = (message) => {
 
 export function signWithClaimCode(claimCode) {
 	const { privateKey } = getKeysFromClaimCode(claimCode);
-	const data = Buffer.from(get(user).addr).toString("hex");
+	let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
+	const data = Buffer.from(messageToSign).toString("hex");
   const sig = sign(USER_DOMAIN_TAG + data, privateKey);
 	return sig;
 }
