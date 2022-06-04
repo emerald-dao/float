@@ -111,7 +111,11 @@
     const arrayOfClaimers = Object.keys(listOfClaimers);
     let csvContent = "data:text/csv;charset=utf-8,";
     for (let i = 0; i < arrayOfClaimers.length; i++) {
-      csvContent += arrayOfClaimers[i] + "\r\n";
+      if (i == arrayOfClaimers.length - 1) {
+        csvContent += arrayOfClaimers[i]
+      } else {
+        csvContent += arrayOfClaimers[i] + "\r\n";
+      }
     }
     var encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
@@ -151,7 +155,7 @@
         <Float
           float={{
             id: floatEvent.hasClaimed.id,
-            owner: floatEvent.currentOwner.address,
+            owner: floatEvent.currentOwner?.address,
             eventHost: floatEvent.host,
             eventImage: floatEvent.image,
             eventName: floatEvent.name,

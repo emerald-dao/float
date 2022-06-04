@@ -56,12 +56,6 @@ export const unauthenticate = () => fcl.unauthenticate();
 export const authenticate = () => fcl.authenticate();
 
 const convertDraftFloat = (draftFloat) => {
-  let secrets = []
-  if (draftFloat.multipleSecretsEnabled) {
-    secrets = draftFloat.claimCode.split(', ');
-  } else {
-    secrets = [draftFloat.claimCode];
-  }
   return {
     claimable: draftFloat.claimable,
     name: draftFloat.name,
@@ -73,7 +67,7 @@ const convertDraftFloat = (draftFloat) => {
     dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
     timePeriod: draftFloat.startTime && draftFloat.endTime ? (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000) : 0,
     secret: draftFloat.claimCodeEnabled ? true : false,
-    secrets: secrets,
+    secretPK: draftFloat.claimCodeEnabled ? draftFloat.secretPK : '',
     limited: draftFloat.quantity ? true : false,
     capacity: draftFloat.quantity ? draftFloat.quantity : 0,
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
@@ -167,6 +161,7 @@ export const setupAccount = async () => {
 export const createEvent = async (forHost, draftFloat) => {
 
   let floatObject = convertDraftFloat(draftFloat);
+  console.log(floatObject);
 
   eventCreationInProgress.set(true);
 
@@ -194,7 +189,7 @@ export const createEvent = async (forHost, draftFloat) => {
         dateStart: UFix64, 
         timePeriod: UFix64, 
         secret: Bool, 
-        secrets: [String], 
+        secretPK: String, 
         limited: Bool, 
         capacity: UInt64, 
         initialGroups: [String], 
@@ -238,22 +233,16 @@ export const createEvent = async (forHost, draftFloat) => {
       
         execute {
           var Timelock: FLOATVerifiers.Timelock? = nil
-          var Secret: FLOATVerifiers.Secret? = nil
+          var SecretV2: FLOATVerifiers.SecretV2? = nil
           var Limited: FLOATVerifiers.Limited? = nil
-          var MultipleSecret: FLOATVerifiers.MultipleSecret? = nil
           var verifiers: [{FLOAT.IVerifier}] = []
           if timelock {
             Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
             verifiers.append(Timelock!)
           }
           if secret {
-            if secrets.length == 1 {
-              Secret = FLOATVerifiers.Secret(_secretPhrase: secrets[0])
-              verifiers.append(Secret!)
-            } else {
-              MultipleSecret = FLOATVerifiers.MultipleSecret(_secrets: secrets)
-              verifiers.append(MultipleSecret!)
-            }
+            SecretV2 = FLOATVerifiers.SecretV2(_publicKey: secretPK)
+            verifiers.append(SecretV2!)
           }
           if limited {
             Limited = FLOATVerifiers.Limited(_capacity: capacity)
@@ -262,7 +251,7 @@ export const createEvent = async (forHost, draftFloat) => {
           let extraMetadata: {String: AnyStruct} = {}
           if flowTokenPurchase {
             let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-            extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
+            extraMetadata["prices"] = {"A.2d4c3caffbeab845.FlowToken.Vault": tokenInfo}
           }
           self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
           log("Started a new event for host.")
@@ -281,7 +270,7 @@ export const createEvent = async (forHost, draftFloat) => {
         arg(floatObject.dateStart.toFixed(1), t.UFix64),
         arg(floatObject.timePeriod.toFixed(1), t.UFix64),
         arg(floatObject.secret, t.Bool),
-        arg(floatObject.secrets, t.Array(t.String)),
+        arg(floatObject.secretPK, t.String),
         arg(floatObject.limited, t.Bool),
         arg(floatObject.capacity, t.UInt64),
         arg(floatObject.initialGroups, t.Array(t.String)),
@@ -405,6 +394,126 @@ export const claimFLOAT = async (eventId, host, secret) => {
         arg(parseInt(eventId), t.UInt64),
         arg(host, t.Address),
         arg(secret, t.Optional(t.String)),
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        if (res.statusCode === 0) {
+          floatClaimedStatus.set(respondWithSuccess());
+        } else {
+          floatClaimedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        floatClaimingInProgress.set(false);
+        draftFloat.set({
+          claimable: true,
+          transferrable: true,
+        })
+
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+  } catch (e) {
+    transactionStatus.set(99)
+    floatClaimedStatus.set(respondWithError(e));
+    floatClaimingInProgress.set(false);
+
+    console.log(e)
+  }
+}
+
+export const claimFLOATv2 = async (eventId, host, secretSig) => {
+
+  let transactionId = false;
+  initTransactionState()
+
+  floatClaimingInProgress.set(true);
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `
+      import FLOAT from 0xFLOAT
+      import FLOATVerifiers from 0xFLOAT
+      import NonFungibleToken from 0xCORE
+      import MetadataViews from 0xCORE
+      import GrantedAccountAccess from 0xFLOAT
+      import FlowToken from 0xFLOWTOKEN
+
+      transaction(eventId: UInt64, host: Address, secretSig: String?) {
+ 
+        let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
+        let Collection: &FLOAT.Collection
+        let FlowTokenVault: &FlowToken.Vault
+      
+        prepare(acct: AuthAccount) {
+          // SETUP COLLECTION
+          if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+              acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
+              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+                      (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+          }
+      
+          // SETUP FLOATEVENTS
+          if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+            acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+          }
+      
+          // SETUP SHARED MINTING
+          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
+              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
+              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
+                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
+          }
+      
+          let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
+                              .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+                              ?? panic("Could not borrow the public FLOATEvents from the host.")
+          self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist.")
+      
+          self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+                              ?? panic("Could not get the Collection from the signer.")
+          
+          self.FlowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+                                  ?? panic("Could not borrow the FlowToken.Vault from the signer.")
+        }
+      
+        execute {
+          let params: {String: AnyStruct} = {}
+      
+          // If the FLOAT has a secret phrase on it
+          if let unwrappedSecretSig = secretSig {
+            params["secretSig"] = unwrappedSecretSig
+          }
+       
+          // If the FLOAT costs something
+          if let prices = self.FLOATEvent.getPrices() {
+            log(prices)
+            let payment <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
+            self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
+            log("Purchased the FLOAT.")
+          }
+          // If the FLOAT is free 
+          else {
+            self.FLOATEvent.claim(recipient: self.Collection, params: params)
+            log("Claimed the FLOAT.")
+          }
+        }
+      }      
+      `,
+      args: (arg, t) => [
+        arg(parseInt(eventId), t.UInt64),
+        arg(host, t.Address),
+        arg(secretSig, t.Optional(t.String)),
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -600,7 +709,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
           self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollections = []
           for recipient in recipients {
-            if FlowStorageFees.defaultTokenAvailableBalance(recipient) > 0.02 {
+            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.003 {
               if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
                 self.RecipientCollections.append(recipientCollection)
               }
