@@ -148,6 +148,8 @@
   <header>
     <h3 class="text-center">Groups</h3>
   </header>
+  <button on:click={() => (open = true)} class="create"
+    >Create a new Group</button>
   {#await groups then groups}
     {#await resolvedName then resolvedName}
       {#if Object.keys(groups).length > 0}
@@ -165,12 +167,14 @@
       {/if}
     {/await}
   {/await}
-  <button on:click={() => (open = true)} class="create"
-    >Create a new Group</button>
 </article>
 
 <style>
   .create {
     margin-top: 20px;
+  }
+
+  button {
+    margin-bottom: 20px;
   }
 </style>
