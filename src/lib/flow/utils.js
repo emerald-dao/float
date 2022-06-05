@@ -118,6 +118,10 @@ const hash = (message) => {
 };
 
 export function signWithClaimCode(claimCode) {
+  if(!claimCode) {
+    return null;
+  }
+  
 	const { privateKey } = getKeysFromClaimCode(claimCode);
 	let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
 	const data = Buffer.from(messageToSign).toString("hex");

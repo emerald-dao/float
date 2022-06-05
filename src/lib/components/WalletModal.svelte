@@ -6,11 +6,26 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
 </script>
 
 <article>
+  <header>
+    <h1>Choose your wallet</h1>
+  </header>
   <div class="wallet">
-    <button id="blocto" on:click={() => configureFCLAndLogin('blocto')}><img src="/blocto-logo.jpg" alt="blocto logo" />Connect Blocto</button>
+    <button id="blocto" on:click={() => configureFCLAndLogin('blocto')}>
+      <img src="/blocto-logo.jpg" alt="blocto logo" />
+      <span>Connect Blocto</span>
+    </button>
   </div>
   <div class="wallet">
-    <button id="dapper" on:click={() => configureFCLAndLogin('dapper')}><img src="/dapper-logo.png" alt="dapper logo" />Connect Dapper</button>
+    <button id="dapper" on:click={() => configureFCLAndLogin('dapper')}>
+      <img src="/dapper-logo.png" alt="dapper logo" />
+      <span>Connect Dapper</span>
+    </button>
+  </div>
+  <div class="wallet">
+    <button id="other" on:click={() => configureFCLAndLogin('other')}>
+      <img src="/lilico-logo.jpg" alt="lilico logo" />
+      <span>Connect Lilico</span>
+    </button>
   </div>
 </article>
 
@@ -20,10 +35,12 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
     top: 50%;
     left: 50%;
     transform: translateX(-50%) translateY(-50%);
-    width: 600px;
-    background-color: var(--h1-color);
+    max-width: 600px;
+    width: 100%;
+    background-color: var(--card-background-color);
     color: var(--primary);
     border: 3px solid var(--primary);
+    z-index:10000;
   }
 
   .wallet {
@@ -33,10 +50,14 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
     margin: 10px;
   }
 
+  h1 {
+    text-align: center;
+  }
+
   button {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items:center;
+    justify-content:flex-start;
     border: none;
   }
 
@@ -45,6 +66,10 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
     height: 50px;
     border-radius: 100%;
     margin-right: 20px;
+  }
+
+  button span {
+    flex-grow:1;
   }
 
   button:hover {
@@ -56,6 +81,10 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
   }
 
   #dapper {
-    background-image: linear-gradient(to top, #c471f5 0%, #fa71cd 100%);
+    background-image: linear-gradient(135deg, #c471f5 -20%, #fa71cd 120%);
+  }
+
+  #other {
+    background-image: linear-gradient(135deg, #f5ba71 -20%, #ff7a62 120%);
   }
 </style>

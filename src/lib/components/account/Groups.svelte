@@ -68,10 +68,7 @@
   uniqueId={+new Date()} />
 
 {#if $user?.addr === addressObject.address}
-  {#if !open}
-    <button on:click={() => (open = true)} class="create"
-      >Create a new Group</button>
-  {:else if open}
+  {#if open}
     <article>
       <header>
         <h3 class="m-0 text-center">Create a new Group</h3>
@@ -162,12 +159,14 @@
             description={group.description} />
         {/each}
       {:else}
-        <p class="text-center no-margin">
+        <p class="text-center">
           This account has not created any groups yet.
         </p>
       {/if}
     {/await}
   {/await}
+  <button on:click={() => (open = true)} class="create"
+    >Create a new Group</button>
 </article>
 
 <style>

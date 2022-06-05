@@ -34,7 +34,6 @@
       <p class="text-center">This account has not created any FLOAT events yet.</p>
     {/if}
   {/await}
-  <br/>
 
   {#if $user?.addr == addressObject.address}
   <a href="/create" role="button" class="addnew">Create a new FLOAT Event</a>
@@ -45,7 +44,6 @@
   .addnew {
     font-weight: bold;
     width: 100%;
-    margin-top:30px;
   }
 
   @media screen and (max-width: 767px) {

@@ -14,6 +14,6 @@ config({
   "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df"
 })
 
-export const verifiersIdentifier = 'A.2d4c3caffbeab845';
+export const verifiersIdentifier = 'A.0afe396ebc8eee65';
 export const flowTokenIdentifier = 'A.1654653399040a61';
 export const secretSalt = import.meta.env.VITE_SECRET_SALT;

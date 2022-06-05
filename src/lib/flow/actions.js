@@ -68,6 +68,11 @@ export const configureFCLAndLogin = async (wallet) => {
       .put("discovery.wallet", "https://staging.accounts.meetdapper.com/fcl/authn-restricted")
       .put("discovery.wallet.method", "POP/RPC")
   }
+  else if (wallet === 'other') {
+    config()
+      .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn") // Mainnet: "https://fcl-discovery.onflow.org/authn"
+      .put("discovery.wallet.method", "IFRAME/RPC")
+  }
   await fcl.authenticate();
   walletModal.set(false);
 }
