@@ -79,6 +79,7 @@ body {
 main {
   flex: 1 0 auto;
   max-width: 800px !important;
+  padding-bottom: 80px;
 }
 footer {
   flex-shrink: 0;
@@ -86,6 +87,8 @@ footer {
 
 article {
   margin: 20px 0;
+  padding-bottom: 80px;
+  padding-top: 80px;
 }
 
 article header {
