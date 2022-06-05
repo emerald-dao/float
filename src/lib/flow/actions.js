@@ -37,10 +37,11 @@ import {
   floatDistributingManyStatus,
   floatDistributingManyInProgress,
   setupAccountInProgress,
-  setupAccountStatus
+  setupAccountStatus,
 } from './stores.js';
+import { get } from 'svelte/store'
 
-import { draftFloat, walletModal } from '$lib/stores';
+import { draftFloat, walletModal, currentWallet } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
 import { notifications } from "$lib/notifications";
@@ -58,21 +59,26 @@ export const authenticate = () => {
   walletModal.set(true);
 };
 
-export const configureFCLAndLogin = async (wallet) => {
+const configureFCL = (wallet) => {
   if (wallet === 'blocto') {
     config()
-      .put("discovery.wallet", "https://flow-wallet-testnet.blocto.app/authn")
+      .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
       .put("discovery.wallet.method", "IFRAME/RPC")
   } else if (wallet === 'dapper') {
     config()
-      .put("discovery.wallet", "https://staging.accounts.meetdapper.com/fcl/authn-restricted")
+      .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
       .put("discovery.wallet.method", "POP/RPC")
   }
   else if (wallet === 'other') {
     config()
-      .put("discovery.wallet", "https://fcl-discovery.onflow.org/testnet/authn") // Mainnet: "https://fcl-discovery.onflow.org/authn"
+      .put("discovery.wallet", import.meta.env.VITE_FCL_DISCOVERY)
       .put("discovery.wallet.method", "IFRAME/RPC")
   }
+}
+
+export const configureFCLAndLogin = async (wallet) => {
+  currentWallet.set(wallet);
+  configureFCL(wallet);
   await fcl.authenticate();
   walletModal.set(false);
 }
@@ -2347,6 +2353,8 @@ export const resolveAddressObject = async (lookup) => {
 }
 
 function initTransactionState() {
+  configureFCL(get(currentWallet));
+  console.log(get(currentWallet));
   transactionInProgress.set(true);
   transactionStatus.set(-1);
   floatClaimedStatus.set(false);
