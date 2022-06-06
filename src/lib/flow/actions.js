@@ -279,7 +279,7 @@ export const createEvent = async (forHost, draftFloat) => {
           let extraMetadata: {String: AnyStruct} = {}
           if flowTokenPurchase {
             let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-            extraMetadata["prices"] = {"A.2d4c3caffbeab845.FlowToken.Vault": tokenInfo}
+            extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
           }
           self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
           log("Started a new event for host.")
