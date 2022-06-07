@@ -97,7 +97,7 @@ const convertDraftFloat = (draftFloat) => {
     secret: draftFloat.claimCodeEnabled ? true : false,
     secretPK: draftFloat.claimCodeEnabled ? draftFloat.secretPK : '',
     limited: draftFloat.quantity ? true : false,
-    capacity: draftFloat.quantity ? draftFloat.quantity : 0,
+    capacity: draftFloat.quantity ? draftFloat.quantity.toString() : '0',
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
     flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
     flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
