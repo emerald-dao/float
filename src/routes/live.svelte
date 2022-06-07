@@ -33,6 +33,7 @@
       message.blockEventData.eventId
     );
     addition++;
+    console.log(addition)
   };
 
   function createStream() {
@@ -71,10 +72,10 @@
   {#await getStats() then stats}
     <div class="grid info">
       <p>
-        FLOATs Claimed<br /><span>{(stats[0] + addition).toLocaleString()}</span
+        FLOATs Claimed<br /><span>{(parseInt(stats[0]) + addition).toLocaleString()}</span
         >
       </p>
-      <p>Events Created<br /><span>{stats[1].toLocaleString()}</span></p>
+      <p>Events Created<br /><span>{parseInt(stats[1]).toLocaleString()}</span></p>
     </div>
   {/await}
   {#each Object.keys(claimedEvents) as id (id)}
