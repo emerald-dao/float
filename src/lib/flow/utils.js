@@ -9,6 +9,8 @@ import { ec } from "elliptic";
 import scrypt from "scrypt-async";
 import {secretSalt} from "./config";
 
+import { Buffer } from 'buffer';
+
 export let distributeCode = `
 import FLOAT from 0xFLOAT
 import NonFungibleToken from 0xCORE
@@ -116,6 +118,10 @@ const hash = (message) => {
 };
 
 export function signWithClaimCode(claimCode) {
+  if(!claimCode) {
+    return null;
+  }
+  
 	const { privateKey } = getKeysFromClaimCode(claimCode);
 	let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
 	const data = Buffer.from(messageToSign).toString("hex");

@@ -25,6 +25,9 @@
   <header>
     <h3 class="text-center">Events</h3>
   </header>
+  {#if $user?.addr == addressObject.address}
+    <a href="/create" role="button" class="addnew">Create a new FLOAT Event</a>
+  {/if}
   {#await floatEvents()}
     <Loading />
   {:then floatEvents}
@@ -34,18 +37,13 @@
       <p class="text-center">This account has not created any FLOAT events yet.</p>
     {/if}
   {/await}
-  <br/>
-
-  {#if $user?.addr == addressObject.address}
-  <a href="/create" role="button" class="addnew">Create a new FLOAT Event</a>
-  {/if}
 </article>
 
 <style>
   .addnew {
     font-weight: bold;
     width: 100%;
-    margin-top:30px;
+    margin-bottom: 20px;
   }
 
   @media screen and (max-width: 767px) {

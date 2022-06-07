@@ -1,6 +1,6 @@
 import { browser } from '$app/env';
 
-import * as fcl from "@samatech/onflow-fcl-esm";
+import * as fcl from "@onflow/fcl";
 
 import "./config.js";
 import { flowTokenIdentifier } from './config.js';
@@ -37,13 +37,15 @@ import {
   floatDistributingManyStatus,
   floatDistributingManyInProgress,
   setupAccountInProgress,
-  setupAccountStatus
+  setupAccountStatus,
 } from './stores.js';
+import { get } from 'svelte/store'
 
-import { draftFloat } from '$lib/stores';
+import { draftFloat, walletModal, currentWallet } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
 import { notifications } from "$lib/notifications";
+import { config } from "@onflow/fcl";
 
 if (browser) {
   // set Svelte $user store to currentUser, 
@@ -53,7 +55,33 @@ if (browser) {
 
 // Lifecycle FCL Auth functions
 export const unauthenticate = () => fcl.unauthenticate();
-export const authenticate = () => fcl.authenticate();
+export const authenticate = () => {
+  walletModal.set(true);
+};
+
+const configureFCL = (wallet) => {
+  if (wallet === 'blocto') {
+    config()
+      .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
+      .put("discovery.wallet.method", "IFRAME/RPC")
+  } else if (wallet === 'dapper') {
+    config()
+      .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
+      .put("discovery.wallet.method", "POP/RPC")
+  }
+  else if (wallet === 'other') {
+    config()
+      .put("discovery.wallet", import.meta.env.VITE_FCL_DISCOVERY)
+      .put("discovery.wallet.method", "IFRAME/RPC")
+  }
+}
+
+export const configureFCLAndLogin = async (wallet) => {
+  currentWallet.set(wallet);
+  configureFCL(wallet);
+  await fcl.authenticate();
+  walletModal.set(false);
+}
 
 const convertDraftFloat = (draftFloat) => {
   return {
@@ -326,7 +354,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
       import MetadataViews from 0xCORE
       import GrantedAccountAccess from 0xFLOAT
       import FlowToken from 0xFLOWTOKEN
-
+      
       transaction(eventId: UInt64, host: Address, secret: String?) {
  
         let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
@@ -709,7 +737,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
           self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollections = []
           for recipient in recipients {
-            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.003 {
+            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.001 {
               if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
                 self.RecipientCollections.append(recipientCollection)
               }
@@ -2325,6 +2353,8 @@ export const resolveAddressObject = async (lookup) => {
 }
 
 function initTransactionState() {
+  configureFCL(get(currentWallet));
+  console.log(get(currentWallet));
   transactionInProgress.set(true);
   transactionStatus.set(-1);
   floatClaimedStatus.set(false);
