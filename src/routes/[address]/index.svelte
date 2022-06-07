@@ -13,8 +13,8 @@
 
   $: addressObject = resolveAddressObject($page.params.address);
 
-  $: tab = $page.query.get('tab') || 'floats';
-  let query = new URLSearchParams($page.query.toString());
+  $: tab = $page.url.searchParams.get('tab') || 'floats';
+  let query = new URLSearchParams($page.url.searchParams.toString());
 </script>
 
 <Meta

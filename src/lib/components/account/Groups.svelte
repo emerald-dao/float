@@ -5,7 +5,7 @@
   import { onMount } from "svelte";
   import Group from "../Group.svelte";
   import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
-  import { authenticate } from "@samatech/onflow-fcl-esm";
+  import { authenticate } from "$lib/flow/actions";
   import { getResolvedName } from "$lib/flow/utils";
   export let addressObject;
 
@@ -68,10 +68,7 @@
   uniqueId={+new Date()} />
 
 {#if $user?.addr === addressObject.address}
-  {#if !open}
-    <button on:click={() => (open = true)} class="create"
-      >Create a new Group</button>
-  {:else if open}
+  {#if open}
     <article>
       <header>
         <h3 class="m-0 text-center">Create a new Group</h3>
@@ -151,6 +148,8 @@
   <header>
     <h3 class="text-center">Groups</h3>
   </header>
+  <button on:click={() => (open = true)} class="create"
+    >Create a new Group</button>
   {#await groups then groups}
     {#await resolvedName then resolvedName}
       {#if Object.keys(groups).length > 0}
@@ -162,7 +161,7 @@
             description={group.description} />
         {/each}
       {:else}
-        <p class="text-center no-margin">
+        <p class="text-center">
           This account has not created any groups yet.
         </p>
       {/if}
@@ -173,5 +172,9 @@
 <style>
   .create {
     margin-top: 20px;
+  }
+
+  button {
+    margin-bottom: 20px;
   }
 </style>

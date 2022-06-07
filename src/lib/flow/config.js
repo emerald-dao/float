@@ -1,8 +1,9 @@
-import { config } from "@samatech/onflow-fcl-esm";
+import { config } from "@onflow/fcl";
 
 config({
+  "app.detail.title": "FLOAT", // Shows user what dapp is trying to connect
+  "app.detail.icon": "https://floats.city/floatlogo_big.png", // shows image to the user to display your dapp brand
   "accessNode.api": import.meta.env.VITE_ACCESS_NODE_API, // import.meta.env.VITE_ACCESS_NODE_API,
-  "discovery.wallet": import.meta.env.VITE_DISCOVERY_WALLET, // import.meta.env.VITE_DISCOVERY_WALLET,
   "0xFLOAT": import.meta.env.VITE_FLOAT_ADDRESS,
   "0xCORE": import.meta.env.VITE_CORE_ADDRESS,
   "0xFLOWTOKEN": import.meta.env.VITE_FLOWTOKEN_ADDRESS,
