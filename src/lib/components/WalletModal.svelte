@@ -1,28 +1,27 @@
 <script>
-import { configureFCLAndLogin } from "$lib/flow/actions";
-
-
-
+  import { configureFCLAndLogin } from "$lib/flow/actions";
+  import { walletModal } from "$lib/stores";
 </script>
 
 <article>
+  <button id="x" on:click={() => ($walletModal = false)}>x</button>
   <header>
     <h1>Choose your wallet</h1>
   </header>
   <div class="wallet">
-    <button id="blocto" on:click={() => configureFCLAndLogin('blocto')}>
+    <button id="blocto" on:click={() => configureFCLAndLogin("blocto")}>
       <img src="/blocto-logo.jpg" alt="blocto logo" />
       <span>Connect Blocto</span>
     </button>
   </div>
   <div class="wallet">
-    <button id="dapper" on:click={() => configureFCLAndLogin('dapper')}>
+    <button id="dapper" on:click={() => configureFCLAndLogin("dapper")}>
       <img src="/dapper-logo.png" alt="dapper logo" />
       <span>Connect Dapper</span>
     </button>
   </div>
   <div class="wallet">
-    <button id="other" on:click={() => configureFCLAndLogin('other')}>
+    <button id="other" on:click={() => configureFCLAndLogin("other")}>
       <img src="/lilico-logo.jpg" alt="lilico logo" />
       <span>Connect Lilico</span>
     </button>
@@ -30,6 +29,18 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
 </article>
 
 <style>
+  #x {
+    position: fixed;
+    top: 5px;
+    right: 5px;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+  }
+
   article {
     position: fixed;
     top: 50%;
@@ -40,7 +51,7 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
     background-color: var(--card-background-color);
     color: var(--primary);
     border: 3px solid var(--primary);
-    z-index:10000;
+    z-index: 10000;
   }
 
   .wallet {
@@ -56,8 +67,8 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
 
   button {
     display: flex;
-    align-items:center;
-    justify-content:flex-start;
+    align-items: center;
+    justify-content: flex-start;
     border: none;
   }
 
@@ -69,15 +80,15 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
   }
 
   button span {
-    flex-grow:1;
+    flex-grow: 1;
   }
 
   button:hover {
-    opacity: .8;
+    opacity: 0.8;
   }
 
   #blocto {
-    background-image: linear-gradient(135deg,#72e9f3 -20%,#404de6 120%);
+    background-image: linear-gradient(135deg, #72e9f3 -20%, #404de6 120%);
   }
 
   #dapper {
