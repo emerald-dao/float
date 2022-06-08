@@ -1,5 +1,32 @@
 <script context="module">
   export const prerender = true;
+
+  import {
+    getEvent
+  } from "$lib/flow/actions.js";
+
+  export async function load({ url, params, stuff }) {
+    console.log('CONSOLE', params);
+    let eventId = params.eventId;
+    let addr = params.address;
+
+    const response = await getEvent(addr, eventId);
+    console.log(response);
+    return {
+      status: 200,
+      props: {
+        metadataEventTitle: response.name,
+        metadataEventDescription: response.description,
+        metadataEventAuthor: response.host,
+      },
+      stuff: {
+        title: response.name,
+        description: response.description,
+        author: response.host
+      }
+    };
+  }
+
 </script>
 
 <script>
@@ -19,9 +46,7 @@
     floatDistributingManyStatus,
     floatDistributingManyInProgress,
   } from "$lib/flow/stores";
-  import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
-    getEvent,
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
@@ -55,6 +80,11 @@
   let groupsWeCanAddTo;
   let resolvedNameObject;
   let isSharedWithMe;
+
+  export let metadataEventTitle;
+  export let metadataEventDescription;
+  export let metadataEventAuthor;
+
   const floatEventCallback = async () => {
     resolvedNameObject = await resolveAddressObject($page.params.address);
     let eventData = await getEvent(
@@ -126,19 +156,10 @@
   };
 </script>
 
-<svelte:head>
-  <title>FLOAT #{$page.params.eventId} {PAGE_TITLE_EXTENSION}</title>
-</svelte:head>
 <div class="container">
   {#await floatEvent}
     <Loading />
   {:then floatEvent}
-    <Meta
-      title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
-      author={floatEvent?.host}
-      description={floatEvent?.description}
-      url={$page.url}
-    />
     <article>
       <header>
         <a href={floatEvent?.url} target="_blank">

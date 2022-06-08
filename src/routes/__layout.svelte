@@ -8,6 +8,7 @@
   import { page } from "$app/stores";
   import { resolver, walletModal } from "$lib/stores.js";
   import WalletModal from "$lib/components/WalletModal.svelte";
+  import Meta from '$lib/components/common/Meta.svelte';
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -30,6 +31,13 @@
 <!-- <div class="alert alert-info text-center info">
   Blocto is currently experiencing downtime, so you will be unable to login. We will be back once Blocto resolves the issue. Thank you!
 </div> -->
+
+<Meta 
+  title={$page.stuff.title}
+  author={$page.stuff.author}
+  description={$page.stuff.description}
+  url={$page.stuff.url}
+/>
 
 <Header />
 
