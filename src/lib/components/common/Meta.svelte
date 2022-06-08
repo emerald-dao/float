@@ -13,7 +13,7 @@
 <meta property="og:image" content="http://floats.city/social-card.png">
 <meta property="twitter:image" content="http://floats.city/social-card.png">
 <meta name="twitter:card" content="summary_large_image">
-<meta property="og:title" content="FLOATs by Emerald City DAO">
+<meta property="og:title" content="{title || "Welcome to FLOAT"} {PAGE_TITLE_EXTENSION}">
 <meta property="og:type" content="article" />
 <meta property="og:url" content="{url || "https://floats.city" }">
 
@@ -22,7 +22,7 @@
 <meta property="og:site_name" content="FLOATs.city">
 <meta name="twitter:image:alt" content="FLOATs.city">
 
-<meta name="twitter:title" content="FLOATs by Emerald City DAO" />
+<meta name="twitter:title" content="{title || "Welcome to FLOAT"} {PAGE_TITLE_EXTENSION}" />
 <meta name="twitter:description" content="{description || "Create and view FLOATs, a proof of attendance platform built by Emerald City DAO built on Flow"}" />
 
 <!--  Non-Essential, But Required for Analytics -->
