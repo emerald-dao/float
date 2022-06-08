@@ -97,7 +97,7 @@ const convertDraftFloat = (draftFloat) => {
     secret: draftFloat.claimCodeEnabled ? true : false,
     secretPK: draftFloat.claimCodeEnabled ? draftFloat.secretPK : '',
     limited: draftFloat.quantity ? true : false,
-    capacity: draftFloat.quantity ? draftFloat.quantity : 0,
+    capacity: draftFloat.quantity ? draftFloat.quantity.toString() : '0',
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
     flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
     flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
@@ -419,7 +419,7 @@ export const claimFLOAT = async (eventId, host, secret) => {
       }      
       `,
       args: (arg, t) => [
-        arg(parseInt(eventId), t.UInt64),
+        arg(eventId, t.UInt64),
         arg(host, t.Address),
         arg(secret, t.Optional(t.String)),
       ],
@@ -539,7 +539,7 @@ export const claimFLOATv2 = async (eventId, host, secretSig) => {
       }      
       `,
       args: (arg, t) => [
-        arg(parseInt(eventId), t.UInt64),
+        arg(eventId, t.UInt64),
         arg(host, t.Address),
         arg(secretSig, t.Optional(t.String)),
       ],
@@ -644,7 +644,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       `,
       args: (arg, t) => [
         arg(forHost, t.Address),
-        arg(parseInt(eventId), t.UInt64),
+        arg(eventId, t.UInt64),
         arg(recipient, t.Address)
       ],
       payer: fcl.authz,
@@ -757,7 +757,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       `,
       args: (arg, t) => [
         arg(forHost, t.Address),
-        arg(parseInt(eventId), t.UInt64),
+        arg(eventId, t.UInt64),
         arg(recipients, t.Array(t.Address))
       ],
       payer: fcl.authz,
@@ -1451,7 +1451,7 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       args: (arg, t) => [
         arg(forHost, t.Address),
         arg(groupName, t.String),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -1521,7 +1521,7 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
       args: (arg, t) => [
         arg(forHost, t.Address),
         arg(groupName, t.String),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -1671,7 +1671,7 @@ export const getEvent = async (addr, eventId) => {
       `,
       args: (arg, t) => [
         arg(addr, t.Address),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ]
     })
     return queryResult || {};
@@ -1858,7 +1858,7 @@ export const getFLOAT = async (addr, id) => {
       `,
       args: (arg, t) => [
         arg(addr, t.Address),
-        arg(parseInt(id), t.UInt64)
+        arg(id, t.UInt64)
       ]
     })
     return queryResult || {};
@@ -1882,7 +1882,7 @@ export const getHoldersInEvent = async (addr, eventId) => {
       `,
       args: (arg, t) => [
         arg(addr, t.Address),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ]
     })
     return queryResult || {};
@@ -1906,7 +1906,7 @@ export const getClaimedInEvent = async (addr, eventId) => {
       `,
       args: (arg, t) => [
         arg(addr, t.Address),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ]
     })
     return queryResult || {};
@@ -1932,7 +1932,7 @@ export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
       `,
       args: (arg, t) => [
         arg(hostAddress, t.Address),
-        arg(parseInt(eventId), t.UInt64),
+        arg(eventId, t.UInt64),
         arg(accountAddress, t.Address)
       ]
     })
@@ -1960,8 +1960,8 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
       `,
       args: (arg, t) => [
         arg(hostAddress, t.Address),
-        arg(parseInt(eventId), t.UInt64),
-        arg(parseInt(serial), t.UInt64)
+        arg(eventId, t.UInt64),
+        arg(serial, t.UInt64)
       ]
     })
     return queryResult;
@@ -2017,7 +2017,7 @@ export const resolveVerifier = async (address, eventId) => {
       `,
       args: (arg, t) => [
         arg(address, t.Address),
-        arg(parseInt(eventId), t.UInt64)
+        arg(eventId, t.UInt64)
       ]
     })
     return queryResult || {};

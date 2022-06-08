@@ -30,7 +30,7 @@
   $: currentUnixTime = +new Date() / 1000;
 
   function claimTheFloat() {
-    const timeOfEventCreation = floatEvent.dateCreated;
+    const timeOfEventCreation = parseInt(floatEvent.dateCreated);
     const timeOfUpdate = 1654199700;
     if (timeOfEventCreation >= timeOfUpdate) {
       const secretSig = signWithClaimCode(claimCode);
@@ -46,26 +46,26 @@
     ✓ You already claimed this FLOAT.
   </button>
 {:else if floatEvent?.claimable}
-  {#if limitedModule && limitedModule[0].capacity <= floatEvent?.totalSupply}
+  {#if limitedModule && parseInt(limitedModule[0].capacity) <= floatEvent?.totalSupply}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br /> All
       <span class="emphasis">
         {floatEvent?.totalSupply}/{limitedModule[0].capacity}
       </span> have been claimed.
     </button>
-  {:else if timelockModule && timelockModule[0].dateStart > currentUnixTime}
+  {:else if timelockModule && parseInt(timelockModule[0].dateStart) > currentUnixTime}
     <button class="secondary outline" disabled>
       This FLOAT Event has not started yet.<br />
       Starting in
       <span class="emphasis">
-        <Countdown unix={timelockModule[0].dateStart} />
+        <Countdown unix={parseInt(timelockModule[0].dateStart)} />
       </span>
     </button>
   {:else if multipleSecretModule && Object.keys(multipleSecretModule[0].secrets).length === 0}
     <button class="secondary outline" disabled>
       This FLOAT Event has run out of secret codes.
     </button>
-  {:else if timelockModule && timelockModule[0].dateEnding < currentUnixTime}
+  {:else if timelockModule && parseInt(timelockModule[0].dateEnding) < currentUnixTime}
     <button class="secondary outline" disabled>
       This FLOAT is no longer available.<br />This event has ended.
     </button>
