@@ -11,14 +11,17 @@
     let eventId = params.eventId;
     let addr = params.address;
 
-    resolvedNameObject = await resolveAddressObject(addr);
+    let resolvedNameObject = await resolveAddressObject(addr);
+
+    console.log('resolved', resolvedNameObject.address)
 
     const response = await getEvent(resolvedNameObject.address, eventId);
 
     return {
       status: 200,
       props: {
-        resolvedNameObject
+        resolvedNameObject,
+        eventData: response
       },
       stuff: {
         title: response.name,
@@ -81,18 +84,16 @@
   let isSharedWithMe;
   
   export let resolvedNameObject;
+  export let eventData;
 
   const floatEventCallback = async () => {
     
-    let eventData = await getEvent(
-      resolvedNameObject.address,
-      $page.params.eventId
-    );
     let hasClaimed = await hasClaimedEvent(
       resolvedNameObject.address,
       $page.params.eventId,
       $user.addr
     );
+
     let currentOwner;
     if (hasClaimed) {
       currentOwner = await getCurrentHolder(
