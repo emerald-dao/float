@@ -20,8 +20,8 @@
 
 <!--  Non-Essential, But Recommended -->
 <meta property="og:description" content="{description || "Create and view FLOATs, a proof of attendance platform built by Emerald City DAO built on Flow"}">
-<meta property="og:site_name" content="FLOATs.city">
-<meta name="twitter:image:alt" content="FLOATs.city">
+<meta property="og:site_name" content="FLOAT - Proof of Attendance on Flow, and so much more!">
+<meta name="twitter:image:alt" content="FLOAT - Proof of Attendance on Flow, and so much more!">
 
 <meta name="twitter:title" content="{title || "Welcome to FLOAT"} {PAGE_TITLE_EXTENSION}" />
 <meta name="twitter:description" content="{description || "Create and view FLOATs, a proof of attendance platform built by Emerald City DAO built on Flow"}" />
