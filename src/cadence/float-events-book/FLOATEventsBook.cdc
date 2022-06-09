@@ -14,6 +14,9 @@ pub contract FLOATEventsBook {
         *  |    |  |  |  |  | ___]
          *************************/
     
+    pub let FLOATEventSeriesGlobalStoragePath: StoragePath
+    pub let FLOATEventSeriesGlobalPublicPath: PublicPath
+
     pub let FLOATEventsBookshelfStoragePath: StoragePath
     pub let FLOATEventsBookshelfPrivatePath: PrivatePath
     pub let FLOATEventsBookshelfPublicPath: PublicPath
@@ -1613,6 +1616,9 @@ pub contract FLOATEventsBook {
         self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfPath
         self.FLOATEventsBookshelfPrivatePath = /private/FLOATEventsBookshelfPath
         self.FLOATEventsBookshelfPublicPath = /public/FLOATEventsBookshelfPath
+
+        self.FLOATEventSeriesGlobalStoragePath = /storage/FLOATEventSeriesGlobalPath
+        self.FLOATEventSeriesGlobalPublicPath = /public/FLOATEventSeriesGlobalPath
 
         self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPath
         self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPath
