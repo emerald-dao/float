@@ -27,7 +27,8 @@
         title: response.name,
         description: response.description,
         author: response.host,
-        image: `https://ipfs.infura.io/ipfs/${response.image}`
+        //image: `https://ipfs.infura.io/ipfs/${response.image}`
+        image: `https://cloudflare-ipfs.com/ipfs/${response.image}`
       }
     };
   }
