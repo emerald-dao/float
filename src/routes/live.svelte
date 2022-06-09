@@ -20,7 +20,7 @@
     setTimeout(() => {
       delete claimedEvents[id];
       claimedEvents = claimedEvents;
-    }, 5000);
+    }, 20000);
   };
 
   const receiveEvent = (message) => {
