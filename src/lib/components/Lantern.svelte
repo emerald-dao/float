@@ -3,7 +3,10 @@
   
   $: display = false;
 
-  setTimeout(() => display = true, Math.random() * 10000)
+  let timeout = Math.random() * 20000;
+
+  setTimeout(() => display = true, timeout)
+  setTimeout(() => display = false, timeout + 6000)
 </script>
 
 {#if display}
