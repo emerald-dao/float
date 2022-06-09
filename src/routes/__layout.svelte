@@ -37,6 +37,7 @@
   author={$page.stuff.author}
   description={$page.stuff.description}
   url={$page.stuff.url}
+  image={$page.stuff.image}
 />
 
 <Header />

@@ -2,7 +2,8 @@
   export const prerender = true;
 
   import {
-    getEvent
+    getEvent,
+    resolveAddressObject
   } from "$lib/flow/actions.js";
 
   export async function load({ url, params, stuff }) {
@@ -10,19 +11,20 @@
     let eventId = params.eventId;
     let addr = params.address;
 
-    const response = await getEvent(addr, eventId);
-    console.log(response);
+    resolvedNameObject = await resolveAddressObject(addr);
+
+    const response = await getEvent(resolvedNameObject.address, eventId);
+
     return {
       status: 200,
       props: {
-        metadataEventTitle: response.name,
-        metadataEventDescription: response.description,
-        metadataEventAuthor: response.host,
+        resolvedNameObject
       },
       stuff: {
         title: response.name,
         description: response.description,
-        author: response.host
+        author: response.host,
+        image: `https://ipfs.infura.io/ipfs/${response.image}`
       }
     };
   }
@@ -56,7 +58,6 @@
     addEventToGroup,
     getGroups,
     removeEventFromGroup,
-    resolveAddressObject,
     distributeDirectlyMany,
     getCurrentHolder,
     getFlowTokenBalance,
@@ -78,15 +79,12 @@
   let confirmed = false;
   let groups;
   let groupsWeCanAddTo;
-  let resolvedNameObject;
   let isSharedWithMe;
-
-  export let metadataEventTitle;
-  export let metadataEventDescription;
-  export let metadataEventAuthor;
+  
+  export let resolvedNameObject;
 
   const floatEventCallback = async () => {
-    resolvedNameObject = await resolveAddressObject($page.params.address);
+    
     let eventData = await getEvent(
       resolvedNameObject.address,
       $page.params.eventId
