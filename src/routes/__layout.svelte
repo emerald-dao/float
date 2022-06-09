@@ -27,9 +27,9 @@
   }
 </script>
 
-<div class="alert alert-info text-center info">
+<!-- <div class="alert alert-info text-center info">
   Mainnet is currently experiencing some issues, we will be back ASAP. Thank you!
-</div>
+</div> -->
 
 <Header />
 
