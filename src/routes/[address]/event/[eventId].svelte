@@ -66,7 +66,6 @@
   import IntersectionObserver from "svelte-intersection-observer";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
-  import Meta from "$lib/components/common/Meta.svelte";
   import ClaimsTable from "$lib/components/common/table/ClaimsTable.svelte";
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
