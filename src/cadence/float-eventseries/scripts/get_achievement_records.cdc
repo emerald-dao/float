@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 pub struct AchievementRecord {
   pub let host: Address

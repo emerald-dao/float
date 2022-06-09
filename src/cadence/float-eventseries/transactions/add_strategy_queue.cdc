@@ -1,5 +1,5 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 import FLOATStrategies from "../FLOATStrategies.cdc"
 
 transaction(
@@ -16,7 +16,6 @@ transaction(
   openingEnding: UFix64,
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
-  minimiumValidAmount: UInt64,
 ) {
   let bookshelf: &FLOATEventsBook.EventsBookshelf
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
@@ -42,7 +41,6 @@ transaction(
     threshold > 0: "threshold should be greator then zero"
     treasuryFTs.length == treasuryFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
     treasuryNFTs.length == treasuryNFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
-    minimiumValidAmount > 0: "minimiumValidAmount should be greator then zero"
   }
 
   execute {
@@ -59,7 +57,6 @@ transaction(
     }
 
     let params: {String: AnyStruct} = {}
-    params["minValid"] = minimiumValidAmount
     if hasOpeningEnding {
       params["openingEnd"] = openingEnding
     }
@@ -76,7 +73,7 @@ transaction(
     )
 
     let strategy <- FLOATStrategies.createStrategy(
-        type: FLOATStrategies.StrategyType.Lottery,
+        type: FLOATStrategies.StrategyType.ClaimingQueue,
         controller: <- controller,
         params: params
       ) ?? panic("Failed to create strategy")

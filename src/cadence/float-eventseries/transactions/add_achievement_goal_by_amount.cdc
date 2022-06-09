@@ -1,11 +1,12 @@
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATStrategies from "../FLOATStrategies.cdc"
 
 transaction(
   bookId: UInt64,
-  name: String,
-  description: String,
-  image: String
+  points: UInt64,
+  eventsAmount: UInt64,
+  requiredEventsAmount: UInt64
 ) {
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
 
@@ -26,10 +27,19 @@ transaction(
       ?? panic("Could not borrow the events book private.")
   }
 
+  pre {
+    points > 0: "points should be greator then zero"
+    eventsAmount >= requiredEventsAmount: "events(required) should not be greator then events"
+  }
+
   execute {
+    let goal = FLOATStrategies.CollectByAmountGoal(
+      points: points,
+      amount: eventsAmount,
+      requiredAmount: requiredEventsAmount
+    )
+    self.eventsBook.addAchievementGoal(goal: goal)
 
-    self.eventsBook.updateBasics(name: name, description: description, image: image)
-
-    log("Update the basics of a FLOAT EventsBook.")
+    log("A achievement goal have been added to a FLOAT EventsBook.")
   }
 }

@@ -1,10 +1,9 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import FungibleToken from "../../core-contracts/FungibleToken.cdc"
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 transaction(
-  bookId: UInt64,
-  strategyIndex: Int,
+  bookId: UInt64
 ) {
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
 
@@ -28,8 +27,8 @@ transaction(
 
   execute {
     let treasury = self.eventsBook.borrowTreasuryPrivate()
-    treasury.nextStrategyStage(idx: strategyIndex)
+    treasury.dropTreasury()
 
-    log("Strategy go to next step.")
+    log("Treasury have been dropped from a FLOAT EventsBook.")
   }
 }

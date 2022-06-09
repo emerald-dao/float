@@ -1,18 +1,19 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FungibleToken from "../../core-contracts/FungibleToken.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 transaction(
   bookId: UInt64,
   storagePath: String,
   publicPath: String,
-  ids: [UInt64]
+  amount: UFix64
 ) {
   let bookshelf: &FLOATEventsBook.EventsBookshelf
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
-  let nftPublicPath: PublicPath
+  let fungibleTokenPublicPath: PublicPath
+  let fungibleTokenReciever: &FungibleToken.Vault{FungibleToken.Receiver}
 
-  let collection: &NonFungibleToken.Collection
+  let fungibleTokenToDeposit: @FungibleToken.Vault
 
   prepare(acct: AuthAccount) {
     // SETUP Bookshelf resource, link public and private
@@ -32,37 +33,34 @@ transaction(
       ?? panic("Could not borrow the events book private.")
 
     // ensure fungible token capability
-    self.nftPublicPath = PublicPath(identifier: publicPath) ?? panic("Invalid publicPath: ".concat(publicPath))
-    acct.getCapability(self.nftPublicPath)
-      .borrow<&{NonFungibleToken.CollectionPublic}>()
+    self.fungibleTokenPublicPath = PublicPath(identifier: publicPath) ?? panic("Invalid publicPath: ".concat(publicPath))
+    self.fungibleTokenReciever = acct.getCapability(self.fungibleTokenPublicPath)
+      .borrow<&FungibleToken.Vault{FungibleToken.Receiver}>()
       ?? panic("Could not borrow the fungible token reciever.")
 
     // fungible token vault
-    self.collection = acct.borrow<&NonFungibleToken.Collection>(
+    let vault = acct.borrow<&FungibleToken.Vault>(
       from: StoragePath(identifier: storagePath) ?? panic("Invalid storagePath: ".concat(storagePath))
     ) ?? panic("Could not borrow the fungible token vault.")
+    // token resource
+    self.fungibleTokenToDeposit <- vault.withdraw(amount: amount)
   }
 
   pre {
-    ids.length > 0: "amount should be greator then zero"
+    amount > 0.0: "amount should be greator then zero"
+    self.fungibleTokenToDeposit.getType().identifier == self.fungibleTokenReciever.getType().identifier: "Identifier should be same."
   }
 
   execute {
-    let tokenType = self.collection.borrowNFT(id: ids[0]).getType()
+    let tokenType = self.fungibleTokenToDeposit.getType()
     // check if fungible token registered
     if FLOATEventsBook.getTokenDefinition(tokenType.identifier) == nil {
-      self.bookshelf.registerToken(path: self.nftPublicPath, isNFT: true)
-    }
-
-    // NFTs
-    let nftsToDeposit: @[NonFungibleToken.NFT] <- []
-    for id in ids {
-      nftsToDeposit.append(<- self.collection.withdraw(withdrawID: id))
+      self.bookshelf.registerToken(path: self.fungibleTokenPublicPath, isNFT: false)
     }
 
     let treasury = self.eventsBook.borrowTreasuryPrivate()
-    treasury.depositNonFungibleTokens(nfts: <- nftsToDeposit)
+    treasury.depositFungibleToken(from: <- self.fungibleTokenToDeposit)
 
-    log("Non-Fungible Tokens have been deposited to a FLOAT EventsBook.")
+    log("Fungible Tokens have been deposited to a FLOAT EventsBook.")
   }
 }

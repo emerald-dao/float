@@ -1,11 +1,10 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
-import FLOATStrategies from "../FLOATStrategies.cdc"
+import FungibleToken from "../../core-contracts/FungibleToken.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 transaction(
   bookId: UInt64,
-  points: UInt64,
-  percent: UFix64
+  strategyIndex: Int,
 ) {
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
 
@@ -22,21 +21,15 @@ transaction(
     let bookshelf = acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
       ?? panic("Could not borrow the Bookshelf.")
     
+    // events book
     self.eventsBook = bookshelf.borrowEventsBookPrivate(bookId: bookId)
       ?? panic("Could not borrow the events book private.")
   }
 
-  pre {
-    points > 0: "points should be greator then zero"
-  }
-
   execute {
-    let goal = FLOATStrategies.CollectByPercentGoal(
-      points: points,
-      percentToCollect: percent,
-    )
-    self.eventsBook.addAchievementGoal(goal: goal)
+    let treasury = self.eventsBook.borrowTreasuryPrivate()
+    treasury.nextStrategyStage(idx: strategyIndex)
 
-    log("A achievement goal have been added to a FLOAT EventsBook.")
+    log("Strategy go to next step.")
   }
 }

@@ -1,12 +1,11 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 import FLOATStrategies from "../FLOATStrategies.cdc"
 
 transaction(
   bookId: UInt64,
   points: UInt64,
-  eventsAmount: UInt64,
-  requiredEventsAmount: UInt64
+  percent: UFix64
 ) {
   let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
 
@@ -29,14 +28,12 @@ transaction(
 
   pre {
     points > 0: "points should be greator then zero"
-    eventsAmount >= requiredEventsAmount: "events(required) should not be greator then events"
   }
 
   execute {
-    let goal = FLOATStrategies.CollectByAmountGoal(
+    let goal = FLOATStrategies.CollectByPercentGoal(
       points: points,
-      amount: eventsAmount,
-      requiredAmount: requiredEventsAmount
+      percentToCollect: percent,
     )
     self.eventsBook.addAchievementGoal(goal: goal)
 

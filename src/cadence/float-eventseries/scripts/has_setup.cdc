@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 pub fun main(accountAddr: Address): Bool {
   let acct = getAccount(accountAddr)

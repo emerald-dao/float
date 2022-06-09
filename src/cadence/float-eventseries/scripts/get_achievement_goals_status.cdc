@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventsBook.cdc"
+import FLOATEventsBook from "../FLOATEventSeries.cdc"
 
 pub let STATE_TODO = "todo"
 pub let STATE_READY = "ready"
