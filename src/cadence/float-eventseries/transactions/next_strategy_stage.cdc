@@ -1,33 +1,33 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import FungibleToken from "../../core-contracts/FungibleToken.cdc"
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
   bookId: UInt64,
   strategyIndex: Int,
 ) {
-  let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
+  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
   prepare(acct: AuthAccount) {
-    // SETUP Bookshelf resource, link public and private
-    if acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createEventsBookshelf(), to: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPublic, MetadataViews.ResolverCollection}>
-          (FLOATEventsBook.FLOATEventsBookshelfPublicPath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPrivate}>
-          (FLOATEventsBook.FLOATEventsBookshelfPrivatePath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
+    // SETUP Event Series builder resource, link public and private
+    if acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    let bookshelf = acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      ?? panic("Could not borrow the Bookshelf.")
+    let bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      ?? panic("Could not borrow the Event Series builder.")
     
-    // events book
-    self.eventsBook = bookshelf.borrowEventsBookPrivate(bookId: bookId)
-      ?? panic("Could not borrow the events book private.")
+    // event series
+    self.eventSeries = bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+      ?? panic("Could not borrow the event series private.")
   }
 
   execute {
-    let treasury = self.eventsBook.borrowTreasuryPrivate()
+    let treasury = self.eventSeries.borrowTreasuryPrivate()
     treasury.nextStrategyStage(idx: strategyIndex)
 
     log("Strategy go to next step.")

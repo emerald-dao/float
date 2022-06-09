@@ -7,7 +7,7 @@ import MetadataViews from "../core-contracts/MetadataViews.cdc"
 import FungibleToken from "../core-contracts/FungibleToken.cdc"
 import FLOAT from "../float/FLOAT.cdc"
 
-pub contract FLOATEventsBook {
+pub contract FLOATEventSeries {
 
     /**    ___  ____ ___ _  _ ____
        *   |__] |__|  |  |__| [__
@@ -17,9 +17,9 @@ pub contract FLOATEventsBook {
     pub let FLOATEventSeriesGlobalStoragePath: StoragePath
     pub let FLOATEventSeriesGlobalPublicPath: PublicPath
 
-    pub let FLOATEventsBookshelfStoragePath: StoragePath
-    pub let FLOATEventsBookshelfPrivatePath: PrivatePath
-    pub let FLOATEventsBookshelfPublicPath: PublicPath
+    pub let FLOATEventSeriesBuilderStoragePath: StoragePath
+    pub let FLOATEventSeriesBuilderPrivatePath: PrivatePath
+    pub let FLOATEventSeriesBuilderPublicPath: PublicPath
 
     pub let FLOATAchievementBoardStoragePath: StoragePath
     pub let FLOATAchievementBoardPublicPath: PublicPath
@@ -32,24 +32,24 @@ pub contract FLOATEventsBook {
     pub event ContractInitialized()
     pub event ContractTokenDefintionUpdated(identifier: String, path: PublicPath, isNFT: Bool)
 
-    pub event FLOATEventsBookCreated(bookId: UInt64, host: Address, name: String, description: String, image: String)
-    pub event FLOATEventsBookRevoked(bookId: UInt64, host: Address)
-    pub event FLOATEventsBookRecovered(bookId: UInt64, host: Address)
-    pub event FLOATEventsBookBasicsUpdated(bookId: UInt64, host: Address, name: String, description: String, image: String)
-    pub event FLOATEventsBookSlotUpdated(bookId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
-    pub event FLOATEventsBookGoalAdded(bookId: UInt64, host: Address, goalTitle: String, points: UInt64)
+    pub event FLOATEventSeriesCreated(bookId: UInt64, host: Address, name: String, description: String, image: String)
+    pub event FLOATEventSeriesRevoked(bookId: UInt64, host: Address)
+    pub event FLOATEventSeriesRecovered(bookId: UInt64, host: Address)
+    pub event FLOATEventSeriesBasicsUpdated(bookId: UInt64, host: Address, name: String, description: String, image: String)
+    pub event FLOATEventSeriesSlotUpdated(bookId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
+    pub event FLOATEventSeriesGoalAdded(bookId: UInt64, host: Address, goalTitle: String, points: UInt64)
 
-    pub event FLOATEventsBookTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
-    pub event FLOATEventsBookTreasuryTokenWithdraw(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
-    pub event FLOATEventsBookTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
-    pub event FLOATEventsBookTreasuryNFTWithdraw(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
-    pub event FLOATEventsBookTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
-    pub event FLOATEventsBookTreasuryDropped(bookId: UInt64, host: Address, receiver: Address)
-    pub event FLOATEventsBookTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
-    pub event FLOATEventsBookTreasuryStrategyNextStage(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
-    pub event FLOATEventsBookTreasuryClaimed(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
+    pub event FLOATEventSeriesTreasuryTokenDeposit(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
+    pub event FLOATEventSeriesTreasuryTokenWithdraw(bookId: UInt64, host: Address, identifier: String, amount: UFix64)
+    pub event FLOATEventSeriesTreasuryNFTDeposit(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
+    pub event FLOATEventSeriesTreasuryNFTWithdraw(bookId: UInt64, host: Address, identifier: String, ids: [UInt64])
+    pub event FLOATEventSeriesTreasuryUpdateDropReceiver(bookId: UInt64, host: Address, receiver: Address)
+    pub event FLOATEventSeriesTreasuryDropped(bookId: UInt64, host: Address, receiver: Address)
+    pub event FLOATEventSeriesTreasuryStrategyAdded(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int)
+    pub event FLOATEventSeriesTreasuryStrategyNextStage(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
+    pub event FLOATEventSeriesTreasuryClaimed(bookId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
 
-    pub event FLOATEventsBookshelfCreated(sequence: UInt64)
+    pub event FLOATEventSeriesBuilderCreated(sequence: UInt64)
 
     pub event FLOATAchievementRecordInitialized(bookId: UInt64, host: Address, owner: Address)
     pub event FLOATAchievementGoalAccomplished(bookId: UInt64, host: Address, owner: Address, goalIdx: Int)
@@ -61,10 +61,10 @@ pub contract FLOATEventsBook {
         *  ___]  |  |  |  |  |___
          ************************/
     
-    // total events books amount
-    pub var totalEventsBooks: UInt64
-    // total events bookshelf amount
-    pub var totalEventsBookshelfs: UInt64
+    // total event series amount
+    pub var totalEventSeries: UInt64
+    // total event series builder amount
+    pub var totalEventSeriesBuilder: UInt64
     // total achievement board amount
     pub var totalAchievementBoards: UInt64
 
@@ -115,13 +115,13 @@ pub contract FLOATEventsBook {
 
         // check if the token is NFT
         access(contract) fun isNFT(): Bool {
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             return tokenInfo.isNFT
         }
 
         // get ft receiver by address and identifier
         access(contract) fun getFungibleTokenReceiver(): &{FungibleToken.Receiver} {
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
 
             let receiverVault = getAccount(self.address)
@@ -138,7 +138,7 @@ pub contract FLOATEventsBook {
 
         // get nft collection by address and identifier
         access(contract) fun getNFTCollectionPublic(): &{NonFungibleToken.CollectionPublic} {
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(self.identifier) ?? panic("Unknown token")
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(self.identifier) ?? panic("Unknown token")
             assert(tokenInfo.isNFT, message: "The token should be Non-Fungiable Token")
 
             let collection = getAccount(self.address)
@@ -184,8 +184,8 @@ pub contract FLOATEventsBook {
         }
     }
 
-    // identifier of a EventsBook
-    pub struct EventsBookIdentifier {
+    // identifier of a EventSeries
+    pub struct EventSeriesIdentifier {
         // book owner address
         pub let host: Address
         // book id
@@ -197,13 +197,13 @@ pub contract FLOATEventsBook {
         }
 
         // get the reference of the given book
-        pub fun getEventsBookPublic(): &{EventsBookPublic} {
+        pub fun getEventSeriesPublic(): &{EventSeriesPublic} {
             let ref = getAccount(self.host)
-                .getCapability(FLOATEventsBook.FLOATEventsBookshelfPublicPath)
-                .borrow<&EventsBookshelf{EventsBookshelfPublic}>()
-                ?? panic("Could not borrow the public EventsBookshelfPublic.")
-            return ref.borrowEventsBook(bookId: self.id)
-                ?? panic("Failed to get events book reference.")
+                .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
+                .borrow<&EventSeriesBuilder{EventSeriesBuilderPublic}>()
+                ?? panic("Could not borrow the public EventSeriesBuilderPublic.")
+            return ref.borrowEventSeries(bookId: self.id)
+                ?? panic("Failed to get event series reference.")
         }
 
         // convert identifier to string
@@ -297,7 +297,7 @@ pub contract FLOATEventsBook {
         pub fun getGoalDetail(): {String: AnyStruct}
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventsBook: &{EventsBookPublic}, user: Address): Bool
+        access(account) fun verify(_ eventSeries: &{EventSeriesPublic}, user: Address): Bool
     }
 
     // Declare an enum to describe status
@@ -563,7 +563,7 @@ pub contract FLOATEventsBook {
         pub fun nextStrategyStage(idx: Int): StrategyState
     }
 
-    // Treasury resource of each EventsBook (Optional)
+    // Treasury resource of each EventSeries (Optional)
     pub resource Treasury: TreasuryPublic, TreasuryPrivate {
         // Treasury bookID
         access(self) let bookId: UInt64
@@ -629,7 +629,7 @@ pub contract FLOATEventsBook {
             // ensure achievement record should be same
             let achievementIdentifier = user.getTarget().toString()
             let bookIdentifier = self.getParentIdentifier().toString()
-            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as events book identifier")
+            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as event series identifier")
 
             // verify if user can claim
             let strategy = self.borrowStrategyRef(idx: strategyIndex)
@@ -644,7 +644,7 @@ pub contract FLOATEventsBook {
             // ensure achievement record should be same
             let achievementIdentifier = user.getTarget().toString()
             let bookIdentifier = self.getParentIdentifier().toString()
-            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as events book identifier")
+            assert(achievementIdentifier == bookIdentifier, message: "Achievement identifier should be same as event series identifier")
 
             // verify if user can claim
             let strategy = self.borrowStrategyRef(idx: strategyIndex)
@@ -679,7 +679,7 @@ pub contract FLOATEventsBook {
             user.treasuryClaimed(strategy: strategy)
 
             // emit claimed event
-            emit FLOATEventsBookTreasuryClaimed(
+            emit FLOATEventSeriesTreasuryClaimed(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 strategyIdentifier: strategy.getType().identifier,
@@ -699,7 +699,7 @@ pub contract FLOATEventsBook {
         pub fun updateDropReceiver(receiver: Address) {
             self.receiver = receiver
 
-            emit FLOATEventsBookTreasuryUpdateDropReceiver(
+            emit FLOATEventSeriesTreasuryUpdateDropReceiver(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 receiver: receiver
@@ -732,7 +732,7 @@ pub contract FLOATEventsBook {
             }
 
             // treasury dropped
-            emit FLOATEventsBookTreasuryDropped(
+            emit FLOATEventSeriesTreasuryDropped(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 receiver: self.receiver
@@ -742,7 +742,7 @@ pub contract FLOATEventsBook {
         // deposit ft to treasury
         pub fun depositFungibleToken(from: @FungibleToken.Vault) {
             let fromIdentifier = from.getType().identifier
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(fromIdentifier)
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(fromIdentifier)
                 ?? panic("This token is not defined.")
             assert(!tokenInfo.isNFT, message: "This token should be FT.")
             assert(fromIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
@@ -755,7 +755,7 @@ pub contract FLOATEventsBook {
                 vaultRef!.deposit(from: <- from)
             }
 
-            emit FLOATEventsBookTreasuryTokenDeposit(
+            emit FLOATEventSeriesTreasuryTokenDeposit(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 identifier: fromIdentifier,
@@ -768,7 +768,7 @@ pub contract FLOATEventsBook {
             assert(nfts.length > 0, message: "Empty collection.")
 
             let nftIdentifier = (&nfts[0] as &NonFungibleToken.NFT).getType().identifier
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(nftIdentifier)
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(nftIdentifier)
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
             assert(nftIdentifier == tokenInfo.type, message: "From identifier should be same as definition")
@@ -776,20 +776,22 @@ pub contract FLOATEventsBook {
             let ids: [UInt64] = []
             var collectionRef: &{NonFungibleToken.CollectionPublic}? = &self.genericNFTPool[nftIdentifier] as &{NonFungibleToken.CollectionPublic}?
             if collectionRef == nil {
-                self.genericNFTPool[nftIdentifier] <-! FLOATEventsBook.createTreasuryCollection()
+                self.genericNFTPool[nftIdentifier] <-! FLOATEventSeries.createTreasuryCollection()
                 collectionRef = &self.genericNFTPool[nftIdentifier] as &{NonFungibleToken.CollectionPublic}?
             }
 
             let len = nfts.length
             var i = 0
             while i < len {
-                collectionRef!.deposit(token: <- nfts.removeFirst())
+                let first <- nfts.removeFirst()
+                assert(first.getType().identifier == nftIdentifier, message: "nfts identifier should be same.")
+                collectionRef!.deposit(token: <- first)
                 i = i + 1
             }
             // delete empty collection
             destroy nfts
 
-            emit FLOATEventsBookTreasuryNFTDeposit(
+            emit FLOATEventSeriesTreasuryNFTDeposit(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 identifier: nftIdentifier,
@@ -820,7 +822,7 @@ pub contract FLOATEventsBook {
             // add to strategies
             self.strategies.append(<- strategy)
 
-            emit FLOATEventsBookTreasuryStrategyAdded(
+            emit FLOATEventSeriesTreasuryStrategyAdded(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 strategyIdentifier: id,
@@ -838,7 +840,7 @@ pub contract FLOATEventsBook {
             // execute on state changed
             strategy.onStateChanged(state: ret)
 
-            emit FLOATEventsBookTreasuryStrategyNextStage(
+            emit FLOATEventSeriesTreasuryStrategyNextStage(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 strategyIdentifier: strategy.getType().identifier,
@@ -878,7 +880,7 @@ pub contract FLOATEventsBook {
 
         // ensure FT is enough
         access(self) fun ensureFTEnough(identifer: String, amount: UFix64) {
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(identifer)
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(identifer)
                 ?? panic("This token is not defined.")
             assert(!tokenInfo.isNFT, message: "This token should be FT.")
             assert(tokenInfo.type == identifer, message: "The identifer of input and definition should be same")
@@ -891,7 +893,7 @@ pub contract FLOATEventsBook {
 
         // ensure NFT is enough
         access(self) fun ensureNFTEnough(identifer: String, amount: UInt64) {
-            let tokenInfo = FLOATEventsBook.getTokenDefinition(identifer)
+            let tokenInfo = FLOATEventSeries.getTokenDefinition(identifer)
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
             assert(tokenInfo.type == identifer, message: "The identifer of input and definition should be same")
@@ -916,7 +918,7 @@ pub contract FLOATEventsBook {
             // do 'transfer' action
             let ft <- treasuryRef!.withdraw(amount: amount)
             
-            emit FLOATEventsBookTreasuryTokenWithdraw(
+            emit FLOATEventSeriesTreasuryTokenWithdraw(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 identifier: recipientIdentifier,
@@ -943,7 +945,7 @@ pub contract FLOATEventsBook {
                 i = i + 1
             }
 
-            emit FLOATEventsBookTreasuryNFTWithdraw(
+            emit FLOATEventSeriesTreasuryNFTWithdraw(
                 bookId: self.bookId,
                 host: self.owner!.address,
                 identifier: nftIdentifier,
@@ -952,13 +954,13 @@ pub contract FLOATEventsBook {
         }
 
         // get identifier
-        access(self) fun getParentIdentifier(): EventsBookIdentifier {
-            return EventsBookIdentifier(self.owner!.address, self.bookId)
+        access(self) fun getParentIdentifier(): EventSeriesIdentifier {
+            return EventSeriesIdentifier(self.owner!.address, self.bookId)
         }
     }
 
-    // A public interface to read EventsBook
-    pub resource interface EventsBookPublic {
+    // A public interface to read EventSeries
+    pub resource interface EventSeriesPublic {
         // ---- Members ----
         pub let sequence: UInt64
         // event basic display info
@@ -970,7 +972,7 @@ pub contract FLOATEventsBook {
         // get book id
         pub fun getID(): UInt64
         // get book identifier
-        pub fun getIdentifier(): EventsBookIdentifier
+        pub fun getIdentifier(): EventSeriesIdentifier
         // get last slot index
         pub fun getLastSlotIdx(): Int
         // get all slots data
@@ -985,20 +987,20 @@ pub contract FLOATEventsBook {
         pub fun borrowTreasury(): &Treasury{TreasuryPublic}
     }
 
-    // A private interface to write for EventsBook
-    pub resource interface EventsBookPrivate {
+    // A private interface to write for EventSeries
+    pub resource interface EventSeriesPrivate {
         // borrow the treasury private reference
         pub fun borrowTreasuryPrivate(): &Treasury{TreasuryPublic, TreasuryPrivate}
         // update basic information
         pub fun updateBasics(name: String, description: String, image: String)
         // update slot identifier information
         pub fun updateSlotData(idx: Int, identifier: EventIdentifier)
-        // add a new achievement goal to the events book
+        // add a new achievement goal to the event series
         pub fun addAchievementGoal(goal: {IAchievementGoal})
     }
 
-    // The events book defination
-    pub resource EventsBook: EventsBookPublic, EventsBookPrivate, MetadataViews.Resolver {
+    // The event series defination
+    pub resource EventSeries: EventSeriesPublic, EventSeriesPrivate, MetadataViews.Resolver {
         pub let sequence: UInt64
         pub let host: Address
         // --- basics ---
@@ -1012,7 +1014,7 @@ pub contract FLOATEventsBook {
         access(account) let slots: [{EventSlot}]
         // Achievement goals
         access(account) let goals: [{IAchievementGoal}]
-        // nest resource for the EventsBook treasury
+        // nest resource for the EventSeries treasury
         access(contract) var treasury: @Treasury
 
         init(
@@ -1024,7 +1026,7 @@ pub contract FLOATEventsBook {
             goals: [{IAchievementGoal}],
             _ extra: {String: AnyStruct}
         ) {
-            self.sequence = FLOATEventsBook.totalEventsBooks
+            self.sequence = FLOATEventSeries.totalEventSeries
             self.host = host
 
             self.name = name
@@ -1047,7 +1049,7 @@ pub contract FLOATEventsBook {
             )
             self.extra = extra
 
-            FLOATEventsBook.totalEventsBooks = FLOATEventsBook.totalEventsBooks + 1
+            FLOATEventSeries.totalEventSeries = FLOATEventSeries.totalEventSeries + 1
         }
 
         destroy() {
@@ -1059,7 +1061,7 @@ pub contract FLOATEventsBook {
         pub fun getViews(): [Type] {
             return [
                 Type<MetadataViews.Display>(),
-                Type<EventsBookIdentifier>()
+                Type<EventSeriesIdentifier>()
             ]
         }
 
@@ -1071,7 +1073,7 @@ pub contract FLOATEventsBook {
                         description: self.description, 
                         thumbnail: MetadataViews.IPFSFile(cid: self.image, path: nil)
                     )
-                case Type<EventsBookIdentifier>():
+                case Type<EventSeriesIdentifier>():
                     return self.getIdentifier()
             }
             return nil
@@ -1081,8 +1083,8 @@ pub contract FLOATEventsBook {
             return self.uuid
         }
         
-        pub fun getIdentifier(): EventsBookIdentifier {
-            return EventsBookIdentifier(self.owner!.address, self.uuid)
+        pub fun getIdentifier(): EventSeriesIdentifier {
+            return EventSeriesIdentifier(self.owner!.address, self.uuid)
         }
 
         pub fun getLastSlotIdx(): Int {
@@ -1127,7 +1129,7 @@ pub contract FLOATEventsBook {
             self.description = description
             self.image = image
 
-            emit FLOATEventsBookBasicsUpdated(
+            emit FLOATEventSeriesBasicsUpdated(
                 bookId: self.uuid,
                 host: self.host,
                 name: name,
@@ -1148,7 +1150,7 @@ pub contract FLOATEventsBook {
             // update identifier information
             (slot as! &{WritableEventSlot}).setIdentifier(identifier)
 
-            emit FLOATEventsBookSlotUpdated(
+            emit FLOATEventSeriesSlotUpdated(
                 bookId: self.uuid,
                 host: self.host,
                 index: idx,
@@ -1160,7 +1162,7 @@ pub contract FLOATEventsBook {
         pub fun addAchievementGoal(goal: {IAchievementGoal}) {
             self.goals.append(goal)
 
-            emit FLOATEventsBookGoalAdded(
+            emit FLOATEventSeriesGoalAdded(
                 bookId: self.uuid,
                 host: self.host,
                 goalTitle: goal.title,
@@ -1174,25 +1176,25 @@ pub contract FLOATEventsBook {
 
     }
 
-    // A public interface to read EventsBookshelf
-    pub resource interface EventsBookshelfPublic {
+    // A public interface to read EventSeriesBuilder
+    pub resource interface EventSeriesBuilderPublic {
         // ---- Members ----
         pub let sequence: UInt64
         // ---- Methods ----
         // get all ids including revoked
-        pub fun getEventsBookIDs(): [UInt64]
+        pub fun getEventSeriesIDs(): [UInt64]
         // check if some id is revoked
         pub fun isRevoked(bookId: UInt64): Bool
-        // borrow the public interface of EventsBook
-        pub fun borrowEventsBook(bookId: UInt64): &EventsBook{EventsBookPublic}?
+        // borrow the public interface of EventSeries
+        pub fun borrowEventSeries(bookId: UInt64): &EventSeries{EventSeriesPublic}?
         // internal full reference borrowing
-        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf
+        access(account) fun borrowEventSeriesBuilderFullRef(): &EventSeriesBuilder
     }
 
-    // A private interface to write for EventsBookshelf
-    pub resource interface EventsBookshelfPrivate {
-        // create a new events book
-        pub fun createEventsBook(
+    // A private interface to write for EventSeriesBuilder
+    pub resource interface EventSeriesBuilderPrivate {
+        // create a new event series
+        pub fun createEventSeries(
             name: String,
             description: String,
             image: String,
@@ -1200,10 +1202,10 @@ pub contract FLOATEventsBook {
             goals: [{IAchievementGoal}],
             extra: {String: AnyStruct}
         ): UInt64
-        // revoke a events book.
-        pub fun revokeEventsBook(bookId: UInt64)
-        // recover a events book.
-        pub fun recoverEventsBook(bookId: UInt64)
+        // revoke a event series.
+        pub fun revokeEventSeries(bookId: UInt64)
+        // recover a event series.
+        pub fun recoverEventSeries(bookId: UInt64)
 
         // registor a token info for general usage
         pub fun registerToken(path: PublicPath, isNFT: Bool)
@@ -1217,26 +1219,26 @@ pub contract FLOATEventsBook {
             oneShareOfClaimableNFT: {String: UInt64},
         ): @StrategyController
 
-        // borrow eventsbook private ref
-        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPublic, EventsBookPrivate}?
+        // borrow event series private ref
+        pub fun borrowEventSeriesPrivate(bookId: UInt64): &EventSeries{EventSeriesPublic, EventSeriesPrivate}?
     }
 
-    // the events book resource collection
-    pub resource EventsBookshelf: EventsBookshelfPublic, EventsBookshelfPrivate, MetadataViews.ResolverCollection {
+    // the event series resource collection
+    pub resource EventSeriesBuilder: EventSeriesBuilderPublic, EventSeriesBuilderPrivate, MetadataViews.ResolverCollection {
         pub let sequence: UInt64
 
-        access(account) var books: @{UInt64: EventsBook}
-        access(account) var revoked: @{UInt64: EventsBook}
+        access(account) var books: @{UInt64: EventSeries}
+        access(account) var revoked: @{UInt64: EventSeries}
 
         init() {
             self.books <- {}
             self.revoked <- {}
 
-            self.sequence = FLOATEventsBook.totalEventsBookshelfs
+            self.sequence = FLOATEventSeries.totalEventSeriesBuilder
 
-            emit FLOATEventsBookshelfCreated(sequence: self.sequence)
+            emit FLOATEventSeriesBuilderCreated(sequence: self.sequence)
 
-            FLOATEventsBook.totalEventsBookshelfs = FLOATEventsBook.totalEventsBookshelfs + 1
+            FLOATEventSeries.totalEventSeriesBuilder = FLOATEventSeries.totalEventSeriesBuilder + 1
         }
 
         destroy() {
@@ -1254,11 +1256,11 @@ pub contract FLOATEventsBook {
             return (&self.books[id] as &{MetadataViews.Resolver}?) ?? panic("Faild to borrow ViewResolver.")
         }
 
-        pub fun borrowEventsBook(bookId: UInt64): &EventsBook{EventsBookPublic}? {
-            return &self.books[bookId] as &EventsBook{EventsBookPublic}?
+        pub fun borrowEventSeries(bookId: UInt64): &EventSeries{EventSeriesPublic}? {
+            return &self.books[bookId] as &EventSeries{EventSeriesPublic}?
         }
 
-        pub fun getEventsBookIDs(): [UInt64] {
+        pub fun getEventSeriesIDs(): [UInt64] {
             return self.books.keys.concat(self.revoked.keys)
         }
 
@@ -1267,15 +1269,15 @@ pub contract FLOATEventsBook {
         }
         
         // Maps the eventId to the name of that
-        // events book. Just a kind helper.
-        pub fun getAllEventsBooks(_ revoked: Bool): {UInt64: String} {
+        // event series. Just a kind helper.
+        pub fun getAllEventSeries(_ revoked: Bool): {UInt64: String} {
             let answer: {UInt64: String} = {}
             let keys = revoked ? self.revoked.keys : self.books.keys
             for id in keys {
                 if revoked {
-                    answer[id] = (&self.revoked[id] as &EventsBook?)!.name
+                    answer[id] = (&self.revoked[id] as &EventSeries?)!.name
                 } else {
-                    answer[id] = (&self.books[id] as &EventsBook?)!.name
+                    answer[id] = (&self.books[id] as &EventSeries?)!.name
                 }
             }
             return answer
@@ -1283,7 +1285,7 @@ pub contract FLOATEventsBook {
 
         // --- Setters - Private Interfaces ---
 
-        pub fun createEventsBook(
+        pub fun createEventSeries(
             name: String,
             description: String,
             image: String,
@@ -1293,7 +1295,7 @@ pub contract FLOATEventsBook {
         ): UInt64 {
             let host = self.owner!.address
 
-            let eventsBook <- create EventsBook(
+            let eventSeries <- create EventSeries(
                 host: host,
                 name: name,
                 description: description,
@@ -1302,10 +1304,10 @@ pub contract FLOATEventsBook {
                 goals: goals,
                 extra
             )
-            let bookId = eventsBook.uuid
-            self.books[bookId] <-! eventsBook
+            let bookId = eventSeries.uuid
+            self.books[bookId] <-! eventSeries
 
-            emit FLOATEventsBookCreated(
+            emit FLOATEventSeriesCreated(
                 bookId: bookId,
                 host: host,
                 name: name,
@@ -1316,18 +1318,18 @@ pub contract FLOATEventsBook {
             return bookId
         }
 
-        pub fun revokeEventsBook(bookId: UInt64) {
-            let book <- self.books.remove(key: bookId) ?? panic("The events book does not exist")
+        pub fun revokeEventSeries(bookId: UInt64) {
+            let book <- self.books.remove(key: bookId) ?? panic("The event series does not exist")
             self.revoked[bookId] <-! book
             
-            emit FLOATEventsBookRevoked(bookId: bookId, host: self.owner!.address)
+            emit FLOATEventSeriesRevoked(bookId: bookId, host: self.owner!.address)
         }
 
-        pub fun recoverEventsBook(bookId: UInt64) {
-            let book <- self.revoked.remove(key: bookId) ?? panic("The events book does not exist")
+        pub fun recoverEventSeries(bookId: UInt64) {
+            let book <- self.revoked.remove(key: bookId) ?? panic("The event series does not exist")
             self.books[bookId] <-! book
 
-            emit FLOATEventsBookRecovered(bookId: bookId, host: self.owner!.address)
+            emit FLOATEventSeriesRecovered(bookId: bookId, host: self.owner!.address)
         }
 
         pub fun registerToken(path: PublicPath, isNFT: Bool) {
@@ -1338,11 +1340,11 @@ pub contract FLOATEventsBook {
                     ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic}")
                 let id = collection.getIDs().removeFirst()
                 let nft = collection.borrowNFT(id: id)
-                FLOATEventsBook.setTokenDefintion(token: nft.getType(), path: path, isNFT: true)
+                FLOATEventSeries.setTokenDefintion(token: nft.getType(), path: path, isNFT: true)
             } else {
                 let ft = tokenCap.borrow<&{FungibleToken.Receiver}>()
                     ?? panic("Could not borrow the &{FungibleToken.Receiver}")
-                FLOATEventsBook.setTokenDefintion(token: ft.getType(), path: path, isNFT: false)
+                FLOATEventSeries.setTokenDefintion(token: ft.getType(), path: path, isNFT: false)
             }
         }
 
@@ -1363,14 +1365,14 @@ pub contract FLOATEventsBook {
             )
         }
 
-        pub fun borrowEventsBookPrivate(bookId: UInt64): &EventsBook{EventsBookPublic, EventsBookPrivate}? {
-            return &self.books[bookId] as &EventsBook{EventsBookPublic, EventsBookPrivate}?
+        pub fun borrowEventSeriesPrivate(bookId: UInt64): &EventSeries{EventSeriesPublic, EventSeriesPrivate}? {
+            return &self.books[bookId] as &EventSeries{EventSeriesPublic, EventSeriesPrivate}?
         }
 
         // --- Setters - Contract Only ---
 
-        access(account) fun borrowEventsBookshelfFullRef(): &EventsBookshelf {
-            return &self as &EventsBookshelf
+        access(account) fun borrowEventSeriesBuilderFullRef(): &EventSeriesBuilder {
+            return &self as &EventSeriesBuilder
         }
 
         // --- Self Only ---
@@ -1384,7 +1386,7 @@ pub contract FLOATEventsBook {
         // get achievement record owner
         pub fun getOwner(): Address
         // get achievement record target
-        pub fun getTarget(): EventsBookIdentifier
+        pub fun getTarget(): EventSeriesIdentifier
         // get total score
         pub fun getTotalScore(): UInt64
         // get current comsumable score
@@ -1404,10 +1406,10 @@ pub contract FLOATEventsBook {
         pub fun accomplishGoal(goalIdx: Int)
     }
 
-    // Users' Achevement of one EventsBook
+    // Users' Achevement of one EventSeries
     pub resource Achievement: AchievementPublic, AchievementWritable {
         // target to event identifier
-        access(self) let target: EventsBookIdentifier
+        access(self) let target: EventSeriesIdentifier
         // current achievement score
         access(account) var score: UInt64
         // current consumable achievement score
@@ -1423,7 +1425,7 @@ pub contract FLOATEventsBook {
             self.consumableScore = 0
             self.finishedGoals = []
 
-            self.target = EventsBookIdentifier(host, bookId)
+            self.target = EventSeriesIdentifier(host, bookId)
         }
 
         // --- Getters - Public Interfaces ---
@@ -1434,7 +1436,7 @@ pub contract FLOATEventsBook {
         }
 
         // get achievement record target
-        pub fun getTarget(): EventsBookIdentifier {
+        pub fun getTarget(): EventSeriesIdentifier {
             return self.target
         }
 
@@ -1455,11 +1457,11 @@ pub contract FLOATEventsBook {
 
         // check if goal can be accomplished
         pub fun isGoalReady(goalIdx: Int): Bool {
-            // fetch the events book reference
-            let eventsBookRef = self.getTarget().getEventsBookPublic()
-            let goal = eventsBookRef.getGoal(idx: goalIdx)
+            // fetch the event series reference
+            let eventSeriesRef = self.getTarget().getEventSeriesPublic()
+            let goal = eventSeriesRef.getGoal(idx: goalIdx)
 
-            return goal.verify(eventsBookRef, user: self.owner!.address)
+            return goal.verify(eventSeriesRef, user: self.owner!.address)
         }
 
         // --- Setters - Private Interfaces ---
@@ -1470,12 +1472,12 @@ pub contract FLOATEventsBook {
                 !self.finishedGoals.contains(goalIdx): "The goal is already accomplished."
             }
 
-            // fetch the events book reference
-            let eventsBookRef = self.getTarget().getEventsBookPublic()
-            let goal = eventsBookRef.getGoal(idx: goalIdx)
+            // fetch the event series reference
+            let eventSeriesRef = self.getTarget().getEventSeriesPublic()
+            let goal = eventSeriesRef.getGoal(idx: goalIdx)
 
             // verify first. if not allowed, the method will panic
-            assert(goal.verify(eventsBookRef, user: self.owner!.address), message: "Failed to verify goal")
+            assert(goal.verify(eventSeriesRef, user: self.owner!.address), message: "Failed to verify goal")
 
             // add to score
             let point = goal.getPoints()
@@ -1483,7 +1485,7 @@ pub contract FLOATEventsBook {
             self.consumableScore = self.consumableScore.saturatingAdd(point)
 
             // update achievement to all opening treasury strategies
-            let treasury = eventsBookRef.borrowTreasury()
+            let treasury = eventSeriesRef.borrowTreasury()
             let openingStrategies = treasury.borrowStrategiesRef(state: StrategyState.opening)
             for strategy in openingStrategies {
                 strategy.onGoalAccomplished(user: &self as &{AchievementPublic})
@@ -1494,8 +1496,8 @@ pub contract FLOATEventsBook {
 
             // emit event
             emit FLOATAchievementGoalAccomplished(
-                bookId: eventsBookRef.getID(),
-                host: eventsBookRef.owner!.address,
+                bookId: eventSeriesRef.getID(),
+                host: eventSeriesRef.owner!.address,
                 owner: self.owner!.address,
                 goalIdx: goalIdx
             )
@@ -1520,15 +1522,15 @@ pub contract FLOATEventsBook {
 
     // A public interface to read AchievementBoard
     pub resource interface AchievementBoardPublic {
-        // get the achievement reference by events book identifier
+        // get the achievement reference by event series identifier
         pub fun borrowAchievementRecordRef(host: Address, bookId: UInt64): &{AchievementPublic}?
     }
 
     // A private interface to write AchievementBoard
     pub resource interface AchievementBoardPrivate {
         // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventsBookIdentifier
-        // get the achievement record reference by events book identifier
+        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventSeriesIdentifier
+        // get the achievement record reference by event series identifier
         pub fun borrowAchievementRecordWritable(host: Address, bookId: UInt64): &{AchievementPublic, AchievementWritable}?
     }
 
@@ -1539,7 +1541,7 @@ pub contract FLOATEventsBook {
         access(account) var achievements: @{String: Achievement}
 
         init() {
-            self.sequence = FLOATEventsBook.totalAchievementBoards
+            self.sequence = FLOATEventSeries.totalAchievementBoards
             self.achievements <- {}
 
             emit FLOATAchievementBoardCreated(
@@ -1547,7 +1549,7 @@ pub contract FLOATEventsBook {
                 owner: self.owner!.address
             )
 
-            FLOATEventsBook.totalAchievementBoards = FLOATEventsBook.totalAchievementBoards + 1
+            FLOATEventSeries.totalAchievementBoards = FLOATEventSeries.totalAchievementBoards + 1
         }
 
         destroy() {
@@ -1557,7 +1559,7 @@ pub contract FLOATEventsBook {
         // --- Getters - Public Interfaces ---
 
         pub fun borrowAchievementRecordRef(host: Address, bookId: UInt64): &{AchievementPublic}? {
-            let target = EventsBookIdentifier(host, bookId)
+            let target = EventSeriesIdentifier(host, bookId)
             let key = target.toString()
             return &self.achievements[key] as &{AchievementPublic}?
         }
@@ -1565,12 +1567,12 @@ pub contract FLOATEventsBook {
         // --- Setters - Private Interfaces ---
 
         // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventsBookIdentifier {
-            let identifier = EventsBookIdentifier(host, bookId)
+        pub fun createAchievementRecord(host: Address, bookId: UInt64): EventSeriesIdentifier {
+            let identifier = EventSeriesIdentifier(host, bookId)
             let key = identifier.toString()
 
             assert(self.achievements[key] == nil, message: "Achievement of the event book should be empty.")
-            assert(identifier.getEventsBookPublic() != nil , message: "The events book should exist")
+            assert(identifier.getEventSeriesPublic() != nil , message: "The event series should exist")
 
             self.achievements[key] <-! create Achievement(
                 host: host,
@@ -1586,7 +1588,7 @@ pub contract FLOATEventsBook {
         }
 
         pub fun borrowAchievementRecordWritable(host: Address, bookId: UInt64): &{AchievementPublic, AchievementWritable}? {
-            let target = EventsBookIdentifier(host, bookId)
+            let target = EventSeriesIdentifier(host, bookId)
             let key = target.toString()
             return &self.achievements[key] as &{AchievementPublic, AchievementWritable}?
         }
@@ -1599,8 +1601,8 @@ pub contract FLOATEventsBook {
 
     // ---- contract methods ----
 
-    pub fun createEventsBookshelf(): @EventsBookshelf {
-        return <- create EventsBookshelf()
+    pub fun createEventSeriesBuilder(): @EventSeriesBuilder {
+        return <- create EventSeriesBuilder()
     }
 
     pub fun createAchievementBoard(): @AchievementBoard {
@@ -1608,14 +1610,14 @@ pub contract FLOATEventsBook {
     }
 
     init() {
-        self.totalEventsBooks = 0
-        self.totalEventsBookshelfs = 0
+        self.totalEventSeries = 0
+        self.totalEventSeriesBuilder = 0
         self.totalAchievementBoards = 0
         self.tokenDefinitions = {}
 
-        self.FLOATEventsBookshelfStoragePath = /storage/FLOATEventsBookshelfPath
-        self.FLOATEventsBookshelfPrivatePath = /private/FLOATEventsBookshelfPath
-        self.FLOATEventsBookshelfPublicPath = /public/FLOATEventsBookshelfPath
+        self.FLOATEventSeriesBuilderStoragePath = /storage/FLOATEventSeriesBuilderPath
+        self.FLOATEventSeriesBuilderPrivatePath = /private/FLOATEventSeriesBuilderPath
+        self.FLOATEventSeriesBuilderPublicPath = /public/FLOATEventSeriesBuilderPath
 
         self.FLOATEventSeriesGlobalStoragePath = /storage/FLOATEventSeriesGlobalPath
         self.FLOATEventSeriesGlobalPublicPath = /public/FLOATEventSeriesGlobalPath
@@ -1626,3 +1628,4 @@ pub contract FLOATEventsBook {
         emit ContractInitialized()
     }
 }
+ 

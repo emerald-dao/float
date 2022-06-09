@@ -1,5 +1,5 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import FLOATStrategies from "../FLOATStrategies.cdc"
 
 transaction(
@@ -8,23 +8,23 @@ transaction(
   eventHosts: [Address],
   eventIds: [UInt64],
 ) {
-  let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
+  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
   prepare(acct: AuthAccount) {
-    // SETUP Bookshelf resource, link public and private
-    if acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createEventsBookshelf(), to: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPublic, MetadataViews.ResolverCollection}>
-          (FLOATEventsBook.FLOATEventsBookshelfPublicPath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPrivate}>
-          (FLOATEventsBook.FLOATEventsBookshelfPrivatePath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
+    // SETUP Event Series builder resource, link public and private
+    if acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    let bookshelf = acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      ?? panic("Could not borrow the Bookshelf.")
+    let bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventsBook = bookshelf.borrowEventsBookPrivate(bookId: bookId)
-      ?? panic("Could not borrow the events book private.")
+    self.eventSeries = bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+      ?? panic("Could not borrow the event series private.")
   }
 
   pre {
@@ -33,12 +33,12 @@ transaction(
   }
 
   execute {
-    let floats: [FLOATEventsBook.EventIdentifier] = []
+    let floats: [FLOATEventSeries.EventIdentifier] = []
 
     let presetLen = eventHosts.length
     var i = 0
     while i < presetLen {
-      floats.append(FLOATEventsBook.EventIdentifier(eventHosts[i], eventIds[i]))
+      floats.append(FLOATEventSeries.EventIdentifier(eventHosts[i], eventIds[i]))
       i = i + 1
     }
 
@@ -46,8 +46,8 @@ transaction(
       points: points,
       floats: floats
     )
-    self.eventsBook.addAchievementGoal(goal: goal)
+    self.eventSeries.addAchievementGoal(goal: goal)
 
-    log("A achievement goal have been added to a FLOAT EventsBook.")
+    log("A achievement goal have been added to a FLOAT EventSeries.")
   }
 }

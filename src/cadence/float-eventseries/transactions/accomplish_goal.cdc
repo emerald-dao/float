@@ -1,21 +1,21 @@
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
   host: Address,
   bookId: UInt64,
   goalIdx: UInt64
 ) {
-  let achievementRecord: &{FLOATEventsBook.AchievementPublic, FLOATEventsBook.AchievementWritable}
+  let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
 
   prepare(acct: AuthAccount) {
     // SETUP Achievement Board resource, link public
-    if acct.borrow<&FLOATEventsBook.AchievementBoard>(from: FLOATEventsBook.FLOATAchievementBoardStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createAchievementBoard(), to: FLOATEventsBook.FLOATAchievementBoardStoragePath)
-      acct.link<&FLOATEventsBook.AchievementBoard{FLOATEventsBook.AchievementBoardPublic}>
-          (FLOATEventsBook.FLOATAchievementBoardPublicPath, target: FLOATEventsBook.FLOATAchievementBoardStoragePath)
+    if acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createAchievementBoard(), to: FLOATEventSeries.FLOATAchievementBoardStoragePath)
+      acct.link<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
+          (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
-    let achievementBoard = acct.borrow<&FLOATEventsBook.AchievementBoard>(from: FLOATEventsBook.FLOATAchievementBoardStoragePath)
+    let achievementBoard = acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath)
       ?? panic("Could not borrow the AchievementBoard from the signer.")
     
     if let record = achievementBoard.borrowAchievementRecordWritable(host: host, bookId: bookId) {

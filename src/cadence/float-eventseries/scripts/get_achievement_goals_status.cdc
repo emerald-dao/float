@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 pub let STATE_TODO = "todo"
 pub let STATE_READY = "ready"
@@ -36,8 +36,8 @@ pub fun main(
   let acct = getAccount(accountAddr)
 
   let achievementBoard = acct
-    .getCapability(FLOATEventsBook.FLOATAchievementBoardPublicPath)
-    .borrow<&FLOATEventsBook.AchievementBoard{FLOATEventsBook.AchievementBoardPublic}>()
+    .getCapability(FLOATEventSeries.FLOATAchievementBoardPublicPath)
+    .borrow<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>()
     ?? panic("Failed to borrow achievement board")
 
   let record = achievementBoard.borrowAchievementRecordRef(host: host, bookId: bookId)
@@ -45,8 +45,8 @@ pub fun main(
 
   let finishedGoals = record.getFinishedGoals()
 
-  let eventsBookRef = record.getTarget().getEventsBookPublic()
-  let goals = eventsBookRef.getGoals()
+  let eventSeriesRef = record.getTarget().getEventSeriesPublic()
+  let goals = eventSeriesRef.getGoals()
   let goalLen = goals.length
 
   let ret: [GoalStatus] = []

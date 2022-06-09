@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 transaction(
@@ -6,19 +6,19 @@ transaction(
   bookId: UInt64,
   strategyIndex: UInt64,
 ) {
-  let achievementRecord: &{FLOATEventsBook.AchievementPublic, FLOATEventsBook.AchievementWritable}
-  let eventsBook: &{FLOATEventsBook.EventsBookPublic}
+  let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
+  let eventSeries: &{FLOATEventSeries.EventSeriesPublic}
 
   prepare(acct: AuthAccount) {
     // SETUP Achievement Board resource, link public
-    if acct.borrow<&FLOATEventsBook.AchievementBoard>(from: FLOATEventsBook.FLOATAchievementBoardStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createAchievementBoard(), to: FLOATEventsBook.FLOATAchievementBoardStoragePath)
-      acct.link<&FLOATEventsBook.AchievementBoard{FLOATEventsBook.AchievementBoardPublic}>
-          (FLOATEventsBook.FLOATAchievementBoardPublicPath, target: FLOATEventsBook.FLOATAchievementBoardStoragePath)
+    if acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createAchievementBoard(), to: FLOATEventSeries.FLOATAchievementBoardStoragePath)
+      acct.link<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
+          (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
     // get achievement record from signer
-    let achievementBoard = acct.borrow<&FLOATEventsBook.AchievementBoard>(from: FLOATEventsBook.FLOATAchievementBoardStoragePath)
+    let achievementBoard = acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath)
       ?? panic("Could not borrow the AchievementBoard from the signer.")
     
     if let record = achievementBoard.borrowAchievementRecordWritable(host: host, bookId: bookId) {
@@ -29,18 +29,18 @@ transaction(
         ?? panic("Could not borrow the Achievement record")
     }
 
-    // get EventsBook from host
+    // get EventSeries from host
     let bookshelf = getAccount(host)
-      .getCapability(FLOATEventsBook.FLOATEventsBookshelfPublicPath)
-      .borrow<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPublic}>()
-      ?? panic("Could not borrow the public EventsBookshelfPublic.")
+      .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
+      .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic}>()
+      ?? panic("Could not borrow the public EventSeriesBuilderPublic.")
     
-    self.eventsBook = bookshelf.borrowEventsBook(bookId: bookId)
-      ?? panic("Failed to get events book reference.")
+    self.eventSeries = bookshelf.borrowEventSeries(bookId: bookId)
+      ?? panic("Failed to get event series reference.")
   }
 
   execute {
-    let treasury = self.eventsBook.borrowTreasury()
+    let treasury = self.eventSeries.borrowTreasury()
     treasury.claim(strategyIndex: Int(strategyIndex), user: self.achievementRecord)
 
     log("Claimed your rewards from treasury.")

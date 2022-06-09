@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 transaction(
@@ -11,27 +11,27 @@ transaction(
   presetEventIds: [UInt64],
   presetRequired: [Bool]
 ) {
-  let bookshelf: &FLOATEventsBook.EventsBookshelf
+  let bookshelf: &FLOATEventSeries.EventSeriesBuilder
 
   prepare(acct: AuthAccount) {
-    // SETUP Bookshelf resource, link public and private
-    if acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createEventsBookshelf(), to: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPublic, MetadataViews.ResolverCollection}>
-          (FLOATEventsBook.FLOATEventsBookshelfPublicPath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPrivate}>
-          (FLOATEventsBook.FLOATEventsBookshelfPrivatePath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
+    // SETUP Event Series builder resource, link public and private
+    if acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
     // SETUP Achievement Board resource, link public
-    if acct.borrow<&FLOATEventsBook.AchievementBoard>(from: FLOATEventsBook.FLOATAchievementBoardStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createAchievementBoard(), to: FLOATEventsBook.FLOATAchievementBoardStoragePath)
-      acct.link<&FLOATEventsBook.AchievementBoard{FLOATEventsBook.AchievementBoardPublic}>
-          (FLOATEventsBook.FLOATAchievementBoardPublicPath, target: FLOATEventsBook.FLOATAchievementBoardStoragePath)
+    if acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createAchievementBoard(), to: FLOATEventSeries.FLOATAchievementBoardStoragePath)
+      acct.link<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
+          (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
-    self.bookshelf = acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      ?? panic("Could not borrow the Bookshelf.")
+    self.bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      ?? panic("Could not borrow the Event Series builder.")
   }
 
   pre {
@@ -42,16 +42,16 @@ transaction(
   }
 
   execute {
-    let slots: [{FLOATEventsBook.EventSlot}] = []
+    let slots: [{FLOATEventSeries.EventSlot}] = []
     // add preset slots
     let presetLen = presetHosts.length
     var presetCnt: Int = 0
     while presetCnt < presetLen {
-      let eventIdentifier = FLOATEventsBook.EventIdentifier(presetHosts[presetCnt], presetEventIds[presetCnt])
+      let eventIdentifier = FLOATEventSeries.EventIdentifier(presetHosts[presetCnt], presetEventIds[presetCnt])
       if presetRequired[presetCnt] {
-        slots.append(FLOATEventsBook.RequiredEventSlot(eventIdentifier))
+        slots.append(FLOATEventSeries.RequiredEventSlot(eventIdentifier))
       } else {
-        slots.append(FLOATEventsBook.OptionalEventSlot(eventIdentifier))
+        slots.append(FLOATEventSeries.OptionalEventSlot(eventIdentifier))
       }
       presetCnt = presetCnt + 1
     }
@@ -59,15 +59,15 @@ transaction(
     // add empty slots
     var emptyCnt: UInt64 = 0
     while emptyCnt < emptySlots { 
-      slots.append(FLOATEventsBook.EmptyEventSlot(emptyCnt < emptySlotsRequired))
+      slots.append(FLOATEventSeries.EmptyEventSlot(emptyCnt < emptySlotsRequired))
       emptyCnt = emptyCnt + 1
     }
 
-    let goals: [{FLOATEventsBook.IAchievementGoal}] = []
+    let goals: [{FLOATEventSeries.IAchievementGoal}] = []
     let extra: {String: AnyStruct} = {}
 
-    self.bookshelf.createEventsBook(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
+    self.bookshelf.createEventSeries(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
 
-    log("Created a FLOAT EventsBook.")
+    log("Created a FLOAT EventSeries.")
   }
 }

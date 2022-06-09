@@ -1,6 +1,6 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
   bookId: UInt64,
@@ -8,28 +8,28 @@ transaction(
   publicPath: String,
   ids: [UInt64]
 ) {
-  let bookshelf: &FLOATEventsBook.EventsBookshelf
-  let eventsBook: &FLOATEventsBook.EventsBook{FLOATEventsBook.EventsBookPublic, FLOATEventsBook.EventsBookPrivate}
+  let bookshelf: &FLOATEventSeries.EventSeriesBuilder
+  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
   let nftPublicPath: PublicPath
 
   let collection: &NonFungibleToken.Collection
 
   prepare(acct: AuthAccount) {
-    // SETUP Bookshelf resource, link public and private
-    if acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath) == nil {
-      acct.save(<- FLOATEventsBook.createEventsBookshelf(), to: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPublic, MetadataViews.ResolverCollection}>
-          (FLOATEventsBook.FLOATEventsBookshelfPublicPath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      acct.link<&FLOATEventsBook.EventsBookshelf{FLOATEventsBook.EventsBookshelfPrivate}>
-          (FLOATEventsBook.FLOATEventsBookshelfPrivatePath, target: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
+    // SETUP Event Series builder resource, link public and private
+    if acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath) == nil {
+      acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
+          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    self.bookshelf = acct.borrow<&FLOATEventsBook.EventsBookshelf>(from: FLOATEventsBook.FLOATEventsBookshelfStoragePath)
-      ?? panic("Could not borrow the Bookshelf.")
+    self.bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+      ?? panic("Could not borrow the Event Series builder.")
     
-    // events book
-    self.eventsBook = self.bookshelf.borrowEventsBookPrivate(bookId: bookId)
-      ?? panic("Could not borrow the events book private.")
+    // event series
+    self.eventSeries = self.bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+      ?? panic("Could not borrow the event series private.")
 
     // ensure fungible token capability
     self.nftPublicPath = PublicPath(identifier: publicPath) ?? panic("Invalid publicPath: ".concat(publicPath))
@@ -50,7 +50,7 @@ transaction(
   execute {
     let tokenType = self.collection.borrowNFT(id: ids[0]).getType()
     // check if fungible token registered
-    if FLOATEventsBook.getTokenDefinition(tokenType.identifier) == nil {
+    if FLOATEventSeries.getTokenDefinition(tokenType.identifier) == nil {
       self.bookshelf.registerToken(path: self.nftPublicPath, isNFT: true)
     }
 
@@ -60,9 +60,9 @@ transaction(
       nftsToDeposit.append(<- self.collection.withdraw(withdrawID: id))
     }
 
-    let treasury = self.eventsBook.borrowTreasuryPrivate()
+    let treasury = self.eventSeries.borrowTreasuryPrivate()
     treasury.depositNonFungibleTokens(nfts: <- nftsToDeposit)
 
-    log("Non-Fungible Tokens have been deposited to a FLOAT EventsBook.")
+    log("Non-Fungible Tokens have been deposited to a FLOAT EventSeries.")
   }
 }

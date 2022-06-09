@@ -1,4 +1,4 @@
-import FLOATEventsBook from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 pub struct AchievementRecord {
   pub let host: Address
@@ -27,8 +27,8 @@ pub fun main(
   let acct = getAccount(accountAddr)
 
   let achievementBoard = acct
-    .getCapability<&FLOATEventsBook.AchievementBoard{FLOATEventsBook.AchievementBoardPublic}>
-      (FLOATEventsBook.FLOATAchievementBoardPublicPath)
+    .getCapability<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
+      (FLOATEventSeries.FLOATAchievementBoardPublicPath)
     .borrow()
   if achievementBoard == nil {
     return []
