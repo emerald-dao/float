@@ -9,6 +9,12 @@
 
   export let address = "";
   export let eventId = "";
+  export let totalClaimed = 0;
+
+  let MAX_CLAIMED_AUTO_SHOW_THRESHOLD = 9999;
+
+  // only show claims table automatically if there are less than 10,000 claims
+  let showClaims = totalClaimed < MAX_CLAIMED_AUTO_SHOW_THRESHOLD;
 
   let getRows = async () => {
     console.log("potato");
@@ -34,8 +40,10 @@
   }
 </script>
 
+
+{#if showClaims}
 {#await promise}
-  <article aria-busy="true" />
+  <div aria-busy="true" />
 {:then rows}
   <Table
     {pageCount}
@@ -67,3 +75,9 @@
     </tbody>
   </Table>
 {/await}
+{:else}
+
+  <p>This FLOAT is very popular! 🎉 To be mindful of network load, we won't load the list of who claimed this FLOAT automatically. You are welcome to click on the button below to load it manually!</p>
+  <button on:click={() => showClaims = true}>View list of who claimed this FLOAT</button>
+
+{/if}

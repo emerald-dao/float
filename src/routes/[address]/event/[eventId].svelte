@@ -425,6 +425,7 @@
             <ClaimsTable
               address={floatEvent?.host}
               eventId={floatEvent?.eventId}
+              totalClaimed={floatEvent?.totalSupply}
             />
           {/if}
         </div>
