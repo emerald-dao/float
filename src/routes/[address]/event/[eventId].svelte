@@ -210,7 +210,7 @@
         {/if}
       </blockquote>
       <p>
-        <span class="emphasis">{floatEvent?.totalSupply}</span> have been minted.
+        <span class="emphasis">{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been minted.
       </p>
       {#if limitedVerifier && limitedVerifier[0]}
         <p>
