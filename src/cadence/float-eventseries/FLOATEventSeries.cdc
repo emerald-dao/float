@@ -49,6 +49,9 @@ pub contract FLOATEventSeries {
     pub event FLOATEventSeriesTreasuryStrategyNextStage(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
     pub event FLOATEventSeriesTreasuryClaimed(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
 
+    pub event FLOATEventSeriesGlobalAddedToList(seriesId: UInt64, host: Address)
+    pub event FLOATEventSeriesGlobalTreasuryStrategyUpdated(seriesId: UInt64, host: Address)
+
     pub event FLOATEventSeriesBuilderCreated(sequence: UInt64)
 
     pub event FLOATAchievementRecordInitialized(seriesId: UInt64, host: Address, owner: Address)
@@ -535,7 +538,7 @@ pub contract FLOATEventSeries {
         // get nft collection public 
         pub fun getTreasuryNFTCollection(tokenIdentifier: String): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(state: StrategyState?): [StrategyInformation]
+        pub fun getStrategies(states: [StrategyState]?): [StrategyInformation]
         // For the public to check if some strategy is claimable
         pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool
         // For the public to claim rewards
@@ -609,14 +612,14 @@ pub contract FLOATEventSeries {
         }
 
         // get all strategy information
-        pub fun getStrategies(state: StrategyState?): [StrategyInformation] {
+        pub fun getStrategies(states: [StrategyState]?): [StrategyInformation] {
             let infos: [StrategyInformation] = []
             let len = self.strategies.length
             var i = 0
             while i < len {
                 let strategyRef = &self.strategies[i] as &{ITreasuryStrategy}
                 let info = strategyRef.controller.getInfo()
-                if state == nil || state! == info.currentState {
+                if states == nil || states!.contains(info.currentState) {
                     infos.append(info)
                 }
                 i = i + 1
@@ -709,7 +712,7 @@ pub contract FLOATEventSeries {
         // drop all treasury, if no strategy alive
         pub fun dropTreasury() {
             pre {
-                self.strategies.length == self.getStrategies(state: StrategyState.closed).length
+                self.strategies.length == self.getStrategies(states: [StrategyState.closed]).length
                     : "All strategies should be closed"
             }
 
@@ -822,9 +825,14 @@ pub contract FLOATEventSeries {
             // add to strategies
             self.strategies.append(<- strategy)
 
+            let host = self.owner!.address
+            // update global
+            let global = FLOATEventSeries.borrowEventSeriesGlobal()
+            global.seriesUpdateTreasuryStrategy(host, seriesId: self.seriesId)
+
             emit FLOATEventSeriesTreasuryStrategyAdded(
                 seriesId: self.seriesId,
-                host: self.owner!.address,
+                host: host,
                 strategyIdentifier: id,
                 index: self.strategies.length - 1
             )
@@ -840,9 +848,14 @@ pub contract FLOATEventSeries {
             // execute on state changed
             strategy.onStateChanged(state: ret)
 
+            let host = self.owner!.address
+            // update global
+            let global = FLOATEventSeries.borrowEventSeriesGlobal()
+            global.seriesUpdateTreasuryStrategy(host, seriesId: self.seriesId)
+
             emit FLOATEventSeriesTreasuryStrategyNextStage(
                 seriesId: self.seriesId,
-                host: self.owner!.address,
+                host: host,
                 strategyIdentifier: strategy.getType().identifier,
                 index: idx,
                 stage: ret.rawValue
@@ -1162,6 +1175,9 @@ pub contract FLOATEventSeries {
         pub fun addAchievementGoal(goal: {IAchievementGoal}) {
             self.goals.append(goal)
 
+            let global = FLOATEventSeries.borrowEventSeriesGlobal()
+            global.seriesUpdateGoals(self.host, seriesId: self.uuid)
+
             emit FLOATEventSeriesGoalAdded(
                 seriesId: self.uuid,
                 host: self.host,
@@ -1377,6 +1393,116 @@ pub contract FLOATEventSeries {
 
         // --- Self Only ---
 
+    }
+
+    // ---- Shared global resources ----
+    
+    pub resource interface EventSeriesGlobalPublic {
+        // get series identifier
+        pub fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier]
+        // get series amount
+        pub fun getTotalAmount(isTreasuryAvailable: Bool): Int
+        // add a event series with goal to global
+        access(contract) fun seriesUpdateGoals(_ host: Address, seriesId: UInt64)
+        // update event series by its treasury strategy
+        access(contract) fun seriesUpdateTreasuryStrategy(_ host: Address, seriesId: UInt64)
+    }
+
+    pub resource EventSeriesGlobal: EventSeriesGlobalPublic {
+        access(self) var seriesList: [String]
+        access(self) var seriesWithTreasuryAvailableList: [String]
+        access(self) var seriesMapping: {String: EventSeriesIdentifier}
+
+        init() {
+            self.seriesMapping = {}
+            self.seriesList = []
+            self.seriesWithTreasuryAvailableList = []
+        }
+
+        // --- Getters - Public Interfaces ---
+
+        pub fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier] {
+            let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
+            let startAt = Int(page.saturatingMultiply(limit))
+            assert(startAt < arr.length, message: "page is out of bound")
+
+            let endAt = startAt + Int(limit) > arr.length ? arr.length : startAt + Int(limit)
+            let names = arr.slice(from: startAt, upTo: endAt)
+
+            let ret: [EventSeriesIdentifier] = []
+            for name in names {
+                let id = self.seriesMapping[name]
+                assert(id != nil, message: "Invalid series key:".concat(name))
+                ret.append(id!)
+            }
+            return ret
+        }
+
+        pub fun getTotalAmount(isTreasuryAvailable: Bool): Int {
+            let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
+            return arr.length
+        }
+
+        // --- Setters - Contract Only ---
+
+        // add a event series with goal to global
+        access(contract) fun seriesUpdateGoals(_ host: Address, seriesId: UInt64) {
+            let id = EventSeriesIdentifier(host, seriesId)
+            let key = id.toString()
+            // Already exists
+            if self.seriesMapping.containsKey(key) {
+                return
+            }
+
+            // ensure event series exists
+            id.getEventSeriesPublic()
+            assert(!self.seriesList.contains(key), message: "Already exists, key:".concat(key))
+
+            self.seriesMapping[key] = id
+            self.seriesList.insert(at: 0, key)
+
+            emit FLOATEventSeriesGlobalAddedToList(seriesId: seriesId, host: host)
+        }
+
+        // update event series by its treasury strategy 
+        access(contract) fun seriesUpdateTreasuryStrategy(_ host: Address, seriesId: UInt64) {
+            let id = EventSeriesIdentifier(host, seriesId)
+            let key = id.toString()
+            assert(self.seriesMapping.containsKey(key), message: "Key does not exist")
+
+            // ensure event series exists
+            let eventSeries = id.getEventSeriesPublic()
+            let treasury = eventSeries.borrowTreasury()
+            let availableStrategies = treasury.getStrategies(states: [
+                StrategyState.preparing,
+                StrategyState.opening,
+                StrategyState.claimable
+            ])
+
+            var updated = false
+            if availableStrategies.length > 0 && !self.seriesWithTreasuryAvailableList.contains(key) {
+                self.seriesWithTreasuryAvailableList.insert(at: 0, key)
+                updated = true
+            } else {
+                // remove key
+                let index = self.seriesWithTreasuryAvailableList.firstIndex(of: key)
+                if index != nil {
+                    self.seriesWithTreasuryAvailableList.remove(at: index!)
+                    updated = true
+                }
+                // update to first
+                if availableStrategies.length > 0 {
+                    self.seriesWithTreasuryAvailableList.insert(at: 0, key)
+                    updated = true
+                }
+            }
+
+            if updated {
+                emit FLOATEventSeriesGlobalTreasuryStrategyUpdated(seriesId: seriesId, host: host)
+            }
+        }
+
+        // --- Self Only ---
     }
 
     // ---- data For Endusers ----
@@ -1609,6 +1735,12 @@ pub contract FLOATEventSeries {
         return <- create AchievementBoard()
     }
 
+    // borrow the reference of the EventSeriesGlobal
+    pub fun borrowEventSeriesGlobal(): &EventSeriesGlobal{EventSeriesGlobalPublic} {
+        return self.account.borrow<&EventSeriesGlobal{EventSeriesGlobalPublic}>(from: self.FLOATEventSeriesGlobalStoragePath)
+            ?? panic("Failed to borrow EventSeriesGlobal")
+    }
+
     init() {
         self.totalEventSeries = 0
         self.totalEventSeriesBuilder = 0
@@ -1619,11 +1751,17 @@ pub contract FLOATEventSeries {
         self.FLOATEventSeriesBuilderPrivatePath = /private/FLOATEventSeriesBuilderPath
         self.FLOATEventSeriesBuilderPublicPath = /public/FLOATEventSeriesBuilderPath
 
+        self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPath
+        self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPath
+
         self.FLOATEventSeriesGlobalStoragePath = /storage/FLOATEventSeriesGlobalPath
         self.FLOATEventSeriesGlobalPublicPath = /public/FLOATEventSeriesGlobalPath
 
-        self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPath
-        self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPath
+        self.account.save(<- create EventSeriesGlobal(), to: self.FLOATEventSeriesGlobalStoragePath)
+        self.account.link<&EventSeriesGlobal{EventSeriesGlobalPublic}>(
+            self.FLOATEventSeriesGlobalPublicPath,
+            target: self.FLOATEventSeriesGlobalStoragePath
+        )
 
         emit ContractInitialized()
     }
