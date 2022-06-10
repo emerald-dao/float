@@ -2,18 +2,18 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 pub struct AchievementRecord {
   pub let host: Address
-  pub let bookId: UInt64
+  pub let seriesId: UInt64
   pub let score: UInt64
   pub let consumableScore: UInt64
 
   init(
     _ host: Address,
-    _ bookId: UInt64,
+    _ seriesId: UInt64,
     _ score: UInt64,
     _ consumable: UInt64
   ) {
     self.host = host
-    self.bookId = bookId
+    self.seriesId = seriesId
     self.score = score
     self.consumableScore = consumable
   }
@@ -22,7 +22,7 @@ pub struct AchievementRecord {
 pub fun main(
   accountAddr: Address,
   host: Address,
-  bookIds: [UInt64]
+  seriesIds: [UInt64]
 ): [AchievementRecord] {
   let acct = getAccount(accountAddr)
 
@@ -35,12 +35,12 @@ pub fun main(
   }
 
   let ret: [AchievementRecord] = []
-  for bookId in bookIds {
-    let record = achievementBoard!.borrowAchievementRecordRef(host: host, bookId: bookId)
+  for seriesId in seriesIds {
+    let record = achievementBoard!.borrowAchievementRecordRef(host: host, seriesId: seriesId)
     if record == nil {
       continue
     }
-    ret.append(AchievementRecord(host, bookId, record!.getTotalScore(), record!.getConsumableScore()))
+    ret.append(AchievementRecord(host, seriesId, record!.getTotalScore(), record!.getConsumableScore()))
   }
 
   return ret

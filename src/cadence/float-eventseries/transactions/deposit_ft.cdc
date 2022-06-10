@@ -3,12 +3,12 @@ import FungibleToken from "../../core-contracts/FungibleToken.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
-  bookId: UInt64,
+  seriesId: UInt64,
   storagePath: String,
   publicPath: String,
   amount: UFix64
 ) {
-  let bookshelf: &FLOATEventSeries.EventSeriesBuilder
+  let serieshelf: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
   let fungibleTokenPublicPath: PublicPath
   let fungibleTokenReciever: &FungibleToken.Vault{FungibleToken.Receiver}
@@ -25,11 +25,11 @@ transaction(
           (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    self.bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
     // event series
-    self.eventSeries = self.bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+    self.eventSeries = self.serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
 
     // ensure fungible token capability
@@ -55,7 +55,7 @@ transaction(
     let tokenType = self.fungibleTokenToDeposit.getType()
     // check if fungible token registered
     if FLOATEventSeries.getTokenDefinition(tokenType.identifier) == nil {
-      self.bookshelf.registerToken(path: self.fungibleTokenPublicPath, isNFT: false)
+      self.serieshelf.registerToken(path: self.fungibleTokenPublicPath, isNFT: false)
     }
 
     let treasury = self.eventSeries.borrowTreasuryPrivate()

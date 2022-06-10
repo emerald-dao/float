@@ -11,7 +11,7 @@ transaction(
   presetEventIds: [UInt64],
   presetRequired: [Bool]
 ) {
-  let bookshelf: &FLOATEventSeries.EventSeriesBuilder
+  let serieshelf: &FLOATEventSeries.EventSeriesBuilder
 
   prepare(acct: AuthAccount) {
     // SETUP Event Series builder resource, link public and private
@@ -30,7 +30,7 @@ transaction(
           (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
-    self.bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
   }
 
@@ -66,7 +66,7 @@ transaction(
     let goals: [{FLOATEventSeries.IAchievementGoal}] = []
     let extra: {String: AnyStruct} = {}
 
-    self.bookshelf.createEventSeries(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
+    self.serieshelf.createEventSeries(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
 
     log("Created a FLOAT EventSeries.")
   }

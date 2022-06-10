@@ -31,7 +31,7 @@ pub struct GoalStatus {
 pub fun main(
   accountAddr: Address,
   host: Address,
-  bookId: UInt64
+  seriesId: UInt64
 ): [GoalStatus] {
   let acct = getAccount(accountAddr)
 
@@ -40,7 +40,7 @@ pub fun main(
     .borrow<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>()
     ?? panic("Failed to borrow achievement board")
 
-  let record = achievementBoard.borrowAchievementRecordRef(host: host, bookId: bookId)
+  let record = achievementBoard.borrowAchievementRecordRef(host: host, seriesId: seriesId)
     ?? panic("Failed to borrow achievement record")
 
   let finishedGoals = record.getFinishedGoals()

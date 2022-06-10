@@ -3,7 +3,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import FLOATStrategies from "../FLOATStrategies.cdc"
 
 transaction(
-  bookId: UInt64,
+  seriesId: UInt64,
   consumable: Bool,
   threshold: UInt64,
   maxClaimableAmount: UInt64,
@@ -18,7 +18,7 @@ transaction(
   claimableEnding: UFix64,
   minimiumValidAmount: UInt64,
 ) {
-  let bookshelf: &FLOATEventSeries.EventSeriesBuilder
+  let serieshelf: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
   prepare(acct: AuthAccount) {
@@ -31,10 +31,10 @@ transaction(
           (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    self.bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventSeries = self.bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+    self.eventSeries = self.serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 
@@ -67,7 +67,7 @@ transaction(
       params["claimableEnd"] = claimableEnding
     }
 
-    let controller <- self.bookshelf.createStrategyController(
+    let controller <- self.serieshelf.createStrategyController(
       consumable: consumable,
       threshold: threshold,
       maxClaimableAmount: maxClaimableAmount,

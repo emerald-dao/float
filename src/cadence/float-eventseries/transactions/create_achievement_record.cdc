@@ -2,7 +2,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
   host: Address,
-  bookId: UInt64
+  seriesId: UInt64
 ) {
   let achievementBoard: &FLOATEventSeries.AchievementBoard
 
@@ -19,7 +19,7 @@ transaction(
   }
 
   execute {
-    let identifier = self.achievementBoard.createAchievementRecord(host: host, bookId: bookId)
+    let identifier = self.achievementBoard.createAchievementRecord(host: host, seriesId: seriesId)
     log("Created a new achievement record[".concat(identifier.toString()).concat("] for signer."))
   }
 }

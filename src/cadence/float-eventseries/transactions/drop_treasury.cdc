@@ -3,7 +3,7 @@ import FungibleToken from "../../core-contracts/FungibleToken.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
-  bookId: UInt64
+  seriesId: UInt64
 ) {
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
@@ -17,11 +17,11 @@ transaction(
           (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    let bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    let serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
     // event series
-    self.eventSeries = bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+    self.eventSeries = serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 

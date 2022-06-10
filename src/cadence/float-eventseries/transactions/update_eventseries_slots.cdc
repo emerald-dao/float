@@ -2,7 +2,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 transaction(
-  bookId: UInt64,
+  seriesId: UInt64,
   slotIndexes: [UInt64],
   slotHosts: [Address],
   slotEventIds: [UInt64],
@@ -19,10 +19,10 @@ transaction(
           (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    let bookshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    let serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventSeries = bookshelf.borrowEventSeriesPrivate(bookId: bookId)
+    self.eventSeries = serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 

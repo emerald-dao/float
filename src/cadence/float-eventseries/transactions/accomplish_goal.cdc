@@ -2,7 +2,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
   host: Address,
-  bookId: UInt64,
+  seriesId: UInt64,
   goalIdx: UInt64
 ) {
   let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
@@ -18,11 +18,11 @@ transaction(
     let achievementBoard = acct.borrow<&FLOATEventSeries.AchievementBoard>(from: FLOATEventSeries.FLOATAchievementBoardStoragePath)
       ?? panic("Could not borrow the AchievementBoard from the signer.")
     
-    if let record = achievementBoard.borrowAchievementRecordWritable(host: host, bookId: bookId) {
+    if let record = achievementBoard.borrowAchievementRecordWritable(host: host, seriesId: seriesId) {
       self.achievementRecord = record
     } else {
-      achievementBoard.createAchievementRecord(host: host, bookId: bookId)
-      self.achievementRecord = achievementBoard.borrowAchievementRecordWritable(host: host, bookId: bookId)
+      achievementBoard.createAchievementRecord(host: host, seriesId: seriesId)
+      self.achievementRecord = achievementBoard.borrowAchievementRecordWritable(host: host, seriesId: seriesId)
         ?? panic("Could not borrow the Achievement record")
     }
   }
