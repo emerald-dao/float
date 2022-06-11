@@ -13,6 +13,19 @@ config({
   "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df"
 })
 
+export const addressMap = {
+  FlowToken: import.meta.env.VITE_FLOWTOKEN_ADDRESS,
+  FungibleToken: import.meta.env.VITE_FUNGIBLETOKEN_ADDRESS,
+  NonFungibleToken: import.meta.env.VITE_CORE_ADDRESS,
+  MetadataViews: import.meta.env.VITE_CORE_ADDRESS,
+  FLOAT: import.meta.env.VITE_FLOAT_ADDRESS,
+  FLOATVerifiers: import.meta.env.VITE_FLOAT_ADDRESS,
+  GrantedAccountAccess: import.meta.env.VITE_FLOAT_ADDRESS,
+  FLOATEventSeries: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
+  FLOATEventSeriesGoals: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
+  FLOATTreasuryStrategies: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
+}
+
 export const verifiersIdentifier = 'A.2d4c3caffbeab845';
 export const flowTokenIdentifier = 'A.1654653399040a61';
 export const secretSalt = import.meta.env.VITE_SECRET_SALT;
