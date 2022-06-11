@@ -1,6 +1,6 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
-import FLOATStrategies from "../FLOATStrategies.cdc"
+import FLOATTreasuryStrategies from "../FLOATTreasuryStrategies.cdc"
 
 transaction(
   seriesId: UInt64,
@@ -75,8 +75,8 @@ transaction(
       oneShareOfClaimableNFT: oneShareOfClaimableNFT
     )
 
-    let strategy <- FLOATStrategies.createStrategy(
-        type: FLOATStrategies.StrategyType.Lottery,
+    let strategy <- FLOATTreasuryStrategies.createStrategy(
+        type: FLOATTreasuryStrategies.StrategyType.Lottery,
         controller: <- controller,
         params: params
       ) ?? panic("Failed to create strategy")

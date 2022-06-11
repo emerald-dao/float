@@ -1,5 +1,5 @@
-import FLOATEventSeries from "../FLOATEventSeries.cdc"
-import MetadataViews from "../../core-contracts/MetadataViews.cdc"
+import FLOATEventSeries from "../../FLOATEventSeries.cdc"
+import MetadataViews from "../../../core-contracts/MetadataViews.cdc"
 
 transaction {
 

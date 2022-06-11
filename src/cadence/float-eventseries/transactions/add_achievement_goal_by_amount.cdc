@@ -1,6 +1,6 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
-import FLOATStrategies from "../FLOATStrategies.cdc"
+import FLOATEventSeriesGoals from "../FLOATEventSeriesGoals.cdc"
 
 transaction(
   seriesId: UInt64,
@@ -33,7 +33,7 @@ transaction(
   }
 
   execute {
-    let goal = FLOATStrategies.CollectByAmountGoal(
+    let goal = FLOATEventSeriesGoals.CollectByAmountGoal(
       points: points,
       amount: eventsAmount,
       requiredAmount: requiredEventsAmount

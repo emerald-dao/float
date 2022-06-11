@@ -3,7 +3,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 transaction(
   host: Address,
   seriesId: UInt64,
-  goalIdx: UInt64
+  goals: [Int]
 ) {
   let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
 
@@ -28,9 +28,10 @@ transaction(
   }
 
   execute {
-    self.achievementRecord.accomplishGoal(goalIdx: Int(goalIdx))
-
-    log("Goal idx[".concat(goalIdx.toString()).concat("] was accomplished"))
+    for goalIdx in goals {
+      self.achievementRecord.accomplishGoal(goalIdx: goalIdx)
+      log("Goal idx[".concat(goalIdx.toString()).concat("] was accomplished"))
+    }
   }
 }
  

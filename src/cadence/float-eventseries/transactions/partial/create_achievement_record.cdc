@@ -1,4 +1,4 @@
-import FLOATEventSeries from "../FLOATEventSeries.cdc"
+import FLOATEventSeries from "../../FLOATEventSeries.cdc"
 
 transaction(
   host: Address,
