@@ -28,7 +28,7 @@
 </script>
 
 <!-- <div class="alert alert-info text-center info">
-  Blocto is currently experiencing downtime, so you will be unable to login. We will be back once Blocto resolves the issue. Thank you!
+  Mainnet is currently experiencing some issues, we will be back ASAP. Thank you!
 </div> -->
 
 <Header />

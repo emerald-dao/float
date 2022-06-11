@@ -1,11 +1,8 @@
-import FlowToken from 0x0ae53cb6e3f42a79
-import FungibleToken from 0xee82856bf20e2aa6
+import FlowToken from 0x1654653399040a61
+import FungibleToken from 0xf233dcee88fe0abe
 
-transaction(recipient: Address) {
-  prepare(signer: AuthAccount) {
-    let vault = signer.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)!
-    let recipient = getAccount(recipient).getCapability(/public/flowTokenBalance)
-                      .borrow<&FlowToken.Vault{FungibleToken.Receiver}>()!
-    recipient.deposit(from: <- vault.withdraw(amount: 100.0))
-  }
+pub fun main(): UFix64 {
+  let vault = getAccount(0x84efe65bd9993ff8).getCapability(/public/flowTokenBalance)
+                .borrow<&FlowToken.Vault{FungibleToken.Balance}>()!
+  return vault.balance
 }
