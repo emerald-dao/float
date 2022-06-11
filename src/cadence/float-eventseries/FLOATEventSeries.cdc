@@ -996,6 +996,8 @@ pub contract FLOATEventSeries {
         pub fun getGoals(): [{IAchievementGoal}]
         // get an achievement goal by index
         pub fun getGoal(idx: Int): {IAchievementGoal}
+        // check if goals of this user reached
+        pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool]
         // borrow the treasury public reference
         pub fun borrowTreasury(): &Treasury{TreasuryPublic}
     }
@@ -1128,6 +1130,25 @@ pub contract FLOATEventSeries {
 
         pub fun borrowTreasury(): &Treasury{TreasuryPublic} {
             return &self.treasury as &Treasury{TreasuryPublic}
+        }
+
+        // check if goals of this user reached
+        pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool] {
+            let ret: [Bool] = []
+            var checkingGoals: [{IAchievementGoal}] = []
+            if let includeIndexes = idxs {
+                for idx in includeIndexes {
+                    assert(idx >= 0 && idx < self.goals.length, message: "Goal does not exist.")
+                    checkingGoals.append(self.goals[idx]!)
+                }
+            } else {
+                checkingGoals = self.goals
+            }
+            // get
+            for goal in checkingGoals {
+                ret.append(goal.verify(&self as &{EventSeriesPublic}, user: user))
+            }
+            return ret
         }
 
         // --- Setters - Private Interfaces ---
