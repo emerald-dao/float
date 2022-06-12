@@ -329,8 +329,11 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun borrowFLOAT(id: UInt64): &NFT? {
-            let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT?
-            return ref as! &NFT?
+            if self.ownedNFTs[id] != nil {
+                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
+                return ref as! &NFT
+            }
+            return nil
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
