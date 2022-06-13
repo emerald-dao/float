@@ -16,7 +16,7 @@ transaction(
   openingEnding: UFix64,
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
-  minimiumValidAmount: UInt64,
+  minimiumValidAmount: UInt64?,
 ) {
   let serieshelf: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
@@ -42,7 +42,7 @@ transaction(
     threshold > 0: "threshold should be greator then zero"
     treasuryFTs.length == treasuryFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
     treasuryNFTs.length == treasuryNFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
-    minimiumValidAmount > 0: "minimiumValidAmount should be greator then zero"
+    minimiumValidAmount == nil || minimiumValidAmount! > 0: "minimiumValidAmount should be greator then zero"
   }
 
   execute {

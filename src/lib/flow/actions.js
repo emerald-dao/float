@@ -3,7 +3,7 @@ import { browser } from '$app/env';
 import * as fcl from "@onflow/fcl";
 
 import "./config.js";
-import { flowTokenIdentifier } from './config.js';
+import { addressMap, flowTokenIdentifier } from './config.js';
 import {
   user,
   txId,
@@ -40,6 +40,8 @@ import {
   setupAccountStatus,
 } from './stores.js';
 import { get } from 'svelte/store'
+
+import * as cadence from './cadence';
 
 import { draftFloat, walletModal, currentWallet } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
@@ -2359,4 +2361,223 @@ function initTransactionState() {
   transactionStatus.set(-1);
   floatClaimedStatus.set(false);
   eventCreatedStatus.set(false);
+}
+
+/**
+____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
+|___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
+|___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
+ */
+ 
+// -------------- Setter - Transactions --------------
+
+// **************************
+// ** Event Series Builder **
+// **************************
+
+/**
+ * create a new event series
+ * 
+ * @param {object} basics basic information
+ * @param {string} basics.name
+ * @param {string} basics.description
+ * @param {string} basics.image
+ * @param {object[]} presetEvents
+ * @param {string} presetEvents.host
+ * @param {number} presetEvents.eventId
+ * @param {boolean} presetEvents.required
+ * @param {number} emptySlotsAmt
+ * @param {boolean} emptySlotsRequired
+ */
+export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = true) => {
+  const code = cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap)
+}
+
+/**
+ * add a goal to EventSeries
+ * 
+ * @param {number} seriesId
+ * @param {string} type
+ * @param {number} points how many achievement point can be gained
+ * @param {object} options
+ */
+export const addAchievementGoalToEventSeries = async (seriesId, type, points, options) => {
+  let code
+
+  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap)
+  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap)
+  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap)
+}
+
+/**
+ * update EventSeries basics
+ * 
+ * @param {number} seriesId
+ * @param {object} basics basic information
+ * @param {string} basics.name
+ * @param {string} basics.description
+ * @param {string} basics.image
+ */
+export const updateEventseriesBasics = async (seriesId, basics) => {
+  const code = cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap)
+
+}
+
+/**
+ * update EventSeries slots
+ * 
+ * @param {number} seriesId
+ * @param {object[]} slotsEvents
+ * @param {number} slotsEvents.index
+ * @param {string} slotsEvents.host
+ * @param {number} slotsEvents.eventId
+ */
+export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
+  const code = cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap)
+
+}
+
+
+/**
+ * add treasury strategy
+ * 
+ * @param {number} seriesId
+ * @param {string} type
+ * @param {object} options
+ * @param {boolean} options.consumable if comsume achievement point
+ * @param {number} options.threshold how many achievement points in valid to claim
+ * @param {number} options.maxClaimableAmount
+ * @param {boolean} options.autoStart
+ * @param {object[]} options.oneShareOfFTs
+ * @param {string} options.oneShareOfFTs.identifier
+ * @param {number} options.oneShareOfFTs.amount
+ * @param {object[]} options.oneShareOfNFTs
+ * @param {string} options.oneShareOfNFTs.identifier
+ * @param {number} options.oneShareOfNFTs.amount
+ * @param {boolean} options.hasOpendingEnding
+ * @param {number} options.opendingEnding
+ * @param {boolean} options.hasClaimableEnding
+ * @param {number} options.claimableEnding
+ * @param {number?} options.minimiumValidAmount
+ */
+export const addTreasuryStrategy = async (seriesId, type, options) => {
+  let code
+  
+  code = cadence.replaceImportAddresses(cadence.txAddTreasuryLotteryStrategy, addressMap)
+  code = cadence.replaceImportAddresses(cadence.txAddTreasuryQueueStrategy, addressMap)
+}
+
+/**
+ * deposit fungible token to treasury
+ * 
+ * @param {number} seriesId
+ * @param {string} storagePath
+ * @param {string} publicPath
+ * @param {number} amount
+ */
+export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, amount) => {
+  const code = cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap)
+}
+
+/**
+ * deposit non-fungible token to treasury
+ * 
+ * @param {number} seriesId
+ * @param {string} storagePath
+ * @param {string} publicPath
+ * @param {number[]} ids
+ */
+export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, ids) => {
+  const code = cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap)
+}
+
+/**
+ * let strategy go to next stage
+ * 
+ * @param {number} seriesId
+ * @param {number} strategyIndex
+ */
+export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
+  const code = cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap)
+}
+
+/**
+ * Drop treasury's FTs and NFTs
+ * 
+ * @param {number} seriesId 
+ */
+export const dropTreasury = async (seriesId) => {
+  const code = cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap)
+}
+
+// **********************
+// ** Events Collector **
+// **********************
+
+/**
+ * accompllish event series goals
+ * 
+ * @param {string} host
+ * @param {number} seriesId
+ * @param {number[]} goals
+ */
+export const accompllishGoals = async (host, seriesId, goals) => {
+  const code = cadence.replaceImportAddresses(cadence.txAccompllishGoal, addressMap)
+}
+
+/**
+ * claim the rewards from event series treasury
+ * 
+ * @param {string} host 
+ * @param {number} seriesId 
+ * @param {number} strategyIndex 
+ */
+export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
+  const code = cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap)
+}
+
+// -------------- Getter - Scripts --------------
+
+// **************************
+// ** Event Series Builder **
+// **************************
+
+
+// TODO
+
+// **************************
+// ** Event Series Builder **
+// **************************
+
+/**
+ * check if you have achievement board
+ * 
+ * @param {string} acct
+ */
+export const hasAchievementBoard = async (acct) => {
+  const code = cadence.replaceImportAddresses(cadence.scHasAchievementBoard, addressMap)
+}
+
+
+/**
+ * get records
+ * 
+ * @param {string} acct
+ * @param {string} host
+ * @param {number} seriesIds
+ */
+export const getAchievementRecords = async (acct, host, seriesIds) => {
+  const code = cadence.replaceImportAddresses(cadence.scGetAchievementRecords, addressMap)
+}
+
+/**
+ * get and check goals
+ * 
+ * @param {string} acct
+ * @param {string} host
+ * @param {number} seriesIds
+ */
+export const getAndCheckEventSeriesGoals = async (acct, host, seriesIds) => {
+  const code = cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap)
+
 }
