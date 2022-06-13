@@ -38,6 +38,7 @@ import {
   floatDistributingManyInProgress,
   setupAccountInProgress,
   setupAccountStatus,
+  eventSeries,
 } from './stores.js';
 import { get } from 'svelte/store'
 
@@ -2364,6 +2365,65 @@ function initTransactionState() {
 }
 
 /**
+ * genrenal method of sending transaction
+ * 
+ * @param {string} code
+ * @param {fcl.ArgsFn} args
+ * @param {import('svelte/store').Writable<boolean>} inProgress 
+ * @param {import('svelte/store').Writable<boolean>} actionStatus 
+ * @param {(string, string)=>void} [onSealed=undefined]
+ * @param {number} [gasLimit=9999]
+ */
+const generalSendTransaction = async (code, args, actionInProgress = undefined, actionStatus = undefined, gasLimit = 9999, onSealed = undefined) => {
+  gasLimit = gasLimit || 9999
+
+  actionInProgress && actionInProgress.set(true);
+
+  let transactionId = false;
+  initTransactionState();
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: code,
+      args: args,
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: gasLimit
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        if (res.statusCode === 0) {
+          actionStatus && actionStatus.set(respondWithSuccess());
+        } else {
+          actionStatus && actionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode))
+        }
+        actionInProgress && actionInProgress.set(false);
+
+        // on sealed callback
+        if (typeof onSealed === 'function') {
+          onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage)
+        }
+
+        setTimeout(() => transactionInProgress.set(false), 2000)
+      }
+    })
+
+    return await fcl.tx(transactionId).onceSealed();
+  } catch (e) {
+    actionStatus && actionStatus.set(false);
+    transactionStatus.set(99)
+    console.log(e)
+
+    setTimeout(() => transactionInProgress.set(false), 10000)
+  }
+}
+
+/**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
 |___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
@@ -2386,11 +2446,36 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  * @param {string} presetEvents.host
  * @param {number} presetEvents.eventId
  * @param {boolean} presetEvents.required
- * @param {number} emptySlotsAmt
- * @param {boolean} emptySlotsRequired
+ * @param {number} emptySlotsAmt how many empty slots totally
+ * @param {number} emptySlotsRequired how many empty slots is required
  */
-export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = true) => {
-  const code = cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap)
+export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = 0) => {
+  const reduced = presetEvents.reduce((all, curr) => {
+    if (typeof curr.host === 'string' &&
+      typeof curr.eventId === 'number' && 
+      (typeof curr.required === 'boolean' || curr.required === undefined)) {
+      all.hosts.push(curr.host)
+      all.eventIds.push(curr.eventId)
+      all.required.push(curr.required ?? true)
+    }
+    return all
+  }, { hosts:[], eventIds: [], required: []})
+
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap),
+    (arg, t) => [
+      arg(basics.name, t.String),
+      arg(basics.description, t.String),
+      arg(basics.image, t.String),
+      arg(emptySlotsAmt, t.UInt64),
+      arg(emptySlotsRequired, t.UInt64),
+      arg(reduced.hosts, t.Array(t.Address)),
+      arg(reduced.eventIds, t.Array(t.UInt64)),
+      arg(reduced.required, t.Array(t.Bool))
+    ],
+    eventSeries.Creation.InProgress,
+    eventSeries.Creation.Status
+  )
 }
 
 /**
@@ -2403,10 +2488,65 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
  */
 export const addAchievementGoalToEventSeries = async (seriesId, type, points, options) => {
   let code
+  /** @type {fcl.ArgsFn} */
+  let args
+  switch (type) {
+    case cadence.GOAL_BY_AMOUNT:
+      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap)
 
-  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap)
-  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap)
-  code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap)
+      const { eventsAmount, requiredEventsAmount } = options || {}
+      if (eventsAmount === undefined) {
+        throw new Error('eventsAmount is missing')
+      }
+      args = (arg, t) => [
+        arg(seriesId, t.UInt64),
+        arg(points, t.UInt64),
+        arg(eventsAmount, t.UInt64),
+        arg(requiredEventsAmount || eventsAmount, t.UInt64),
+      ]
+      break;
+
+    case cadence.GOAL_BY_PERCENT:
+      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap)
+
+      const { percent } = options || {}
+      if (percent === undefined) {
+        throw new Error('percent is missing')
+      }
+      args = (arg, t) => [
+        arg(seriesId, t.UInt64),
+        arg(points, t.UInt64),
+        arg(percent, t.UFix64),
+      ]
+      break;
+
+    case cadence.GOAL_BY_SPECIFICS:
+      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap)
+
+      const { events } = options || {}
+      if (events === undefined && !Array.isArray(events)) {
+        throw new Error('events is missing')
+      }
+      const reduced = events.reduce((all, curr) => {
+        if (typeof curr.host === 'string' && typeof curr.eventId === 'number') {
+          all.hosts.push(curr.host)
+          all.eventIds.push(curr.eventId)
+        }
+        return all
+      }, { hosts:[], eventIds: [] })
+
+      args = (arg, t) => [
+        arg(seriesId, t.UInt64),
+        arg(points, t.UInt64),
+        arg(reduced.hosts, t.Array(t.Address)),
+        arg(reduced.eventIds, t.Array(t.UInt64)),
+      ]
+      break;
+  }
+  return generalSendTransaction(code, args, 
+    eventSeries.AddAchievementGoal.InProgress,
+    eventSeries.AddAchievementGoal.Status
+  )
 }
 
 /**
@@ -2419,8 +2559,17 @@ export const addAchievementGoalToEventSeries = async (seriesId, type, points, op
  * @param {string} basics.image
  */
 export const updateEventseriesBasics = async (seriesId, basics) => {
-  const code = cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap)
-
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(basics.name, t.String),
+      arg(basics.description, t.String),
+      arg(basics.image, t.String),
+    ],
+    eventSeries.UpdateBasics.InProgress,
+    eventSeries.UpdateBasics.Status
+  )
 }
 
 /**
@@ -2433,8 +2582,28 @@ export const updateEventseriesBasics = async (seriesId, basics) => {
  * @param {number} slotsEvents.eventId
  */
 export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
-  const code = cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap)
+  const reduced = slotsEvents.reduce((all, curr) => {
+    if (typeof curr.index === 'number' &&
+      typeof curr.host === 'string' &&
+      typeof curr.eventId === 'number') {
+      all.indexes.push(curr.index)
+      all.hosts.push(curr.host)
+      all.eventIds.push(curr.eventId)
+    }
+    return all
+  }, { indexes: [], hosts:[], eventIds: []})
 
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(reduced.indexes, t.Array(t.UInt64)),
+      arg(reduced.hosts, t.Array(t.Address)),
+      arg(reduced.eventIds, t.Array(t.UInt64)),
+    ],
+    eventSeries.UpdateSlots.InProgress,
+    eventSeries.UpdateSlots.Status
+  )
 }
 
 

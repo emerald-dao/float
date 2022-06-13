@@ -25,6 +25,14 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
 |___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
  */
 
+// Contants
+export const GOAL_BY_AMOUNT = 'goalByAmount'
+export const GOAL_BY_PERCENT = 'goalByPercent'
+export const GOAL_BY_SPECIFICS = 'goalBySpecifics'
+
+export const STRATEGY_LOTTERY = 'lotteryStrategy'
+export const STRATEGY_QUEUE = 'queueStrategy'
+
 // -------------- Setter - Transactions --------------
 // ** Event Series Builder **
 export { default as txCreateEventSeries } from '../../cadence/float-eventseries/transactions/create_eventseries.cdc?raw'

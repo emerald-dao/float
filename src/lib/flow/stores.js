@@ -51,3 +51,36 @@ export const deleteGroupStatus = writable(false);
 
 export const deleteEventInProgress = writable(false);
 export const deleteEventStatus = writable(false);
+
+/**
+____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
+|___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
+|___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
+ */
+
+/**
+ * @param {string} key 
+ */
+ const buildWraitable = () => {
+  return {
+    "InProgress": writable(false),
+    "Status": writable(false),
+  }
+}
+
+/**
+ * Event Series Reactive
+ */
+export const eventSeries = {
+  Creation: buildWraitable(),
+  AddAchievementGoal: buildWraitable(),
+  UpdateBasics: buildWraitable(),
+  UpdateSlots: buildWraitable(),
+  AddTreasuryStrategy: buildWraitable(),
+  DepositFungibleToken: buildWraitable(),
+  DepositNonFungibleToken: buildWraitable(),
+  NextTreasuryStrategyStage: buildWraitable(),
+  DropTreasury: buildWraitable(),
+  AccompllishGoals: buildWraitable(),
+  ClaimTreasuryRewards: buildWraitable(),
+}
