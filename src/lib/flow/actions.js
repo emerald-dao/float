@@ -2542,6 +2542,8 @@ export const addAchievementGoalToEventSeries = async (seriesId, type, points, op
         arg(reduced.eventIds, t.Array(t.UInt64)),
       ]
       break;
+    default:
+      throw new Error("Unknown type")
   }
   return generalSendTransaction(code, args, 
     eventSeries.AddAchievementGoal.InProgress,
@@ -2623,17 +2625,82 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
  * @param {object[]} options.oneShareOfNFTs
  * @param {string} options.oneShareOfNFTs.identifier
  * @param {number} options.oneShareOfNFTs.amount
- * @param {boolean} options.hasOpendingEnding
- * @param {number} options.opendingEnding
+ * @param {boolean} options.hasOpeningEnding
+ * @param {number} options.openingEnding
  * @param {boolean} options.hasClaimableEnding
  * @param {number} options.claimableEnding
  * @param {number?} options.minimiumValidAmount
  */
-export const addTreasuryStrategy = async (seriesId, type, options) => {
+export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
+  if (!options.oneShareOfFTs?.length && !options.oneShareOfNFTs?.length) {
+    throw new Error('missing treasury deposit.')
+  }
+  let treasuryFTs = []
+  let treasuryFTsAmount = []
+  if (options.oneShareOfFTs?.length > 0) {
+    options.oneShareOfFTs.forEach(one => {
+      treasuryFTs.push(one.identifier)
+      treasuryFTsAmount.push(one.amount)
+    })
+  }
+  let treasuryNFTs = []
+  let treasuryNFTsAmount = []
+  if (options.oneShareOfNFTs?.length > 0) {
+    options.oneShareOfNFTs.forEach(one => {
+      treasuryNFTs.push(one.identifier)
+      treasuryNFTsAmount.push(one.amount)
+    })
+  }
+
   let code
-  
-  code = cadence.replaceImportAddresses(cadence.txAddTreasuryLotteryStrategy, addressMap)
-  code = cadence.replaceImportAddresses(cadence.txAddTreasuryQueueStrategy, addressMap)
+  /** @type {fcl.ArgsFn} */
+  let args
+  switch (type) {
+    case cadence.STRATEGY_LOTTERY:
+      code = cadence.replaceImportAddresses(cadence.txAddTreasuryLotteryStrategy, addressMap)
+      args = (arg, t) => [
+        arg(seriesId, t.UInt64),
+        arg(options.consumable, t.Bool),
+        arg(options.threshold, t.UInt64),
+        arg(options.maxClaimableAmount, t.UInt64),
+        arg(options.autoStart, t.Bool),
+        arg(treasuryFTs, t.Array(t.String)),
+        arg(treasuryFTsAmount, t.Array(t.UFix64)),
+        arg(treasuryNFTs, t.Array(t.String)),
+        arg(treasuryNFTsAmount, t.Array(t.UInt64)),
+        arg(options.hasOpeningEnding, t.Bool),
+        arg(options.openingEnding, t.UFix64),
+        arg(options.hasClaimableEnding, t.Bool),
+        arg(options.claimableEnding, t.UFix64),
+        arg(options.minimiumValidAmount, t.UInt64)
+      ]
+      break;
+    case cadence.STRATEGY_QUEUE:
+      code = cadence.replaceImportAddresses(cadence.txAddTreasuryQueueStrategy, addressMap)
+      args = (arg, t) => [
+        arg(seriesId, t.UInt64),
+        arg(options.consumable, t.Bool),
+        arg(options.threshold, t.UInt64),
+        arg(options.maxClaimableAmount, t.UInt64),
+        arg(options.autoStart, t.Bool),
+        arg(treasuryFTs, t.Array(t.String)),
+        arg(treasuryFTsAmount, t.Array(t.UFix64)),
+        arg(treasuryNFTs, t.Array(t.String)),
+        arg(treasuryNFTsAmount, t.Array(t.UInt64)),
+        arg(options.hasOpeningEnding, t.Bool),
+        arg(options.openingEnding, t.UFix64),
+        arg(options.hasClaimableEnding, t.Bool),
+        arg(options.claimableEnding, t.UFix64)
+      ]
+      break;
+    default:
+      throw new Error("Unknown type")
+  }
+
+  return generalSendTransaction(code, args,
+    eventSeries.AddTreasuryStrategy.InProgress,
+    eventSeries.AddTreasuryStrategy.Status
+  )
 }
 
 /**
