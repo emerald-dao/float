@@ -2712,7 +2712,17 @@ export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
  * @param {number} amount
  */
 export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, amount) => {
-  const code = cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(storagePath, t.String),
+      arg(publicPath, t.String),
+      arg(amount, t.UFix64),
+    ],
+    eventSeries.DepositFungibleToken.InProgress,
+    eventSeries.DepositFungibleToken.Status
+  )
 }
 
 /**
@@ -2724,7 +2734,18 @@ export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publ
  * @param {number[]} ids
  */
 export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, ids) => {
-  const code = cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(storagePath, t.String),
+      arg(publicPath, t.String),
+      arg(ids, t.Array(t.UInt64)),
+    ],
+    eventSeries.DepositNonFungibleToken.InProgress,
+    eventSeries.DepositNonFungibleToken.Status,
+  )
+  
 }
 
 /**
@@ -2734,7 +2755,15 @@ export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, p
  * @param {number} strategyIndex
  */
 export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
-  const code = cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(strategyIndex, t.Int),
+    ],
+    eventSeries.NextTreasuryStrategyStage.InProgress,
+    eventSeries.NextTreasuryStrategyStage.Status,
+  )
 }
 
 /**
@@ -2743,7 +2772,14 @@ export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
  * @param {number} seriesId 
  */
 export const dropTreasury = async (seriesId) => {
-  const code = cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+    ],
+    eventSeries.DropTreasury.InProgress,
+    eventSeries.DropTreasury.Status,
+  )
 }
 
 // **********************
@@ -2758,7 +2794,16 @@ export const dropTreasury = async (seriesId) => {
  * @param {number[]} goals
  */
 export const accompllishGoals = async (host, seriesId, goals) => {
-  const code = cadence.replaceImportAddresses(cadence.txAccompllishGoal, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txAccompllishGoal, addressMap),
+    (arg, t) => [
+      arg(host, t.Address),
+      arg(seriesId, t.UInt64),
+      arg(goals, t.Array(t.Int)),
+    ],
+    eventSeries.AccompllishGoals.InProgress,
+    eventSeries.AccompllishGoals.Status,
+  )
 }
 
 /**
@@ -2769,7 +2814,16 @@ export const accompllishGoals = async (host, seriesId, goals) => {
  * @param {number} strategyIndex 
  */
 export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
-  const code = cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap)
+  return generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap),
+    (arg, t) => [
+      arg(host, t.Address),
+      arg(seriesId, t.UInt64),
+      arg(strategyIndex, t.Int),
+    ],
+    eventSeries.ClaimTreasuryRewards.InProgress,
+    eventSeries.ClaimTreasuryRewards.Status,
+  )
 }
 
 // -------------- Getter - Scripts --------------
