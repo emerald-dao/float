@@ -1,28 +1,31 @@
 <script>
-import { configureFCLAndLogin } from "$lib/flow/actions";
-
-
-
+  import { configureFCLAndLogin } from "$lib/flow/actions";
+  import { walletModal } from "$lib/stores";
 </script>
 
 <article>
+  <button id="x" on:click={() => ($walletModal = false)}>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
+      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    </svg>
+  </button>
   <header>
     <h1>Choose your wallet</h1>
   </header>
   <div class="wallet">
-    <button id="blocto" on:click={() => configureFCLAndLogin('blocto')}>
+    <button id="blocto" on:click={() => configureFCLAndLogin("blocto")}>
       <img src="/blocto-logo.jpg" alt="blocto logo" />
       <span>Connect Blocto</span>
     </button>
   </div>
   <div class="wallet">
-    <button id="dapper" on:click={() => configureFCLAndLogin('dapper')}>
+    <button id="dapper" on:click={() => configureFCLAndLogin("dapper")}>
       <img src="/dapper-logo.png" alt="dapper logo" />
       <span>Connect Dapper</span>
     </button>
   </div>
   <div class="wallet">
-    <button id="other" on:click={() => configureFCLAndLogin('other')}>
+    <button id="other" on:click={() => configureFCLAndLogin("other")}>
       <img src="/lilico-logo.jpg" alt="lilico logo" />
       <span>Connect Lilico</span>
     </button>
@@ -30,6 +33,26 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
 </article>
 
 <style>
+  #x {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    padding:0;
+    justify-content: center;
+    align-items: center;
+    background:none;
+  }
+
+  #x svg {
+    position:relative;
+    color:var(--primary);
+    width: 30px;
+    height:30px;
+  }
+
   article {
     position: fixed;
     top: 50%;
@@ -40,7 +63,7 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
     background-color: var(--card-background-color);
     color: var(--primary);
     border: 3px solid var(--primary);
-    z-index:10000;
+    z-index: 10000;
   }
 
   .wallet {
@@ -56,8 +79,8 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
 
   button {
     display: flex;
-    align-items:center;
-    justify-content:flex-start;
+    align-items: center;
+    justify-content: flex-start;
     border: none;
   }
 
@@ -69,15 +92,15 @@ import { configureFCLAndLogin } from "$lib/flow/actions";
   }
 
   button span {
-    flex-grow:1;
+    flex-grow: 1;
   }
 
   button:hover {
-    opacity: .8;
+    opacity: 0.8;
   }
 
   #blocto {
-    background-image: linear-gradient(135deg,#72e9f3 -20%,#404de6 120%);
+    background-image: linear-gradient(135deg, #72e9f3 -20%, #404de6 120%);
   }
 
   #dapper {

@@ -325,19 +325,19 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
-            return &self.ownedNFTs[id] as &NonFungibleToken.NFT
+            return (&self.ownedNFTs[id] as &NonFungibleToken.NFT?)!
         }
 
         pub fun borrowFLOAT(id: UInt64): &NFT? {
             if self.ownedNFTs[id] != nil {
-                let ref = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
+                let ref = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
                 return ref as! &NFT
             }
             return nil
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
-            let tokenRef = &self.ownedNFTs[id] as auth &NonFungibleToken.NFT
+            let tokenRef = (&self.ownedNFTs[id] as auth &NonFungibleToken.NFT?)!
             let nftRef = tokenRef as! &NFT
             return nftRef as &{MetadataViews.Resolver}
         }
@@ -628,7 +628,7 @@ pub contract FLOAT: NonFungibleToken {
             // implements. For example, "Limited", "Timelock", "Secret", etc.  
             // All the verifiers are in the FLOATVerifiers.cdc contract
             for identifier in self.verifiers.keys {
-                let typedModules = &self.verifiers[identifier] as &[{IVerifier}]
+                let typedModules = (&self.verifiers[identifier] as &[{IVerifier}]?)!
                 var i = 0
                 while i < typedModules.length {
                     let verifier = &typedModules[i] as &{IVerifier}
@@ -855,7 +855,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun deleteEvent(eventId: UInt64) {
             let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
             for groupName in event.getGroups() {
-                let groupRef = &self.groups[groupName] as &Group 
+                let groupRef = (&self.groups[groupName] as &Group?)!
                 groupRef.removeEvent(eventId: eventId)
             }
             destroy event
@@ -874,7 +874,7 @@ pub contract FLOAT: NonFungibleToken {
             let eventsInGroup = self.groups[groupName]?.getEvents() 
                                 ?? panic("This Group does not exist.")
             for eventId in eventsInGroup {
-                let ref = &self.events[eventId] as &FLOATEvent
+                let ref = (&self.events[eventId] as &FLOATEvent?)!
                 ref.removeFromGroup(groupName: groupName)
             }
             destroy self.groups.remove(key: groupName)
@@ -887,7 +887,7 @@ pub contract FLOAT: NonFungibleToken {
                 self.groups[groupName] != nil: "This group does not exist."
                 self.events[eventId] != nil: "This event does not exist."
             }
-            let groupRef = &self.groups[groupName] as &Group
+            let groupRef = (&self.groups[groupName] as &Group?)!
             groupRef.addEvent(eventId: eventId)
 
             let eventRef = self.borrowEventRef(eventId: eventId)!
@@ -900,7 +900,7 @@ pub contract FLOAT: NonFungibleToken {
                 self.groups[groupName] != nil: "This group does not exist."
                 self.events[eventId] != nil: "This event does not exist."
             }
-            let groupRef = &self.groups[groupName] as &Group
+            let groupRef = (&self.groups[groupName] as &Group?)!
             groupRef.removeEvent(eventId: eventId)
 
             let eventRef = self.borrowEventRef(eventId: eventId)!
@@ -908,10 +908,7 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun getGroup(groupName: String): &Group? {
-            if self.groups[groupName] != nil {
-                return &self.groups[groupName] as &Group
-            }
-            return nil
+            return &self.groups[groupName] as &Group?
         }
         
         pub fun getGroups(): [String] {
@@ -942,10 +939,7 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun borrowEventRef(eventId: UInt64): &FLOATEvent? {
-            if self.events[eventId] != nil {
-                return &self.events[eventId] as &FLOATEvent
-            }
-            return nil
+            return &self.events[eventId] as &FLOATEvent?
         }
 
         /************* Getters (for anyone) *************/
@@ -953,10 +947,7 @@ pub contract FLOAT: NonFungibleToken {
         // Get a public reference to the FLOATEvent
         // so you can call some helpful getters
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}? {
-            if self.events[eventId] != nil {
-                return &self.events[eventId] as &FLOATEvent{FLOATEventPublic}
-            }
-            return nil
+            return &self.events[eventId] as &FLOATEvent{FLOATEventPublic}?
         }
 
         pub fun getIDs(): [UInt64] {
@@ -968,14 +959,14 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getAllEvents(): {UInt64: String} {
             let answer: {UInt64: String} = {}
             for id in self.events.keys {
-                let ref = &self.events[id] as &FLOATEvent
+                let ref = (&self.events[id] as &FLOATEvent?)!
                 answer[id] = ref.name
             }
             return answer
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
-            return &self.events[id] as &{MetadataViews.Resolver}
+            return (&self.events[id] as &{MetadataViews.Resolver}?)!
         }
 
         init() {

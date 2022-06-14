@@ -1,12 +1,22 @@
 <script>
   export let ipfsHash;
+  
+  $: display = false;
+
+  let timeout = Math.random() * 20000;
+
+  setTimeout(() => display = true, timeout)
+  setTimeout(() => display = false, timeout + 6000)
 </script>
 
+{#if display}
 <img
   class="lantern"
   style="left: {Math.floor(Math.random() * (90 - 10 + 1)) + 10}vw;"
   src="https://ipfs.infura.io/ipfs/{ipfsHash}"
-  alt="lantern" />
+  alt="lantern" 
+/>
+{/if}
 
 <style>
   .lantern {
