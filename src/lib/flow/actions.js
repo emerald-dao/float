@@ -2424,6 +2424,22 @@ const generalSendTransaction = async (code, args, actionInProgress = undefined, 
 }
 
 /**
+ * genrenal method of query transaction
+ * 
+ * @param {string} code
+ * @param {fcl.ArgsFn} args
+ * @param {any} defaultValue
+ */
+const generalQuery = async (code, args, defaultValue = {}) => {
+  try {
+    const queryResult = await fcl.query({ cadence: code, args })
+    return queryResult ?? defaultValue
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+/**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
 |___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
@@ -2461,7 +2477,7 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
     return all
   }, { hosts:[], eventIds: [], required: []})
 
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap),
     (arg, t) => [
       arg(basics.name, t.String),
@@ -2545,7 +2561,7 @@ export const addAchievementGoalToEventSeries = async (seriesId, type, points, op
     default:
       throw new Error("Unknown type")
   }
-  return generalSendTransaction(code, args, 
+  return await generalSendTransaction(code, args, 
     eventSeries.AddAchievementGoal.InProgress,
     eventSeries.AddAchievementGoal.Status
   )
@@ -2561,7 +2577,7 @@ export const addAchievementGoalToEventSeries = async (seriesId, type, points, op
  * @param {string} basics.image
  */
 export const updateEventseriesBasics = async (seriesId, basics) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2595,7 +2611,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
     return all
   }, { indexes: [], hosts:[], eventIds: []})
 
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2697,7 +2713,7 @@ export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
       throw new Error("Unknown type")
   }
 
-  return generalSendTransaction(code, args,
+  return await generalSendTransaction(code, args,
     eventSeries.AddTreasuryStrategy.InProgress,
     eventSeries.AddTreasuryStrategy.Status
   )
@@ -2712,7 +2728,7 @@ export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
  * @param {number} amount
  */
 export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, amount) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2734,7 +2750,7 @@ export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publ
  * @param {number[]} ids
  */
 export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, ids) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2755,7 +2771,7 @@ export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, p
  * @param {number} strategyIndex
  */
 export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2772,7 +2788,7 @@ export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
  * @param {number} seriesId 
  */
 export const dropTreasury = async (seriesId) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
@@ -2794,7 +2810,7 @@ export const dropTreasury = async (seriesId) => {
  * @param {number[]} goals
  */
 export const accompllishGoals = async (host, seriesId, goals) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txAccompllishGoal, addressMap),
     (arg, t) => [
       arg(host, t.Address),
@@ -2814,7 +2830,7 @@ export const accompllishGoals = async (host, seriesId, goals) => {
  * @param {number} strategyIndex 
  */
 export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
-  return generalSendTransaction(
+  return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap),
     (arg, t) => [
       arg(host, t.Address),
@@ -2845,7 +2861,13 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
  * @param {string} acct
  */
 export const hasAchievementBoard = async (acct) => {
-  const code = cadence.replaceImportAddresses(cadence.scHasAchievementBoard, addressMap)
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scHasAchievementBoard, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address)
+    ],
+    false
+  )
 }
 
 
@@ -2857,7 +2879,15 @@ export const hasAchievementBoard = async (acct) => {
  * @param {number} seriesIds
  */
 export const getAchievementRecords = async (acct, host, seriesIds) => {
-  const code = cadence.replaceImportAddresses(cadence.scGetAchievementRecords, addressMap)
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetAchievementRecords, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(host, t.Address),
+      arg(seriesIds, t.Array(t.UInt64))
+    ],
+    []
+  )
 }
 
 /**
@@ -2868,6 +2898,13 @@ export const getAchievementRecords = async (acct, host, seriesIds) => {
  * @param {number} seriesIds
  */
 export const getAndCheckEventSeriesGoals = async (acct, host, seriesIds) => {
-  const code = cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap)
-
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(host, t.Address),
+      arg(seriesIds, t.Array(t.UInt64))
+    ],
+    []
+  )
 }
