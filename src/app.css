@@ -23,7 +23,7 @@ img, image {
 /* Can be forced with data-theme="light" */
 [data-theme="light"],
 :root:not([data-theme="dark"]) {
-  color-scheme: light;
+  color-scheme: inherit;
   --primary: #35d9ba;
   --primary-hover: #248f7a;
   --primary-focus: transparent;
@@ -34,7 +34,7 @@ img, image {
 /* Automatically enabled if user has Dark mode enabled */
 @media only screen and (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    color-scheme: light dark;
+    color-scheme: inherit;
     --primary: #38e8c6;
     --primary-hover: #12bf9d;
     --primary-focus: transparent;
@@ -45,7 +45,7 @@ img, image {
 /* Green Dark scheme (Forced) */
 /* Enabled if forced with data-theme="dark" */
 [data-theme="dark"] {
-  color-scheme: light dark;
+  color-scheme: inherit;
   --primary: #38e8c6;
   --primary-hover: #12bf9d;
   --primary-focus: transparent;
