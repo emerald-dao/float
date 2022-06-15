@@ -1,5 +1,6 @@
 <script>
   import CheckAddress from "$lib/components/CheckAddress.svelte";
+  import Stats from '$lib/components/common/Stats.svelte';
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
 </script>
 
@@ -33,6 +34,8 @@
     </div>
   </div>
 </div>
+
+<Stats />
 
 <article>
   <h2 id="findAddress">View FLOATs from an Account</h2>

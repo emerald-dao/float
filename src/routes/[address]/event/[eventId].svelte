@@ -52,7 +52,7 @@
     floatDistributingManyStatus,
     floatDistributingManyInProgress,
   } from "$lib/flow/stores";
-  import { blacklist } from "$lib/constants";
+  import { denylist } from "$lib/constants";
   import {
     toggleClaimable,
     toggleTransferrable,
@@ -89,7 +89,17 @@
   export let eventData;
 
   const floatEventCallback = async () => {
-    
+    resolvedNameObject = await resolveAddressObject($page.params.address);
+    if (denylist.includes(resolvedNameObject.address)) {
+      return null;
+    }
+    let eventData = await getEvent(
+      resolvedNameObject.address,
+      $page.params.eventId
+    );
+    if (!eventData) {
+      return null;
+    }
     let hasClaimed = await hasClaimedEvent(
       resolvedNameObject.address,
       $page.params.eventId,
@@ -162,7 +172,7 @@
   {:then floatEvent}
     {#if !floatEvent}
       <article>
-        <p>This event is deleted or the acount is blacklisted.</p>
+        <p>This event is deleted or the acount is denylisted.</p>
       </article>
     {:else}
       <article>
@@ -542,10 +552,10 @@
     color: var(--green);
     font-size: 0.7rem;
   }
-  .claims {
+  /* .claims {
     text-align: left;
   }
   .admin {
     text-align: left;
-  }
+  } */
 </style>
