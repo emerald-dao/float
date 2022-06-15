@@ -19,7 +19,7 @@
     floatDistributingManyStatus,
     floatDistributingManyInProgress,
   } from "$lib/flow/stores";
-  import { blacklist, PAGE_TITLE_EXTENSION } from "$lib/constants";
+  import { denylist, PAGE_TITLE_EXTENSION } from "$lib/constants";
   import {
     getEvent,
     toggleClaimable,
@@ -57,7 +57,7 @@
   let isSharedWithMe;
   const floatEventCallback = async () => {
     resolvedNameObject = await resolveAddressObject($page.params.address);
-    if (blacklist.includes(resolvedNameObject.address)) {
+    if (denylist.includes(resolvedNameObject.address)) {
       return null;
     }
     let eventData = await getEvent(
@@ -141,7 +141,7 @@
   {:then floatEvent}
     {#if !floatEvent}
       <article>
-        <p>This event is deleted or the acount is blacklisted.</p>
+        <p>This event is deleted or the acount is denylisted.</p>
       </article>
     {:else}
       <Meta
