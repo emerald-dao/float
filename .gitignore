@@ -6,6 +6,7 @@ node_modules
 .env
 .env.production
 .env.development
+.env.local
 .vercel
 .output
 flow.json
