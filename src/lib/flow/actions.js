@@ -78,7 +78,7 @@ const configureFCL = (wallet) => {
   }
 }
 
-export const configureFCLAndLogin = async (wallet) => {
+export const configureFCLAndLogin = async (wallet, service) => {
   currentWallet.set(wallet);
   configureFCL(wallet);
   await fcl.authenticate();

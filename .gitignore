@@ -4,12 +4,11 @@ node_modules
 /.svelte-kit
 /package
 .env
+.env.local
 .env.production
 .env.development
 .env.local
 .vercel
 .output
 flow.json
-.env.development
-.env.production
 .vercel_build_output
