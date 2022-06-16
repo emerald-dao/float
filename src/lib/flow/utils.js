@@ -1,5 +1,5 @@
 import {
-  user
+	user
 } from './stores.js';
 
 import { get } from 'svelte/store'
@@ -7,7 +7,7 @@ import { resolver } from '$lib/stores.js';
 import { SHA3 } from "sha3";
 import { ec } from "elliptic";
 import scrypt from "scrypt-async";
-import {secretSalt} from "./config";
+import { secretSalt } from "./config";
 
 import { Buffer } from 'buffer';
 
@@ -48,11 +48,11 @@ transaction(eventId: UInt64, recipient: Address) {
 `;
 
 export function parseErrorMessageFromFCL(errorString) {
-  let newString = errorString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: assertion failed:', 'Error:')
+	let newString = errorString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: assertion failed:', 'Error:')
 	newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: panic:', 'Error:')
-  newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: pre-condition failed:', 'Error')
-	newString = newString.replace(/-->.*/,'');
-  return newString;
+	newString = newString.replace('[Error Code: 1101] cadence runtime error Execution failed:\nerror: pre-condition failed:', 'Error')
+	newString = newString.replace(/-->.*/, '');
+	return newString;
 }
 
 export function getResolvedName(addressObject, priority = get(resolver)) {
@@ -86,7 +86,7 @@ export function getKeysFromClaimCode(claimCode) {
 			var ec_p256 = new ec("p256");
 			let kp = ec_p256.keyFromPrivate(privateKey, "hex"); // hex string, array or Buffer
 			var publicKey = kp.getPublic().encode("hex").substr(2);
-			keys = {publicKey, privateKey};
+			keys = { publicKey, privateKey };
 		}
 	);
 	return keys;
@@ -118,13 +118,13 @@ const hash = (message) => {
 };
 
 export function signWithClaimCode(claimCode) {
-  if(!claimCode) {
-    return null;
-  }
-  
+	if (!claimCode) {
+		return null;
+	}
+
 	const { privateKey } = getKeysFromClaimCode(claimCode);
-	let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
-	const data = Buffer.from(messageToSign).toString("hex");
-  const sig = sign(USER_DOMAIN_TAG + data, privateKey);
+	// let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
+	const data = Buffer.from(get(user).addr).toString("hex");
+	const sig = sign(USER_DOMAIN_TAG + data, privateKey);
 	return sig;
 }
