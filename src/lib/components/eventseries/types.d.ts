@@ -1,4 +1,20 @@
 
+export interface FloatEvent {
+  host: string
+  eventId: number
+  groups: string[]
+
+  image: string
+  name: string
+  description: string
+  url: string
+
+  totalSupply: number
+  claimable: boolean
+  transferrable: boolean
+  dateCreated: number
+}
+
 export interface EventSeriesBasics {
   name: string;
   description: string;

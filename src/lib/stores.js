@@ -26,18 +26,6 @@ export const draftGroup = writable({
 
 export const walletModal = writable(false);
 
-// For Event Series Creation
-export const draftEventSeries = writable({
-  basics: {
-    name: '',
-    description: '',
-    image: '',
-  },
-  presetEvents: [],
-  emptySlotsAmt: 0,
-  emptySlotsRequired: false,
-})
-
 export const theme = persistentWritable('theme', 'dark');
 
 export const resolver = persistentWritable('preferredNameResolver', 'find');
