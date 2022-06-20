@@ -17,10 +17,6 @@
 
   $: itemRequired = item.required;
 
-  $: {
-    console.log(item, itemRequired);
-  }
-
   /** @type {string} */
   let resolvedName;
 

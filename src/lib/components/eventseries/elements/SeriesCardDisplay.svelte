@@ -11,25 +11,29 @@
         alt="{eventSeriesData.basics?.name} Image"
       />
     {/if}
-    {#if eventSeriesData.owner}
-      <p>
-        <small>
-          <span class="credit">Created by</span>
-          <a href="/series/{eventSeriesData.owner}" class="host">
-            {eventSeriesData.owner}
-          </a>
-        </small>
-      </p>
-    {/if}
   </div>
   <div class="panel-content">
     <h1>{eventSeriesData.basics?.name}</h1>
     <p>
       {eventSeriesData.basics?.description}
     </p>
-    <code data-tooltip="Total slots">
-      FLOAT Slots: {eventSeriesData.slots?.length ?? 0}
-    </code>
+    <div class="d-flex flex-gap">
+      <code data-tooltip="Total slots" class="flex-none">
+        Event Slots: {eventSeriesData.slots?.length ?? 0}
+      </code>
+      {#if eventSeriesData.owner}
+        <small class="flex-auto">
+          <span class="credit">Created by</span>
+          <a
+            href="/series/{eventSeriesData.owner}"
+            target="_blank"
+            class="host"
+          >
+            {eventSeriesData.owner}
+          </a>
+        </small>
+      {/if}
+    </div>
   </div>
 </article>
 
@@ -55,6 +59,10 @@
     flex: none;
     border-width: 0px;
     margin: 0;
+    padding: 1rem;
+  }
+  .panel > .card img {
+    margin-bottom: 0px;
   }
 
   .panel > .panel-content {
@@ -71,7 +79,7 @@
   }
 
   .panel-content p {
-    min-height: 80px;
+    min-height: 72px;
     overflow-wrap: break-word;
   }
 
