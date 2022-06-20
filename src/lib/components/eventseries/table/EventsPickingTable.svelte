@@ -4,19 +4,31 @@
   import Table, { Row, Sort } from "../../common/table/Table.svelte";
   import { sortNumber, sortString } from "../../common/table/sorting.js";
   import { formatter } from "$lib/flow/utils";
+  import { createEventDispatcher } from "svelte";
 
-  /** @type {Array<import('../types').FloatEvent>} */
-  export let floatEvents;
+  const dispatch = createEventDispatcher();
+
+  /** @type {Array<import('../types').PickableEvent>} */
+  export let pickableEvents;
   /** @type {string} */
   export let ownerAddress;
 
-  let rows = floatEvents;
+  let rows = pickableEvents;
   if (rows?.length > 0) {
     rows = rows.sort((a, b) => b.dateCreated - a.dateCreated);
   }
 
   let pageCount = 0; //first page
-  let pageSize = 25;
+  let pageSize = 10;
+  let rowsVisible = [];
+
+  function onSelected(row) {
+    dispatch("pickChanged", {
+      host: ownerAddress,
+      eventId: row.event.eventId,
+      picked: row.picked,
+    });
+  }
 
   function onCellClick(row) {
     return;
@@ -43,7 +55,7 @@
   {pageCount}
   {pageSize}
   {rows}
-  let:rows={visibleRows}
+  let:rows={rowsVisible}
   labels={{
     empty: "This account has not created any events.",
     loading: "Loading events...",
@@ -51,6 +63,7 @@
 >
   <thead slot="head">
     <tr>
+      <th> Select </th>
       <th>
         Event
         <Sort key="name" on:sort={onSortString} />
@@ -65,42 +78,56 @@
   </thead>
 
   <tbody>
-    {#each visibleRows as row, index (row)}
+    {#each rowsVisible as row, index (row)}
       <Row {index} on:click={() => onCellClick(row)}>
+        <td data-label="Select">
+          <input
+            type="checkbox"
+            name="picked"
+            bind:checked={row.picked}
+            on:change={() => onSelected(row)}
+          />
+        </td>
         <td data-label="Event">
           <div class="event-block d-flex">
             <div style="margin-right:10px;">
-              <a href="/{ownerAddress}/event/{row.eventId}">
+              <a
+                href="/{ownerAddress}/event/{row.event.eventId}"
+                target="_blank"
+              >
                 <img
                   alt=""
                   class="table-image"
-                  src="https://ipfs.infura.io/ipfs/{row.image}"
+                  src="https://ipfs.infura.io/ipfs/{row.event.image}"
                 />
               </a>
             </div>
             <div>
-              <a href="/{ownerAddress}/event/{row.eventId}">
-                {row.name}
+              <a
+                href="/{ownerAddress}/event/{row.event.eventId}"
+                target="_blank"
+              >
+                {row.event.name}
               </a>
-              <div class="event-description">{row.description}</div>
+              <div class="event-description">{row.event.description}</div>
             </div>
           </div>
         </td>
         <td data-label="Created">
-          <span>{formatter.format(row.dateCreated * 1000)}</span>
+          <span>{formatter.format(row.event.dateCreated * 1000)}</span>
         </td>
         <td data-label="Groups">
           <span
-            >{row.groups.length > 0 ? "" : " - "}
-            {#each row.groups as group}
-              <a href="/{ownerAddress}/group/{group}"
-                ><div class="group-badge small">{group}</div></a
-              >
+            >{row.event.groups.length > 0 ? "" : " - "}
+            {#each row.event.groups as group}
+              <a href="/{ownerAddress}/group/{group}" target="_blank">
+                <div class="group-badge small">{group}</div>
+              </a>
             {/each}
           </span>
         </td>
         <td data-label="Claimed">
-          <span>{row.totalSupply}</span>
+          <span>{row.event.totalSupply}</span>
         </td>
       </Row>
     {/each}

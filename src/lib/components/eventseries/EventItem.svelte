@@ -11,21 +11,27 @@
   export let empty = false;
 
   // for none empty part
-  /** @type {string} */
-  export let host = "";
-  /** @type {number} */
-  export let eventId = -1;
   export let preview = true;
-  export let required = true;
+  /** @type {{host: string, eventId: number, required?: boolean}} */
+  export let item = { host: "", eventId: -1, required: false };
+
+  $: itemRequired = item.required;
+
+  $: {
+    console.log(item, itemRequired);
+  }
 
   /** @type {string} */
   let resolvedName;
 
   /** @type {Promise<import('./types').FloatEvent>} */
   const floatEventCallback = async () => {
-    let resolvedNameObject = await resolveAddressObject(host);
+    let resolvedNameObject = await resolveAddressObject(item.host);
     resolvedName = getResolvedName(resolvedNameObject);
-    let eventData = await getEvent(resolvedNameObject.address, String(eventId));
+    let eventData = await getEvent(
+      resolvedNameObject.address,
+      String(item.eventId)
+    );
     if (!eventData) {
       return null;
     }
@@ -33,7 +39,7 @@
     if (!preview) {
       data.hasClaimed = await hasClaimedEvent(
         resolvedNameObject.address,
-        eventId,
+        item.eventId,
         $user.addr
       );
     }
@@ -41,11 +47,16 @@
   };
 </script>
 
-{#if !empty && host !== "" && eventId > 0}
+{#if !empty && item.host !== "" && item.eventId > 0}
   {#await floatEventCallback()}
     <Loading />
   {:then floatEvent}
-    <article class="card-item">
+    <article
+      class="card-item"
+      on:click={(e) => {
+        dispatch("clickItem", { host: item.host, eventId: item.eventId });
+      }}
+    >
       {#if !floatEvent}
         <h3>Deleted</h3>
       {:else}
@@ -62,12 +73,11 @@
         >
           <h3>{floatEvent.name}</h3>
         </a>
-        {#if required}
+        {#if itemRequired}
           <svg
             class="badge"
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
-            fill="currentColor"
           >
             <path
               fill-rule="evenodd"
@@ -75,17 +85,31 @@
               clip-rule="evenodd"
             />
           </svg>
+        {:else}
+          <svg
+            class="badge outline opacity"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+            />
+          </svg>
         {/if}
       {/if}
     </article>
   {/await}
 {:else}
-  <article class="card-item center">
+  <article
+    class="card-item center pointer"
+    on:click={(e) => dispatch("clickEmpty", e.detail)}
+  >
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      on:click={(e) => dispatch("clickEmpty", e.detail)}
     >
       <path
         fill-rule="evenodd"
@@ -149,6 +173,21 @@
     fill: var(--primary);
   }
 
+  .card-item .badge.outline {
+    fill: var(--background-color);
+    stroke: var(--primary);
+    stroke-width: 2;
+  }
+
+  .card-item .badge.opacity {
+    fill-opacity: 0.3;
+    stroke-opacity: 0.3;
+  }
+
+  .card-item.pointer {
+    cursor: pointer;
+  }
+
   .card-item.center {
     justify-content: center;
   }
@@ -156,7 +195,6 @@
   .card-item.center > svg {
     width: 64px;
     height: 64px;
-    cursor: pointer;
   }
 
   .unclaimed {

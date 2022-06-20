@@ -126,6 +126,25 @@ h3 {
 
 }
 
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-gap {
+  gap: 1rem;
+}
+
+.flex-none {
+  flex: none;
+}
+
+.flex-auto {
+  flex: 1 1 auto;
+}
+
 .input-button-group {
   display: flex;
 }

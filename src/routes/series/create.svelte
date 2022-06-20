@@ -1,20 +1,16 @@
 <script>
-  import {
-    authenticate,
-    createEventSeries,
-    resolveAddressObject,
-  } from "$lib/flow/actions";
+  import { authenticate, createEventSeries } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import ImageUploader from "$lib/components/ImageUploader.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
   import EventItem from "$lib/components/eventseries/EventItem.svelte";
-  import Dialog from "$lib/components/eventseries/elements/Dialog.svelte";
-  import EventsPickingTable from "$lib/components/eventseries/table/EventsPickingTable.svelte";
+  import DialogPickingEvents from "$lib/components/eventseries/DialogPickingEvents.svelte";
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
     .split(" ")[2];
+  let dialogOpened = false;
 
   const creationInProgress = eventSeries.Creation.InProgress;
   const creationStatus = eventSeries.Creation.Status;
@@ -32,10 +28,10 @@
     emptySlotsRequired: false,
   };
 
-  $: isPreviewOk = true; // FIXME
-  // !!draftEventSeries.basics.image &&
-  // !!draftEventSeries.basics.name &&
-  // !!draftEventSeries.basics.description;
+  $: isPreviewOk =
+    !!draftEventSeries.basics.image &&
+    !!draftEventSeries.basics.name &&
+    !!draftEventSeries.basics.description;
 
   async function initCreateEventSeries() {
     let canCreateEventSeries = await checkInputs();
@@ -57,25 +53,34 @@
     return true;
   }
 
-  // ------ Dialog part ------
-
-  let dialogOpened = false;
-  let addressToQuery = "";
-  let addressToQueryValid = undefined;
-  let addressIsQuerying = false;
-
-  function toggleModal(evt) {
-    dialogOpened = !dialogOpened;
+  /**
+   * events added
+   *
+   * @param {object} added
+   * @param {string} added.host
+   * @param {number[]} added.picked
+   */
+  function onEventsAdded(added) {
+    draftEventSeries.presetEvents = [
+      ...draftEventSeries.presetEvents,
+      ...added.picked.map((one) => ({
+        host: added.host,
+        eventId: one,
+        required: true,
+      })),
+    ];
   }
 
-  async function onSearchAddress() {
-    addressIsQuerying = true;
-    const addrObj = await resolveAddressObject(addressToQuery);
-    addressIsQuerying = false;
-    addressToQueryValid = addrObj.address !== "";
-    if (!addressToQueryValid && addressToQuery !== addrObj.address) {
-      addressToQuery = addrObj.address;
+  function onToggleRequired(host, eventId) {
+    let slots = draftEventSeries.presetEvents;
+    for (let i = 0; i < slots.length; i++) {
+      const slot = slots[i];
+      if (slot.host === host && slot.eventId === eventId) {
+        slot.required = !slot.required;
+        break;
+      }
     }
+    draftEventSeries.presetEvents = slots;
   }
 </script>
 
@@ -85,7 +90,7 @@
 
 <div class="container">
   <article>
-    <h1 class="mb-1 text-center">Create a new Event Series</h1>
+    <h1 class="mb-1 text-center">Create a new FLOAT Event Series</h1>
     <label for="seriesName">
       Event Series Name
       <input
@@ -129,23 +134,21 @@
 
       <hr />
 
-      <h5>Preset Slots</h5>
+      <h5>Preset FLOAT Slots</h5>
 
       <div class="flex-wrap flex-gap mb-1">
-        <!-- 97505692 97506358 -->
-        {#each draftEventSeries.presetEvents as slot}
+        {#each draftEventSeries.presetEvents as slot (slot.host + slot.eventId)}
           <EventItem
-            host={slot.host}
-            eventId={slot.eventId}
-            required={slot.required}
+            item={slot}
+            on:clickItem={(e) => onToggleRequired(slot.host, slot.eventId)}
           />
         {/each}
-        <EventItem empty={true} on:clickEmpty={toggleModal} />
+        <EventItem empty={true} on:clickEmpty={(e) => (dialogOpened = true)} />
       </div>
 
       <hr />
 
-      <h5>Empty Slots (to configure later)</h5>
+      <h5>Empty FLOAT Slots (to configure later)</h5>
 
       <div class="flex flex-gap mb-1">
         <label for="emptySlotsAmt" class="flex-auto">
@@ -224,72 +227,12 @@
   </article>
 </div>
 
-<Dialog opened={dialogOpened}>
-  <header>Add FLOAT Events to Series</header>
-  <div class="flex flex-gap">
-    <label for="seriesName" class="flex-auto">
-      Owner Address
-      <input
-        type="text"
-        id="addressToQuery"
-        name="addressToQuery"
-        placeholder="0x00000000000"
-        on:keyup={(e) => (addressToQueryValid = undefined)}
-        bind:value={addressToQuery}
-        aria-invalid={typeof addressToQueryValid === "boolean"
-          ? !addressToQueryValid
-          : undefined}
-      />
-    </label>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="javascript:void(0);"
-      role="button"
-      class="flex-none"
-      style="margin-top: 10px;"
-      aria-busy={addressIsQuerying}
-      on:click={onSearchAddress}
-    >
-      Query
-    </a>
-  </div>
-  {#if addressToQueryValid}
-    <hr />
-    <EventsPickingTable ownerAddress="{addressToQuery}," floatEvents={[]} />
-  {/if}
-  <footer>
-    <!-- svelte-ignore a11y-invalid-attribute -->
-    <a
-      href="javascript:void(0);"
-      role="button"
-      class="secondary"
-      on:click={toggleModal}
-    >
-      Close
-    </a>
-  </footer>
-</Dialog>
+<DialogPickingEvents
+  bind:opened={dialogOpened}
+  on:add={(e) => onEventsAdded(e.detail)}
+/>
 
 <style>
-  .flex-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-  }
-
-  .flex-gap {
-    gap: 1rem;
-  }
-
-  .flex-none {
-    flex: none;
-  }
-
-  .flex-auto {
-    flex: 1 1 auto;
-  }
-
   .fix-form {
     padding: 15px 0px;
   }

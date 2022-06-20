@@ -1,4 +1,9 @@
 
+export interface PickableEvent {
+  picked: boolean
+  event: FloatEvent
+}
+
 export interface FloatEvent {
   host: string
   eventId: number
