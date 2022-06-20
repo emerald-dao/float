@@ -32,7 +32,7 @@
     emptySlotsRequired: false,
   };
 
-  $: isPreviewOk = true;
+  $: isPreviewOk = true; // FIXME
   // !!draftEventSeries.basics.image &&
   // !!draftEventSeries.basics.name &&
   // !!draftEventSeries.basics.description;
@@ -129,6 +129,22 @@
 
       <hr />
 
+      <h5>Preset Slots</h5>
+
+      <div class="flex-wrap flex-gap mb-1">
+        <!-- 97505692 97506358 -->
+        {#each draftEventSeries.presetEvents as slot}
+          <EventItem
+            host={slot.host}
+            eventId={slot.eventId}
+            required={slot.required}
+          />
+        {/each}
+        <EventItem empty={true} on:clickEmpty={toggleModal} />
+      </div>
+
+      <hr />
+
       <h5>Empty Slots (to configure later)</h5>
 
       <div class="flex flex-gap mb-1">
@@ -167,22 +183,6 @@
             </span>
           </label>
         </fieldset>
-      </div>
-
-      <hr />
-
-      <h5>Preset Slots</h5>
-
-      <div class="flex-wrap flex-gap">
-        <!-- 97505692 97506358 -->
-        {#each draftEventSeries.presetEvents as slot}
-          <EventItem
-            host={slot.host}
-            eventId={slot.eventId}
-            required={slot.required}
-          />
-        {/each}
-        <EventItem empty={true} on:clickEmpty={toggleModal} />
       </div>
     {/if}
 
