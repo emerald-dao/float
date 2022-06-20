@@ -7,6 +7,4 @@
   <title>Availble Event Series {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
-<div class="">
-  <slot />
-</div>
+<div class="">List of available series.</div>
