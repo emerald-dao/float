@@ -1,10 +1,16 @@
 <script>
-  import { authenticate, createEventSeries } from "$lib/flow/actions";
+  import {
+    authenticate,
+    createEventSeries,
+    resolveAddressObject,
+  } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import ImageUploader from "$lib/components/ImageUploader.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
   import EventItem from "$lib/components/eventseries/EventItem.svelte";
+  import Dialog from "$lib/components/eventseries/elements/Dialog.svelte";
+  import EventsPickingTable from "$lib/components/eventseries/table/EventsPickingTable.svelte";
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
@@ -51,8 +57,25 @@
     return true;
   }
 
-  function onClickEmptySlot() {
-    // TODO
+  // ------ Dialog part ------
+
+  let dialogOpened = false;
+  let addressToQuery = "";
+  let addressToQueryValid = undefined;
+  let addressIsQuerying = false;
+
+  function toggleModal(evt) {
+    dialogOpened = !dialogOpened;
+  }
+
+  async function onSearchAddress() {
+    addressIsQuerying = true;
+    const addrObj = await resolveAddressObject(addressToQuery);
+    addressIsQuerying = false;
+    addressToQueryValid = addrObj.address !== "";
+    if (!addressToQueryValid && addressToQuery !== addrObj.address) {
+      addressToQuery = addrObj.address;
+    }
   }
 </script>
 
@@ -159,8 +182,7 @@
             required={slot.required}
           />
         {/each}
-        <EventItem host={$user?.addr} eventId={97506358} />
-        <EventItem empty={true} on:clickEmpty={onClickEmptySlot} />
+        <EventItem empty={true} on:clickEmpty={toggleModal} />
       </div>
     {/if}
 
@@ -202,12 +224,58 @@
   </article>
 </div>
 
+<Dialog opened={dialogOpened}>
+  <header>Add FLOAT Events to Series</header>
+  <div class="flex flex-gap">
+    <label for="seriesName" class="flex-auto">
+      Owner Address
+      <input
+        type="text"
+        id="addressToQuery"
+        name="addressToQuery"
+        placeholder="0x00000000000"
+        on:keyup={(e) => (addressToQueryValid = undefined)}
+        bind:value={addressToQuery}
+        aria-invalid={typeof addressToQueryValid === "boolean"
+          ? !addressToQueryValid
+          : undefined}
+      />
+    </label>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a
+      href="javascript:void(0);"
+      role="button"
+      class="flex-none"
+      style="margin-top: 10px;"
+      aria-busy={addressIsQuerying}
+      on:click={onSearchAddress}
+    >
+      Query
+    </a>
+  </div>
+  {#if addressToQueryValid}
+    <hr />
+    <EventsPickingTable ownerAddress="{addressToQuery}," floatEvents={[]} />
+  {/if}
+  <footer>
+    <!-- svelte-ignore a11y-invalid-attribute -->
+    <a
+      href="javascript:void(0);"
+      role="button"
+      class="secondary"
+      on:click={toggleModal}
+    >
+      Close
+    </a>
+  </footer>
+</Dialog>
+
 <style>
   .flex-wrap {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    align-items: stretch;
+    align-items: center;
   }
 
   .flex-gap {
