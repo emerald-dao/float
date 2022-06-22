@@ -89,14 +89,9 @@
   export let eventData;
 
   const floatEventCallback = async () => {
-    resolvedNameObject = await resolveAddressObject($page.params.address);
     if (denylist.includes(resolvedNameObject.address)) {
       return null;
     }
-    let eventData = await getEvent(
-      resolvedNameObject.address,
-      $page.params.eventId
-    );
     if (!eventData) {
       return null;
     }
