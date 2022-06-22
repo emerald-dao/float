@@ -7,13 +7,13 @@
   } from "$lib/flow/actions.js";
 
   export async function load({ url, params, stuff }) {
-    console.log('CONSOLE', params);
+    // console.log('CONSOLE', params);
     let eventId = params.eventId;
     let addr = params.address;
 
     let resolvedNameObject = await resolveAddressObject(addr);
 
-    console.log('resolved', resolvedNameObject.address)
+    // console.log('resolved', resolvedNameObject.address)
 
     const response = await getEvent(resolvedNameObject.address, eventId);
 
