@@ -138,8 +138,7 @@
       var fr = new FileReader();
       fr.onload = (e) => {
         let stuff = e.target.result;
-        stuff = stuff.replaceAll(" ", "");
-        listOfAddresses = stuff.split(/\r\n/);
+        listOfAddresses = stuff.split(",");
       };
       fr.readAsText(file);
     } else {
@@ -158,7 +157,7 @@
       if (i == arrayOfClaimers.length - 1) {
         csvContent += arrayOfClaimers[i];
       } else {
-        csvContent += arrayOfClaimers[i] + "\r\n";
+        csvContent += arrayOfClaimers[i] + ",";
       }
     }
     var encodedUri = encodeURI(csvContent);
@@ -186,8 +185,7 @@
             <small class="muted"
               >Created on {new Date(
                 floatEvent?.dateCreated * 1000
-              ).toLocaleString()}</small
-            >
+              ).toLocaleString()}</small>
           </p>
         </header>
         {#if floatEvent?.hasClaimed}
@@ -202,8 +200,7 @@
               totalSupply: floatEvent.totalSupply,
               serial: floatEvent.hasClaimed.serial,
             }}
-            claimed={true}
-          />
+            claimed={true} />
         {:else}
           <Float
             float={{
@@ -211,12 +208,11 @@
               eventImage: floatEvent.image,
               eventName: floatEvent.name,
               totalSupply: floatEvent.totalSupply,
-            }}
-          />
+            }} />
         {/if}
         <blockquote>
-          <strong><small class="muted">DESCRIPTION</small></strong><br
-          />{floatEvent?.description}
+          <strong><small class="muted">DESCRIPTION</small></strong
+          ><br />{floatEvent?.description}
         </blockquote>
         {#if floatEvent?.groups.length > 0}
           <blockquote>
@@ -224,8 +220,7 @@
             <br />
             {#each floatEvent?.groups as group}
               <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"
-                ><div class="group-badge">{group}</div></a
-              >
+                ><div class="group-badge">{group}</div></a>
             {/each}
           </blockquote>
         {/if}
@@ -235,19 +230,16 @@
           {#if flowTokenCost}
             {#await getFlowTokenBalance($user?.addr) then balance}
               This FLOAT costs <span class="emphasis"
-                >{parseFloat(flowTokenCost).toFixed(2)}</span
-              >
+                >{parseFloat(flowTokenCost).toFixed(2)}</span>
               FlowToken to claim.
               {#if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
                 You have <span class="emphasis"
-                  >{parseFloat(balance).toFixed(2)}</span
-                >
+                  >{parseFloat(balance).toFixed(2)}</span>
                 FlowToken. After purchasing, your final balance will be
                 <span class="emphasis"
                   >{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(
                     2
-                  )}</span
-                > FlowToken.
+                  )}</span> FlowToken.
               {:else if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
                 You cannot afford this FLOAT.
               {/if}
@@ -258,8 +250,8 @@
         </blockquote>
         <p>
           <span class="emphasis"
-            >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span
-          > have been minted.
+            >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been
+          minted.
         </p>
         {#if limitedVerifier && limitedVerifier[0]}
           <p>
@@ -272,8 +264,7 @@
             <ClaimButton
               {flowTokenCost}
               {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed}
-            />
+              hasClaimed={floatEvent?.hasClaimed} />
           {:else}
             <button id="connect" on:click={authenticate}>Connect Wallet</button>
           {/if}
@@ -292,8 +283,7 @@
                   toggleClaimable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}
-              >
+                  )}>
                 {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
               </button>
               <button
@@ -304,8 +294,7 @@
                   toggleTransferrable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}
-              >
+                  )}>
                 {floatEvent?.transferrable
                   ? "Stop transfers"
                   : "Allow transfers"}
@@ -325,8 +314,7 @@
                     deleteEvent(
                       resolvedNameObject.address,
                       floatEvent?.eventId
-                    )}
-                >
+                    )}>
                   Delete this event
                 </button>
               {/if}
@@ -339,8 +327,7 @@
                   id="address"
                   name="address"
                   placeholder="0x00000000000"
-                  bind:value={recipientAddr}
-                />
+                  bind:value={recipientAddr} />
                 {#if $floatDistributingInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
@@ -368,8 +355,7 @@
                   id="list"
                   name="list"
                   placeholder="0x00000000000"
-                  on:change={uploadList}
-                />
+                  on:change={uploadList} />
                 {#if $floatDistributingManyInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
@@ -392,14 +378,11 @@
                 <small>Minting to: {listOfAddresses.toString()}</small>
               {:else if listOfAddresses === "error"}
                 <small class="red"
-                  >This file is not supported. Please upload a .csv file.</small
-                >
+                  >This file is not supported. Please upload a .csv file.</small>
               {:else}
                 <small
                   >Upload a .csv file <a href="/example.csv" download
-                    >(here is an example)</a
-                  > of addresses, each on their own line.</small
-                >
+                    >(here is an example)</a> of addresses, each on their own line.</small>
               {/if}
             </div>
             {#if groupsWeCanAddTo.length > 0}
@@ -424,8 +407,7 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Add</button
-                    >
+                        )}>Add</button>
                   {/if}
                 </div>
                 <small>Add to a pre-existing Group.</small>
@@ -455,8 +437,7 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Remove</button
-                    >
+                        )}>Remove</button>
                   {/if}
                 </div>
                 <small>Remove from a Group.</small>
@@ -464,8 +445,7 @@
             {/if}
 
             <button id="download" on:click={downloadList}
-              >Download list of claimers</button
-            >
+              >Download list of claimers</button>
           </article>
         {/if}
       {/await}
@@ -479,8 +459,7 @@
               <ClaimsTable
                 address={floatEvent?.host}
                 eventId={floatEvent?.eventId}
-                totalClaimed={floatEvent?.totalSupply}
-              />
+                totalClaimed={floatEvent?.totalSupply} />
             {/if}
           </div>
         </IntersectionObserver>
