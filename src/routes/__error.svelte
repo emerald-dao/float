@@ -1,3 +1,20 @@
+
+<!-- <script context="module">
+  // UNCOMMENT THIS WHOLE BLOCK TO DEBUG ERRORS
+  export function load({ error, status }) {
+      return {
+          props: {
+              title: `${status}: ${error.message}`
+          }
+      };
+  }
+</script>
+
+<script>
+  export let title;
+</script>
+
+<h1>{title}</h1> -->
 <h1>Something went wrong!</h1>
 
 <p>Try refreshing the page or <a href="/">click here</a> to go back to the homepage.</p>
