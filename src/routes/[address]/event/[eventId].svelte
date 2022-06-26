@@ -377,8 +377,8 @@
               {:else}
                 <small
                   >Upload a .csv file <a href="/example.csv" download
-                    >(here is an example)</a> of addresses, each on their own line.</small>
-                <small>2 NOTES: 1) FLOATs will only be given to people who have set up their collection already. 2) You can only 
+                    >(here is an example)</a> of addresses.</small><br />
+                <small>NOTE: 1) FLOATs will only be given to people who have set up their collection already. 2) You can only 
                   distribute a maximum of 200 FLOATs at a time.
                 </small>
               {/if}
