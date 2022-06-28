@@ -8,6 +8,7 @@
   import { page } from "$app/stores";
   import { resolver, walletModal } from "$lib/stores.js";
   import WalletModal from "$lib/components/WalletModal.svelte";
+  import Meta from '$lib/components/common/Meta.svelte';
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -27,10 +28,18 @@
   }
 </script>
 
-<!-- <div class="alert alert-info text-center info">
-  Due to Flow Mainnet <a href="https://docs.onflow.org/status/">maintenance</a>,
+<div class="alert alert-info text-center info">
+  Due to Flow Mainnet <a href="https://status.onflow.org">maintenance</a>,
   it is possible you encounter errors when running transactions.
-</div> -->
+</div>
+
+<Meta 
+  title={$page.stuff.title}
+  author={$page.stuff.author}
+  description={$page.stuff.description}
+  url={$page.stuff.url}
+  image={$page.stuff.image}
+/>
 
 <Header />
 

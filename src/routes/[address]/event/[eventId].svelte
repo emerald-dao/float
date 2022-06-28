@@ -1,5 +1,38 @@
 <script context="module">
   export const prerender = true;
+
+  import {
+    getEvent,
+    resolveAddressObject
+  } from "$lib/flow/actions.js";
+
+  export async function load({ url, params, stuff }) {
+    // console.log('CONSOLE', params);
+    let eventId = params.eventId;
+    let addr = params.address;
+
+    let resolvedNameObject = await resolveAddressObject(addr);
+
+    // console.log('resolved', resolvedNameObject.address)
+
+    const response = await getEvent(resolvedNameObject.address, eventId);
+
+    return {
+      status: 200,
+      props: {
+        resolvedNameObject,
+        eventData: response
+      },
+      stuff: {
+        title: response.name,
+        description: response.description,
+        author: response.host,
+        //image: `https://ipfs.infura.io/ipfs/${response.image}`
+        //image: `https://cloudflare-ipfs.com/ipfs/${response.image}`
+      }
+    };
+  }
+
 </script>
 
 <script>
@@ -19,9 +52,8 @@
     floatDistributingManyStatus,
     floatDistributingManyInProgress,
   } from "$lib/flow/stores";
-  import { denylist, PAGE_TITLE_EXTENSION } from "$lib/constants";
+  import { denylist } from "$lib/constants";
   import {
-    getEvent,
     toggleClaimable,
     toggleTransferrable,
     deleteEvent,
@@ -31,7 +63,6 @@
     addEventToGroup,
     getGroups,
     removeEventFromGroup,
-    resolveAddressObject,
     distributeDirectlyMany,
     getCurrentHolder,
     getFlowTokenBalance,
@@ -40,7 +71,6 @@
   import IntersectionObserver from "svelte-intersection-observer";
   import Loading from "$lib/components/common/Loading.svelte";
   import Float from "$lib/components/Float.svelte";
-  import Meta from "$lib/components/common/Meta.svelte";
   import ClaimsTable from "$lib/components/common/table/ClaimsTable.svelte";
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
@@ -53,17 +83,15 @@
   let confirmed = false;
   let groups;
   let groupsWeCanAddTo;
-  let resolvedNameObject;
   let isSharedWithMe;
+  
+  export let resolvedNameObject;
+  export let eventData;
+
   const floatEventCallback = async () => {
-    resolvedNameObject = await resolveAddressObject($page.params.address);
     if (denylist.includes(resolvedNameObject.address)) {
       return null;
     }
-    let eventData = await getEvent(
-      resolvedNameObject.address,
-      $page.params.eventId
-    );
     if (!eventData) {
       return null;
     }
@@ -72,6 +100,7 @@
       $page.params.eventId,
       $user.addr
     );
+
     let currentOwner;
     if (hasClaimed) {
       currentOwner = await getCurrentHolder(
@@ -131,9 +160,6 @@
   };
 </script>
 
-<svelte:head>
-  <title>FLOAT #{$page.params.eventId} {PAGE_TITLE_EXTENSION}</title>
-</svelte:head>
 <div class="container">
   {#await floatEvent}
     <Loading />
@@ -143,11 +169,6 @@
         <p>This event is deleted or the acount is denylisted.</p>
       </article>
     {:else}
-      <Meta
-        title="{floatEvent?.name} | FLOAT #{$page.params.eventId}"
-        author={floatEvent?.host}
-        description={floatEvent?.description}
-        url={$page.url} />
       <article>
         <header>
           <a href={floatEvent?.url} target="_blank">
@@ -356,7 +377,10 @@
               {:else}
                 <small
                   >Upload a .csv file <a href="/example.csv" download
-                    >(here is an example)</a> of addresses, each on their own line.</small>
+                    >(here is an example)</a> of addresses.</small><br />
+                <small>NOTE: 1) FLOATs will only be given to people who have set up their collection already. 2) You can only 
+                  distribute a maximum of 200 FLOATs at a time.
+                </small>
               {/if}
             </div>
             {#if groupsWeCanAddTo.length > 0}
@@ -505,10 +529,10 @@
     color: var(--green);
     font-size: 0.7rem;
   }
-  .claims {
+  /* .claims {
     text-align: left;
   }
   .admin {
     text-align: left;
-  }
+  } */
 </style>
