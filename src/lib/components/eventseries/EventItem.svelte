@@ -161,6 +161,7 @@
   }
 
   .card-item .badge {
+    cursor: pointer;
     position: absolute;
     top: -4px;
     right: -4px;
