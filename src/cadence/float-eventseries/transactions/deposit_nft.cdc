@@ -50,7 +50,7 @@ transaction(
   execute {
     let tokenType = self.collection.borrowNFT(id: ids[0]).getType()
     // check if fungible token registered
-    if FLOATEventSeries.getTokenDefinition(tokenType.identifier) == nil {
+    if FLOATEventSeries.getTokenDefinition(tokenType) == nil {
       self.serieshelf.registerToken(path: self.nftPublicPath, isNFT: true)
     }
 

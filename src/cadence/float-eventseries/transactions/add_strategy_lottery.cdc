@@ -48,14 +48,18 @@ transaction(
   execute {
     let treasury = self.eventSeries.borrowTreasuryPrivate()
 
-    let oneShareOfClaimableFT: {String: UFix64} = {}
+    let oneShareOfClaimableFT: {Type: UFix64} = {}
     for i, key in treasuryFTs {
-      oneShareOfClaimableFT[key] = treasuryFTsAmount[i]
+      let tokenType = CompositeType(key) ?? panic("Invalid type: ".concat(key))
+      assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(key))
+      oneShareOfClaimableFT[tokenType] = treasuryFTsAmount[i]
     }
 
-    let oneShareOfClaimableNFT: {String: UInt64} = {}
+    let oneShareOfClaimableNFT: {Type: UInt64} = {}
     for i, key in treasuryNFTs {
-      oneShareOfClaimableNFT[key] = treasuryNFTsAmount[i]
+      let tokenType = CompositeType(key) ?? panic("Invalid type: ".concat(key))
+      assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(key))
+      oneShareOfClaimableNFT[tokenType] = treasuryNFTsAmount[i]
     }
 
     let params: {String: AnyStruct} = {}

@@ -54,7 +54,7 @@ transaction(
   execute {
     let tokenType = self.fungibleTokenToDeposit.getType()
     // check if fungible token registered
-    if FLOATEventSeries.getTokenDefinition(tokenType.identifier) == nil {
+    if FLOATEventSeries.getTokenDefinition(tokenType) == nil {
       self.serieshelf.registerToken(path: self.fungibleTokenPublicPath, isNFT: false)
     }
 
