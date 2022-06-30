@@ -71,7 +71,7 @@
     </button>
   {:else if flowTokenCost && !confirmed}
     <button class="important" on:click={() => (confirmed = true)}>
-      This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click to confim.
+      This costs {parseFloat(flowTokenCost).toFixed(2)} FlowToken. Click to confirm.
     </button>
   {:else if $floatClaimingInProgress}
     <button aria-busy="true" disabled>Claiming FLOAT</button>
@@ -95,8 +95,7 @@
           type="text"
           name="claimCode"
           bind:value={claimCode}
-          placeholder="secret code"
-        />
+          placeholder="secret code" />
       </label>
     {/if}
     <button
