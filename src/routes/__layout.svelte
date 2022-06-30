@@ -29,7 +29,7 @@
 </script>
 
 <!-- <div class="alert alert-info text-center info">
-  Due to Flow Mainnet <a href="https://docs.onflow.org/status/">maintenance</a>,
+  Due to Flow Mainnet <a href="https://status.onflow.org">maintenance</a>,
   it is possible you encounter errors when running transactions.
 </div> -->
 
