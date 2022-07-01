@@ -49,8 +49,31 @@
   }
 
   async function checkInputs() {
-    // FIXME required inputs checking
-    return true;
+    let errorArray = [];
+    let messageString = "The following mandatory fields are missing";
+
+    // add conditions here
+    if (!draftEventSeries.basics.name) {
+      errorArray.push("EventSeries Name");
+    } else if (!draftEventSeries.basics.description) {
+      errorArray.push("EventSeries Description");
+    } else if (!draftEventSeries.basics.image) {
+      errorArray.push("EventSeries Image");
+    }
+
+    if (
+      draftEventSeries.emptySlotsAmt === 0 &&
+      draftEventSeries.presetEvents.length === 0
+    ) {
+      errorArray.push("EventSeries need one slot at least.");
+    }
+
+    if (errorArray.length > 0) {
+      notifications.info(`${messageString}: ${errorArray.join(",")}`);
+      return false;
+    } else {
+      return true;
+    }
   }
 
   /**
