@@ -3,7 +3,7 @@ import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 
 transaction(
   seriesId: UInt64,
-  slotIndexes: [UInt64],
+  slotIndexes: [Int],
   slotHosts: [Address],
   slotEventIds: [UInt64],
 ) {
@@ -36,7 +36,7 @@ transaction(
     var i = 0
     while i < presetLen {
       let eventIdentifier = FLOATEventSeries.EventIdentifier(slotHosts[i], slotEventIds[i])
-      self.eventSeries.updateSlotData(idx: Int(slotIndexes[i]), identifier: eventIdentifier)
+      self.eventSeries.updateSlotData(idx: slotIndexes[i], identifier: eventIdentifier)
       i = i + 1
     }
     log("Update the slot identifiers of a FLOAT EventSeries.")

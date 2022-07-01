@@ -6,7 +6,7 @@ export interface PickableEvent {
 
 export interface FloatEvent {
   host: string
-  eventId: number
+  eventId: string
   groups: string[]
 
   image: string
@@ -28,7 +28,7 @@ export interface EventSeriesBasics {
 
 export interface EventSeriesSlot {
   host: string;
-  eventId: number;
+  eventId: string;
   required?: boolean;
 }
 

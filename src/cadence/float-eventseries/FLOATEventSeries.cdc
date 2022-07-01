@@ -57,7 +57,7 @@ pub contract FLOATEventSeries {
     pub event FLOATAchievementRecordInitialized(seriesId: UInt64, host: Address, owner: Address)
     pub event FLOATAchievementGoalAccomplished(seriesId: UInt64, host: Address, owner: Address, goalIdx: Int)
 
-    pub event FLOATAchievementBoardCreated(sequence: UInt64, owner: Address)
+    pub event FLOATAchievementBoardCreated(sequence: UInt64)
 
     /**    ____ ___ ____ ___ ____
        *   [__   |  |__|  |  |___
@@ -1689,8 +1689,7 @@ pub contract FLOATEventSeries {
             self.achievements <- {}
 
             emit FLOATAchievementBoardCreated(
-                sequence: self.sequence,
-                owner: self.owner!.address
+                sequence: self.sequence
             )
 
             FLOATEventSeries.totalAchievementBoards = FLOATEventSeries.totalAchievementBoards + 1

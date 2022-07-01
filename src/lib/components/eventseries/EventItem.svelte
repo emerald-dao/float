@@ -17,24 +17,23 @@
 
   $: itemRequired = item.required;
 
-  /** @type {string} */
-  let resolvedName;
-
   /** @type {Promise<import('./types').FloatEvent>} */
   const floatEventCallback = async () => {
-    let resolvedNameObject = await resolveAddressObject(item.host);
-    resolvedName = getResolvedName(resolvedNameObject);
-    let eventData = await getEvent(
-      resolvedNameObject.address,
-      String(item.eventId)
-    );
+    let hostAddress;
+    if (item.host.startsWith("0x")) {
+      hostAddress = item.host;
+    } else {
+      let resolvedNameObject = await resolveAddressObject(item.host);
+      hostAddress = resolvedNameObject.address;
+    }
+    let eventData = await getEvent(hostAddress, String(item.eventId));
     if (!eventData) {
       return null;
     }
     let data = { ...eventData };
     if (!preview) {
       data.hasClaimed = await hasClaimedEvent(
-        resolvedNameObject.address,
+        hostAddress,
         item.eventId,
         $user.addr
       );
@@ -63,9 +62,9 @@
         />
         <a
           class="no-style"
-          href="/{resolvedName}/event/{floatEvent.eventId}"
+          href="/{item.host}/event/{floatEvent.eventId}"
           target="_blank"
-          data-tooltip="#{floatEvent.eventId} By {resolvedName}"
+          data-tooltip="#{floatEvent.eventId} By {item.host}"
         >
           <h3>{floatEvent.name}</h3>
         </a>

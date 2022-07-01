@@ -2265,6 +2265,10 @@ export const resolveAddressObject = async (lookup) => {
   try {
     if (rootLookup.length === 18 && rootLookup.substring(0, 2) === '0x') {
       answer.address = lookup;
+      // FIXME: no need resolve names in dev
+      if (import.meta.env.DEV && import.meta.env.VITE_FLOW_NETWORK === 'testnet') {
+        return answer
+      }
       answer.resolvedNames.find = await fcl.query({
         cadence: `
         import FIND from 0xFIND
@@ -2415,6 +2419,7 @@ const generalSendTransaction = async (code, args, actionInProgress = undefined, 
 
     return await fcl.tx(transactionId).onceSealed();
   } catch (e) {
+    actionInProgress && actionInProgress.set(false);
     actionStatus && actionStatus.set(false);
     transactionStatus.set(99)
     console.log(e)
@@ -2463,12 +2468,12 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  * @param {number} presetEvents.eventId
  * @param {boolean} presetEvents.required
  * @param {number} emptySlotsAmt how many empty slots totally
- * @param {number} emptySlotsRequired how many empty slots is required
+ * @param {boolean} emptySlotsRequired how many empty slots is required
  */
-export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = 0) => {
+export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = false) => {
   const reduced = presetEvents.reduce((all, curr) => {
     if (typeof curr.host === 'string' &&
-      typeof curr.eventId === 'number' && 
+      typeof curr.eventId === 'string' && 
       (typeof curr.required === 'boolean' || curr.required === undefined)) {
       all.hosts.push(curr.host)
       all.eventIds.push(curr.eventId)
@@ -2483,8 +2488,8 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
       arg(basics.name, t.String),
       arg(basics.description, t.String),
       arg(basics.image, t.String),
-      arg(emptySlotsAmt, t.UInt64),
-      arg(emptySlotsRequired, t.UInt64),
+      arg(String(emptySlotsAmt), t.UInt64),
+      arg(emptySlotsRequired ? String(emptySlotsAmt) : '0', t.UInt64),
       arg(reduced.hosts, t.Array(t.Address)),
       arg(reduced.eventIds, t.Array(t.UInt64)),
       arg(reduced.required, t.Array(t.Bool))
@@ -2544,7 +2549,7 @@ export const addAchievementGoalToEventSeries = async (seriesId, type, points, op
         throw new Error('events is missing')
       }
       const reduced = events.reduce((all, curr) => {
-        if (typeof curr.host === 'string' && typeof curr.eventId === 'number') {
+        if (typeof curr.host === 'string' && typeof curr.eventId === 'string') {
           all.hosts.push(curr.host)
           all.eventIds.push(curr.eventId)
         }
@@ -2603,7 +2608,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
   const reduced = slotsEvents.reduce((all, curr) => {
     if (typeof curr.index === 'number' &&
       typeof curr.host === 'string' &&
-      typeof curr.eventId === 'number') {
+      typeof curr.eventId === 'string') {
       all.indexes.push(curr.index)
       all.hosts.push(curr.host)
       all.eventIds.push(curr.eventId)

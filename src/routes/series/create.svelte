@@ -81,7 +81,7 @@
    *
    * @param {object} added
    * @param {string} added.host
-   * @param {number[]} added.picked
+   * @param {string[]} added.picked
    */
   function onEventsAdded(added) {
     draftEventSeries.presetEvents = [
