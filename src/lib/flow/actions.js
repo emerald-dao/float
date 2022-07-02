@@ -660,7 +660,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingStatus.set(respondWithSuccess());
-          notifications.info(`You successfuly distributed a FLOAT!`);
+          notifications.info(`You successfully distributed a FLOAT!`);
         } else {
           floatDistributingStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
           notifications.info(parseErrorMessageFromFCL(res.errorMessage));
@@ -773,7 +773,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingManyStatus.set(respondWithSuccess());
-          notifications.info(`You successfuly distributed FLOATs!`);
+          notifications.info(`You successfully distributed FLOATs!`);
         } else {
           floatDistributingManyStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
@@ -1465,7 +1465,7 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         if (res.statusCode === 0) {
-          notifications.info(`You successfuly added this event to a Group!`);
+          notifications.info(`You successfully added this event to a Group!`);
           addEventToGroupStatus.set(respondWithSuccess());
         } else {
           addEventToGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
