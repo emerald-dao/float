@@ -69,10 +69,10 @@ const configureFCL = (wallet) => {
       .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
       .put("discovery.wallet.method", "POP/RPC")
   }
-  else if (wallet === 'other') {
+  else if (wallet === 'lilico') {
     config()
-      .put("discovery.wallet", import.meta.env.VITE_FCL_DISCOVERY)
-      .put("discovery.wallet.method", "IFRAME/RPC")
+      .put("discovery.wallet", import.meta.env.VITE_LILICO_DISCOVERY)
+      .put("discovery.wallet.method", "EXT/RPC")
   }
 }
 
