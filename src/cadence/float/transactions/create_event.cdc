@@ -21,7 +21,9 @@ transaction(
   capacity: UInt64, 
   initialGroups: [String], 
   flowTokenPurchase: Bool, 
-  flowTokenCost: UFix64
+  flowTokenCost: UFix64,
+  minimumBalanceToggle: Bool,
+  minimumBalance: UFix64
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -62,6 +64,7 @@ transaction(
     var Timelock: FLOATVerifiers.Timelock? = nil
     var SecretV2: FLOATVerifiers.SecretV2? = nil
     var Limited: FLOATVerifiers.Limited? = nil
+    var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -74,6 +77,10 @@ transaction(
     if limited {
       Limited = FLOATVerifiers.Limited(_capacity: capacity)
       verifiers.append(Limited!)
+    }
+    if minimumBalanceToggle {
+      MinimumBalance = FLOATVerifiers.MinimumBalance(_amount: minimumBalance)
+      verifiers.append(MinimumBalance!)
     }
     let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchase {

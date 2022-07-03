@@ -16,6 +16,7 @@ export const draftFloat = writable({
   transferrable: true,
   initialGroup: "",
   flowTokenPurchase: false,
+  minimumBalance: false,
 });
 
 export const draftGroup = writable({
@@ -51,10 +52,10 @@ export function persistentWritable(key, defaultValue) {
 
   // Subscribe to changes.
   subscribe(value => {
-      // Store the new value.
-      if (browser) {
-        localStorage.setItem(key, value);
-      }
+    // Store the new value.
+    if (browser) {
+      localStorage.setItem(key, value);
+    }
   });
 
   return { subscribe, set, update };

@@ -21,6 +21,8 @@
 // so we pass it through as well.
 
 import FLOAT from "./FLOAT.cdc"
+import FungibleToken from "../core-contracts/FungibleToken.cdc"
+import FlowToken from "../core-contracts/FlowToken.cdc"
 
 pub contract FLOATVerifiers {
 
@@ -147,6 +149,30 @@ pub contract FLOATVerifiers {
 
         init(_publicKey: String) {
             self.publicKey = _publicKey
+        }
+    }
+
+    //
+    // MinimumBalance
+    //
+    // Requires a minimum Flow Balance to succeed
+    pub struct MinimumBalance: FLOAT.IVerifier {
+        pub let amount: UFix64
+
+        pub fun verify(_ params: {String: AnyStruct}) {
+            let claimee: Address = params["claimee"]! as! Address
+            let flowVault = getAccount(claimee).getCapability(/public/flowTokenBalance)
+                                .borrow<&FlowToken.Vault{FungibleToken.Balance}>()
+                                ?? panic("Could not borrow the Flow Token Vault")
+            
+            assert(
+                flowVault.balance >= self.amount, 
+                message: "You do not meet the minimum required Flow Token balance."
+            )
+        }
+
+        init(_amount: UFix64) {
+            self.amount = _amount
         }
     }
 }
