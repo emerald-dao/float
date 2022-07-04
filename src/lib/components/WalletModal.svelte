@@ -5,8 +5,15 @@
 
 <article>
   <button id="x" on:click={() => ($walletModal = false)}>
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x" viewBox="0 0 16 16">
-      <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      fill="currentColor"
+      class="bi bi-x"
+      viewBox="0 0 16 16">
+      <path
+        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
     </svg>
   </button>
   <header>
@@ -25,7 +32,7 @@
     </button>
   </div>
   <div class="wallet">
-    <button id="other" on:click={() => configureFCLAndLogin("other")}>
+    <button id="lilico" on:click={() => configureFCLAndLogin("lilico")}>
       <img src="/lilico-logo.jpg" alt="lilico logo" />
       <span>Connect Lilico</span>
     </button>
@@ -40,17 +47,17 @@
     width: 30px;
     height: 30px;
     display: flex;
-    padding:0;
+    padding: 0;
     justify-content: center;
     align-items: center;
-    background:none;
+    background: none;
   }
 
   #x svg {
-    position:relative;
-    color:var(--primary);
+    position: relative;
+    color: var(--primary);
     width: 30px;
-    height:30px;
+    height: 30px;
   }
 
   article {
@@ -107,7 +114,7 @@
     background-image: linear-gradient(135deg, #c471f5 -20%, #fa71cd 120%);
   }
 
-  #other {
+  #lilico {
     background-image: linear-gradient(135deg, #f5ba71 -20%, #ff7a62 120%);
   }
 </style>

@@ -354,7 +354,6 @@
         </span>
       </button>
     </div>
-
     {#if $draftFloat.claimCodeEnabled}
       <label for="claimCode"
         >Enter a claim code (<i>case-sensitive</i>)
@@ -364,6 +363,42 @@
           bind:value={claimCode}
           placeholder="ex. mySecretCode" />
       </label>
+      <hr />
+    {/if}
+
+    <!-- MINIMUM BALANCE -->
+    <div class="grid no-break mb-1">
+      <button
+        class:secondary={$draftFloat.minimumBalance}
+        class="outline"
+        on:click={() => ($draftFloat.minimumBalance = false)}>
+        No Required Balance
+        <span>You do not have to have a minimum $FLOW balance.</span>
+      </button>
+      <button
+        class:secondary={!$draftFloat.minimumBalance}
+        class="outline"
+        on:click={() => {
+          $draftFloat.minimumBalance = true;
+        }}>
+        Minimum Balance
+        <span>This FLOAT requires a minimum $FLOW balance.</span>
+      </button>
+    </div>
+    {#if $draftFloat.minimumBalance}
+      <div class="grid">
+        <label for="minimum"
+          >Amount (in $FLOW)
+          <input
+            type="number"
+            id="minimum"
+            name="minimum"
+            min="1.00"
+            placeholder="ex. 10.0"
+            step="0.01"
+            bind:value={$draftFloat.minimumBalance} />
+        </label>
+      </div>
       <hr />
     {/if}
 
@@ -383,16 +418,16 @@
           $draftFloat.flowTokenPurchase = true;
         }}>
         Payment
-        <span
-          >This FLOAT costs FlowToken to claim. Suitable for things like
-          tickets.</span>
+        <span>
+          This FLOAT costs $FLOW to claim. Suitable for things like tickets.
+        </span>
       </button>
     </div>
     {#if $draftFloat.flowTokenPurchase}
       <div class="grid">
         <!-- Date -->
         <label for="cost"
-          >Cost (in FLOW)
+          >Cost (in $FLOW)
           <input
             type="number"
             id="cost"

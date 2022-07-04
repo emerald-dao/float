@@ -72,10 +72,10 @@ const configureFCL = (wallet) => {
       .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
       .put("discovery.wallet.method", "POP/RPC")
   }
-  else if (wallet === 'other') {
+  else if (wallet === 'lilico') {
     config()
-      .put("discovery.wallet", import.meta.env.VITE_FCL_DISCOVERY)
-      .put("discovery.wallet.method", "IFRAME/RPC")
+      .put("discovery.wallet", import.meta.env.VITE_LILICO_DISCOVERY)
+      .put("discovery.wallet.method", "EXT/RPC")
   }
 }
 
@@ -103,7 +103,9 @@ const convertDraftFloat = (draftFloat) => {
     capacity: draftFloat.quantity ? draftFloat.quantity.toString() : '0',
     initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
     flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
-    flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0"
+    flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0",
+    minimumBalanceToggle: draftFloat.minimumBalance ? true : false,
+    minimumBalance: draftFloat.minimumBalance ? String(draftFloat.minimumBalance.toFixed(2)) : "0.0"
   };
 }
 
@@ -225,7 +227,9 @@ export const createEvent = async (forHost, draftFloat) => {
         capacity: UInt64, 
         initialGroups: [String], 
         flowTokenPurchase: Bool, 
-        flowTokenCost: UFix64
+        flowTokenCost: UFix64,
+        minimumBalanceToggle: Bool,
+        minimumBalance: UFix64
       ) {
       
         let FLOATEvents: &FLOAT.FLOATEvents
@@ -266,6 +270,7 @@ export const createEvent = async (forHost, draftFloat) => {
           var Timelock: FLOATVerifiers.Timelock? = nil
           var SecretV2: FLOATVerifiers.SecretV2? = nil
           var Limited: FLOATVerifiers.Limited? = nil
+          var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
           var verifiers: [{FLOAT.IVerifier}] = []
           if timelock {
             Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -278,6 +283,10 @@ export const createEvent = async (forHost, draftFloat) => {
           if limited {
             Limited = FLOATVerifiers.Limited(_capacity: capacity)
             verifiers.append(Limited!)
+          }
+          if minimumBalanceToggle {
+            MinimumBalance = FLOATVerifiers.MinimumBalance(_amount: minimumBalance)
+            verifiers.append(MinimumBalance!)
           }
           let extraMetadata: {String: AnyStruct} = {}
           if flowTokenPurchase {
@@ -306,7 +315,9 @@ export const createEvent = async (forHost, draftFloat) => {
         arg(floatObject.capacity, t.UInt64),
         arg(floatObject.initialGroups, t.Array(t.String)),
         arg(floatObject.flowTokenPurchase, t.Bool),
-        arg(floatObject.flowTokenCost, t.UFix64)
+        arg(floatObject.flowTokenCost, t.UFix64),
+        arg(floatObject.minimumBalanceToggle, t.Bool),
+        arg(floatObject.minimumBalance, t.UFix64)
       ],
       payer: fcl.authz,
       proposer: fcl.authz,
@@ -663,7 +674,7 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingStatus.set(respondWithSuccess());
-          notifications.info(`You successfuly distributed a FLOAT!`);
+          notifications.info(`You successfully distributed a FLOAT!`);
         } else {
           floatDistributingStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
           notifications.info(parseErrorMessageFromFCL(res.errorMessage));
@@ -776,7 +787,7 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           floatDistributingManyStatus.set(respondWithSuccess());
-          notifications.info(`You successfuly distributed FLOATs!`);
+          notifications.info(`You successfully distributed FLOATs!`);
         } else {
           floatDistributingManyStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
@@ -1468,7 +1479,7 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
       transactionStatus.set(res.status)
       if (res.status === 4) {
         if (res.statusCode === 0) {
-          notifications.info(`You successfuly added this event to a Group!`);
+          notifications.info(`You successfully added this event to a Group!`);
           addEventToGroupStatus.set(respondWithSuccess());
         } else {
           addEventToGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));

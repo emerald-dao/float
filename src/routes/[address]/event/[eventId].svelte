@@ -1,10 +1,7 @@
 <script context="module">
   export const prerender = true;
 
-  import {
-    getEvent,
-    resolveAddressObject
-  } from "$lib/flow/actions.js";
+  import { getEvent, resolveAddressObject } from "$lib/flow/actions.js";
 
   export async function load({ url, params, stuff }) {
     // console.log('CONSOLE', params);
@@ -21,7 +18,7 @@
       status: 200,
       props: {
         resolvedNameObject,
-        eventData: response
+        eventData: response,
       },
       stuff: {
         title: response?.name,
@@ -29,10 +26,9 @@
         author: response?.host,
         //image: `https://ipfs.infura.io/ipfs/${response.image}`
         //image: `https://cloudflare-ipfs.com/ipfs/${response.image}`
-      }
+      },
     };
   }
-
 </script>
 
 <script>
@@ -80,11 +76,12 @@
   let claimsTableInView;
   let limitedVerifier;
   let flowTokenCost;
+  let minimumBalanceVerifier;
   let confirmed = false;
   let groups;
   let groupsWeCanAddTo;
   let isSharedWithMe;
-  
+
   export let resolvedNameObject;
   export let eventData;
 
@@ -112,6 +109,8 @@
     let data = { ...eventData, hasClaimed, currentOwner };
     limitedVerifier =
       data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
+    minimumBalanceVerifier =
+      data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.MinimumBalance`];
     let prices = data.extraMetadata["prices"];
     if (prices) {
       flowTokenCost = prices[`${flowTokenIdentifier}.FlowToken.Vault`]?.price;
@@ -226,15 +225,15 @@
             {#await getFlowTokenBalance($user?.addr) then balance}
               This FLOAT costs <span class="emphasis"
                 >{parseFloat(flowTokenCost).toFixed(2)}</span>
-              FlowToken to claim.
+              $FLOW to claim.
               {#if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
                 You have <span class="emphasis"
                   >{parseFloat(balance).toFixed(2)}</span>
-                FlowToken. After purchasing, your final balance will be
+                $FLOW. After purchasing, your final balance will be
                 <span class="emphasis"
                   >{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(
                     2
-                  )}</span> FlowToken.
+                  )}</span> $FLOW.
               {:else if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
                 You cannot afford this FLOAT.
               {/if}
@@ -243,6 +242,17 @@
             Free
           {/if}
         </blockquote>
+        {#if minimumBalanceVerifier && minimumBalanceVerifier[0]}
+          <blockquote>
+            <strong><small class="muted">MINIMUM BALANCE</small></strong>
+            This FLOAT requires a minimum balance of <span class="emphasis">
+              {" " +
+                parseFloat(minimumBalanceVerifier[0].amount).toFixed(2) +
+                " "}
+            </span> $FLOW to claim. 
+            This amount will <strong>NOT</strong> be withdrawn from your account.
+          </blockquote>
+        {/if}
         <p>
           <span class="emphasis"
             >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been
@@ -377,9 +387,12 @@
               {:else}
                 <small
                   >Upload a .csv file <a href="/example.csv" download
-                    >(here is an example)</a> of addresses.</small><br />
-                <small>NOTE: 1) FLOATs will only be given to people who have set up their collection already. 2) You can only 
-                  distribute a maximum of 200 FLOATs at a time.
+                    >(here is an example)</a> of addresses.</small
+                ><br />
+                <small
+                  >NOTE: 1) FLOATs will only be given to people who have set up
+                  their collection already. 2) You can only distribute a maximum
+                  of 200 FLOATs at a time.
                 </small>
               {/if}
             </div>
