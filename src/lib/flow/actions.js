@@ -38,6 +38,8 @@ import {
   floatDistributingManyInProgress,
   setupAccountInProgress,
   setupAccountStatus,
+  incinerateInProgress,
+  incinerateStatus
 } from './stores.js';
 import { get } from 'svelte/store'
 
@@ -917,6 +919,69 @@ export const deleteFLOATs = async (ids) => {
     transactionStatus.set(99);
     floatDeletionInProgress.set(false);
     floatDeletionStatus.set(respondWithError(e))
+    console.log(e)
+  }
+}
+
+export const incinerate = async (ids) => {
+
+  let transactionId = false;
+  initTransactionState();
+
+  incinerateInProgress.set(true);
+
+  try {
+    transactionId = await fcl.mutate({
+      cadence: `import FLOATIncinerator from 0xFLOAT
+      import FLOAT from 0xFLOAT
+      
+      transaction(ids: [UInt64]) {
+        let Collection: &FLOAT.Collection
+        let Incinerator: &FLOATIncinerator.Incinerator
+        prepare(signer: AuthAccount) {
+          self.Collection = signer.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+                              ?? panic("Could not get the Collection from the signer.")
+        
+          if signer.borrow<&FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath) == nil {
+            signer.save(<- FLOATIncinerator.createIncinerator(), to: FLOATIncinerator.IncineratorStoragePath)
+            signer.link<&FLOATIncinerator.Incinerator{FLOATIncinerator.IncineratorPublic}>(FLOATIncinerator.IncineratorPublicPath, target: FLOATIncinerator.IncineratorStoragePath)
+          }
+          self.Incinerator = signer.borrow<&FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath)!
+        }
+      
+        execute {
+          self.Incinerator.burn(collection: self.Collection, ids: ids)
+        }
+      }`,
+      args: (arg, t) => [
+        arg(ids, t.Array(t.UInt64))
+      ],
+      payer: fcl.authz,
+      proposer: fcl.authz,
+      authorizations: [fcl.authz],
+      limit: 9999
+    })
+
+    txId.set(transactionId);
+
+    fcl.tx(transactionId).subscribe(res => {
+      transactionStatus.set(res.status)
+      if (res.status === 4) {
+        if (res.statusCode === 0) {
+          incinerateStatus.set(respondWithSuccess());
+        } else {
+          incinerateStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
+        }
+        incinerateInProgress.set(false);
+
+        setTimeout(() => incinerateInProgress.set(false), 2000)
+      }
+    })
+
+  } catch (e) {
+    transactionStatus.set(99);
+    incinerateInProgress.set(false);
+    incinerateStatus.set(respondWithError(e))
     console.log(e)
   }
 }
