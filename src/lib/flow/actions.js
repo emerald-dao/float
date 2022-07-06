@@ -1129,7 +1129,7 @@ export const deleteEvent = async (forHost, eventId) => {
       payer: fcl.authz,
       proposer: fcl.authz,
       authorizations: [fcl.authz],
-      limit: 999
+      limit: 9999
     })
 
     txId.set(transactionId);
