@@ -853,12 +853,12 @@ pub contract FLOAT: NonFungibleToken {
         // Deletes an event. Also makes sure to remove
         // the event from all the groups its in.
         pub fun deleteEvent(eventId: UInt64) {
-            let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
-            for groupName in event.getGroups() {
+            let eventRef = self.borrowEventRef(eventId: eventId) ?? panic("This FLOAT does not exist.")
+            for groupName in eventRef.getGroups() {
                 let groupRef = (&self.groups[groupName] as &Group?)!
                 groupRef.removeEvent(eventId: eventId)
             }
-            destroy event
+            destroy self.events.remove(key: eventId)
         }
 
         pub fun createGroup(groupName: String, image: String, description: String) {
