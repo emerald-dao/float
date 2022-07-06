@@ -818,14 +818,14 @@ export const deleteFLOAT = async (id) => {
       transaction(id: UInt64) {
 
         let Collection: &FLOAT.Collection
-      
+
         prepare(acct: AuthAccount) {
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
         }
-      
+
         execute {
-          destroy self.Collection.withdraw(withdrawID: id)
+          self.Collection.delete(id: id)
           log("Destroyed the FLOAT.")
         }
       }
@@ -886,7 +886,7 @@ export const deleteFLOATs = async (ids) => {
       
         execute {
           for id in ids {
-            destroy self.Collection.withdraw(withdrawID: id)
+            self.Collection.delete(id: id)
           }
           log("Destroyed the FLOAT.")
         }
