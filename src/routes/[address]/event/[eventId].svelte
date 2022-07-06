@@ -21,7 +21,7 @@
         eventData: response,
       },
       stuff: {
-        title: response?.name,
+        title: response?.name + ' | Claim this FLOAT by ' + addr,
         description: response?.description,
         author: response?.host,
         removeTitleSuffix : true
