@@ -812,24 +812,22 @@ export const deleteFLOAT = async (id) => {
 
   try {
     transactionId = await fcl.mutate({
-      cadence: `
-      import FLOAT from 0xFLOAT
+      cadence: `import FLOAT from 0xFLOAT
 
       transaction(id: UInt64) {
-
+      
         let Collection: &FLOAT.Collection
-
+      
         prepare(acct: AuthAccount) {
           self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                               ?? panic("Could not get the Collection from the signer.")
         }
-
+      
         execute {
           self.Collection.delete(id: id)
           log("Destroyed the FLOAT.")
         }
-      }
-      `,
+      }`,
       args: (arg, t) => [
         arg(id, t.UInt64)
       ],
@@ -872,11 +870,10 @@ export const deleteFLOATs = async (ids) => {
 
   try {
     transactionId = await fcl.mutate({
-      cadence: `
-      import FLOAT from 0xFLOAT
+      cadence: `import FLOAT from 0xFLOAT
 
       transaction(ids: [UInt64]) {
-
+      
         let Collection: &FLOAT.Collection
       
         prepare(acct: AuthAccount) {
@@ -890,8 +887,7 @@ export const deleteFLOATs = async (ids) => {
           }
           log("Destroyed the FLOAT.")
         }
-      }
-      `,
+      }`,
       args: (arg, t) => [
         arg(ids, t.Array(t.UInt64))
       ],
