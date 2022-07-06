@@ -39,6 +39,7 @@
   description={$page.stuff.description}
   url={$page.stuff.url}
   image={$page.stuff.image}
+  removeTitleSuffix={$page.stuff.removeTitleSuffix}
 />
 
 <Header />
