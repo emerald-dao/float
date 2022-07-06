@@ -46,7 +46,10 @@
 	</p>
 
 	<h2 id="distribute-directly">Rules</h2>
-	<p>No nudity or any imagery involving sexual content.</p>
+	<p>
+		No nudity or any imagery involving sexual content. You will be immediately
+		banned from the platform.
+	</p>
 
 	<h2>FLOAT == "Flow Attendance"</h2>
 	<p>
