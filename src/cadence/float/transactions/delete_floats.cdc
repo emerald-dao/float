@@ -1,6 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
 
-transaction(id: UInt64) {
+transaction(ids: [UInt64]) {
 
   let Collection: &FLOAT.Collection
 
@@ -10,7 +10,9 @@ transaction(id: UInt64) {
   }
 
   execute {
-    self.Collection.delete(id: id)
+    for id in ids {
+      self.Collection.delete(id: id)
+    }
     log("Destroyed the FLOAT.")
   }
 }

@@ -260,11 +260,10 @@ pub contract FLOAT: NonFungibleToken {
         pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
-            let id = nft.id
 
             // Update self.events[eventId] to not
             // have this FLOAT's id in it
-            self.events[nft.eventId]!.remove(key: id)
+            self.events[nft.eventId]!.remove(key: withdrawID)
 
             // Try to update the FLOATEvent's current holders. This will
             // not work if they unlinked their FLOATEvent to the public,
@@ -279,11 +278,22 @@ pub contract FLOAT: NonFungibleToken {
                     floatEvent.transferrable, 
                     message: "This FLOAT is not transferrable."
                 )
-                floatEvent.updateFLOATHome(id: nft.id, serial: nft.serial, owner: nil)
+                floatEvent.updateFLOATHome(id: withdrawID, serial: nft.serial, owner: nil)
             }
 
-            emit Withdraw(id: id, from: self.owner!.address)
+            emit Withdraw(id: withdrawID, from: self.owner!.address)
             return <- nft
+        }
+
+        pub fun delete(id: UInt64) {
+            let token <- self.ownedNFTs.remove(key: id) ?? panic("You do not own this FLOAT in your collection")
+            let nft <- token as! @NFT
+
+            // Update self.events[eventId] to not
+            // have this FLOAT's id in it
+            self.events[nft.eventId]!.remove(key: id)
+
+            destroy nft
         }
 
         // Only returns the FLOATs for which we can still
@@ -853,12 +863,12 @@ pub contract FLOAT: NonFungibleToken {
         // Deletes an event. Also makes sure to remove
         // the event from all the groups its in.
         pub fun deleteEvent(eventId: UInt64) {
-            let event <- self.events.remove(key: eventId) ?? panic("This event does not exist")
-            for groupName in event.getGroups() {
+            let eventRef = self.borrowEventRef(eventId: eventId) ?? panic("This FLOAT does not exist.")
+            for groupName in eventRef.getGroups() {
                 let groupRef = (&self.groups[groupName] as &Group?)!
                 groupRef.removeEvent(eventId: eventId)
             }
-            destroy event
+            destroy self.events.remove(key: eventId)
         }
 
         pub fun createGroup(groupName: String, image: String, description: String) {
