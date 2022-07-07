@@ -52,6 +52,11 @@ export const deleteGroupStatus = writable(false);
 export const deleteEventInProgress = writable(false);
 export const deleteEventStatus = writable(false);
 
+export const incinerateInProgress = writable(false);
+export const incinerateStatus = writable(false);
+
+
+
 /**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  

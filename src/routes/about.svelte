@@ -17,9 +17,9 @@
 	<p>
 		Whether it be a <span class="twitter">Twitter space</span>,
 		<span class="discord">Discord call</span>,
-		<span class="youtube">YouTube livestream</span>, IRL event, or anything at all, you can
-		create a FLOAT Event so participants can remember and have proof that they
-		were there.
+		<span class="youtube">YouTube livestream</span>, IRL event, or anything at
+		all, you can create a FLOAT Event so participants can remember and have
+		proof that they were there.
 	</p>
 
 	<h2>Cherish your favorite memories #onFlow.</h2>
@@ -40,8 +40,15 @@
 
 	<h2 id="distribute-directly">Configure your events however you want.</h2>
 	<p>
-		Want to prevent users from transferring your FLOATs? Want to put a time limit or max capacity
-		on your event? Configure your events however you want on the <a href="/create">/create</a> page.
+		Want to prevent users from transferring your FLOATs? Want to put a time
+		limit or max capacity on your event? Configure your events however you want
+		on the <a href="/create">/create</a> page.
+	</p>
+
+	<h2 id="distribute-directly">Rules</h2>
+	<p>
+		No nudity or any imagery involving sexual content. You will be immediately
+		banned from the platform.
 	</p>
 
 	<h2>FLOAT == "Flow Attendance"</h2>
@@ -51,8 +58,7 @@
 			><img
 				style="height:20px;width:auto;margin-right:4px;"
 				src="/emeraldcitylogo.png"
-				alt="Emerald City logo"
-			/>Emerald City</a
+				alt="Emerald City logo" />Emerald City</a
 		>, the first DAO on Flow. You may have seen us develop other fun stuff like
 		the
 		<a
@@ -61,8 +67,7 @@
 			><img
 				style="height:20px;width:auto;margin-right:4px;"
 				src="/emeraldboticon.png"
-				alt="Emerald bot icon"
-			/>Emerald bot
+				alt="Emerald bot icon" />Emerald bot
 		</a>. If you have, hellooooooooo again!
 	</p>
 	<p>
@@ -71,7 +76,11 @@
 		have you!
 	</p>
 
-  <a role="button" class="bold"  href="/create" style="display:block; margin: 0 auto;">Create a FLOAT Event!</a>
+	<a
+		role="button"
+		class="bold"
+		href="/create"
+		style="display:block; margin: 0 auto;">Create a FLOAT Event!</a>
 </div>
 
 <style>
