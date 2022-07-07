@@ -62,9 +62,8 @@
 
   let showTable = false;
 
-  const getMyFloats = async () => {
-    console.log("yo");
-    const floatsRaw = await getFLOATs($user?.addr);
+  const getMyFloats = async (user) => {
+    const floatsRaw = await getFLOATs(user?.addr);
     const floatsFormatted = Object.values(floatsRaw || {})?.map((obj) => {
       return {
         ...obj.float,
@@ -73,7 +72,7 @@
     return floatsFormatted || [];
   };
 
-  const floats = getMyFloats();
+  $: floats = getMyFloats($user);
 
   function deleteMyFloats() {
     showTable = false;
@@ -462,7 +461,7 @@
     background: linear-gradient(#12191f, #f26b52);
   }
   .noTable {
-    height: 100vh;
+    min-height: 100vh;
   }
 
   /* SVG FIRE */
