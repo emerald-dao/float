@@ -57,7 +57,7 @@ pub contract FLOAT: NonFungibleToken {
     pub event ContractInitialized()
     pub event FLOATMinted(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, recipient: Address, serial: UInt64)
     pub event FLOATClaimed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, eventName: String, recipient: Address, serial: UInt64)
-    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, serial: UInt64)
+    pub event FLOATDestroyed(id: UInt64, eventHost: Address, eventId: UInt64, eventImage: String, serial: UInt64)
     pub event FLOATTransferred(id: UInt64, eventHost: Address, eventId: UInt64, newOwner: Address?, serial: UInt64)
     pub event FLOATPurchased(id: UInt64, eventHost: Address, eventId: UInt64, recipient: Address, serial: UInt64)
     pub event FLOATEventCreated(eventId: UInt64, description: String, host: Address, image: String, name: String, url: String)
@@ -205,6 +205,7 @@ pub contract FLOAT: NonFungibleToken {
                 id: self.id, 
                 eventHost: self.eventHost, 
                 eventId: self.eventId, 
+                eventImage: self.eventImage,
                 serial: self.serial
             )
         }
