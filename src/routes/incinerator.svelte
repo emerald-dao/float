@@ -93,7 +93,7 @@
   uniqueId={+new Date()} />
 
 {#if !showTable}
-  <div class="spawner" class:noTable={!showTable}>
+  <div class="spawner noTable">
     {#if !$user?.loggedIn}
       <button id="incinerate-button" on:click={authenticate}
         >Connect Wallet</button>
@@ -459,11 +459,10 @@
     left: 0px;
     position: relative;
     width: 100vw;
-    height: auto;
     background: linear-gradient(#12191f, #f26b52);
   }
   .noTable {
-    height: 100vh;
+    min-height: 80vh;
   }
 
   /* SVG FIRE */
