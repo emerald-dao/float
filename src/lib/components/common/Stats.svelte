@@ -13,7 +13,7 @@
         <span>{parseInt(stats[0]).toLocaleString()}</span>
       </p>
       <p>
-        Total FLOATs Burned<br />
+        FLOATs Incinerated<br />
         <span>{(parseInt(stats[1]) + addition).toLocaleString()}</span>
       </p>
     </div>

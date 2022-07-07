@@ -112,7 +112,7 @@
 
     <Stats {addition} incinerator={true} />
 
-    <div class="mo-fire">
+    <div class="mo-fire" class:grow-larger={$incinerateInProgress === true}>
       <svg
         version="1.1"
         id="Layer_1"
@@ -391,6 +391,10 @@
             <button id="quit-button" on:click={() => (showTable = false)}
               >Quit</button>
           </div>
+          <p class="no-margin">
+            Select a bunch of FLOATs to burn forever. You will never get these
+            FLOATs back.
+          </p>
 
           <div>
             {#each Object.values($selectedToBurn) as float}
@@ -471,6 +475,20 @@
     transform: translateX(-50%);
     bottom: -50px;
     z-index: 11;
+  }
+
+  .grow-larger {
+    animation: growLarger 4s forwards;
+  }
+
+  @keyframes growLarger {
+    0% {
+      width: 60%;
+    }
+
+    100% {
+      width: 85%;
+    }
   }
 
   .mo-fire svg {
