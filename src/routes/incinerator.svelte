@@ -102,7 +102,7 @@
         >Incinerating...</button>
     {:else if $incinerateStatus.success}
       <button id="incinerate-button" disabled
-        >The flame grows stronger...</button>
+        >You have added strength to the fire!</button>
     {:else if !$incinerateStatus.success && $incinerateStatus.error}
       <button id="incinerate-button" disabled> Error </button>
     {:else}

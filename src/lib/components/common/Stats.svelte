@@ -10,11 +10,11 @@
       <p
         data-tooltip="The lower a FLOAT's serial and the longer you've had it, the more it adds to the flame.">
         Flame Strength<br />
-        <span>{(parseInt(stats[0]) + addition).toLocaleString()}</span>
+        <span>{parseInt(stats[0]).toLocaleString()}</span>
       </p>
       <p>
         Total FLOATs Burned<br />
-        <span>{parseInt(stats[1]).toLocaleString()}</span>
+        <span>{(parseInt(stats[1]) + addition).toLocaleString()}</span>
       </p>
     </div>
   {/await}
