@@ -974,7 +974,7 @@ export const incinerate = async (ids) => {
         }
         incinerateInProgress.set(false);
 
-        setTimeout(() => incinerateInProgress.set(false), 2000)
+        setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
@@ -2344,6 +2344,28 @@ export const getStats = async () => {
         let info: [UInt64] = []
         info.append(FLOAT.totalSupply)
         info.append(FLOAT.totalFLOATEvents)
+        return info
+      }
+      `,
+      args: (arg, t) => [
+      ]
+    })
+    return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getIncineratedStats = async () => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOATIncinerator from 0xFLOAT
+
+      pub fun main(): [UInt64] {
+        let info: [UInt64] = []
+        info.append(FLOATIncinerator.flameStrength)
+        info.append(FLOATIncinerator.totalIncinerated)
         return info
       }
       `,
