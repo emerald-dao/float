@@ -462,7 +462,7 @@
     background: linear-gradient(#12191f, #f26b52);
   }
   .noTable {
-    min-height: 80vh;
+    height: 100vh;
   }
 
   /* SVG FIRE */
