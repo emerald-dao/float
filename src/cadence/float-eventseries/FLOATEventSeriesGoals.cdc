@@ -1,3 +1,4 @@
+import FLOAT from "../float/FLOAT.cdc"
 import FLOATEventSeries from "./FLOATEventSeries.cdc"
 
 pub contract FLOATEventSeriesGoals {
@@ -47,10 +48,11 @@ pub contract FLOATEventSeriesGoals {
             let slots = eventSeries.getSlots()
             for slot in slots {
                 if let eventIdentifier = slot.getIdentifier() {
-                    let eventPub = eventIdentifier.getEventPublic()
+                    // ensure event exists
+                    eventIdentifier.getEventPublic()
                     // check if FLOAT is claimed
-                    let token = eventPub.hasClaimed(account: user)
-                    if token != nil {
+                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                    if isOwned {
                         claimedTotal = claimedTotal + 1
                         // required update
                         if slot.isEventRequired() {
@@ -98,10 +100,11 @@ pub contract FLOATEventSeriesGoals {
             for slot in slots {
                 slotTotal = slotTotal + 1.0
                 if let eventIdentifier = slot.getIdentifier() {
-                    let eventPub = eventIdentifier.getEventPublic()
+                    // ensure event exists
+                    eventIdentifier.getEventPublic()
                     // check if FLOAT is claimed
-                    let token = eventPub.hasClaimed(account: user)
-                    if token != nil {
+                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                    if isOwned {
                         claimedTotal = claimedTotal + 1.0
                     }
                 }
@@ -149,16 +152,35 @@ pub contract FLOATEventSeriesGoals {
                 if let eventIdentifier = slot.getIdentifier() {
                     // only required
                     if requiredIDs.contains(eventIdentifier.toString()) {
-                        let eventPub = eventIdentifier.getEventPublic()
+                        // ensure event exists
+                        eventIdentifier.getEventPublic()
                         // check if FLOAT is claimed
-                        let token = eventPub.hasClaimed(account: user)
-                        if token != nil {
+                        let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                        if isOwned {
                             claimedTotal = claimedTotal + 1
                         }
                     }
                 }
             }
             return claimedTotal == requiredIDs.length
+        }
+    }
+    // ------------- Utility Method -------------
+
+    // get user FLOAT collection
+    access(contract) fun getFLOATCollection(user: Address): &FLOAT.Collection{FLOAT.CollectionPublic}? {
+        return getAccount(user)
+            .getCapability(FLOAT.FLOATCollectionPublicPath)
+            .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+    }
+
+    // to check if owned some FLOAT of a Event
+    access(contract) fun isOwnedFLOAT(user: Address, eventId: UInt64): Bool {
+        if let collection = FLOATEventSeriesGoals.getFLOATCollection(user: user) {
+            let ids = collection.ownedIdsFromEvent(eventId: eventId)
+            return ids.length > 0
+        } else {
+            return false
         }
     }
 
