@@ -215,9 +215,9 @@
     <footer>
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
-          <button class="contrast small-button" on:click={authenticate}
-            >Connect Wallet</button
-          >
+          <button class="contrast small-button" on:click={authenticate}>
+            Connect Wallet
+          </button>
         </div>
       {:else if $creationInProgress}
         <button aria-busy="true" disabled>Creating FLOAT</button>
