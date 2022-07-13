@@ -969,6 +969,7 @@ export const incinerate = async (ids) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           incinerateStatus.set(respondWithSuccess());
+          setTimeout(() => incinerateStatus.set(null), 2000);
         } else {
           incinerateStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
