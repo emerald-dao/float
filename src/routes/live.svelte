@@ -4,7 +4,7 @@
   import GraffleSDK from "$lib/graffle.js";
   import { onMount } from "svelte";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
-  import Stats from '$lib/components/common/Stats.svelte';
+  import Stats from "$lib/components/common/Stats.svelte";
 
   let claimedEvents = {};
 
@@ -26,14 +26,15 @@
   const receiveEvent = (message) => {
     // `message` is the event
     console.log(message);
-    renderImage(
-      message.id,
-      message.blockEventData.eventImage,
-      message.blockEventData.eventHost,
-      message.blockEventData.eventId
-    );
-    addition++;
-    console.log(addition)
+    if (message.flowEventId === "A.2d4c3caffbeab845.FLOAT.FLOATClaimed") {
+      renderImage(
+        message.id,
+        message.blockEventData.eventImage,
+        message.blockEventData.eventHost,
+        message.blockEventData.eventId
+      );
+      addition++;
+    }
   };
 
   function createStream() {
@@ -63,8 +64,7 @@
 <LibLoader
   url="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.2/signalr.min.js"
   on:loaded={() => createStream()}
-  uniqueId={+new Date()}
-/>
+  uniqueId={+new Date()} />
 
 <div id="spawner">
   <img class="island" src="/island.png" alt="FLOATing island" />

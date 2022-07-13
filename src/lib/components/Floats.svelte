@@ -25,6 +25,10 @@
   <header>
     <h3 class="text-center">Claimed FLOATs</h3>
   </header>
+  {#if $user?.addr == addressObject.address}
+    <a href="/incinerator" role="button" class="incinerate"
+      >Incinerate some FLOATs</a>
+  {/if}
   {#await floats()}
     <Loading />
   {:then floats}
@@ -34,21 +38,27 @@
       <p class="text-center">This account has not claimed any FLOATs yet.</p>
       {#if $user?.addr == addressObject.address}
         <a href="/create" role="button" class="addnew"
-          >Create a new FLOAT Event</a
-        >
+          >Create a new FLOAT Event</a>
       {/if}
     {/if}
   {/await}
 </article>
 
 <style>
-  .addnew {
+  .addnew,
+  .incinerate {
     font-weight: bold;
     width: 100%;
   }
 
+  .incinerate {
+    background-color: #f26b52;
+    border: 0;
+  }
+
   @media screen and (max-width: 767px) {
-    .addnew {
+    .addnew,
+    .incinerate {
       margin-top: 20px;
     }
   }

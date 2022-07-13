@@ -969,12 +969,13 @@ export const incinerate = async (ids) => {
       if (res.status === 4) {
         if (res.statusCode === 0) {
           incinerateStatus.set(respondWithSuccess());
+          setTimeout(() => incinerateStatus.set(null), 2000);
         } else {
           incinerateStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
         }
         incinerateInProgress.set(false);
 
-        setTimeout(() => incinerateInProgress.set(false), 2000)
+        setTimeout(() => transactionInProgress.set(false), 2000)
       }
     })
 
@@ -2344,6 +2345,28 @@ export const getStats = async () => {
         let info: [UInt64] = []
         info.append(FLOAT.totalSupply)
         info.append(FLOAT.totalFLOATEvents)
+        return info
+      }
+      `,
+      args: (arg, t) => [
+      ]
+    })
+    return queryResult || [];
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getIncineratedStats = async () => {
+  try {
+    let queryResult = await fcl.query({
+      cadence: `
+      import FLOATIncinerator from 0xFLOAT
+
+      pub fun main(): [UInt64] {
+        let info: [UInt64] = []
+        info.append(FLOATIncinerator.flameStrength)
+        info.append(FLOATIncinerator.totalIncinerated)
         return info
       }
       `,
