@@ -2772,7 +2772,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
  * @param {object} options
  * @param {boolean} options.consumable if comsume achievement point
  * @param {number} options.threshold how many achievement points in valid to claim
- * @param {number} options.maxClaimableAmount
+ * @param {number} options.maxClaimableShares
  * @param {boolean} options.autoStart
  * @param {object[]} options.oneShareOfFTs
  * @param {string} options.oneShareOfFTs.identifier
@@ -2817,7 +2817,7 @@ export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
         arg(seriesId, t.UInt64),
         arg(options.consumable, t.Bool),
         arg(options.threshold, t.UInt64),
-        arg(options.maxClaimableAmount, t.UInt64),
+        arg(options.maxClaimableShares, t.UInt64),
         arg(options.autoStart, t.Bool),
         arg(treasuryFTs, t.Array(t.String)),
         arg(treasuryFTsAmount, t.Array(t.UFix64)),
@@ -2836,7 +2836,7 @@ export const addTreasuryStrategy = async (seriesId, type, options = {}) => {
         arg(seriesId, t.UInt64),
         arg(options.consumable, t.Bool),
         arg(options.threshold, t.UInt64),
-        arg(options.maxClaimableAmount, t.UInt64),
+        arg(options.maxClaimableShares, t.UInt64),
         arg(options.autoStart, t.Bool),
         arg(treasuryFTs, t.Array(t.String)),
         arg(treasuryFTsAmount, t.Array(t.UFix64)),

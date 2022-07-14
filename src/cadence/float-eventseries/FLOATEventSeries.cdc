@@ -310,13 +310,156 @@ pub contract FLOATEventSeries {
         pub case closed
     }
 
+    pub enum StrategyDeliveryType: UInt8 {
+        pub case ftIdenticalAmount
+        pub case ftRandomAmount
+        pub case nft
+    }
+
+    // delivery information
+    pub struct interface StrategyDelivery {
+        // which delivery type
+        pub let type: StrategyDeliveryType
+        // is delivery nft?
+        pub let isNFT: Bool
+        // which token is this strategy to deliver
+        pub let deliveryTokenType: Type
+        // how many claimable shares
+        pub let maxClaimableShares: UInt64
+        // how many shares has been delivered
+        pub var claimedShares: UInt64
+        // ---- readonly methods ----
+        // get total amount of the delivery
+        pub fun getTotalAmount(): UFix64
+        // get rest amount of the delivery
+        pub fun getRestAmount(): UFix64
+        // ---- writable methods ----
+        access(contract) fun deliveryFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}) {
+            pre {
+                !self.isNFT: "Strategy should be delivering Fungible Token"
+            }
+        }
+        access(contract) fun deliveryNFT(treasury: &Treasury, recipient: &{NonFungibleToken.CollectionPublic}) {
+            pre {
+                self.isNFT: "Strategy should be delivering NFT"
+            }
+        }
+    }
+
+    // StrategyDeliveryType.ftIdenticalAmount
+    pub struct StrategyDeliveryFTWithIdenticalAmount: StrategyDelivery {
+        // interface implement
+        pub let type: StrategyDeliveryType
+        pub let isNFT: Bool
+        pub let deliveryTokenType: Type
+        pub let maxClaimableShares: UInt64
+        pub var claimedShares: UInt64
+        // local implement
+        pub let oneShareAmount: UFix64
+        pub var restAmount: UFix64
+
+        init(
+            _ tokenType: Type,
+            _ maxClaimableShares: UInt64,
+            oneShareAmount: UFix64,
+        ) {
+            self.type = StrategyDeliveryType.ftIdenticalAmount
+            self.isNFT = false
+            self.deliveryTokenType = tokenType
+            self.maxClaimableShares = maxClaimableShares
+            self.claimedShares = 0
+            self.oneShareAmount = oneShareAmount
+            self.restAmount = self.getTotalAmount()
+        }
+        // interface implement
+        pub fun getTotalAmount(): UFix64 {
+            return self.oneShareAmount * UFix64(self.maxClaimableShares)
+        }
+        pub fun getRestAmount(): UFix64 {
+            return self.restAmount
+        }
+        // ---- writable methods ----
+        access(contract) fun deliveryFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}) {
+            // TODO
+        }
+        access(contract) fun deliveryNFT(treasury: &Treasury, recipient: &{NonFungibleToken.CollectionPublic}) { /* NOTHING */ }
+    }
+
+    // StrategyDeliveryType.ftRandomAmount
+    pub struct StrategyDeliveryFTWithRandomAmount: StrategyDelivery {
+        // interface implement
+        pub let type: StrategyDeliveryType
+        pub let isNFT: Bool
+        pub let deliveryTokenType: Type
+        pub let maxClaimableShares: UInt64
+        pub var claimedShares: UInt64
+        // local implement
+        pub let totalAmount: UFix64
+        pub var restAmount: UFix64
+
+        init(
+            _ tokenType: Type,
+            _ maxClaimableShares: UInt64,
+            totalAmount: UFix64,
+        ) {
+            self.type = StrategyDeliveryType.ftRandomAmount
+            self.isNFT = false
+            self.deliveryTokenType = tokenType
+            self.maxClaimableShares = maxClaimableShares
+            self.claimedShares = 0
+            self.totalAmount = totalAmount
+            self.restAmount = totalAmount
+        }
+        // interface implement
+        pub fun getTotalAmount(): UFix64 {
+            return self.totalAmount
+        }
+        pub fun getRestAmount(): UFix64 {
+            return self.restAmount
+        }
+        // ---- writable methods ----
+        access(contract) fun deliveryFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}) {
+            // TODO
+        }
+        access(contract) fun deliveryNFT(treasury: &Treasury, recipient: &{NonFungibleToken.CollectionPublic}) { /* NOTHING */ }
+    }
+
+    // StrategyDeliveryType.nft
+    pub struct StrategyDeliveryNFT: StrategyDelivery {
+        // interface implement
+        pub let type: StrategyDeliveryType
+        pub let isNFT: Bool
+        pub let deliveryTokenType: Type
+        pub let maxClaimableShares: UInt64
+        pub var claimedShares: UInt64
+
+        init(
+            _ tokenType: Type,
+            _ maxClaimableShares: UInt64,
+        ) {
+            self.type = StrategyDeliveryType.nft
+            self.isNFT = true
+            self.deliveryTokenType = tokenType
+            self.maxClaimableShares = maxClaimableShares
+            self.claimedShares = 0
+        }
+        // interface implement
+        pub fun getTotalAmount(): UFix64 { return 0.0 }
+        pub fun getRestAmount(): UFix64 { return 0.0 }
+        // ---- writable methods ----
+        access(contract) fun deliveryFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}) { /* NOTHING */ }
+        access(contract) fun deliveryNFT(treasury: &Treasury, recipient: &{NonFungibleToken.CollectionPublic}) {
+            // TODO
+        }
+    }
+
     pub struct StrategyInformation {
         // when claimed, if score will be consumed
         pub let consumable: Bool
         // minimium threshold of achievement score
         pub let threshold: UInt64
         // how many claimable shares
-        pub let maxClaimableAmount: UInt64
+        pub let maxClaimableShares: UInt64
         // how much FTs to claim for one share
         pub let oneShareOfClaimableFT: {Type: UFix64}
         // how much NFTs to claim for one share
@@ -330,19 +473,19 @@ pub contract FLOATEventSeries {
         init(
             _ consumable: Bool,
             _ threshold: UInt64,
-            _ maxClaimableAmount: UInt64,
+            _ maxClaimableShares: UInt64,
             _ oneShareOfClaimableFT: {Type: UFix64},
             _ oneShareOfClaimableNFT: {Type: UInt64}
         ) {
             pre {
                 threshold > 0: "Threshold must be bigger than zero"
-                maxClaimableAmount > 0: "claimable amount must be bigger than zero"
+                maxClaimableShares > 0: "claimable amount must be bigger than zero"
                 oneShareOfClaimableFT.keys.length > 0 || oneShareOfClaimableNFT.keys.length > 0
                     : "at least one share of FT or NFTs to claim"
             }
             self.consumable = consumable
             self.threshold = threshold
-            self.maxClaimableAmount = maxClaimableAmount
+            self.maxClaimableShares = maxClaimableShares
             self.oneShareOfClaimableFT = oneShareOfClaimableFT
             self.oneShareOfClaimableNFT = oneShareOfClaimableNFT
             // variable
@@ -365,7 +508,7 @@ pub contract FLOATEventSeries {
             let ret = StrategyInformation(
                 self.consumable,
                 self.threshold,
-                self.maxClaimableAmount,
+                self.maxClaimableShares,
                 self.oneShareOfClaimableFT,
                 self.oneShareOfClaimableNFT
             )
@@ -384,11 +527,11 @@ pub contract FLOATEventSeries {
         init(
             consumable: Bool,
             threshold: UInt64,
-            maxClaimableAmount: UInt64,
+            maxClaimableShares: UInt64,
             oneShareOfClaimableFT: {Type: UFix64},
             oneShareOfClaimableNFT: {Type: UInt64}
         ) {
-            self.info = StrategyInformation(consumable, threshold, maxClaimableAmount, oneShareOfClaimableFT, oneShareOfClaimableNFT)
+            self.info = StrategyInformation(consumable, threshold, maxClaimableShares, oneShareOfClaimableFT, oneShareOfClaimableNFT)
             self.claimed = []
         }
 
@@ -435,7 +578,7 @@ pub contract FLOATEventSeries {
         access(contract) fun ensureClaimOneShare(user: &{AchievementPublic}): UInt64 {
             pre {
                 self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
-                self.info.claimedAmount < self.info.maxClaimableAmount: "Reach max claimable."
+                self.info.claimedAmount < self.info.maxClaimableShares: "Reach max claimable."
                 !self.hasClaimed(address: user.getOwner()): "The user has claimed one share."
                 self.verifyScore(user: user): "Score not enough! The user cannot to claim for now."
             }
@@ -571,13 +714,12 @@ pub contract FLOATEventSeries {
         access(self) let seriesId: UInt64
         // generic tokens will be dropped to this address, when treasury destory
         access(self) var receiver: Address
-
-        // fungible token pool {identifier: Vault}
-        access(self) var genericFTPool: @{Type: FungibleToken.Vault}
-        // non-fungible token pool {identifier: Collection}
-        access(self) var genericNFTPool: @{Type: {NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}}
         // all treasury strategies
         access(self) var strategies: @[{ITreasuryStrategy}]
+        // fungible token pool {identifier: Vault}
+        access(contract) var genericFTPool: @{Type: FungibleToken.Vault}
+        // non-fungible token pool {identifier: Collection}
+        access(contract) var genericNFTPool: @{Type: {NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}}
 
         init(
             seriesId: UInt64,
@@ -690,7 +832,7 @@ pub contract FLOATEventSeries {
             )
 
             // check if all shares claimed, go next stage
-            if currentClaimed >= strategyInfo.maxClaimableAmount {
+            if currentClaimed >= strategyInfo.maxClaimableShares {
                 self.nextStrategyStage(idx: strategyIndex)
             }
         }
@@ -812,12 +954,12 @@ pub contract FLOATEventSeries {
             // ensure FTs and NFTs is enough in the treasury
             let info = strategy.controller.getInfo()
             for ftKey in info.oneShareOfClaimableFT.keys {
-                let amount = info.oneShareOfClaimableFT[ftKey]!.saturatingMultiply(UFix64(info.maxClaimableAmount))
+                let amount = info.oneShareOfClaimableFT[ftKey]!.saturatingMultiply(UFix64(info.maxClaimableShares))
                 self.ensureFTEnough(type: ftKey, amount: amount)
             }
 
             for nftKey in info.oneShareOfClaimableNFT.keys {
-                let amount = info.oneShareOfClaimableNFT[nftKey]!.saturatingMultiply(info.maxClaimableAmount)
+                let amount = info.oneShareOfClaimableNFT[nftKey]!.saturatingMultiply(info.maxClaimableShares)
                 self.ensureNFTEnough(type: nftKey, amount: amount)
             }
 
@@ -1248,7 +1390,7 @@ pub contract FLOATEventSeries {
         pub fun createStrategyController(
             consumable: Bool,
             threshold: UInt64,
-            maxClaimableAmount: UInt64,
+            maxClaimableShares: UInt64,
             oneShareOfClaimableFT: {Type: UFix64},
             oneShareOfClaimableNFT: {Type: UInt64},
         ): @StrategyController
@@ -1386,14 +1528,14 @@ pub contract FLOATEventSeries {
         pub fun createStrategyController(
             consumable: Bool,
             threshold: UInt64,
-            maxClaimableAmount: UInt64,
+            maxClaimableShares: UInt64,
             oneShareOfClaimableFT: {Type: UFix64},
             oneShareOfClaimableNFT: {Type: UInt64},
         ): @StrategyController {
             return <- create StrategyController(
                 consumable: consumable,
                 threshold: threshold,
-                maxClaimableAmount: maxClaimableAmount,
+                maxClaimableShares: maxClaimableShares,
                 oneShareOfClaimableFT: oneShareOfClaimableFT,
                 oneShareOfClaimableNFT: oneShareOfClaimableNFT
             )

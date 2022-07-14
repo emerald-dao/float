@@ -6,7 +6,7 @@ transaction(
   seriesId: UInt64,
   consumable: Bool,
   threshold: UInt64,
-  maxClaimableAmount: UInt64,
+  maxClaimableShares: UInt64,
   autoStart: Bool,
   treasuryFTs: [String],
   treasuryFTsAmount: [UFix64],
@@ -71,7 +71,7 @@ transaction(
     let controller <- self.serieshelf.createStrategyController(
       consumable: consumable,
       threshold: threshold,
-      maxClaimableAmount: maxClaimableAmount,
+      maxClaimableShares: maxClaimableShares,
       oneShareOfClaimableFT: oneShareOfClaimableFT,
       oneShareOfClaimableNFT: oneShareOfClaimableNFT
     )
