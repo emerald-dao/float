@@ -33,6 +33,10 @@ export const GOAL_BY_SPECIFICS = 'goalBySpecifics'
 export const STRATEGY_LOTTERY = 'lotteryStrategy'
 export const STRATEGY_QUEUE = 'queueStrategy'
 
+export const DELIVERY_FT_IDENTICAL = 'ftIdenticalAmount'
+export const DELIVERY_FT_RANDOM = 'ftRandomAmount'
+export const DELIVERY_NFT = 'nft'
+
 // -------------- Setter - Transactions --------------
 // ** Event Series Builder **
 export { default as txCreateEventSeries } from '../../cadence/float-eventseries/transactions/create_eventseries.cdc?raw'
@@ -41,8 +45,7 @@ export { default as txUpdateEventSeriesSlots } from '../../cadence/float-eventse
 export { default as txAddEventSeriesGoalByAmount } from '../../cadence/float-eventseries/transactions/add_achievement_goal_by_amount.cdc?raw'
 export { default as txAddEventSeriesGoalByPercent } from '../../cadence/float-eventseries/transactions/add_achievement_goal_by_percent.cdc?raw'
 export { default as txAddEventSeriesGoalBySpecifics } from '../../cadence/float-eventseries/transactions/add_achievement_goal_by_specifics.cdc?raw'
-export { default as txAddTreasuryLotteryStrategy } from '../../cadence/float-eventseries/transactions/add_strategy_lottery.cdc?raw'
-export { default as txAddTreasuryQueueStrategy } from '../../cadence/float-eventseries/transactions/add_strategy_queue.cdc?raw'
+export { default as txAddTreasuryStrategy } from '../../cadence/float-eventseries/transactions/add_strategy.cdc?raw'
 export { default as txDepositFungibleTokenToTreasury } from '../../cadence/float-eventseries/transactions/deposit_ft.cdc?raw'
 export { default as txDepositNonFungibleTokenToTreasury } from '../../cadence/float-eventseries/transactions/deposit_nft.cdc?raw'
 export { default as txNextTreasuryStrategyStage } from '../../cadence/float-eventseries/transactions/next_strategy_stage.cdc?raw'

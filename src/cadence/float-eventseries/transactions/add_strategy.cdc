@@ -6,19 +6,22 @@ transaction(
   seriesId: UInt64,
   consumable: Bool,
   threshold: UInt64,
-  maxClaimableShares: UInt64,
   autoStart: Bool,
-  treasuryFTs: [String],
-  treasuryFTsAmount: [UFix64],
-  treasuryNFTs: [String],
-  treasuryNFTsAmount: [UInt64],
+  // State Parameters
   hasOpeningEnding: Bool,
   openingEnding: UFix64,
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
-  minimiumValidAmount: UInt64?,
+  hasMinimiumValid: Bool,
+  minimiumValidAmount: UInt64,
+  // Delivery Parameters
+  strategyMode: UInt8,
+  maxClaimableShares: UInt64,
+  deliveryMode: UInt8,
+  deliveryTokenIdentifier: String,
+  deliveryParam1: UFix64?,
 ) {
-  let serieshelf: &FLOATEventSeries.EventSeriesBuilder
+  let seriesBuilder: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
   prepare(acct: AuthAccount) {
@@ -31,37 +34,49 @@ transaction(
           (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
-    self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    self.seriesBuilder = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventSeries = self.serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
+    self.eventSeries = self.seriesBuilder.borrowEventSeriesPrivate(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 
   pre {
     threshold > 0: "threshold should be greator then zero"
-    treasuryFTs.length == treasuryFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
-    treasuryNFTs.length == treasuryNFTsAmount.length: "Array of treasuryFTs parameters should be with same length"
+    FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode) != nil: "Invalid strategyMode"
+    FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) != nil: "Invalid deliveryMode"
     minimiumValidAmount == nil || minimiumValidAmount! > 0: "minimiumValidAmount should be greator then zero"
   }
 
   execute {
     let treasury = self.eventSeries.borrowTreasuryPrivate()
 
-    let oneShareOfClaimableFT: {Type: UFix64} = {}
-    for i, key in treasuryFTs {
-      let tokenType = CompositeType(key) ?? panic("Invalid type: ".concat(key))
-      assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(key))
-      oneShareOfClaimableFT[tokenType] = treasuryFTsAmount[i]
+    let tokenType = CompositeType(deliveryTokenIdentifier) ?? panic("Invalid type: ".concat(deliveryTokenIdentifier))
+    assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(deliveryTokenIdentifier))
+
+    var delivery: {FLOATEventSeries.StrategyDelivery}? = nil
+
+    switch FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) {
+      case FLOATEventSeries.StrategyDeliveryType.ftIdenticalAmount:
+        assert(deliveryParam1 != nil && deliveryParam1! > 0.0, message: "missing delivery parameter.")
+        delivery = FLOATEventSeries.StrategyDeliveryFTWithIdenticalAmount(tokenType, maxClaimableShares, deliveryParam1!)
+        break
+      case FLOATEventSeries.StrategyDeliveryType.ftRandomAmount:
+        assert(deliveryParam1 != nil && deliveryParam1! > 0.0, message: "missing delivery parameter.")
+        delivery = FLOATEventSeries.StrategyDeliveryFTWithRandomAmount(tokenType, maxClaimableShares, deliveryParam1!)
+        break
+      case FLOATEventSeries.StrategyDeliveryType.nft:
+        delivery = FLOATEventSeries.StrategyDeliverNFT(tokenType, maxClaimableShares)
+        break
     }
 
-    let oneShareOfClaimableNFT: {Type: UInt64} = {}
-    for i, key in treasuryNFTs {
-      let tokenType = CompositeType(key) ?? panic("Invalid type: ".concat(key))
-      assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(key))
-      oneShareOfClaimableNFT[tokenType] = treasuryNFTsAmount[i]
-    }
+    let controller <- self.seriesBuilder.createStrategyController(
+      consumable: consumable,
+      threshold: threshold,
+      delivery: delivery ?? panic("Missing delivery instance."),
+    )
 
+    // strategy paramters
     let params: {String: AnyStruct} = {}
     params["minValid"] = minimiumValidAmount
     if hasOpeningEnding {
@@ -71,16 +86,8 @@ transaction(
       params["claimableEnd"] = claimableEnding
     }
 
-    let controller <- self.serieshelf.createStrategyController(
-      consumable: consumable,
-      threshold: threshold,
-      maxClaimableShares: maxClaimableShares,
-      oneShareOfClaimableFT: oneShareOfClaimableFT,
-      oneShareOfClaimableNFT: oneShareOfClaimableNFT
-    )
-
     let strategy <- FLOATTreasuryStrategies.createStrategy(
-        type: FLOATTreasuryStrategies.StrategyType.Lottery,
+        type: FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode)!,
         controller: <- controller,
         params: params
       ) ?? panic("Failed to create strategy")

@@ -499,7 +499,6 @@ pub contract FLOATEventSeries {
         init(
             _ tokenType: Type,
             _ maxClaimableShares: UInt64,
-            oneShareAmount: UInt64
         ) {
             self.type = StrategyDeliveryType.nft
             self.isNFT = true

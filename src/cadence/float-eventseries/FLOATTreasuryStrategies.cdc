@@ -66,9 +66,9 @@ pub contract FLOATTreasuryStrategies {
             if let value = params["minValid"] {
                 self.minimiumValid = value as! UInt64
             } else {
-                self.minimiumValid = info.maxClaimableShares
+                self.minimiumValid = info.delivery.maxClaimableShares
             }
-            assert(self.minimiumValid >= info.maxClaimableShares, message: "min valid amount should be greater then max claimable amount.")
+            assert(self.minimiumValid >= info.delivery.maxClaimableShares, message: "min valid amount should be greater then max claimable amount.")
 
             // user ending time
             self.ending = FLOATTreasuryStrategies.parseStrategyTime(params)
@@ -98,7 +98,7 @@ pub contract FLOATTreasuryStrategies {
             assert(isValidEnough, message: "Valid addresses is not enough.")
 
             let info = self.controller.getInfo()
-            let winnerAmount = info.maxClaimableShares
+            let winnerAmount = info.delivery.maxClaimableShares
 
             // draw a lottery to pick winners
             var amt: UInt64 = 0
