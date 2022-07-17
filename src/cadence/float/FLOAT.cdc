@@ -153,7 +153,7 @@ pub contract FLOAT: NonFungibleToken {
                     return MetadataViews.Display(
                         name: self.eventName, 
                         description: self.eventDescription, 
-                        file: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
+                        thumbnail: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
                     )
                 case Type<TokenIdentifier>():
                     return TokenIdentifier(
@@ -566,7 +566,7 @@ pub contract FLOAT: NonFungibleToken {
                     return MetadataViews.Display(
                         name: self.name, 
                         description: self.description, 
-                        file: MetadataViews.IPFSFile(cid: self.image, path: nil)
+                        thumbnail: MetadataViews.IPFSFile(cid: self.image, path: nil)
                     )
             }
 
