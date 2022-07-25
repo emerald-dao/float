@@ -1,13 +1,13 @@
 <script>
-  import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import { page } from "$app/stores";
   import { resolveAddressObject } from "$lib/flow/actions";
 </script>
 
 <svelte:head>
-  <title>EventSeries #{$page.params.seriesId} {PAGE_TITLE_EXTENSION}</title>
+  <title>EventSeries #{$page.params.seriesId} by {$page.params.host}</title>
 </svelte:head>
 
-<div class="">
+<div class="container">
+  <!-- TODO -->
   <slot />
 </div>
