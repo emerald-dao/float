@@ -2970,6 +2970,16 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
   )
 }
 
+// For Dev
+export const runCleanUp = async () => {
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txCleanup, addressMap),
+    (arg, t) => [],
+    eventSeries.Creation.InProgress,
+    eventSeries.Creation.Status,
+  )
+}
+
 // -------------- Getter - Scripts --------------
 
 // ************************

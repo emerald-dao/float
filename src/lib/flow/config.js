@@ -22,6 +22,7 @@ export const addressMap = {
   FLOATVerifiers: import.meta.env.VITE_FLOAT_ADDRESS,
   GrantedAccountAccess: import.meta.env.VITE_FLOAT_ADDRESS,
   FLOATEventSeries: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
+  FLOATEventSeriesViews: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
   FLOATEventSeriesGoals: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
   FLOATTreasuryStrategies: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
 }

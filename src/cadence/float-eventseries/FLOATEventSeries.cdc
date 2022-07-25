@@ -44,7 +44,7 @@ pub contract FLOATEventSeries {
     pub event FLOATEventSeriesTreasuryNFTDeposit(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
     pub event FLOATEventSeriesTreasuryNFTWithdraw(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
     pub event FLOATEventSeriesTreasuryUpdateDropReceiver(seriesId: UInt64, host: Address, receiver: Address)
-    pub event FLOATEventSeriesTreasuryDropped(seriesId: UInt64, host: Address, receiver: Address)
+    pub event FLOATEventSeriesTreasuryDropped(seriesId: UInt64, host: Address?, receiver: Address)
     pub event FLOATEventSeriesTreasuryStrategyAdded(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int)
     pub event FLOATEventSeriesTreasuryStrategyNextStage(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
     pub event FLOATEventSeriesTreasuryClaimed(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
@@ -963,7 +963,7 @@ pub contract FLOATEventSeries {
             // treasury dropped
             emit FLOATEventSeriesTreasuryDropped(
                 seriesId: self.seriesId,
-                host: self.owner!.address,
+                host: self.owner?.address,
                 receiver: self.receiver
             )
         }
