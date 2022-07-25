@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import Meta from "$lib/components/common/Meta.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
+  import SeriesList from "$lib/components/eventseries/SeriesList.svelte";
   import { getEventSeries, resolveAddressObject } from "$lib/flow/actions";
   import { user } from "$lib/flow/stores";
 
@@ -39,15 +40,21 @@
     {#await loadFloatEventSeries(addressObject.address)}
       <Loading />
     {:then eventSeries}
-      {#if eventSeries.length > 0}
-        <!-- TODO -->
-        LIST of EventSeries: <br />
-        {JSON.stringify(eventSeries)}
-      {:else}
-        <p class="text-center">
-          This account has not created any FLOAT EventSeries yet.
-        </p>
-      {/if}
+      <SeriesList
+        list={eventSeries.map((item) => ({
+          sequence: item.sequence ? parseInt(item.sequence) : -1,
+          identifier: {
+            host: addressObject.address,
+            id: item.id,
+          },
+          basics: {
+            name: item.display?.name,
+            description: item.display?.description,
+            image: item.display?.thumbnail?.cid ?? "",
+          },
+          slots: item.slots || [],
+        }))}
+      />
     {/await}
   {/await}
 </article>

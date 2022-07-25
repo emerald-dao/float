@@ -14,9 +14,9 @@
   </div>
   <div class="panel-content">
     <h1>{eventSeriesData.basics?.name}</h1>
-    <p>
+    <div class="desc">
       {eventSeriesData.basics?.description}
-    </p>
+    </div>
     <div class="d-flex flex-gap">
       <code data-tooltip="Total slots" class="flex-none">
         Event Slots: {eventSeriesData.slots?.length ?? 0}
@@ -51,7 +51,7 @@
     border: 1px solid var(--primary);
   }
 
-  .panel p:last-child {
+  .panel .desc:last-child {
     margin-bottom: 0;
   }
 
@@ -78,7 +78,7 @@
     word-break: break-all;
   }
 
-  .panel-content p {
+  .panel-content .desc {
     min-height: 72px;
     overflow-wrap: break-word;
   }

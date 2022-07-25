@@ -29,7 +29,7 @@
   {:else}
     <a
       class="no-style"
-      href="/series/{eventSeriesData.owner}/{eventSeriesData.identifier.id}"
+      href="/series/{ownerName}/{eventSeriesData.identifier.id}"
     >
       <SeriesCardDisplay
         eventSeriesData={{

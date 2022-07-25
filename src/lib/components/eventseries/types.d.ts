@@ -26,22 +26,23 @@ export interface EventSeriesBasics {
   image: string;
 }
 
-export interface EventSeriesSlot {
+interface Identifier {
   host: string;
-  eventId: string;
-  required?: boolean;
+  id: string;
 }
 
-export interface EventSeriesIdentifier {
-  host: string;
-  id: number;
+interface EventSeriesSlot {
+  event?: Identifier
+  required: boolean;
 }
 
 export interface EventSeriesData {
   // data memeber
-  identifier: EventSeriesIdentifier;
+  identifier: Identifier;
   basics: EventSeriesBasics;
   slots: EventSeriesSlot[];
+  // calc member
+  sequence?: number
   // display member
   owner?: string
 }

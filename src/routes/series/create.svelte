@@ -14,6 +14,9 @@
 
   const creationInProgress = eventSeries.Creation.InProgress;
   const creationStatus = eventSeries.Creation.Status;
+  // init with false
+  creationInProgress.set(false);
+  creationStatus.set(false);
 
   // For Event Series Creation
   /** @type {import('../../lib/components/eventseries/types').EventSeriesCreateRequest} */
