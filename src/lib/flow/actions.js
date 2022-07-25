@@ -2625,9 +2625,9 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  * @param {number} presetEvents.eventId
  * @param {boolean} presetEvents.required
  * @param {number} emptySlotsAmt how many empty slots totally
- * @param {boolean} emptySlotsRequired how many empty slots is required
+ * @param {number} emptySlotsAmtRequired how many empty slots is required
  */
-export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsRequired = false) => {
+export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsAmtRequired = 0) => {
   const reduced = presetEvents.reduce((all, curr) => {
     if (typeof curr.host === 'string' &&
       typeof curr.eventId === 'string' && 
@@ -2646,7 +2646,7 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
       arg(basics.description, t.String),
       arg(basics.image, t.String),
       arg(String(emptySlotsAmt), t.UInt64),
-      arg(emptySlotsRequired ? String(emptySlotsAmt) : '0', t.UInt64),
+      arg(emptySlotsAmtRequired ? String(emptySlotsAmtRequired) : '0', t.UInt64),
       arg(reduced.hosts, t.Array(t.Address)),
       arg(reduced.eventIds, t.Array(t.UInt64)),
       arg(reduced.required, t.Array(t.Bool))

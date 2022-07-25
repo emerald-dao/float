@@ -7,9 +7,9 @@
   import EventItem from "$lib/components/eventseries/EventItem.svelte";
   import DialogPickingEvents from "$lib/components/eventseries/DialogPickingEvents.svelte";
 
-  let timezone = new Date()
-    .toLocaleTimeString("en-us", { timeZoneName: "short" })
-    .split(" ")[2];
+  // let timezone = new Date()
+  //   .toLocaleTimeString("en-us", { timeZoneName: "short" })
+  //   .split(" ")[2];
   let dialogOpened = false;
 
   const creationInProgress = eventSeries.Creation.InProgress;
@@ -25,7 +25,7 @@
     },
     presetEvents: [],
     emptySlotsAmt: 0,
-    emptySlotsRequired: false,
+    emptySlotsAmtRequired: 0,
   };
 
   $: isPreviewOk =
@@ -44,7 +44,7 @@
       draftEventSeries.basics,
       draftEventSeries.presetEvents,
       draftEventSeries.emptySlotsAmt,
-      draftEventSeries.emptySlotsRequired
+      draftEventSeries.emptySlotsAmtRequired
     );
   }
 
@@ -157,7 +157,9 @@
 
       <hr />
 
-      <h5>Preset FLOAT Slots</h5>
+      <h5 class:highlight={draftEventSeries.presetEvents.length > 0}>
+        Preset FLOAT Slots
+      </h5>
 
       <div class="flex-wrap flex-gap mb-1">
         {#each draftEventSeries.presetEvents as slot (slot.host + slot.eventId)}
@@ -175,7 +177,9 @@
 
       <div class="flex flex-gap mb-1">
         <label for="emptySlotsAmt" class="flex-auto">
-          Amount
+          <span class:highlight={draftEventSeries.emptySlotsAmt > 0}>
+            Amount
+          </span>
           <input
             type="number"
             id="emptySlotsAmt"
@@ -193,22 +197,21 @@
             }}
           />
         </label>
-        <fieldset class="flex-none">
-          <legend>Property</legend>
-          <label for="emptySlotsRequired" class="fix-form">
-            <input
-              type="checkbox"
-              role="switch"
-              id="emptySlotsRequired"
-              name="emptySlotsRequired"
-              required
-              bind:checked={draftEventSeries.emptySlotsRequired}
-            />
-            <span class:highlight={draftEventSeries.emptySlotsRequired}>
-              Event required
-            </span>
-          </label>
-        </fieldset>
+        <!-- Range slider -->
+        <label for="emptySlotsAmtRequired">
+          <span class:highlight={draftEventSeries.emptySlotsAmtRequired > 0}>
+            Required Slots: {draftEventSeries.emptySlotsAmtRequired ?? ""}
+          </span>
+          <input
+            type="range"
+            id="emptySlotsAmtRequired"
+            name="emptySlotsAmtRequired"
+            min="0"
+            max={draftEventSeries.emptySlotsAmt}
+            required
+            bind:value={draftEventSeries.emptySlotsAmtRequired}
+          />
+        </label>
       </div>
     {/if}
 
@@ -256,10 +259,6 @@
 />
 
 <style>
-  .fix-form {
-    padding: 15px 0px;
-  }
-
   .highlight {
     color: var(--primary);
   }

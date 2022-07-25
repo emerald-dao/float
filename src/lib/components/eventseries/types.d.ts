@@ -50,7 +50,7 @@ export interface EventSeriesCreateRequest {
   basics: EventSeriesBasics;
   presetEvents: EventSeriesSlot[];
   emptySlotsAmt: number;
-  emptySlotsRequired: boolean;
+  emptySlotsAmtRequired: number;
 }
 
 
