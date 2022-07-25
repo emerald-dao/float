@@ -56,9 +56,10 @@ export { default as txClaimTreasuryRewards } from '../../cadence/float-eventseri
 
 // -------------- Getter - Scripts --------------
 // ** Event Series Builder **
-// TODO
 
 // ** Events Collector **
+export { default as scGetEventSeries } from '../../cadence/float-eventseries/scripts/get_event_series.cdc?raw'
+
 export { default as scHasAchievementBoard } from '../../cadence/float-eventseries/scripts/has_achievement_board.cdc?raw'
 export { default as scGetAchievementRecords } from '../../cadence/float-eventseries/scripts/get_achievement_records.cdc?raw'
 export { default as scGetAndCheckEventSeriesGoals } from '../../cadence/float-eventseries/scripts/get_and_check_series_goals.cdc?raw'

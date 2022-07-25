@@ -2972,16 +2972,28 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
 
 // -------------- Getter - Scripts --------------
 
-// **************************
-// ** Event Series Builder **
-// **************************
+// ************************
+// ** Event Series Users **
+// ************************
 
+/**
+ * check if you have achievement board
+ * 
+ * @param {string} 
+ */
+export const getEventSeries = async (acct) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetEventSeries, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address)
+    ],
+    {}
+  )
+}
 
-// TODO
-
-// **************************
-// ** Event Series Builder **
-// **************************
+// ***********************
+// ** Achievement Board **
+// ***********************
 
 /**
  * check if you have achievement board

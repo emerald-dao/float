@@ -1,8 +1,8 @@
 <script>
   import { user } from "$lib/flow/stores";
   import { resolveAddressObject, getEvent } from "$lib/flow/actions";
-  import { getResolvedName } from "$lib/flow/utils";
-  import Loading from "../common/Loading.svelte";
+  // import { getResolvedName } from "$lib/flow/utils";
+  import Loading from "$lib/components/common/Loading.svelte";
   import { createEventDispatcher } from "svelte";
   // dispatcher
   const dispatch = createEventDispatcher();

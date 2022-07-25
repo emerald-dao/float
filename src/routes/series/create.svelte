@@ -4,7 +4,7 @@
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import ImageUploader from "$lib/components/ImageUploader.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
-  import EventItem from "$lib/components/eventseries/EventItem.svelte";
+  import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import DialogPickingEvents from "$lib/components/eventseries/DialogPickingEvents.svelte";
 
   // let timezone = new Date()
