@@ -182,7 +182,8 @@
         {data.eventDescription}
       </blockquote>
       <blockquote>
-        <strong><small class="muted">VIEW FLOAT IN DISCORD</small></strong><br />
+        <strong><small class="muted">VIEW FLOAT IN DISCORD</small></strong
+        ><br />
         <div
           class="command-badge mono"
           data-tooltip="Paste into Discord to view FLOAT">
@@ -200,7 +201,8 @@
           </svg>
           <span class="command">/float view {floatOwner} {data.id}</span>
         </div>
-        <CopyBadge text={`/float view account:${floatOwner} floatid:${data.id}`} />
+        <CopyBadge
+          text={`/float view account:${floatOwner} floatid:${data.id}`} />
       </blockquote>
       {#if !data.totalSupply}
         <p class="red">The Event this FLOAT is from has been deleted.</p>
@@ -216,9 +218,7 @@
             {$floatDeletionStatus.error}
           </button>
         {:else}
-          <button class="outline red" on:click={() => deleteFLOAT(data.id)}>
-            Delete this FLOAT
-          </button>
+          <a class="outline red" href="/incinerator">Delete this FLOAT </a>
         {/if}
       {/if}
     </article>
