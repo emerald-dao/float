@@ -27,9 +27,8 @@
 
 <script>
   import { page } from "$app/stores";
-  import { goto } from "$app/navigation";
   import SeriesCardDisplay from "$lib/components/eventseries/elements/SeriesCardDisplay.svelte";
-  import SeriesInfo from "$lib/components/eventseries/partials/SeriesInfo.svelte";
+  import SeriesSummary from "$lib/components/eventseries/partials/SeriesSummary.svelte";
   import SeriesTreasury from "$lib/components/eventseries/partials/SeriesTreasury.svelte";
   import SeriesSettings from "$lib/components/eventseries/partials/SeriesSettings.svelte";
   import { seriesTab } from "$lib/stores";
@@ -39,9 +38,9 @@
   export let resolvedNameObject;
   export let eventSeries;
 
-  seriesTab.set("info");
+  seriesTab.set("summary");
 
-  $: isIndexPage = $seriesTab === "info";
+  $: isIndexPage = $seriesTab === "summary";
   $: isTreasuryPage = $seriesTab === "treasury";
   $: isSettingsPage = $seriesTab === "settings";
 </script>
@@ -70,13 +69,13 @@
         <li
           on:click={() => {
             if (!isIndexPage) {
-              seriesTab.set("info");
+              seriesTab.set("summary");
             }
           }}
           class:animatedlink={!isIndexPage}
           class:selected={isIndexPage}
         >
-          Information
+          Summary
         </li>
         <li
           on:click={() => {
@@ -105,7 +104,7 @@
       </ul>
 
       {#if isIndexPage}
-        <SeriesInfo {eventSeries} />
+        <SeriesSummary {eventSeries} />
       {:else if isTreasuryPage}
         <SeriesTreasury {eventSeries} />
       {:else if isSettingsPage && $user?.addr == resolvedNameObject.address}

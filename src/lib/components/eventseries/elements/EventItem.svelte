@@ -1,9 +1,9 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import { user } from "$lib/flow/stores";
   import { resolveAddressObject, getEvent } from "$lib/flow/actions";
-  // import { getResolvedName } from "$lib/flow/utils";
   import Loading from "$lib/components/common/Loading.svelte";
-  import { createEventDispatcher } from "svelte";
+
   // dispatcher
   const dispatch = createEventDispatcher();
 
@@ -12,125 +12,122 @@
 
   // for none empty part
   export let preview = true;
-  /** @type {{host: string, eventId: number, required?: boolean}} */
-  export let item = { host: "", eventId: -1, required: false };
+  /** @type {import('../types').EventSeriesSlot} */
+  export let item = { event: null, required: false };
 
-  $: itemRequired = item.required;
+  $: itemRequired = item.required ?? false;
 
   /** @type {Promise<import('./types').FloatEvent>} */
   const floatEventCallback = async () => {
+    if (!item.event) return null;
+
     let hostAddress;
-    if (item.host.startsWith("0x")) {
-      hostAddress = item.host;
+    if (item.event?.host.startsWith("0x")) {
+      hostAddress = item.event?.host;
     } else {
-      let resolvedNameObject = await resolveAddressObject(item.host);
+      let resolvedNameObject = await resolveAddressObject(item.event?.host);
       hostAddress = resolvedNameObject.address;
     }
-    let eventData = await getEvent(hostAddress, String(item.eventId));
+    let eventData = await getEvent(hostAddress, String(item.event?.id));
     if (!eventData) {
       return null;
     }
     let data = { ...eventData };
     if (!preview) {
-      data.hasClaimed = await hasClaimedEvent(
-        hostAddress,
-        item.eventId,
-        $user.addr
-      );
+      data.hasClaimed = false; // FIXME: use ownedIdsFromEvent to check FLOAT
     }
     return data;
   };
+
+  const handleClick = (e) => {
+    if (!empty) {
+      if (item.event) {
+        dispatch("clickItem", {
+          host: item.event?.host,
+          id: item.event?.id,
+        });
+      }
+    } else {
+      dispatch("clickEmpty", e.detail);
+    }
+  };
 </script>
 
-{#if !empty && item.host !== "" && item.eventId > 0}
-  {#await floatEventCallback()}
-    <Loading />
-  {:then floatEvent}
-    <article
-      class="card-item"
-      on:click={(e) => {
-        dispatch("clickItem", { host: item.host, eventId: item.eventId });
-      }}
-    >
-      {#if !floatEvent}
-        <h3>Deleted</h3>
-      {:else}
-        <img
-          src="https://ipfs.infura.io/ipfs/{floatEvent.image}"
-          alt="{floatEvent.name} Image"
-          class:unclaimed={!preview}
-        />
-        <a
-          class="no-style"
-          href="/{item.host}/event/{floatEvent.eventId}"
-          target="_blank"
-          data-tooltip="#{floatEvent.eventId} By {item.host}"
-        >
-          <h3>{floatEvent.name}</h3>
-        </a>
-        {#if itemRequired}
-          <svg
-            class="badge"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-              clip-rule="evenodd"
-            />
-          </svg>
+<article class="card-item" on:click={handleClick}>
+  {#if !empty}
+    {#await floatEventCallback()}
+      <Loading />
+    {:then floatEvent}
+      <div>
+        {#if !floatEvent}
+          <h3>Empty<br />Slot</h3>
         {:else}
-          <svg
-            class="badge outline opacity"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
+          <img
+            src="https://ipfs.infura.io/ipfs/{floatEvent.image}"
+            alt="{floatEvent.name} Image"
+            class:unclaimed={!preview}
+          />
+          <a
+            class="no-style"
+            href="/{item.event?.host}/event/{floatEvent.eventId}"
+            target="_blank"
+            data-tooltip="#{floatEvent.eventId} by {item.event?.host}"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
-            />
-          </svg>
+            <h3>{floatEvent.name}</h3>
+          </a>
         {/if}
-      {/if}
-    </article>
-  {/await}
-{:else}
-  <article
-    class="card-item center pointer"
-    on:click={(e) => dispatch("clickEmpty", e.detail)}
-  >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fill-rule="evenodd"
-        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-        clip-rule="evenodd"
-      />
-    </svg>
-  </article>
-{/if}
+      </div>
+    {/await}
+  {:else}
+    <div class="center pointer" on:click={handleClick}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    </div>
+  {/if}
+
+  {#if !empty}
+    {#if itemRequired}
+      <svg class="badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+        <path
+          fill-rule="evenodd"
+          d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+          clip-rule="evenodd"
+        />
+      </svg>
+    {:else}
+      <svg
+        class="badge outline opacity"
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+        />
+      </svg>
+    {/if}
+  {/if}
+</article>
 
 <style>
   .card-item {
     position: relative;
 
     width: 96px;
-    min-height: 128px;
-    max-height: 95%;
+    height: 128px;
 
     padding: 8px;
     margin: 0 4px 4px 0;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: end;
-    align-items: center;
-    text-align: center;
 
     border: 1px solid transparent;
   }
@@ -139,9 +136,32 @@
     border: 1px solid var(--primary);
   }
 
-  .card-item > * {
+  .card-item > div > * {
     max-width: 80px;
     max-height: 80px;
+  }
+
+  .card-item > div {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    align-items: center;
+    text-align: center;
+
+    width: 100%;
+    height: 100%;
+  }
+  .card-item > div.pointer {
+    cursor: pointer;
+  }
+
+  .card-item > div.center {
+    justify-content: center;
+  }
+
+  .card-item > div.center > svg {
+    width: 64px;
+    height: 64px;
   }
 
   .card-item h3 {
@@ -178,19 +198,6 @@
   .card-item .badge.opacity {
     fill-opacity: 0.3;
     stroke-opacity: 0.3;
-  }
-
-  .card-item.pointer {
-    cursor: pointer;
-  }
-
-  .card-item.center {
-    justify-content: center;
-  }
-
-  .card-item.center > svg {
-    width: 64px;
-    height: 64px;
   }
 
   .unclaimed {

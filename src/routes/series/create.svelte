@@ -90,8 +90,10 @@
     draftEventSeries.presetEvents = [
       ...draftEventSeries.presetEvents,
       ...added.picked.map((one) => ({
-        host: added.host,
-        eventId: one,
+        event: {
+          host: added.host,
+          id: one,
+        },
         required: true,
       })),
     ];
@@ -101,7 +103,7 @@
     let slots = draftEventSeries.presetEvents;
     for (let i = 0; i < slots.length; i++) {
       const slot = slots[i];
-      if (slot.host === host && slot.eventId === eventId) {
+      if (slot.event?.host === host && slot.event?.id === eventId) {
         slot.required = !slot.required;
         break;
       }
@@ -165,10 +167,11 @@
       </h5>
 
       <div class="flex-wrap flex-gap mb-1">
-        {#each draftEventSeries.presetEvents as slot (slot.host + slot.eventId)}
+        {#each draftEventSeries.presetEvents as slot (slot.event?.host + slot.event?.id)}
           <EventItem
             item={slot}
-            on:clickItem={(e) => onToggleRequired(slot.host, slot.eventId)}
+            on:clickItem={(e) =>
+              onToggleRequired(slot.event?.host, slot.event?.id)}
           />
         {/each}
         <EventItem empty={true} on:clickEmpty={(e) => (dialogOpened = true)} />
