@@ -3,17 +3,8 @@
   import Meta from "$lib/components/common/Meta.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
   import SeriesList from "$lib/components/eventseries/SeriesList.svelte";
-  import { getEventSeries, resolveAddressObject } from "$lib/flow/actions";
+  import { getEventSeriesList, resolveAddressObject } from "$lib/flow/actions";
   import { user } from "$lib/flow/stores";
-
-  let loadFloatEventSeries = async (address) => {
-    const rawDic = await getEventSeries(address);
-    if (rawDic && Object.keys(rawDic)?.length > 0) {
-      return Object.values(rawDic);
-    } else {
-      return [];
-    }
-  };
 </script>
 
 <Meta
@@ -32,30 +23,22 @@
   {#await resolveAddressObject($page.params.host)}
     <Loading />
   {:then addressObject}
-    {#if $user?.addr == addressObject.address}
-      <a href="/series/create" role="button" class="addnew">
-        Create a new FLOAT EventSeries
-      </a>
+    {#if !addressObject.address}
+      <p>
+        Invalid Address: {$page.params.host}
+      </p>
+    {:else}
+      {#if $user?.addr == addressObject.address}
+        <a href="/series/create" role="button" class="addnew">
+          Create a new FLOAT EventSeries
+        </a>
+      {/if}
+      {#await getEventSeriesList(addressObject.address)}
+        <Loading />
+      {:then eventSeries}
+        <SeriesList list={eventSeries} />
+      {/await}
     {/if}
-    {#await loadFloatEventSeries(addressObject.address)}
-      <Loading />
-    {:then eventSeries}
-      <SeriesList
-        list={eventSeries.map((item) => ({
-          sequence: item.sequence ? parseInt(item.sequence) : -1,
-          identifier: {
-            host: addressObject.address,
-            id: item.id,
-          },
-          basics: {
-            name: item.display?.name,
-            description: item.display?.description,
-            image: item.display?.thumbnail?.cid ?? "",
-          },
-          slots: item.slots || [],
-        }))}
-      />
-    {/await}
   {/await}
 </article>
 

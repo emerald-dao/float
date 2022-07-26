@@ -3,25 +3,28 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import FLOATEventSeriesViews from "../FLOATEventSeriesViews.cdc"
 
 pub fun main(
-  host: Address,
-  id: UInt64,
-):  EventSeriesMetadata? {
+  host: Address
+):  {UInt64: EventSeriesMetadata} {
 
   let builderRef = getAccount(host)
     .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
     .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>()
   
   if builderRef == nil {
-    return nil
+    return {}
   }
 
-  let eventSeries = builderRef!.borrowEventSeries(seriesId: id)
-  let resolver = builderRef!.borrowViewResolver(id: id)
-  if eventSeries == nil || resolver == nil {
-    return nil
-  }
+  let collection = builderRef!
+  let eventSeriesIds: [UInt64] = collection.getIDs() 
 
-  return EventSeriesMetadata(eventSeries!, resolver)
+  let returnVal: {UInt64: EventSeriesMetadata} = {}
+  for oneId in eventSeriesIds {
+    let eventSeries = collection.borrowEventSeries(seriesId: oneId)
+      ?? panic("This event series does not exist in the account.")
+    let resolver = collection.borrowViewResolver(id: oneId)
+    returnVal[eventSeries.sequence] = EventSeriesMetadata(eventSeries, resolver)
+  }
+  return returnVal
 }
 
 // EventSeries Metadata

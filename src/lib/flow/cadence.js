@@ -60,6 +60,7 @@ export { default as txCleanup } from '../../cadence/float-eventseries/transactio
 // ** Event Series Builder **
 
 // ** Events Collector **
+export { default as scGetEventSeriesList } from '../../cadence/float-eventseries/scripts/get_event_series_list.cdc?raw'
 export { default as scGetEventSeries } from '../../cadence/float-eventseries/scripts/get_event_series.cdc?raw'
 
 export { default as scHasAchievementBoard } from '../../cadence/float-eventseries/scripts/has_achievement_board.cdc?raw'
