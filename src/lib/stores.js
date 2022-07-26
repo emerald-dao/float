@@ -27,6 +27,8 @@ export const draftGroup = writable({
 
 export const walletModal = writable(false);
 
+export const seriesTab = writable('info');
+
 export const theme = persistentWritable('theme', 'dark');
 
 export const resolver = persistentWritable('preferredNameResolver', 'find');
