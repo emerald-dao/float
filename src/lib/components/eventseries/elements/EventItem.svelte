@@ -16,6 +16,7 @@
   export let item = { event: null, required: false };
 
   $: itemRequired = item.required ?? false;
+  $: itemOwned = false;
 
   /** @type {Promise<import('./types').FloatEvent>} */
   const floatEventCallback = async () => {
@@ -32,11 +33,10 @@
     if (!eventData) {
       return null;
     }
-    let data = { ...eventData };
     if (!preview) {
-      data.hasClaimed = false; // FIXME: use ownedIdsFromEvent to check FLOAT
+      itemOwned = false; // FIXME: use ownedIdsFromEvent to check FLOAT
     }
-    return data;
+    return eventData;
   };
 
   const handleClick = (e) => {
@@ -95,7 +95,7 @@
   {/if}
 
   {#if !empty}
-    {#if itemRequired}
+    {#if itemOwned}
       <svg class="badge" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
         <path
           fill-rule="evenodd"
@@ -103,7 +103,7 @@
           clip-rule="evenodd"
         />
       </svg>
-    {:else}
+    {:else if itemRequired}
       <svg
         class="badge outline opacity"
         xmlns="http://www.w3.org/2000/svg"
