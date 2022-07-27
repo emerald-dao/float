@@ -4,11 +4,19 @@
   export const prerender = true;
 
   export async function load({ url, params, stuff }) {
+    // fix app.css.map
+    if (String(params.seriesId).endsWith("map")) {
+      return { status: 200 };
+    }
+
     const resolvedNameObject = await resolveAddressObject(params.host);
-    const response = await getEventSeries(
-      resolvedNameObject.address,
-      params.seriesId
-    );
+    let response;
+    try {
+      response = await getEventSeries(
+        resolvedNameObject.address,
+        params.seriesId
+      );
+    } catch (err) {}
     return {
       status: 200,
       props: {

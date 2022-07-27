@@ -3035,6 +3035,7 @@ export const getEventSeries = async (acct, id) => {
     ],
     {}
   )
+  if (!raw) return null
   return parseEventSeries(acct, raw)
 }
 

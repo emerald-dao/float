@@ -87,13 +87,22 @@
    * @param {string[]} added.picked
    */
   function onEventsAdded(added) {
+    const currentExists = draftEventSeries.presetEvents.reduce((prev, curr) => {
+      if (!curr.event) return prev;
+      prev.add(`${curr.event.host}#${curr.event.id}`);
+      return prev;
+    }, new Set());
+    const events = added.picked
+      .map((one) => ({
+        host: added.host,
+        id: one,
+      }))
+      .filter((one) => !currentExists.has(`${one.host}#${one.id}`));
+
     draftEventSeries.presetEvents = [
       ...draftEventSeries.presetEvents,
-      ...added.picked.map((one) => ({
-        event: {
-          host: added.host,
-          id: one,
-        },
+      ...events.map((event) => ({
+        event,
         required: true,
       })),
     ];
