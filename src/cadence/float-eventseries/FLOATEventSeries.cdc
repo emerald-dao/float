@@ -1356,7 +1356,7 @@ pub contract FLOATEventSeries {
             identifier.getEventPublic()
 
             // update identifier information
-            slot.setIdentifier(identifier)
+            self.slots[idx].setIdentifier(identifier)
 
             emit FLOATEventSeriesSlotUpdated(
                 seriesId: self.uuid,
