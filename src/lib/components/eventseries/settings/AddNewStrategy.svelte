@@ -1,5 +1,8 @@
 <script>
-  // TODO
+  import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+
+  /** @type {import('../types').EventSeriesData} */
+  export let eventSeries;
 </script>
 
 <details>

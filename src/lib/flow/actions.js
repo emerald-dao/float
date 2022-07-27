@@ -2555,29 +2555,32 @@ const generalSendTransaction = async (code, args, actionInProgress = undefined, 
 
     txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          actionStatus && actionStatus.set(respondWithSuccess());
-        } else {
-          actionStatus && actionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode))
-        }
-        actionInProgress && actionInProgress.set(false);
+    return new Promise((resolve, reject) => {
+      fcl.tx(transactionId).subscribe(res => {
+        transactionStatus.set(res.status)
 
-        // on sealed callback
-        if (typeof onSealed === 'function') {
-          onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage)
-        }
+        if (res.status === 4) {
+          if (res.statusCode === 0) {
+            actionStatus && actionStatus.set(respondWithSuccess());
+          } else {
+            actionStatus && actionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode))
+          }
+          actionInProgress && actionInProgress.set(false);
+  
+          // on sealed callback
+          if (typeof onSealed === 'function') {
+            onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage)
+          }
+  
+          setTimeout(() => transactionInProgress.set(false), 2000)
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
+          resolve();
+        }
+      })
     })
-
-    return await fcl.tx(transactionId).onceSealed();
   } catch (e) {
     actionInProgress && actionInProgress.set(false);
-    actionStatus && actionStatus.set(false);
+    actionStatus && actionStatus.set(respondWithError(e));
     transactionStatus.set(99)
     console.log(e)
 
@@ -2763,7 +2766,7 @@ export const updateEventseriesBasics = async (seriesId, basics) => {
  */
 export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
   const reduced = slotsEvents.reduce((all, curr) => {
-    if (typeof curr.index === 'number' &&
+    if (typeof curr.index === 'string' &&
       typeof curr.host === 'string' &&
       typeof curr.eventId === 'string') {
       all.indexes.push(curr.index)
@@ -2777,7 +2780,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
     cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
-      arg(reduced.indexes, t.Array(t.UInt64)),
+      arg(reduced.indexes, t.Array(t.Int)),
       arg(reduced.hosts, t.Array(t.Address)),
       arg(reduced.eventIds, t.Array(t.UInt64)),
     ],
