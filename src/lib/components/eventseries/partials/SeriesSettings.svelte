@@ -4,15 +4,18 @@
   import ManageTreasury from "$lib/components/eventseries/settings/ManageTreasury.svelte";
   import UpdateSlots from "$lib/components/eventseries/settings/UpdateSlots.svelte";
 
+  // dispatcher
+  const dispatch = createEventDispatcher();
+
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
 </script>
 
 <h4>FLOAT Events in the series</h4>
-<UpdateSlots {eventSeries} />
+<UpdateSlots {eventSeries} on:seriesUpdated={dispatch("seriesUpdated")} />
 <h4>Series Goals</h4>
-<AddNewGoal {eventSeries} />
+<AddNewGoal {eventSeries} on:seriesUpdated={dispatch("seriesUpdated")} />
 <h4>Series Treasury</h4>
-<ManageTreasury {eventSeries} />
+<ManageTreasury {eventSeries} on:seriesUpdated={dispatch("seriesUpdated")} />
 <h4>Reward Strategies</h4>
-<AddNewStrategy {eventSeries} />
+<AddNewStrategy {eventSeries} on:seriesUpdated={dispatch("seriesUpdated")} />

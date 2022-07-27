@@ -4,6 +4,9 @@
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import { updateEventseriesSlots } from "$lib/flow/actions";
 
+  // dispatcher
+  const dispatch = createEventDispatcher();
+
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
 
@@ -77,6 +80,9 @@
   }
 
   function handleReset() {
+    if ($txStatus?.success) {
+      dispatch("seriesUpdated");
+    }
     txInProgress.set(false);
     txStatus.set(false);
     pendingSlots = [];

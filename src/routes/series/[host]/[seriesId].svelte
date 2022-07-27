@@ -51,6 +51,10 @@
   $: isIndexPage = $seriesTab === "summary";
   $: isTreasuryPage = $seriesTab === "treasury";
   $: isSettingsPage = $seriesTab === "settings";
+
+  function refreshEventSeries() {
+    // TODO
+  }
 </script>
 
 <div class="container">
@@ -116,7 +120,7 @@
       {:else if isTreasuryPage}
         <SeriesTreasury {eventSeries} />
       {:else if isSettingsPage && $user?.addr == resolvedNameObject.address}
-        <SeriesSettings {eventSeries} />
+        <SeriesSettings {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {/if}
     {/if}
   </article>
