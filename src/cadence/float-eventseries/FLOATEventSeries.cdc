@@ -1226,7 +1226,7 @@ pub contract FLOATEventSeries {
 
             for slot in slots {
                 // ensure required slot is valid
-                if slot.isInstance(RequiredEventSlot.getType()) {
+                if slot.isInstance(Type<RequiredEventSlot>()) {
                     slot.getIdentifier()!.getEventPublic()
                 }
             }
@@ -1351,7 +1351,7 @@ pub contract FLOATEventSeries {
                 idx < self.slots.length: "The idx is out of Slots size."
             }
             let slot = self.slots[idx]
-            assert(slot.isInstance(OptionalEventSlot.getType()) || slot.isInstance(EmptyEventSlot.getType()), message: "The slot should be writable")
+            assert(slot.isInstance(Type<OptionalEventSlot>()) || slot.isInstance(Type<EmptyEventSlot>()), message: "The slot should be writable")
             // ensure event public exist
             identifier.getEventPublic()
 
