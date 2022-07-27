@@ -220,10 +220,6 @@ pub contract FLOATEventSeries {
         pub fun getIdentifier(): EventIdentifier?
         // if the event is required for achievement
         pub fun isEventRequired(): Bool
-    }
-
-    // a writable interface of Event slot
-    pub struct interface WritableEventSlot {
         // set the event identifier
         access(account) fun setIdentifier (_ identifier: EventIdentifier)
     }
@@ -243,16 +239,17 @@ pub contract FLOATEventSeries {
         pub fun isEventRequired(): Bool {
             return true
         }
+
+        access(account) fun setIdentifier (_ identifier: EventIdentifier) {
+            panic("cannot setIdentifier for RequiredEventSlot.")
+        }
     }
     
     // set an optional event slot of some specific event
-    pub struct OptionalEventSlot: EventSlot, WritableEventSlot {
+    pub struct OptionalEventSlot: EventSlot {
         pub var identifier: EventIdentifier?
 
         init(_ identifier: EventIdentifier?) {
-            self.identifier = identifier
-        }
-        access(account) fun setIdentifier (_ identifier: EventIdentifier) {
             self.identifier = identifier
         }
         pub fun getIdentifier(): EventIdentifier? {
@@ -261,10 +258,13 @@ pub contract FLOATEventSeries {
         pub fun isEventRequired(): Bool {
             return false
         }
+        access(account) fun setIdentifier (_ identifier: EventIdentifier) {
+            self.identifier = identifier
+        }
     }
 
     // set an event slot for unknown events
-    pub struct EmptyEventSlot: EventSlot, WritableEventSlot {
+    pub struct EmptyEventSlot: EventSlot {
         pub let isRequired: Bool
         pub var identifier: EventIdentifier?
 
@@ -272,14 +272,14 @@ pub contract FLOATEventSeries {
             self.isRequired = isRequired
             self.identifier = nil
         }
-        access(account) fun setIdentifier (_ identifier: EventIdentifier) {
-            self.identifier = identifier
-        }
         pub fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
         pub fun isEventRequired(): Bool {
             return self.isRequired
+        }
+        access(account) fun setIdentifier (_ identifier: EventIdentifier) {
+            self.identifier = identifier
         }
     }
 
@@ -1356,7 +1356,7 @@ pub contract FLOATEventSeries {
             identifier.getEventPublic()
 
             // update identifier information
-            (slot as! &{WritableEventSlot}).setIdentifier(identifier)
+            slot.setIdentifier(identifier)
 
             emit FLOATEventSeriesSlotUpdated(
                 seriesId: self.uuid,
