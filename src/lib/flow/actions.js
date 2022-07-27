@@ -2624,19 +2624,20 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  * @param {string} basics.description
  * @param {string} basics.image
  * @param {object[]} presetEvents
- * @param {string} presetEvents.host
- * @param {number} presetEvents.eventId
+ * @param {object} presetEvents.event
+ * @param {string} presetEvents.event.host
+ * @param {number} presetEvents.event.id
  * @param {boolean} presetEvents.required
  * @param {number} emptySlotsAmt how many empty slots totally
  * @param {number} emptySlotsAmtRequired how many empty slots is required
  */
 export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsAmtRequired = 0) => {
   const reduced = presetEvents.reduce((all, curr) => {
-    if (typeof curr.host === 'string' &&
-      typeof curr.eventId === 'string' && 
+    if (typeof curr.event?.host === 'string' &&
+      typeof curr.event?.id === 'string' && 
       (typeof curr.required === 'boolean' || curr.required === undefined)) {
-      all.hosts.push(curr.host)
-      all.eventIds.push(curr.eventId)
+      all.hosts.push(curr.event.host)
+      all.eventIds.push(curr.event.id)
       all.required.push(curr.required ?? true)
     }
     return all
