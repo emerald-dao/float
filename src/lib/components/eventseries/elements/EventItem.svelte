@@ -16,6 +16,8 @@
   export let item = { event: null, required: false };
   /** for pending slots */
   export let pending = false;
+  /** for ghost slots */
+  export let ghost = false;
 
   $: itemRequired = item.required ?? false;
   $: itemOwned = false;
@@ -55,7 +57,7 @@
   };
 </script>
 
-<article class="card-item" class:pending on:click={handleClick}>
+<article class="card-item" class:ghost class:pending on:click={handleClick}>
   {#if !empty}
     {#await floatEventCallback()}
       <Loading />
@@ -132,6 +134,10 @@
     margin: 0 4px 4px 0;
 
     border: 1px solid transparent;
+  }
+
+  .card-item.ghost {
+    opacity: 0.2;
   }
 
   .card-item.pending {

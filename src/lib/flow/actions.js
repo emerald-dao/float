@@ -2663,63 +2663,60 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
 /**
  * add a goal to EventSeries
  * 
- * @param {number} seriesId
- * @param {string} type
- * @param {number} points how many achievement point can be gained
- * @param {object} options
+ * @param {import('../components/eventseries/types').AddAchievementGoalRequest}
  */
-export const addAchievementGoalToEventSeries = async (seriesId, type, points, options) => {
+export const addAchievementGoalToEventSeries = async ({type, seriesId, points, params}) => {
   let code
   /** @type {fcl.ArgsFn} */
   let args
   switch (type) {
-    case cadence.GOAL_BY_AMOUNT:
+    case 'byAmount':
       code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap)
 
-      const { eventsAmount, requiredEventsAmount } = options || {}
+      const { eventsAmount, requiredEventsAmount } = params || {}
       if (eventsAmount === undefined) {
         throw new Error('eventsAmount is missing')
       }
       args = (arg, t) => [
         arg(seriesId, t.UInt64),
-        arg(points, t.UInt64),
-        arg(eventsAmount, t.UInt64),
-        arg(requiredEventsAmount || eventsAmount, t.UInt64),
+        arg(String(points), t.UInt64),
+        arg(String(eventsAmount), t.UInt64),
+        arg(String(requiredEventsAmount || eventsAmount), t.UInt64),
       ]
       break;
 
-    case cadence.GOAL_BY_PERCENT:
+    case 'byPercent':
       code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap)
 
-      const { percent } = options || {}
+      const { percent } = params || {}
       if (percent === undefined) {
         throw new Error('percent is missing')
       }
       args = (arg, t) => [
         arg(seriesId, t.UInt64),
-        arg(points, t.UInt64),
-        arg(percent, t.UFix64),
+        arg(String(points), t.UInt64),
+        arg(percent / 100, t.UFix64),
       ]
       break;
 
-    case cadence.GOAL_BY_SPECIFICS:
+    case 'bySpecifics':
       code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap)
 
-      const { events } = options || {}
+      const { events } = params || {}
       if (events === undefined && !Array.isArray(events)) {
         throw new Error('events is missing')
       }
       const reduced = events.reduce((all, curr) => {
-        if (typeof curr.host === 'string' && typeof curr.eventId === 'string') {
+        if (typeof curr.host === 'string' && typeof curr.id === 'string') {
           all.hosts.push(curr.host)
-          all.eventIds.push(curr.eventId)
+          all.eventIds.push(curr.id)
         }
         return all
       }, { hosts:[], eventIds: [] })
 
       args = (arg, t) => [
         arg(seriesId, t.UInt64),
-        arg(points, t.UInt64),
+        arg(String(points), t.UInt64),
         arg(reduced.hosts, t.Array(t.Address)),
         arg(reduced.eventIds, t.Array(t.UInt64)),
       ]

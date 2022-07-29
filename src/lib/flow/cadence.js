@@ -26,10 +26,6 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  */
 
 // Contants
-export const GOAL_BY_AMOUNT = 'goalByAmount'
-export const GOAL_BY_PERCENT = 'goalByPercent'
-export const GOAL_BY_SPECIFICS = 'goalBySpecifics'
-
 export const STRATEGY_LOTTERY = 'lotteryStrategy'
 export const STRATEGY_QUEUE = 'queueStrategy'
 

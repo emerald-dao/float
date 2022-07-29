@@ -6,6 +6,6 @@
 </script>
 
 <details>
-  <summary role="button">Manage the treasury →</summary>
+  <summary role="button"><b>Manage the treasury →</b></summary>
   <div>TODO</div>
 </details>

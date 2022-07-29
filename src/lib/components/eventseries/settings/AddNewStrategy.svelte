@@ -6,6 +6,6 @@
 </script>
 
 <details>
-  <summary role="button">Add a new strategy →</summary>
+  <summary role="button"><b>Add a new strategy →</b></summary>
   <div>TODO</div>
 </details>

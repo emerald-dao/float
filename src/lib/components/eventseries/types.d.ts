@@ -54,4 +54,24 @@ export interface EventSeriesCreateRequest {
   emptySlotsAmtRequired: number;
 }
 
+export type AddGoalType = 'byAmount' | 'byPercent' | 'bySpecifics'
 
+interface ByAmountParams {
+  eventsAmount: number
+  requiredEventsAmount: number
+}
+
+interface ByPercentParams {
+  percent: number
+}
+
+interface BySpecifics {
+  events: Identifier[]
+}
+
+export interface AddAchievementGoalRequest {
+  type: AddGoalType;
+  seriesId: string;
+  points: number;
+  params?: ByAmountParams | ByPercentParams | BySpecifics
+}
