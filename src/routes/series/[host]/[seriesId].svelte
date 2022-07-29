@@ -21,7 +21,7 @@
       status: 200,
       props: {
         resolvedNameObject,
-        eventSeries: response,
+        preloadEventSeries: response,
       },
       stuff: {
         title: response?.basics?.name + " | EventSeries by " + params.host,
@@ -44,7 +44,7 @@
   import { user } from "$lib/flow/stores";
 
   export let resolvedNameObject;
-  export let eventSeries;
+  export let preloadEventSeries;
 
   seriesTab.set("summary");
 
@@ -52,8 +52,15 @@
   $: isTreasuryPage = $seriesTab === "treasury";
   $: isSettingsPage = $seriesTab === "settings";
 
-  function refreshEventSeries() {
-    // TODO
+  // merged eventSeries
+  $: eventSeries = localEventSeries ?? preloadEventSeries;
+
+  let localEventSeries;
+  async function refreshEventSeries() {
+    localEventSeries = await getEventSeries(
+      resolvedNameObject.address,
+      $page.params.seriesId
+    );
   }
 </script>
 
@@ -118,7 +125,7 @@
       {#if isIndexPage}
         <SeriesSummary {eventSeries} />
       {:else if isTreasuryPage}
-        <SeriesTreasury {eventSeries} />
+        <SeriesTreasury {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {:else if isSettingsPage && $user?.addr == resolvedNameObject.address}
         <SeriesSettings {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {/if}

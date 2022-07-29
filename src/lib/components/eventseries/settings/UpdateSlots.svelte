@@ -1,4 +1,5 @@
 <script>
+  import { createEventDispatcher } from "svelte";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import DialogPickingEvents from "$lib/components/eventseries/DialogPickingEvents.svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
