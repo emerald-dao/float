@@ -2128,30 +2128,23 @@ export const getAllowed = async (address) => {
   }
 }
 
-export const resolveVerifier = async (address, eventId) => {
+export const resolveVerifier = async (host, eventId) => {
   try {
     let queryResult = await fcl.query({
       cadence: `
       import FLOAT from 0xFLOAT
-      import MetadataViews from 0xCORE
 
-      pub fun main(account: Address, eventId: UInt64): [String] {
-        let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                                    .borrow<&FLOAT.FLOATEvents{MetadataViews.ResolverCollection}>()
-                                    ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-        let resolved = floatEventCollection.borrowViewResolver(id: eventId)
-        if let view = resolved.resolveView(Type<FLOAT.FLOATEventMetadata>()) {
-          let metadata = view as! FLOAT.FLOATEventMetadata
-          let answer: [String] = []
-          for verifier in metadata.verifiers {
-            answer.append(verifier.getType().identifier)
-          }
-        }
-        return []
+      pub fun main(host: Address, eventId: UInt64): [[{FLOAT.IVerifier}]] {
+        let floatEventCollection = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
+            .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+            ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+        let eventPublicRef = floatEventCollection.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist in the account")
+        let verifiers = eventPublicRef.getVerifiers()
+        return verifiers.values
       }
       `,
       args: (arg, t) => [
-        arg(address, t.Address),
+        arg(host, t.Address),
         arg(eventId, t.UInt64)
       ]
     })
