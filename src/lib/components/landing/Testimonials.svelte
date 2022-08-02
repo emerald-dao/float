@@ -6,12 +6,12 @@
             <small>HumblePoom, founder of Driverz NFT.</small>
         </div>
         <div>
-            <p>Now all the data I need is one click away. I am able to make well-weighted decisions fast enough, to streamline more projects than I ever had.</p>
-            <small>Max K, Engineering Manager at Bumble</small>
+            <p>I created a Float for my Twitch viewers that served as an entry for future giveaways. It was extremely easy to set up and very user friendly for my viewers to collect the Float. For 85-90% of them - it was their first NFT! Floats are great for groups!</p>
+            <small>bigedude33, Gaming & Musical Comedy YouTube Star</small>
         </div>
         <div>
-            <p>Emery provided a solid and structured foundation for my day to day job. Now all the data I need is one click away. I am able to make well-weighted decisions fast enough, to streamline more projects than I ever had.</p>
-            <small>Max K, Engineering Manager at Bumble</small>
+            <p>I love the potential that exists with FLOATS - being able to gate exclusive access to something, and for the host to be able to find a way to reward those who attended later on! It paves a way for new possibilities on web3</p>
+            <small>rko, Flow Community Legend</small>
         </div>
     </div>
 </div>
@@ -38,5 +38,24 @@
 
     .testimonials > div > p {
         flex-grow: 1;
+    }
+
+    h2 {
+        margin-bottom: 1.2rem;
+    }
+
+    small {
+        border-top: 1px solid var(--contrast);
+        padding-top: 5px;
+    }
+
+    @media all and (max-width: 768px) {
+        .testimonials {
+            flex-direction: column;
+        }
+
+        .testimonials > div {
+            width: 100%;
+        }
     }
 </style>
