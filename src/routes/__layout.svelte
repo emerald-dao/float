@@ -48,7 +48,7 @@
 {/if}
 
 {#if $page.url.pathname !== "/incinerator"}
-  <main class="container">
+  <main>
     <Notifications />
     <slot />
     <Transaction />

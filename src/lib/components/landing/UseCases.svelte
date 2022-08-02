@@ -72,6 +72,7 @@
         flex-grow: 1;
         padding: 1.3rem 1.2rem 4rem;
         background-color: var(--primary-hover);
+        min-width: 300px;
     }
 
     .use-cases-list > div > p {

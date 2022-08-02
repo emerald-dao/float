@@ -51,9 +51,9 @@
       </a>
     </li>
     
-    <li>
+    <!-- <li>
       <a href="/about">About</a>
-    </li>
+    </li> -->
   </ul>
   <ul class="text-center">
     <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
@@ -123,14 +123,6 @@
   }
   
   @media screen and (max-width: 780px) {
-    nav {
-      flex-direction:column;
-      justify-content: center;
-      vertical-align: middle;
-      align-items: center;
-      margin-bottom:2rem;
-    }
-
     nav li:last-child  {
       margin:0;
     }
