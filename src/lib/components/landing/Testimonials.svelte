@@ -3,7 +3,7 @@
     <div class="testimonials">
         <div>
             <p>I was just gonna say, ahh man floats are fun, so easy and so much can be done with it! It is golddd</p>
-            <small>HumblePoom, founder of Driverz NFT.</small>
+            <small>HumblePoom, founder of Driverz NFT</small>
         </div>
         <div>
             <p>I created a Float for my Twitch viewers that served as an entry for future giveaways. It was extremely easy to set up and very user friendly for my viewers to collect the Float. For 85-90% of them - it was their first NFT! Floats are great for groups!</p>
