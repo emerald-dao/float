@@ -62,15 +62,15 @@
                 <h3>Live Feeds</h3>
                 <ul>
                     <li>
-                        Check out the <a href="/live"
-                            >live claiming feed and stats page</a
-                        >.
+                        To see a live claiming feed, as well as information about the total number of FLOAT mints and events created, check out our <a href="/live"
+                            >live</a
+                        > page.
                     </li>
                     <li>
-                        Burn your FLOATs in the <a
+                        You can also burn your FLOATs in the <a
                             href="/incinerator"
                             style="color: #df523d;">Incinerator</a
-                        >.
+                        > and watch as tons of other FLOATs are thrown in the fire too!
                     </li>
                 </ul>
             </div>
@@ -96,8 +96,20 @@
         gap: 0.9rem;
     }
 
+    .works-list > div:nth-child(1) {
+        background-color: rgb(133, 202, 236);
+    }
+    .works-list > div:nth-child(2) {
+        background-color: rgb(133, 236, 221);
+    }
+    .works-list > div:nth-child(3) {
+        background-color: rgb(133, 236, 196);
+    }
+    .works-list > div:nth-child(4) {
+        background-color: rgb(133, 236, 155);
+    }
+
     .works-list-element {
-        background-color: var(--primary);
         border-radius: 0.6rem;
         box-sizing: border-box;
         gap: 2.8rem;
@@ -111,6 +123,10 @@
         padding-inline-start: 1.4rem;
     }
 
+    li {
+        color: rgb(43, 43, 43);
+    }
+
     .works-list-element img {
         position: relative;
         display: inline-block;
@@ -118,14 +134,25 @@
         overflow: hidden;
         border-radius: 0.75rem;
         max-width: 70%;
+        object-fit: contain;
     }
 
     .wide {
         display: flex;
+        align-content: space-around;
     }
 
     .share {
         width: calc(50% - 0.45rem);
+    }
+
+    .works-list-element.share {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .share > div {
+        flex-grow: 1;
     }
 
     h3 {
@@ -133,6 +160,7 @@
         font-weight: 600;
         line-height: 1.75rem;
         margin-bottom: 1rem;
+        color: black;
     }
 
     h2 {
@@ -140,5 +168,15 @@
         font-weight: 600;
         line-height: 120%;
         margin-bottom: 2.4rem;
+    }
+
+    @media all and (max-width: 768px) {
+        .wide {
+            display: block;
+        }
+
+        .share {
+            width: 100%;
+        }
     }
 </style>

@@ -71,6 +71,7 @@
 
     .float {
         background-color: #35d9ba;
+        color: var(--contrast);
     }
 
     h2 {

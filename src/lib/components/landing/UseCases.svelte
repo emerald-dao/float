@@ -4,13 +4,13 @@
             name: "Discord AMA",
             description:
                 "Host an event on Discord and create an event for it. Have participants claim the FLOAT to represent their attendance.",
-            image: "/favicon.png",
+            image: "/discord-logo.png",
         },
         {
             name: "Twitter Space AMA",
             description:
                 "Host a Twitter Space and create an event for it. Have participants claim the FLOAT to represent their attendance.",
-            image: "/favicon.png",
+            image: "/twitter-logo.webp",
         },
         {
             name: "Giveaways",
@@ -81,8 +81,7 @@
     }
 
     .use-cases-list > div > img {
-        width: 50px;
-        height: 50px;
+        max-height: 50px;
         position: absolute;
         left: 1.2rem;
         bottom: 1.2rem;
