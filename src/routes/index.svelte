@@ -1,6 +1,11 @@
 <script>
   import CheckAddress from "$lib/components/CheckAddress.svelte";
   import Stats from '$lib/components/common/Stats.svelte';
+  import Button from "$lib/components/landing/Button.svelte";
+import Comparison from "$lib/components/landing/Comparison.svelte";
+import HowWorks from "$lib/components/landing/HowWorks.svelte";
+import Testimonials from "$lib/components/landing/Testimonials.svelte";
+import UseCases from "$lib/components/landing/UseCases.svelte";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
 </script>
 
@@ -8,62 +13,43 @@
   <title>Home {PAGE_TITLE_EXTENSION}</title>
 </svelte:head>
 
-<div class="grid">
-  <a href="/live">
-    <div class="text-center">
-      <img class="island" src="/island.png" alt="FLOAT Logo" />
-    </div>
-  </a>
-  <div class="mt-2 mb-2 text-center">
-    <h1>Welcome to FLOAT</h1>
-    <small
-      >A service by <a href="https://ecdao.org" target="_blank"
-        ><img
-          style="height:20px;width:auto;margin-right:4px;"
-          src="/emeraldcitylogo.png"
-          alt="Emerald Logo" />Emerald City DAO</a
-      ></small>
-    <span class="tag-line"
-      >Claim a unique NFT to show that you attended an event.</span>
-
-    <div class="grid mt-2 no-break align-center">
-      <a role="button" href="/live" class="outline small-button mb-1"
-        >Watch live feed</a>
-      <a role="button" href="/create" class="small-button mb-1"
-        >Create an event</a>
-    </div>
-  </div>
+<div class="hero">
+  <h1>A proof of attendance platform #onFlow.</h1>
+  <h3>Create events for your communities to prove that they were there.</h3>
 </div>
 
-<Stats />
+<Button />
 
-<article>
-  <h2 id="findAddress">View FLOATs from an Account</h2>
-  <CheckAddress />
-</article>
+<UseCases />
+
+<Button />
+
+<HowWorks />
+
+<Button />
+
+<Comparison />
+
+<Testimonials />
+
+<Button />
 
 <style>
-  /* video {
-    display:block;
-    width:100%;
-    max-width: 800px;
-    margin: 20px auto;
-  }
-   */
-
-  h1 {
-    text-align: center;
+  .hero {
+    position: relative;
+    padding: 7rem 2rem 5.2rem 2rem;
   }
 
-  .tag-line {
-    font-weight: 300;
-    font-size: 1.2rem;
-    margin-top: 30px;
-    display: block;
+  .hero h1 {
+    font-size: 3.2rem;
+    line-height: 120%;
+    font-weight: 800;
   }
 
-  .island {
-    width: 30vw;
-    max-width: 400px;
+  h3 {
+    font-size: 1.45rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
   }
 </style>
