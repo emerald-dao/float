@@ -1,5 +1,5 @@
 <script>
-  import CheckAddress from "$lib/components/CheckAddress.svelte";
+  // import CheckAddress from "$lib/components/CheckAddress.svelte";
   import Stats from "$lib/components/common/Stats.svelte";
   import Button from "$lib/components/landing/Button.svelte";
   import Comparison from "$lib/components/landing/Comparison.svelte";
@@ -14,16 +14,18 @@
 </svelte:head>
 
 <div class="hero">
-  <h1>A proof of attendance platform #onFlow.</h1>
+  <h1>Proof of attendance #onFlow.</h1>
   <h3>Create events for your communities to prove that they were there.</h3>
 </div>
 
-<video
+<Stats size="xl" />
+
+<!-- <video
   src="/updated_float.mp4"
   alt="FLOAT Video - Freakizoid"
   autoplay
   controls
-  loop />
+  loop /> -->
 
 <Button />
 

@@ -44,13 +44,17 @@
     text-align: center;
   }
   .info p {
-    line-height: 1.1;
-    font-size: 0.8rem;
+    font-size: 1.45rem;
+    font-weight: 600;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
   }
 
   .info span {
     color: var(--contrast);
-    font-size: 2.3rem;
-    font-weight: 900;
+    font-size: 4.3rem;
+    font-weight: 600;
+    line-height: 120%;
+    margin-bottom: 2.4rem;
   }
 </style>

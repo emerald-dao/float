@@ -97,8 +97,8 @@
     }
 
     .float {
-        background-color: #35d9ba;
-        color: var(--contrast);
+        background-color: rgb(133, 236, 221);
+        color: rgb(43, 43, 43);
         border-top-right-radius: 0.4rem;
         border-bottom-right-radius: 0.4rem;
     }

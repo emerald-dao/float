@@ -40,7 +40,7 @@
         </div>
         <div class="works-list-element share">
             <div>
-                <h3>Emerald bot Integration</h3>
+                <h3>Emerald Bot Integration</h3>
                 <ul>
                     <li>
                         Verify a user owns a FLOAT in Discord using the <a
@@ -139,10 +139,6 @@
 
     .wide img {
         max-width: 50%;
-    }
-
-    .share img {
-        max-width: 75%;
     }
 
     .wide {

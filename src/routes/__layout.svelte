@@ -49,7 +49,7 @@
   <WalletModal />
 {/if}
 
-{#if $page.url.pathname === "/"}
+{#if $page.url.pathname === "/" || $page.url.pathname === '/live'}
   <main>
     <Notifications />
     <slot />

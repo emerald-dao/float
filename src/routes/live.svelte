@@ -71,6 +71,7 @@
 
   <Stats {addition} />
 
+
   {#each Object.keys(claimedEvents) as id (id)}
     <Lantern ipfsHash={claimedEvents[id].ipfsHash} />
   {/each}
@@ -79,11 +80,12 @@
 <style>
   #spawner {
     text-align: center;
+    width:100%;
   }
 
   .island {
     position: relative;
-    width: 50%;
+    width: 25%;
     animation: 8s float linear infinite;
   }
   @keyframes float {

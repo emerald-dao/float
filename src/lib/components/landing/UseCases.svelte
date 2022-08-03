@@ -29,9 +29,9 @@
             example: "https://floats.city/relief.find/event/191808682",
         },
         {
-            name: "Whitelist",
+            name: "Allowlist",
             description:
-                "Have users claim a FLOAT to get onto a whitelist. You can download a list of addresses who claimed your FLOAT.",
+                "Have users claim a FLOAT to get onto an allowlist. You can download a list of addresses who claimed your FLOAT.",
             image: "/favicon.png",
             example: "https://floats.city/robenoch.find/event/204594987",
         },
@@ -81,7 +81,7 @@
         font-weight: 600;
         line-height: 1.75rem;
         margin-bottom: 1rem;
-        color: var(--contrast-hover);
+        color: rgb(43, 43, 43);
     }
     .use-cases {
         padding-top: 0;
@@ -108,14 +108,14 @@
         flex-basis: 30%;
         flex-grow: 1;
         padding: 1.3rem 1.2rem 1rem;
-        background-color: var(--primary-hover);
+        background-color: rgb(133, 236, 221);
         min-width: 300px;
         display: flex;
         flex-direction: column;
     }
 
     .use-cases-list > div > p {
-        color: var(--contrast);
+        color: rgb(43, 43, 43);
         letter-spacing: -0.01rem;
         line-height: 120%;
         margin-bottom: 1rem;
