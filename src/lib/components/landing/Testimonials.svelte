@@ -34,7 +34,7 @@
                 community leaders to create gated areas in discords using the
                 Emerald Bot! I am very grateful. ♥️
             </p>
-            <small>Jimbo, Flow Community Extraordinar</small>
+            <small>Jimbo, Flow Community Extraordinaire</small>
         </div>
         <div>
             <p>
