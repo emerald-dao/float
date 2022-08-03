@@ -72,5 +72,10 @@
     .hero {
       padding-left: 2rem;
     }
+
+    video {
+      width: 75%;
+      left: 12.5%;
+    }
   }
 </style>
