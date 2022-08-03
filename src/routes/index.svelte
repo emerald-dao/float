@@ -52,4 +52,10 @@
     line-height: 1.75rem;
     margin-bottom: 1rem;
   }
+
+  @media all and (max-width: 768px) {
+    .hero {
+      padding-left: 2rem;
+    }
+  }
 </style>
