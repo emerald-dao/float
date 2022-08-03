@@ -48,11 +48,11 @@
     {#each differences as difference}
         <div class="row">
             <div class="poap">
-                <strong>{difference.poap.title}</strong>
+                <strong>&#10060; {difference.poap.title}</strong>
                 {difference.poap.description}
             </div>
             <div class="float">
-                <strong>{difference.float.title}</strong>
+                <strong>&#9989; {difference.float.title}</strong>
                 {difference.float.description}
             </div>
         </div>
