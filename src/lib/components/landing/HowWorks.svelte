@@ -62,15 +62,15 @@
                 <h3>Live Feeds</h3>
                 <ul>
                     <li>
-                        To see a live claiming feed, as well as information about the total number of FLOAT mints and events created, check out our <a href="/live"
-                            >live</a
-                        > page.
+                        To see a live claiming feed, as well as information
+                        about the total number of FLOAT mints and events
+                        created, check out our <a href="/live">live</a> page.
                     </li>
                     <li>
                         You can also burn your FLOATs in the <a
                             href="/incinerator"
-                            style="color: #df523d;">Incinerator</a
-                        > and watch as tons of other FLOATs are thrown in the fire too!
+                            style="color: #df523d;">Incinerator</a> and watch as
+                        tons of other FLOATs are thrown in the fire too!
                     </li>
                 </ul>
             </div>
@@ -87,7 +87,7 @@
     }
 
     .how-works {
-        padding: 0 2rem;
+        padding: 0 4rem;
     }
 
     .works-list {

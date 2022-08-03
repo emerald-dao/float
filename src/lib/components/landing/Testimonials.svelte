@@ -50,7 +50,7 @@
 <style>
     .ending {
         margin-top: 4.35rem;
-        padding: 0 2rem;
+        padding: 0 4rem;
     }
 
     .testimonials {

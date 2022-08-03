@@ -48,10 +48,12 @@
     {#each differences as difference}
         <div class="row">
             <div class="poap">
-                <strong>{difference.poap.title}</strong> {difference.poap.description}
+                <strong>{difference.poap.title}</strong>
+                {difference.poap.description}
             </div>
             <div class="float">
-                <strong>{difference.float.title}</strong> {difference.float.description}
+                <strong>{difference.float.title}</strong>
+                {difference.float.description}
             </div>
         </div>
     {/each}
@@ -60,7 +62,7 @@
 <style>
     .comparison {
         background-color: var(--contrast);
-        padding: 3rem 2rem;
+        padding: 3rem 4rem;
     }
 
     .poap {
