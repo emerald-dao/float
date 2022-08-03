@@ -17,7 +17,7 @@
     <div class="desc">
       {eventSeriesData.basics?.description}
     </div>
-    <div class="d-flex flex-gap">
+    <div class="flex-wrap flex-gap">
       <code data-tooltip="Total slots" class="flex-none">
         Event Slots: {eventSeriesData.slots?.length ?? 0}
       </code>
@@ -45,6 +45,12 @@
     padding: 0;
     width: 100%;
     border: 1px solid transparent;
+  }
+
+  @media screen and (max-width: 520px) {
+    .panel {
+      flex-wrap: wrap;
+    }
   }
 
   .panel:hover {
