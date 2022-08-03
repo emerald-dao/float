@@ -1,8 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { user } from "$lib/flow/stores";
   import { resolveAddressObject, getEvent } from "$lib/flow/actions";
-  import Loading from "$lib/components/common/Loading.svelte";
   import Badge from "../svgs/badge.svelte";
 
   // dispatcher
@@ -59,7 +57,7 @@
 <article class="card-item" class:ghost class:pending on:click={handleClick}>
   {#if !empty}
     {#await floatEventCallback()}
-      <Loading />
+      <div class="center" aria-busy="true" />
     {:then floatEvent}
       <div>
         {#if !floatEvent}
