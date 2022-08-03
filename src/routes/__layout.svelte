@@ -26,6 +26,8 @@
       $resolver = "fn";
     }
   }
+
+  console.log($page.url.pathname);
 </script>
 
 <!-- <div class="alert alert-info text-center info">
@@ -47,7 +49,13 @@
   <WalletModal />
 {/if}
 
-{#if $page.url.pathname !== "/incinerator"}
+{#if $page.url.pathname === "/" || $page.url.pathname === '/live'}
+  <main>
+    <Notifications />
+    <slot />
+    <Transaction />
+  </main>
+{:else if $page.url.pathname !== "/incinerator"}
   <main class="container">
     <Notifications />
     <slot />

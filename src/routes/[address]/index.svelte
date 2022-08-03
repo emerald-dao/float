@@ -13,7 +13,7 @@
 
   $: addressObject = resolveAddressObject($page.params.address);
 
-  $: tab = $page.url.searchParams.get('tab') || 'floats';
+  $: tab = $page.url.searchParams.get("tab") || "floats";
   let query = new URLSearchParams($page.url.searchParams.toString());
 </script>
 
@@ -27,7 +27,7 @@
   <ul class="tabs">
     <li
       on:click={() => {
-        query.set('tab', 'floats')
+        query.set("tab", "floats");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "floats"}
@@ -36,7 +36,7 @@
     </li>
     <li
       on:click={() => {
-        query.set('tab', 'events')
+        query.set("tab", "events");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "events"}
@@ -45,7 +45,7 @@
     </li>
     <li
       on:click={() => {
-        query.set('tab', 'groups')
+        query.set("tab", "groups");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "groups"}
@@ -55,10 +55,10 @@
     {#await addressObject then addressObject}
       {#if $user?.addr == addressObject.address}
         <li
-        on:click={() => {
-          query.set('tab', 'account')
-          goto(`?${query.toString()}`);
-        }}
+          on:click={() => {
+            query.set("tab", "account");
+            goto(`?${query.toString()}`);
+          }}
           class:animatedlink={tab !== "account"}
           class:selected={tab === "account"}>
           Account
@@ -85,52 +85,52 @@
 </div>
 
 <style>
+  .animatedlink {
+    display: inline-block;
+    position: relative;
+  }
 
-.animatedlink {
-  display: inline-block;
-  position: relative;
-}
+  .animatedlink:after {
+    content: "";
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background-color: var(--primary);
+    transform-origin: bottom right;
+    transition: transform 0.25s ease-out;
+  }
 
-.animatedlink:after {
-  content: '';
-  position: absolute;
-  width: 100%;
-  transform: scaleX(0);
-  height: 2px;
-  bottom: 0;
-  left: 0;
-  background-color: var(--primary);
-  transform-origin: bottom right;
-  transition: transform 0.25s ease-out;
-}
+  .animatedlink:hover:after {
+    transform: scaleX(1);
+    transform-origin: bottom left;
+  }
 
-.animatedlink:hover:after {
-  transform: scaleX(1);
-  transform-origin: bottom left;
-}
+  .selected {
+    color: var(--primary);
+    border-bottom: 2px solid var(--primary);
+  }
 
-.selected {
-  color: var(--primary);
-  border-bottom: 2px solid var(--primary);
-}
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 5px;
+  }
 
-.tabs {
-  display: flex;
-  justify-content: space-around;
-}
+  .tabs li {
+    list-style-type: none;
+    font-size: 18px;
+    text-transform: uppercase;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 0px 10px;
+  }
 
-.tabs li {
-  list-style-type: none;
-  font-size: 18px;
-  text-transform: uppercase;
-  font-weight: bold;
-  cursor:pointer;
-  padding: 0px 10px;
-}
-
-.tabs li.selected {
-  cursor:default;
-}
+  .tabs li.selected {
+    cursor: default;
+  }
 
   @media screen and (max-width: 767px) {
     .tabs {
