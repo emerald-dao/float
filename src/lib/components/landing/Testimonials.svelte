@@ -56,6 +56,7 @@
     .testimonials {
         display: flex;
         gap: 0.75rem;
+        flex-wrap: wrap;
     }
 
     .testimonials > div {
@@ -63,6 +64,7 @@
         flex-direction: column;
         padding: 1.2rem 1.2rem 0.75rem;
         width: calc(33.3333333% - 0.5rem);
+        min-width: calc(33.3333333% - 0.5rem);
         border-radius: 0.6rem;
         background-color: var(--muted-border-color);
     }
