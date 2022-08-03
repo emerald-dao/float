@@ -87,7 +87,6 @@
         flex-grow: 1;
     }
 
-
     h2 {
         font-size: 4.3rem;
         font-weight: 600;
@@ -107,6 +106,10 @@
 
         .testimonials > div {
             width: 100%;
+        }
+
+        h2 {
+            font-size: 3.5rem;
         }
     }
 </style>
