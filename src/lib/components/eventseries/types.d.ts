@@ -26,6 +26,19 @@ export interface EventSeriesBasics {
   image: string;
 }
 
+enum GoalStatus {
+  todo = '0',
+  ready = '1',
+  accomplished = '2',
+}
+
+export interface EventSeriesAchievementGoal {
+  type: GoalType;
+  points: number;
+  params?: GoalParamsType
+  status?: GoalStatus;
+}
+
 interface Identifier {
   host: string;
   id: string;
@@ -54,7 +67,8 @@ export interface EventSeriesCreateRequest {
   emptySlotsAmtRequired: number;
 }
 
-export type AddGoalType = 'byAmount' | 'byPercent' | 'bySpecifics'
+export type GoalType = 'byAmount' | 'byPercent' | 'bySpecifics'
+export type GoalParamsType = ByAmountParams | ByPercentParams | BySpecifics
 
 interface ByAmountParams {
   eventsAmount: number
@@ -70,8 +84,8 @@ interface BySpecifics {
 }
 
 export interface AddAchievementGoalRequest {
-  type: AddGoalType;
+  type: GoalType;
   seriesId: string;
   points: number;
-  params?: ByAmountParams | ByPercentParams | BySpecifics
+  params?: GoalParamsType
 }

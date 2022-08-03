@@ -6,6 +6,8 @@
 </script>
 
 <details>
-  <summary role="button"><b>Manage the treasury →</b></summary>
+  <summary role="button" class="secondary">
+    <b>Manage the treasury →</b>
+  </summary>
   <div>TODO</div>
 </details>

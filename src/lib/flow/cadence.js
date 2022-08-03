@@ -54,6 +54,7 @@ export { default as txCleanup } from '../../cadence/float-eventseries/transactio
 
 // -------------- Getter - Scripts --------------
 // ** Event Series Builder **
+export { default as scGetEventSeriesGoals } from '../../cadence/float-eventseries/scripts/get_series_goals.cdc?raw'
 
 // ** Events Collector **
 export { default as scGetEventSeriesList } from '../../cadence/float-eventseries/scripts/get_event_series_list.cdc?raw'

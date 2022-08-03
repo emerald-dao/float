@@ -1,8 +1,13 @@
 <script>
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
+  import Loading from "$lib/components/common/Loading.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
-  import { addAchievementGoalToEventSeries } from "$lib/flow/actions";
+  import {
+    getEventSeriesGoals,
+    addAchievementGoalToEventSeries,
+  } from "$lib/flow/actions";
+  import GoalDisplay from "../elements/GoalDisplay.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -15,11 +20,12 @@
 
   /** @type {import('../types').AddAchievementGoalRequest} */
   let requestParams;
-
+  let goalsPromise;
   let selected = {};
 
   const txInProgress = seriesStore.AddAchievementGoal.InProgress;
   const txStatus = seriesStore.AddAchievementGoal.Status;
+
   // init with false
   handleReset();
 
@@ -39,6 +45,11 @@
       },
     };
     selected = {};
+
+    goalsPromise = getEventSeriesGoals(
+      eventSeries.identifier.host,
+      eventSeries.identifier.id
+    );
   }
 
   function onToggleSelect(eventId) {
@@ -67,16 +78,23 @@
       (requestParams.type === "bySpecifics" &&
         requestParams.params.events?.length > 0));
 
-  function handleAddNewGoals() {
+  async function handleAddNewGoals() {
     if (!isValidToSubmit) return;
 
-    addAchievementGoalToEventSeries(requestParams);
+    await addAchievementGoalToEventSeries(requestParams);
   }
 </script>
 
 {#if isValid}
+  {#await goalsPromise}
+    <Loading />
+  {:then goals}
+    {#each goals as goal, index}
+      <GoalDisplay {goal} totalSlots={eventSeries.slots.length} />
+    {/each}
+  {/await}
   <details>
-    <summary role="button"><b>Add a new goal →</b></summary>
+    <summary role="button" class="secondary"> <b>Add a new goal →</b> </summary>
     <div class="grid no-break mb-1">
       <button
         class:secondary={requestParams.type !== "byAmount"}
@@ -146,6 +164,7 @@
             min="1"
             max={eventSeries.slots.length}
             required
+            disabled={$txInProgress}
             bind:value={requestParams.params.eventsAmount}
             on:change={(e) => {
               requestParams.params.eventsAmount = Math.min(
@@ -168,6 +187,7 @@
             min="0"
             max={requestParams.params.eventsAmount || 0}
             required
+            disabled={$txInProgress}
             bind:value={requestParams.params.requiredEventsAmount}
           />
         </label>
@@ -185,6 +205,7 @@
           min="1"
           max="100"
           required
+          disabled={$txInProgress}
           bind:value={requestParams.params.percent}
         />
       </label>
@@ -196,6 +217,7 @@
             preview={true}
             ghost={!selected[slot.event.id]}
             pending={selected[slot.event.id]}
+            disabled={$txInProgress}
             on:clickItem={(e) => onToggleSelect(slot.event.id)}
           />
         {/each}

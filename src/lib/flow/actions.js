@@ -2695,7 +2695,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
       args = (arg, t) => [
         arg(seriesId, t.UInt64),
         arg(String(points), t.UInt64),
-        arg(percent / 100, t.UFix64),
+        arg((percent / 100.0).toFixed(1), t.UFix64),
       ]
       break;
 
@@ -2798,9 +2798,9 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
  * @param {boolean} options.consumable if comsume achievement point
  * @param {string} options.threshold how many achievement points in valid to claim
  * @param {boolean} options.autoStart
- * @param {string} options.openingEnding
- * @param {string} options.claimableEnding
- * @param {string} options.minimiumValidAmount
+ * @param {number} options.openingEnding
+ * @param {number} options.claimableEnding
+ * @param {number} options.minimiumValidAmount
  * // Delivery Parameters
  * @param {string} options.maxClaimableShares
  * @param {string} options.deliveryTokenIdentifier
@@ -2831,17 +2831,17 @@ export const addTreasuryStrategy = async (seriesId, strategyMode, deliveryMode, 
       arg(options.autoStart, t.Bool),
       // State Parameters
       arg(typeof options.openingEnding !== 'undefined', t.Bool),
-      arg(options.openingEnding, t.UFix64),
+      arg(options.openingEnding.toFixed(1), t.UFix64),
       arg(typeof options.claimableEnding !== 'undefined', t.Bool),
-      arg(options.claimableEnding, t.UFix64),
+      arg(options.claimableEnding.toFixed(1), t.UFix64),
       arg(typeof options.minimiumValidAmount !== 'undefined', t.Bool),
-      arg(options.minimiumValidAmount, t.UInt64),
+      arg(options.minimiumValidAmount.toFixed(0), t.UInt64),
       // Delivery Parameters
       arg(String(strategyModeCode), t.UInt8),
       arg(String(options.maxClaimableShares), t.UInt64),
       arg(String(deliveryModeCode), t.UInt8),
       arg(options.deliveryTokenIdentifier, t.Array(t.String)),
-      arg(options.deliveryParam1 ?? 0.0, t.Array(t.UFix64)),
+      arg((options.deliveryParam1 ?? 0.0).toFixed(1), t.Array(t.UFix64)),
     ],
     eventSeries.AddTreasuryStrategy.InProgress,
     eventSeries.AddTreasuryStrategy.Status
@@ -2863,7 +2863,7 @@ export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publ
       arg(seriesId, t.UInt64),
       arg(storagePath, t.String),
       arg(publicPath, t.String),
-      arg(amount, t.UFix64),
+      arg(String(amount), t.UFix64),
     ],
     eventSeries.DepositFungibleToken.InProgress,
     eventSeries.DepositFungibleToken.Status
@@ -3038,6 +3038,17 @@ export const getEventSeries = async (acct, id) => {
   )
   if (!raw) return null
   return parseEventSeries(acct, raw)
+}
+
+export const getEventSeriesGoals = async (host, id) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetEventSeriesGoals, addressMap),
+    (arg, t) => [
+      arg(host, t.Address),
+      arg(id, t.UInt64),
+    ],
+    []
+  )
 }
 
 // ***********************
