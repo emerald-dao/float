@@ -1,7 +1,8 @@
 <script>
+  import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
-  import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
+  import { addAchievementGoalToEventSeries } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -31,7 +32,7 @@
     requestParams = {
       type: "byAmount",
       seriesId: eventSeries.identifier.id,
-      points: "",
+      points: 100,
       params: {
         eventsAmount: 1,
         requiredEventsAmount: 0,
@@ -54,6 +55,22 @@
       selected[eventId] = true;
     }
     requestParams.params.events = slots;
+  }
+
+  $: isValidToSubmit =
+    requestParams.points > 0 &&
+    !!requestParams.type &&
+    ((requestParams.type === "byAmount" &&
+      requestParams.params.eventsAmount > 0) ||
+      (requestParams.type === "byPercent" &&
+        requestParams.params.percent > 0) ||
+      (requestParams.type === "bySpecifics" &&
+        requestParams.params.events?.length > 0));
+
+  function handleAddNewGoals() {
+    if (!isValidToSubmit) return;
+
+    addAchievementGoalToEventSeries(requestParams);
   }
 </script>
 
@@ -127,8 +144,15 @@
             name="eventsAmount"
             placeholder="ex. 1"
             min="1"
+            max={eventSeries.slots.length}
             required
             bind:value={requestParams.params.eventsAmount}
+            on:change={(e) => {
+              requestParams.params.eventsAmount = Math.min(
+                requestParams.params.eventsAmount,
+                eventSeries.slots.length
+              );
+            }}
           />
         </label>
         <!-- Range slider -->
@@ -176,6 +200,23 @@
           />
         {/each}
       </div>
+    {/if}
+    {#if $txInProgress}
+      <button aria-busy="true" disabled> Adding new Goal </button>
+    {:else if $txStatus === false}
+      <button
+        on:click|preventDefault={handleAddNewGoals}
+        disabled={!isValidToSubmit}
+      >
+        Submit new Goal
+      </button>
+    {:else}
+      {#if $txStatus.success}
+        <p>Goals updated successfully!</p>
+      {:else if !$txStatus.success && $txStatus.error}
+        <p>{JSON.stringify($txStatus.error)}</p>
+      {/if}
+      <button on:click|preventDefault={handleReset}> Continue </button>
     {/if}
   </details>
 {/if}
