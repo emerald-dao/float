@@ -4,7 +4,10 @@
   import AchievementGoals from "$lib/components/eventseries/summary/AchievementGoals.svelte";
   import { createEventDispatcher } from "svelte";
   import { user } from "$lib/flow/stores";
-  import { getAndCheckEventSeriesGoals } from "$lib/flow/actions";
+  import {
+    getEventSeriesGoals,
+    getAndCheckEventSeriesGoals,
+  } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -23,6 +26,13 @@
         eventSeries.identifier.host,
         eventSeries.identifier.id
       );
+    } else {
+      statusPromise = getEventSeriesGoals(
+        eventSeries.identifier.host,
+        eventSeries.identifier.id
+      ).then((goals) => {
+        return { goals, owned: [] };
+      });
     }
   }
 
@@ -46,7 +56,7 @@
       <EventItem
         item={slot}
         {preview}
-        owned={isOwned(userStatus.owned, slot)}
+        owned={preview ? false : isOwned(userStatus?.owned, slot)}
       />
     {/each}
   </div>

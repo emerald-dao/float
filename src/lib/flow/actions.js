@@ -2938,9 +2938,9 @@ export const dropTreasury = async (seriesId) => {
  * @param {string} seriesId
  * @param {number[]} goals
  */
-export const accompllishGoals = async (host, seriesId, goals) => {
+export const accomplishGoals = async (host, seriesId, goals) => {
   return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txAccompllishGoal, addressMap),
+    cadence.replaceImportAddresses(cadence.txAccomplishGoal, addressMap),
     (arg, t) => [
       arg(host, t.Address),
       arg(seriesId, t.UInt64),
@@ -3158,6 +3158,8 @@ export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
   if (!raw) return null
   return {
     goals: raw.goals.map(one => parseRawGoalData(one)).filter(one => !!one),
-    owned: raw.owned
+    owned: raw.owned,
+    totalScore: parseInt(raw.totalScore) ?? 0,
+    consumableScore: parseInt(raw.consumableScore) ?? 0,
   }
 }

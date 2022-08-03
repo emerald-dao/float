@@ -15,10 +15,12 @@ pub fun main(
     .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
 
   if floatsColRef == nil {
-    return Status([], [])
+    return Status([], [], 0, 0)
   }
 
   var verifyFunc: ((Int): FLOATEventSeriesGoals.GoalStatus)? = nil
+  var totalScore: UInt64 = 0
+  var consumableScore: UInt64 = 0
 
   if let achievementBoard = getAccount(accountAddr)
     .getCapability(FLOATEventSeries.FLOATAchievementBoardPublicPath)
@@ -28,6 +30,8 @@ pub fun main(
     if let record = achievementBoard.borrowAchievementRecordRef(host: host, seriesId: seriesId) {
       // when record is created
       let finishedGoals = record.getFinishedGoals()
+      totalScore = record.getTotalScore()
+      consumableScore = record.getConsumableScore()
 
       verifyFunc = fun (goalIdx: Int): FLOATEventSeriesGoals.GoalStatus {
         var status = FLOATEventSeriesGoals.GoalStatus.todo
@@ -75,15 +79,24 @@ pub fun main(
     }
   }
 
-  return Status(goalsRet, ownedIds)
+  return Status(goalsRet, ownedIds, totalScore, consumableScore)
 }
 
 pub struct Status {
   pub let goals: [FLOATEventSeriesGoals.GoalStatusDisplay]
   pub let owned: [FLOATEventSeries.EventIdentifier]
+  pub let totalScore: UInt64
+  pub let consumableScore: UInt64
 
-  init(_ goals: [FLOATEventSeriesGoals.GoalStatusDisplay], _ ids: [FLOATEventSeries.EventIdentifier]) {
+  init(
+    _ goals: [FLOATEventSeriesGoals.GoalStatusDisplay],
+    _ ids: [FLOATEventSeries.EventIdentifier],
+    _ totalScore: UInt64,
+    _ consumableScore: UInt64,
+  ) {
     self.goals = goals
     self.owned = ids
+    self.totalScore = totalScore
+    self.consumableScore = consumableScore
   }
 }

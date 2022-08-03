@@ -8,7 +8,7 @@
   export let preview = true;
   /** @type {number} */
   export let totalSlots = 0;
-  /** @type {import('../types').Identifier} */
+  /** @type {import('../types').Identifier[]} */
   export let owned = [];
 
   $: isByAmount = goal.type === "byAmount";

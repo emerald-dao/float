@@ -35,13 +35,15 @@ enum GoalStatus {
 export interface EventSeriesAchievementGoal {
   type: GoalType;
   points: number;
-  params?: GoalParamsType
+  params?: GoalParamsType;
   status?: GoalStatus;
 }
 
 export interface EventSeriesUserStatus {
   goals: EventSeriesAchievementGoal[];
-  owned: Identifier[]
+  owned: Identifier[];
+  totalScore: number;
+  consumableScore: number;
 }
 
 interface Identifier {
