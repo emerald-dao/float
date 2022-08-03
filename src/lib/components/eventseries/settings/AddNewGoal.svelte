@@ -1,13 +1,13 @@
 <script>
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
+  import GoalDisplay from "../elements/GoalDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
     getEventSeriesGoals,
     addAchievementGoalToEventSeries,
   } from "$lib/flow/actions";
-  import GoalDisplay from "../elements/GoalDisplay.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -17,6 +17,7 @@
 
   $: isValid = eventSeries.identifier.host === $user?.addr;
   $: eventSlots = eventSeries.slots.filter((one) => !!one.event);
+  $: requiredSlots = eventSeries.slots.filter((one) => one.required);
 
   /** @type {import('../types').AddAchievementGoalRequest} */
   let requestParams;
@@ -185,7 +186,10 @@
             id="requiredEventsAmount"
             name="requiredEventsAmount"
             min="0"
-            max={requestParams.params.eventsAmount || 0}
+            max={Math.min(
+              requestParams.params.eventsAmount || 0,
+              requiredSlots.length
+            )}
             required
             disabled={$txInProgress}
             bind:value={requestParams.params.requiredEventsAmount}

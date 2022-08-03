@@ -1,3 +1,4 @@
+import FLOAT from "../../float/FLOAT.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import FLOATEventSeriesGoals from "../FLOATEventSeriesGoals.cdc"
 
@@ -5,8 +6,17 @@ pub fun main(
   accountAddr: Address,
   host: Address,
   seriesId: UInt64
-): [FLOATEventSeriesGoals.GoalStatusDisplay] {
+): Status {
+  // series
   let eventSeriesRef = FLOATEventSeries.EventSeriesIdentifier(host, seriesId).getEventSeriesPublic()
+  // floats
+  let floatsColRef = getAccount(accountAddr)
+    .getCapability(FLOAT.FLOATCollectionPublicPath)
+    .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+
+  if floatsColRef == nil {
+    return Status([], [])
+  }
 
   var verifyFunc: ((Int): FLOATEventSeriesGoals.GoalStatus)? = nil
 
@@ -39,12 +49,12 @@ pub fun main(
     }
   }
 
-  // the final data
-  let ret: [FLOATEventSeriesGoals.GoalStatusDisplay] = []
+  // goals final data
+  let goalsRet: [FLOATEventSeriesGoals.GoalStatusDisplay] = []
   let goals = eventSeriesRef.getGoals()
 
   for i, goal in goals {
-    ret.append(FLOATEventSeriesGoals.GoalStatusDisplay(
+    goalsRet.append(FLOATEventSeriesGoals.GoalStatusDisplay(
       status: verifyFunc!(i),
       identifer: goal.getType().identifier,
       title: goal.title,
@@ -52,5 +62,28 @@ pub fun main(
       detail: goal.getGoalDetail()
     ))
   }
-  return ret
+
+  // get floats data
+  let ownedIds: [FLOATEventSeries.EventIdentifier] = []
+  let slots = eventSeriesRef.getSlots()
+  for slot in slots {
+    if let eventIdentifier = slot.getIdentifier() {
+      let ids = floatsColRef!.ownedIdsFromEvent(eventId: eventIdentifier.id)
+      if ids.length > 0 {
+        ownedIds.append(eventIdentifier)
+      }
+    }
+  }
+
+  return Status(goalsRet, ownedIds)
+}
+
+pub struct Status {
+  pub let goals: [FLOATEventSeriesGoals.GoalStatusDisplay]
+  pub let owned: [FLOATEventSeries.EventIdentifier]
+
+  init(_ goals: [FLOATEventSeriesGoals.GoalStatusDisplay], _ ids: [FLOATEventSeries.EventIdentifier]) {
+    self.goals = goals
+    self.owned = ids
+  }
 }

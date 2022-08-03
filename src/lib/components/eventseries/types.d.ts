@@ -39,6 +39,11 @@ export interface EventSeriesAchievementGoal {
   status?: GoalStatus;
 }
 
+export interface EventSeriesUserStatus {
+  goals: EventSeriesAchievementGoal[];
+  owned: Identifier[]
+}
+
 interface Identifier {
   host: string;
   id: string;

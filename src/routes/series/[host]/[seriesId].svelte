@@ -123,7 +123,7 @@
       </ul>
 
       {#if isIndexPage}
-        <SeriesSummary {eventSeries} />
+        <SeriesSummary {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {:else if isTreasuryPage}
         <SeriesTreasury {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {:else if isSettingsPage && $user?.addr == resolvedNameObject.address}

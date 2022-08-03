@@ -19,9 +19,10 @@
   export let pending = false;
   /** for ghost slots */
   export let ghost = false;
+  /** for owned items */
+  export let owned = false;
 
   $: itemRequired = item.required ?? false;
-  $: itemOwned = false;
 
   /** @type {Promise<import('./types').FloatEvent>} */
   const floatEventCallback = async () => {
@@ -37,9 +38,6 @@
     let eventData = await getEvent(hostAddress, String(item.event?.id));
     if (!eventData) {
       return null;
-    }
-    if (!preview) {
-      itemOwned = false; // FIXME: use ownedIdsFromEvent to check FLOAT
     }
     return eventData;
   };
@@ -65,12 +63,12 @@
     {:then floatEvent}
       <div>
         {#if !floatEvent}
-          <h3>Empty<br />Slot</h3>
+          <h3 class="unclaimed">Empty<br />Slot</h3>
         {:else}
           <img
             src="https://ipfs.infura.io/ipfs/{floatEvent.image}"
             alt="{floatEvent.name} Image"
-            class:unclaimed={!preview}
+            class:unclaimed={!preview && !owned}
           />
           <a
             class="no-style"
@@ -78,7 +76,7 @@
             target="_blank"
             data-tooltip="#{floatEvent.eventId} by {item.event?.host}"
           >
-            <h3>{floatEvent.name}</h3>
+            <h3 class:unclaimed={!preview && !owned}>{floatEvent.name}</h3>
           </a>
         {/if}
       </div>
@@ -101,7 +99,7 @@
 
   {#if !empty}
     <span class="badge">
-      <Badge owned={itemOwned} required={itemRequired} />
+      <Badge {owned} required={itemRequired} />
     </span>
   {/if}
 </article>
@@ -183,7 +181,6 @@
   }
 
   .unclaimed {
-    filter: grayscale(0);
-    opacity: 0.4;
+    opacity: 0.3;
   }
 </style>

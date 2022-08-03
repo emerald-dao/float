@@ -2935,7 +2935,7 @@ export const dropTreasury = async (seriesId) => {
  * accompllish event series goals
  * 
  * @param {string} host
- * @param {number} seriesId
+ * @param {string} seriesId
  * @param {number[]} goals
  */
 export const accompllishGoals = async (host, seriesId, goals) => {
@@ -2944,7 +2944,7 @@ export const accompllishGoals = async (host, seriesId, goals) => {
     (arg, t) => [
       arg(host, t.Address),
       arg(seriesId, t.UInt64),
-      arg(goals, t.Array(t.Int)),
+      arg(goals.map(one => one.toFixed(0)), t.Array(t.Int)),
     ],
     eventSeries.AccompllishGoals.InProgress,
     eventSeries.AccompllishGoals.Status,
@@ -3041,7 +3041,7 @@ export const getEventSeries = async (acct, id) => {
 }
 
 export const getEventSeriesGoals = async (host, id) => {
-  return await generalQuery(
+  const raw = await generalQuery(
     cadence.replaceImportAddresses(cadence.scGetEventSeriesGoals, addressMap),
     (arg, t) => [
       arg(host, t.Address),
@@ -3049,6 +3049,53 @@ export const getEventSeriesGoals = async (host, id) => {
     ],
     []
   )
+  if (!raw) return null
+  return raw.map(one => parseRawGoalData(one)).filter(one => !!one)
+}
+
+/**
+ * @param rawGoal
+ * @return {import('../components/eventseries/types').EventSeriesAchievementGoal}
+ */
+function parseRawGoalData(rawGoal) {
+  /** @type {import('../components/eventseries/types').GoalType} */
+  let type;
+  /** @type {import('../components/eventseries/types').GoalParamsType} */
+  let params;
+  const typeIdentifer = String(rawGoal.identifer);
+  if (typeIdentifer.indexOf("ByAmount") > -1) {
+    type = "byAmount";
+    if (!rawGoal.detail?.amount || !rawGoal.detail?.requiredAmount)
+      return null;
+    params = {
+      eventsAmount: parseInt(rawGoal.detail?.amount),
+      requiredEventsAmount: parseInt(rawGoal.detail?.requiredAmount),
+    };
+  } else if (typeIdentifer.indexOf("ByPercent") > -1) {
+    type = "byPercent";
+    if (!rawGoal.detail?.percent) return null;
+    params = {
+      percent: parseFloat(
+        (parseFloat(rawGoal.detail?.percent) * 100).toFixed(2)
+      ),
+    };
+  } else if (typeIdentifer.indexOf("SpecificFLOATs") > -1) {
+    type = "bySpecifics";
+    if (!rawGoal.detail?.floats || !rawGoal.detail?.floats.length)
+      return null;
+    params = {
+      events: rawGoal.detail?.floats,
+    };
+  } else {
+    return null;
+  }
+
+  return {
+    type,
+    points: parseInt(rawGoal.points),
+    status: rawGoal.status.rawValue,
+    params,
+  };
 }
 
 // ***********************
@@ -3095,16 +3142,22 @@ export const getAchievementRecords = async (acct, host, seriesIds) => {
  * 
  * @param {string} acct
  * @param {string} host
- * @param {number} seriesIds
+ * @param {number} seriesId
+ * @return {import('../components/eventseries/types').EventSeriesUserStatus}
  */
-export const getAndCheckEventSeriesGoals = async (acct, host, seriesIds) => {
-  return await generalQuery(
+export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
+  const raw = await generalQuery(
     cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap),
     (arg, t) => [
       arg(acct, t.Address),
       arg(host, t.Address),
-      arg(seriesIds, t.Array(t.UInt64))
+      arg(seriesId, t.UInt64)
     ],
-    []
+    {}
   )
+  if (!raw) return null
+  return {
+    goals: raw.goals.map(one => parseRawGoalData(one)).filter(one => !!one),
+    owned: raw.owned
+  }
 }
