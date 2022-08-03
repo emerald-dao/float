@@ -62,7 +62,7 @@
                 <p>{useCase.description}</p>
                 <div class="at-bottom">
                     <img src={useCase.image} alt="logo" />
-                    <a href={useCase.example}>See Example</a>
+                    <a href={useCase.example}>See Example →</a>
                 </div>
             </div>
         {/each}
@@ -72,8 +72,11 @@
 <style>
     a {
         text-decoration: none;
-        color: var(--primary-inverse);
         font-weight: 700;
+        color: rgb(43, 43, 43);
+    }
+    a:hover {
+      text-decoration: underline;
     }
 
     h3 {

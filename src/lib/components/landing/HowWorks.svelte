@@ -82,9 +82,13 @@
 <style>
     a {
         text-decoration: none;
-        color: var(--primary-inverse);
         font-weight: 700;
+        color: rgb(43, 43, 43);
     }
+    a:hover {
+      text-decoration: underline;
+    }
+
 
     .how-works {
         padding-top: 0;
