@@ -36,7 +36,7 @@
                     </li>
                 </ul>
             </div>
-            <img src="/social-card.png" alt="social card" />
+            <img src="/admin-cap.png" alt="admin capabilities" />
         </div>
         <div class="works-list-element share">
             <div>
@@ -55,7 +55,7 @@
                     </li>
                 </ul>
             </div>
-            <img src="/social-card.png" alt="social card" />
+            <img src="/emerald-bot.png" alt="emerald bot" />
         </div>
         <div class="works-list-element wide">
             <div>
@@ -74,7 +74,7 @@
                     </li>
                 </ul>
             </div>
-            <img src="/social-card.png" alt="social card" />
+            <img src="/live-page.jpeg" alt="live page" />
         </div>
     </div>
 </div>
@@ -134,8 +134,15 @@
         vertical-align: top;
         overflow: hidden;
         border-radius: 0.75rem;
-        max-width: 70%;
         object-fit: contain;
+    }
+
+    .wide img {
+        max-width: 50%;
+    }
+
+    .share img {
+        max-width: 75%;
     }
 
     .wide {
@@ -178,6 +185,11 @@
 
         .share {
             width: 100%;
+        }
+
+        .wide img,
+        .share img {
+            max-width: 100%;
         }
     }
 </style>

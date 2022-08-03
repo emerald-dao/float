@@ -18,6 +18,13 @@
   <h3>Create events for your communities to prove that they were there.</h3>
 </div>
 
+<video
+  src="/updated_float.mp4"
+  alt="FLOAT Video - Freakizoid"
+  autoplay
+  controls
+  loop />
+
 <Button />
 
 <UseCases />
@@ -37,13 +44,21 @@
 <style>
   .hero {
     position: relative;
-    padding: 7rem 2rem 5.2rem 8rem;
+    padding: 7rem 2rem 2rem 8rem;
   }
 
   .hero h1 {
     font-size: 3.2rem;
     line-height: 120%;
     font-weight: 800;
+  }
+
+  video {
+    position: relative;
+    width: 50%;
+    left: 25%;
+    text-align: center;
+    border-radius: 0.4rem;
   }
 
   h3 {

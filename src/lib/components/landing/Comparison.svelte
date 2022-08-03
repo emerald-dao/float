@@ -2,9 +2,9 @@
     const differences = [
         {
             poap: {
-                title: "Off chain.",
+                title: "Off chain components.",
                 description:
-                    "POAP is an off-chain platform and does not utilize the decentralized nature of the blockchain.",
+                    "POAP events are off-chain and stored in a database. It does not completely utilize the decentralized nature of the blockchain.",
             },
             float: {
                 title: "On chain.",
@@ -36,6 +36,30 @@
                     "Plug numerous FLOAT interactions into your own transactions, such as depositing a FLOAT to a user who mints your NFT.",
             },
         },
+        {
+            poap: {
+                title: "Cannot pause transferring.",
+                description:
+                    "As an event owner, you cannot prevent users from transferring POAPs to each other. This means some users may contain POAPs for not even attending an event.",
+            },
+            float: {
+                title: "Can pause transfers.",
+                description:
+                    "You can toggle on/off transfers (and claiming) at any point in time to ensure they are not given to users who did not attend.",
+            },
+        },
+        {
+            poap: {
+                title: "Can take away user POAPs.",
+                description:
+                    "POAP retains the power to take away users' POAPs. Check out <a href='https://mirror.xyz/metamess.eth/SY7e-ouQ33Aaj6FHF0TgjC-gYmKfTYL66oA2j2XflbY' target='_blank'>this tweet</a> by an angry user.",
+            },
+            float: {
+                title: "True ownership.",
+                description:
+                    "Due to FLOAT being entirely on chain, and the resource oriented nature of the Flow blockchain, users' FLOATs are truly owned by the user.",
+            },
+        },
     ];
 </script>
 
@@ -43,17 +67,17 @@
     <h2>POAP vs. FLOAT</h2>
     <div class="pictures">
         <img src="/poapad.png" alt="POAP ad" />
-        <img src="/floatad.png" alt="FLOAT ad" />
+        <img src="/freakizoid.png" alt="FLOAT ad" />
     </div>
     {#each differences as difference}
         <div class="row">
             <div class="poap">
                 <strong>&#10060; {difference.poap.title}</strong>
-                {difference.poap.description}
+                {@html difference.poap.description}
             </div>
             <div class="float">
                 <strong>&#9989; {difference.float.title}</strong>
-                {difference.float.description}
+                {@html difference.float.description}
             </div>
         </div>
     {/each}
@@ -94,6 +118,7 @@
     .pictures > img {
         width: 50%;
         border-radius: 0px;
+        object-fit: cover;
     }
 
     .pictures > img:nth-child(1) {
