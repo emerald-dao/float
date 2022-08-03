@@ -44,7 +44,7 @@
 <style>
   .hero {
     position: relative;
-    padding: 7rem 2rem 2rem 8rem;
+    padding: 3rem 2rem 2rem 8rem;
   }
 
   .hero h1 {

@@ -88,7 +88,6 @@ body {
 main {
   flex: 1 0 auto;
   padding-bottom: 80px;
-  max-width: none !important;
 }
 
 footer {
@@ -232,6 +231,10 @@ h3 {
 main {
   margin-top: 0;
   padding-top: 0;
+}
+
+.container {
+  max-width: 800px !important;
 }
 
 .rounded-circle {
