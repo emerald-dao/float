@@ -1,11 +1,11 @@
 <script>
   import CheckAddress from "$lib/components/CheckAddress.svelte";
-  import Stats from '$lib/components/common/Stats.svelte';
+  import Stats from "$lib/components/common/Stats.svelte";
   import Button from "$lib/components/landing/Button.svelte";
-import Comparison from "$lib/components/landing/Comparison.svelte";
-import HowWorks from "$lib/components/landing/HowWorks.svelte";
-import Testimonials from "$lib/components/landing/Testimonials.svelte";
-import UseCases from "$lib/components/landing/UseCases.svelte";
+  import Comparison from "$lib/components/landing/Comparison.svelte";
+  import HowWorks from "$lib/components/landing/HowWorks.svelte";
+  import Testimonials from "$lib/components/landing/Testimonials.svelte";
+  import UseCases from "$lib/components/landing/UseCases.svelte";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
 </script>
 
@@ -37,7 +37,7 @@ import UseCases from "$lib/components/landing/UseCases.svelte";
 <style>
   .hero {
     position: relative;
-    padding: 7rem 2rem 5.2rem 2rem;
+    padding: 7rem 2rem 5.2rem 4rem;
   }
 
   .hero h1 {
