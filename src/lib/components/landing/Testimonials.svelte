@@ -2,16 +2,47 @@
     <h2>Testimonials</h2>
     <div class="testimonials">
         <div>
-            <p>I was just gonna say, ahh man floats are fun, so easy and so much can be done with it! It is golddd</p>
+            <p>
+                I was just gonna say, ahh man floats are fun, so easy and so
+                much can be done with it! It is golddd
+            </p>
             <small>HumblePoom, founder of Driverz NFT</small>
         </div>
         <div>
-            <p>I created a Float for my Twitch viewers that served as an entry for future giveaways. It was extremely easy to set up and very user friendly for my viewers to collect the Float. For 85-90% of them - it was their first NFT! Floats are great for groups!</p>
+            <p>
+                I created a Float for my Twitch viewers that served as an entry
+                for future giveaways. It was extremely easy to set up and very
+                user friendly for my viewers to collect the Float. For 85-90% of
+                them - it was their first NFT! Floats are great for groups!
+            </p>
             <small>bigedude33, Gaming & Musical Comedy YouTube Star</small>
         </div>
         <div>
-            <p>I love the potential that exists with FLOATS - being able to gate exclusive access to something, and for the host to be able to find a way to reward those who attended later on! It paves a way for new possibilities on web3</p>
+            <p>
+                I love the potential that exists with FLOATS - being able to
+                gate exclusive access to something, and for the host to be able
+                to find a way to reward those who attended later on! It paves a
+                way for new possibilities on web3
+            </p>
             <small>rko, Flow Community Legend</small>
+        </div>
+        <div>
+            <p>
+                Floats brought an important ability to Flow. They allow anyone
+                to create a proof of attendance or a proof of support. Being
+                able to verify if someone owns a specific float, allows
+                community leaders to create gated areas in discords using the
+                Emerald Bot! I am very grateful. ♥️
+            </p>
+            <small>Jimbo, Flow Community Extraordinar</small>
+        </div>
+        <div>
+            <p>
+                FLOATs are practical, easy to use, and brings an extra layer of
+                fun within the web3 community. Creating or claiming a FLOAT
+                couldn’t be easier. Thanks Emerald City!
+            </p>
+            <small>Nick, #1 Dad on Flow</small>
         </div>
     </div>
 </div>
