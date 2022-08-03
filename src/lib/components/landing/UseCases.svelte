@@ -18,35 +18,35 @@
             name: "Giveaways",
             description:
                 "Have participants claim a FLOAT to enter the giveaway. Then, in Discord using the Emerald bot, use the /randomfloats command to pick a winner.",
-            image: "/favicon.png",
+            image: "/money-bag.png",
             example: "https://floats.city/jacobmtucker.find/event/228533912",
         },
         {
             name: "Fundraisers",
             description:
                 "Created a paid FLOAT and request that people purchase it for a fundraiser, while also claiming a FLOAT marking that they participated in the effort.",
-            image: "/favicon.png",
+            image: "/hand.png",
             example: "https://floats.city/relief.find/event/191808682",
         },
         {
             name: "Allowlist",
             description:
                 "Have users claim a FLOAT to get onto an allowlist. You can download a list of addresses who claimed your FLOAT.",
-            image: "/favicon.png",
+            image: "/document.png",
             example: "https://floats.city/robenoch.find/event/204594987",
         },
         {
             name: "Merch Voucher",
             description:
                 "Want to give out merch to people who get onto a list? Create a FLOAT and have people claim it to be able to purchase merch in the future.",
-            image: "/favicon.png",
+            image: "/tshirt.png",
             example: "https://floats.city/0x7b3cebdc058c1660/event/192961887",
         },
         {
             name: "Quizzes",
             description:
                 "Make a FLOAT Group and then add a bunch of different FLOAT events to that group, each with their own question. For each FLOAT event, make the secret code the answer to that quiz, and then use Emerald bot to validate if a user has all the FLOATs from the Group! ",
-            image: "/favicon.png",
+            image: "/speech-bubble.png",
             example:
                 "https://floats.city/dene.find/group/Icons%20of%20Extreme%20Sports%20-%20QUIZ",
         },
