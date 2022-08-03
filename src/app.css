@@ -7,15 +7,16 @@
 
 /* Make copy&paste text seclection visible */
 ::selection {
-  background:  var(--secondary-focus);
+  background: var(--secondary-focus);
 }
 
-/* add line breaks to event description */  
+/* add line breaks to event description */
 blockquote {
   white-space: pre-line;
 }
 
-img, image {
+img,
+image {
   border-radius: 4px;
 }
 
@@ -67,8 +68,10 @@ body::-webkit-scrollbar {
 
 /* Hide scrollbar for IE, Edge and Firefox */
 body {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
@@ -76,15 +79,18 @@ html,
 body {
   height: 100%;
 }
+
 body {
   display: flex;
   flex-direction: column;
 }
+
 main {
   flex: 1 0 auto;
   padding-bottom: 80px;
   max-width: none !important;
 }
+
 footer {
   flex-shrink: 0;
 }
@@ -121,9 +127,9 @@ h3 {
 }
 
 .d-flex {
-  display:flex;
-  justify-items:center;
-  align-items:center;
+  display: flex;
+  justify-items: center;
+  align-items: center;
 
 }
 
@@ -154,28 +160,28 @@ h3 {
 
 .input-button-group input,
 .input-button-group select {
-  margin-right:10px;
+  margin-right: 10px;
 }
 
 .card-container {
-  display:inline-flex;
+  display: inline-flex;
   flex-wrap: wrap;
-  justify-content: center; 
-  align-items:stretch;
+  justify-content: center;
+  align-items: stretch;
 }
 
 .card {
   width: 250px;
   padding: 1.5rem 1rem;
-  text-align:center;
+  text-align: center;
   margin-right: 10px;
   margin-bottom: 10px;
-  display:inline-flex;
-  flex-direction:column;
-  justify-content:end;
-  align-items:center;
-  border:1px solid transparent;
-  height:95%;
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: center;
+  border: 1px solid transparent;
+  height: 95%;
 }
 
 .card-preview {
@@ -191,16 +197,16 @@ h3 {
   margin-top: 10px;
   margin-bottom: 10px;
   font-size: 1.3rem;
-  flex-grow:1;
-  align-items:center;
+  flex-grow: 1;
+  align-items: center;
 }
 
 .card img {
-    display:block;
-    margin: 0 auto;
-    max-width: 200px;
-    max-height: 200px;
-    margin-bottom: 20px;
+  display: block;
+  margin: 0 auto;
+  max-width: 200px;
+  max-height: 200px;
+  margin-bottom: 20px;
 }
 
 .card:hover {
@@ -209,16 +215,17 @@ h3 {
 
 .tx {
   margin-bottom: 2em;
-  
+
 }
+
 .txId {
-  font-family:monospace;
-  margin-right:10px;
+  font-family: monospace;
+  margin-right: 10px;
 }
 
 .no-style {
-  color:inherit;
-  text-decoration:inherit;
+  color: inherit;
+  text-decoration: inherit;
 }
 
 .container,
@@ -226,17 +233,19 @@ main {
   margin-top: 0;
   padding-top: 0;
 }
+
 .rounded-circle {
   border-radius: 50%;
 }
 
 .m-0 {
-  margin:0;
+  margin: 0;
 }
 
 .mb-1 {
   margin-bottom: 1em;
 }
+
 .mb-2 {
   margin-bottom: 2em;
 }
@@ -267,11 +276,11 @@ main {
 }
 
 .no-break {
-  display:flex;
+  display: flex;
 }
 
 .text-center {
-  text-align:center;
+  text-align: center;
 }
 
 .align-center {
@@ -281,12 +290,10 @@ main {
 
 .mx-auto {
   margin-left: auto;
-  margin-right:auto;
+  margin-right: auto;
 }
 
-.cards {
-  
-}
+.cards {}
 
 .emphasis {
   font-weight: 600;
@@ -309,12 +316,12 @@ main {
   font-weight: bold;
 }
 
-.alert > p,
-.alert > ul {
+.alert>p,
+.alert>ul {
   margin-bottom: 0;
 }
 
-.alert > p + p {
+.alert>p+p {
   margin-top: 5px;
 }
 
@@ -396,7 +403,7 @@ main {
   border-radius: 100px;
   color: var(--primary);
   font-size: 0.7rem;
-  white-space:nowrap;
+  white-space: nowrap;
 }
 
 .group-badge.small {
@@ -408,18 +415,18 @@ main {
 }
 
 .command-badge {
-  display:inline-flex;
-  font-size:0.7rem;
+  display: inline-flex;
+  font-size: 0.7rem;
   vertical-align: middle;
   justify-items: center;
-  align-items:center;
+  align-items: center;
   border: 1px solid var(--color);
-  border-radius:5px;
+  border-radius: 5px;
   padding: 3px 8px;
 }
 
 .command {
-  font-family:monospace;
+  font-family: monospace;
   margin-left: 8px;
 }
 
@@ -427,4 +434,9 @@ main {
   background: yellow;
   border: 0;
   color: black;
+}
+
+.home-page-padding {
+  padding-left: 8rem;
+  padding-right: 8rem;
 }

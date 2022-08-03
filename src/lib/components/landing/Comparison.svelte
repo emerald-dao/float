@@ -39,7 +39,7 @@
     ];
 </script>
 
-<div class="comparison">
+<div class="comparison home-page-padding">
     <h2>POAP vs. FLOAT</h2>
     <div class="pictures">
         <img src="/poapad.png" alt="POAP ad" />
@@ -62,7 +62,8 @@
 <style>
     .comparison {
         background-color: var(--contrast);
-        padding: 3rem 4rem;
+        padding-top: 3rem;
+        padding-bottom: 3rem;
     }
 
     .poap {

@@ -53,7 +53,7 @@
     ];
 </script>
 
-<div class="use-cases">
+<div class="use-cases home-page-padding">
     <h2>Use cases</h2>
     <div class="use-cases-list">
         {#each useCasesList as useCase}
@@ -84,7 +84,8 @@
         color: var(--contrast-hover);
     }
     .use-cases {
-        padding: 0 4rem;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
     h2 {

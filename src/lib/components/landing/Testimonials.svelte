@@ -1,4 +1,4 @@
-<div class="ending">
+<div class="ending home-page-padding">
     <h2>Testimonials</h2>
     <div class="testimonials">
         <div>
@@ -44,13 +44,27 @@
             </p>
             <small>Nick, #1 Dad on Flow</small>
         </div>
+        <div>
+            <p>
+                FLOATs bring the ability for community groups to celebrate their
+                collections, their fandom, their shared experience. With FLOATs,
+                anyone can take part in the fun of web3 without worrying about
+                barriers such as technical know-how, cost of entry, potential
+                for bad actors, etc. <br /><br />
+                They truly represent a key part of bringing a billion people to the
+                blockchain and I can't wait to see how they evolve and grow over
+                time.
+            </p>
+            <small>eldumbo, Annoying Flow NPC</small>
+        </div>
     </div>
 </div>
 
 <style>
     .ending {
         margin-top: 4.35rem;
-        padding: 0 4rem;
+        padding-top: 0;
+        padding-bottom: 0rem;
     }
 
     .testimonials {

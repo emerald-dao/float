@@ -1,4 +1,4 @@
-<div class="how-works">
+<div class="how-works home-page-padding">
     <h2>How It Works</h2>
     <div class="works-list">
         <div class="works-list-element wide">
@@ -87,7 +87,8 @@
     }
 
     .how-works {
-        padding: 0 4rem;
+        padding-top: 0;
+        padding-bottom: 0;
     }
 
     .works-list {
