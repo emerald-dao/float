@@ -18,7 +18,7 @@
   <h3>Create events for your communities to prove that they were there.</h3>
 </div>
 
-<Stats size="xl" />
+<Stats />
 
 <!-- <video
   src="/updated_float.mp4"

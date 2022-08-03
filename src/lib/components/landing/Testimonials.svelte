@@ -87,7 +87,11 @@
         flex-grow: 1;
     }
 
+
     h2 {
+        font-size: 4.3rem;
+        font-weight: 600;
+        line-height: 120%;
         margin-bottom: 1.2rem;
     }
 
