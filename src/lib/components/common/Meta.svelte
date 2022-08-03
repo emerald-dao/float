@@ -10,7 +10,7 @@
 </script>
 <svelte:head>
 <title>{title || "Welcome to FLOAT"} {removeTitleSuffix ? '' : PAGE_TITLE_EXTENSION}</title>
-<meta name="description" content="{description || "Create and view FLOATs, a proof of attendance platform built by Emerald City DAO built on Flow"}" />
+<meta name="description" content="{description || "Create and view FLOATs, a proof of attendance platform built by Emerald City DAO on Flow"}" />
 <meta name="author" content="{author || "Emerald City"}">
 <meta property="og:image" content="{image || "http://floats.city/social-card.png"}">
 <meta property="twitter:image" content="{image || "http://floats.city/social-card.png"}">
