@@ -6,7 +6,7 @@
                 <h3>FLOAT Overview</h3>
                 <ul>
                     <li>
-                        You can create an event on our own completely for free.
+                        You can create an event on your own completely for free.
                     </li>
                     <li>
                         You can add multiple requirements to claiming your
