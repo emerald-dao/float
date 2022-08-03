@@ -74,6 +74,8 @@
     .float {
         background-color: #35d9ba;
         color: var(--contrast);
+        border-top-right-radius: 0.4rem;
+        border-bottom-right-radius: 0.4rem;
     }
 
     h2 {

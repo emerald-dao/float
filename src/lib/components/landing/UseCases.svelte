@@ -70,6 +70,12 @@
 </div>
 
 <style>
+    a {
+        text-decoration: none;
+        color: var(--primary-inverse);
+        font-weight: 700;
+    }
+
     h3 {
         font-size: 1.45rem;
         font-weight: 600;
