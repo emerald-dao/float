@@ -96,3 +96,20 @@ export interface AddAchievementGoalRequest {
   points: number;
   params?: GoalParamsType
 }
+
+export type TreasuryMgrType = 'depositFT' | 'depositNFT' | 'dropAll'
+
+export interface TreasuryManagementRequeset {
+  type: TreasuryMgrType;
+  seriesId: string;
+  storagePath?: string;
+  publicPath?: string;
+  amount?: number;
+  ids?: string[];
+}
+
+export interface TokenBalance {
+  balance: string;
+  identifier: string;
+  path: string;
+}

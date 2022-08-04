@@ -24,6 +24,7 @@
     "buffer": "6.0.3",
     "canvas-confetti": "1.5.1",
     "elliptic": "6.5.4",
+    "flow-native-token-registry": "latest",
     "scrypt-async": "2.0.1",
     "sha3": "2.1.4",
     "svelte": "3.48.0",

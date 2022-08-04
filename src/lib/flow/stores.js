@@ -1,4 +1,5 @@
 import { writable, get } from 'svelte/store';
+import { TokenListProvider, Strategy, ENV } from "flow-native-token-registry";
 
 export const user = writable(null);
 export const getUser = get(user);
@@ -82,10 +83,21 @@ export const eventSeries = {
   UpdateBasics: buildWraitable(),
   UpdateSlots: buildWraitable(),
   AddTreasuryStrategy: buildWraitable(),
-  DepositFungibleToken: buildWraitable(),
-  DepositNonFungibleToken: buildWraitable(),
+  TreasuryManegement: buildWraitable(),
   NextTreasuryStrategyStage: buildWraitable(),
-  DropTreasury: buildWraitable(),
   AccompllishGoals: buildWraitable(),
   ClaimTreasuryRewards: buildWraitable(),
+}
+
+const tokenList = writable(null);
+export const getLatestTokenList = async () => {
+  /** @type {import('flow-native-token-registry').TokenInfo[]} */
+  const cachedList = get(tokenList);
+  if (!cachedList) {
+    const tokens = await new TokenListProvider().resolve(Strategy.CDN, import.meta.env.VITE_FLOW_NETWORK ?? ENV.Mainnet);
+    const list = tokens.getList()
+    tokenList.set(list);
+    return list;
+  }
+  return cachedList
 }

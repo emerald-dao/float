@@ -3143,7 +3143,7 @@ export const getAchievementRecords = async (acct, host, seriesIds) => {
  * @param {string} acct
  * @param {string} host
  * @param {number} seriesId
- * @return {import('../components/eventseries/types').EventSeriesUserStatus}
+ * @return {Promise<import('../components/eventseries/types').EventSeriesUserStatus>}
  */
 export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
   const raw = await generalQuery(
@@ -3162,4 +3162,20 @@ export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
     totalScore: parseInt(raw.totalScore) ?? 0,
     consumableScore: parseInt(raw.consumableScore) ?? 0,
   }
+}
+
+/**
+ * @param {string} acct
+ * @param {string[]} paths
+ * @returns {Promise<import('../components/eventseries/types').TokenBalance[]>}
+ */
+export const getTokenBalances = async (acct, paths) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetBalances, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(paths, t.Array(t.String))
+    ],
+    []
+  )
 }
