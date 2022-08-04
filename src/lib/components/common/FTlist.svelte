@@ -6,7 +6,9 @@
   // dispatcher
   const dispatch = createEventDispatcher();
 
-  let currentToken = "";
+  /** @type {import('flow-native-token-registry').TokenInfo} */
+  let currentToken = undefined;
+  let open = false;
 
   async function getOwnedTokenList(address) {
     const allList = await getLatestTokenList();
@@ -38,24 +40,42 @@
   } // end function
 
   $: ownedList = getOwnedTokenList($user?.addr);
-
-  function selectToken() {
-    // TODO
-  }
 </script>
 
-<details role="list">
-  <summary aria-haspopup="listbox">
-    {currentToken ?? "please choose one"}
+<details role="list" {open}>
+  <summary
+    aria-haspopup="listbox"
+    on:click={(e) => {
+      setTimeout(() => {
+        if (!open) {
+          open = true;
+        }
+      });
+    }}
+  >
+    {#if !currentToken}
+      please choose your token
+    {:else}
+      <img src={currentToken.logoURI} class="icon" alt="currentToken logo" />
+      &nbsp; {currentToken.name}
+    {/if}
   </summary>
   <ul role="listbox">
     {#await ownedList then list}
       {#each list as token}
         <li>
-          <a>
+          <!-- svelte-ignore a11y-missing-attribute -->
+          <a
+            on:click={(e) => {
+              dispatch("select", token);
+              currentToken = token;
+              open = false;
+            }}
+          >
             <div class="flex-wrap between flex-gap">
               <span>
-                <img src={token.logoURI} class="icon" /> &nbsp; {token.name}
+                <img src={token.logoURI} class="icon" alt="{token.name} logo" />
+                &nbsp; {token.name}
               </span>
               <span class="emphasis">{token.balance}</span>
             </div>
@@ -69,8 +89,8 @@
 </details>
 
 <style>
-  .icon {
-    height: 2rem;
-    width: 2rem;
+  img.icon {
+    height: 1.5rem;
+    width: 1.5rem;
   }
 </style>

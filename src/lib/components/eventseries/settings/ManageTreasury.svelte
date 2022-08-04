@@ -1,5 +1,6 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
+  import FTlist from "$lib/components/common/FTlist.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
@@ -7,7 +8,6 @@
     depositNonFungibleTokenToTreasury,
     dropTreasury,
   } from "$lib/flow/actions";
-  import FTlist from "../elements/FTlist.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
