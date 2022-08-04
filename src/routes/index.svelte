@@ -15,7 +15,7 @@
 
 <div class="hero">
   <h1>Proof of attendance #onFlow.</h1>
-  <h3>Create events for your communities to prove that they were there.</h3>
+  <h3>Create events for your communities and prove that they were there.</h3>
 </div>
 
 <Stats />

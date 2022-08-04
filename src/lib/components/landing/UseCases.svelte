@@ -4,14 +4,14 @@
             name: "Discord AMA",
             description:
                 "Host an event on Discord and create an event for it. Have participants claim the FLOAT to represent their attendance.",
-            image: "/discord-logo.png",
+            image: "/discord.png",
             example: "https://floats.city/andrea.find/event/187813244",
         },
         {
             name: "Twitter Space",
             description:
                 "Host a Twitter Space and create an event for it. Have participants claim the FLOAT to represent their attendance.",
-            image: "/twitter-logo.png",
+            image: "/twitter.png",
             example: "https://floats.city/0x29d28c3660dbaead/event/252847127",
         },
         {
@@ -62,7 +62,7 @@
                 <p>{useCase.description}</p>
                 <div class="at-bottom">
                     <img src={useCase.image} alt="logo" />
-                    <a href={useCase.example}>See Example</a>
+                    <a href={useCase.example}>See Example →</a>
                 </div>
             </div>
         {/each}
@@ -72,8 +72,11 @@
 <style>
     a {
         text-decoration: none;
-        color: var(--primary-inverse);
         font-weight: 700;
+        color: rgb(43, 43, 43);
+    }
+    a:hover {
+      text-decoration: underline;
     }
 
     h3 {

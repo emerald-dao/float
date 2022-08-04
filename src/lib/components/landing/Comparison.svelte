@@ -14,7 +14,7 @@
         },
         {
             poap: {
-                title: "Whitelisted.",
+                title: "Gated.",
                 description:
                     "To make an event on POAP, you must first get approval by the platform.",
             },
