@@ -62,7 +62,7 @@
           </a>
         </li>
       {:else}
-        <li>You have no collection with NFTs.</li>
+        <li>You have no collection with NFTs (from NFTCatalog).</li>
       {/each}
     {/await}
   </ul>
