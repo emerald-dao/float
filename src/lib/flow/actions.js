@@ -2787,7 +2787,6 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
   )
 }
 
-
 /**
  * add treasury strategy
  * 
@@ -2849,51 +2848,6 @@ export const addTreasuryStrategy = async (seriesId, strategyMode, deliveryMode, 
 }
 
 /**
- * deposit fungible token to treasury
- * 
- * @param {number} seriesId
- * @param {string} storagePath
- * @param {string} publicPath
- * @param {number} amount
- */
-export const depositFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, amount) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(storagePath, t.String),
-      arg(publicPath, t.String),
-      arg(String(amount), t.UFix64),
-    ],
-    eventSeries.DepositFungibleToken.InProgress,
-    eventSeries.DepositFungibleToken.Status
-  )
-}
-
-/**
- * deposit non-fungible token to treasury
- * 
- * @param {number} seriesId
- * @param {string} storagePath
- * @param {string} publicPath
- * @param {number[]} ids
- */
-export const depositNonFungibleTokenToTreasury = async (seriesId, storagePath, publicPath, ids) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(storagePath, t.String),
-      arg(publicPath, t.String),
-      arg(ids, t.Array(t.UInt64)),
-    ],
-    eventSeries.DepositNonFungibleToken.InProgress,
-    eventSeries.DepositNonFungibleToken.Status,
-  )
-  
-}
-
-/**
  * let strategy go to next stage
  * 
  * @param {number} seriesId
@@ -2912,18 +2866,56 @@ export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
 }
 
 /**
+ * deposit fungible token to treasury
+ * 
+ * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
+ */
+export const depositFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, amount}) => {
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(storagePath, t.String),
+      arg(publicPath, t.String),
+      arg(amount.toFixed(8), t.UFix64),
+    ],
+    eventSeries.TreasuryManegement.InProgress,
+    eventSeries.TreasuryManegement.Status
+  )
+}
+
+/**
+ * deposit non-fungible token to treasury
+ * 
+ * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
+ */
+export const depositNonFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, ids}) => {
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(storagePath, t.String),
+      arg(publicPath, t.String),
+      arg(ids, t.Array(t.UInt64)),
+    ],
+    eventSeries.TreasuryManegement.InProgress,
+    eventSeries.TreasuryManegement.Status,
+  )
+}
+
+/**
  * Drop treasury's FTs and NFTs
  * 
- * @param {number} seriesId 
+ * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
  */
-export const dropTreasury = async (seriesId) => {
+export const dropTreasury = async ({seriesId}) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
     ],
-    eventSeries.DropTreasury.InProgress,
-    eventSeries.DropTreasury.Status,
+    eventSeries.TreasuryManegement.InProgress,
+    eventSeries.TreasuryManegement.Status,
   )
 }
 

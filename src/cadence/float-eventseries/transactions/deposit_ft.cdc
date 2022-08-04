@@ -11,7 +11,7 @@ transaction(
   let serieshelf: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
   let fungibleTokenPublicPath: PublicPath
-  let fungibleTokenReciever: &FungibleToken.Vault{FungibleToken.Receiver}
+  let fungibleTokenReciever: &{FungibleToken.Receiver}
 
   let fungibleTokenToDeposit: @FungibleToken.Vault
 
@@ -35,7 +35,7 @@ transaction(
     // ensure fungible token capability
     self.fungibleTokenPublicPath = PublicPath(identifier: publicPath) ?? panic("Invalid publicPath: ".concat(publicPath))
     self.fungibleTokenReciever = acct.getCapability(self.fungibleTokenPublicPath)
-      .borrow<&FungibleToken.Vault{FungibleToken.Receiver}>()
+      .borrow<&{FungibleToken.Receiver}>()
       ?? panic("Could not borrow the fungible token reciever.")
 
     // fungible token vault

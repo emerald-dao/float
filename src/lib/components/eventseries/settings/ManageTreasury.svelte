@@ -19,6 +19,8 @@
 
   /** @type {import('../types').TreasuryManagementRequeset} */
   let requestParams;
+  /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
+  let currentToken;
 
   const txInProgress = seriesStore.TreasuryManegement.InProgress;
   const txStatus = seriesStore.TreasuryManegement.Status;
@@ -32,22 +34,48 @@
     }
     txInProgress.set(false);
     txStatus.set(false);
+
     requestParams = {
       type: "depositFT",
       seriesId: eventSeries.identifier.id,
+      amount: 0,
     };
   }
 
-  function onToggleSelect(eventId) {
-    // TODO
+  /**
+   * @param {import('flow-native-token-registry').TokenInfo} token
+   */
+  function setCurrentToken(token) {
+    currentToken = token;
+    requestParams.storagePath = token?.path?.vault?.slice("/storage/".length);
+    requestParams.publicPath = token?.path?.receiver?.slice("/public/".length);
   }
 
-  $: isValidToSubmit = false;
+  $: isValidToSubmit =
+    requestParams.type === "depositFT"
+      ? requestParams.amount > 0 &&
+        requestParams.storagePath?.length > 0 &&
+        requestParams.publicPath?.length > 0
+      : requestParams.type === "depositNFT"
+      ? requestParams.ids?.length > 0 &&
+        requestParams.storagePath?.length > 0 &&
+        requestParams.publicPath?.length > 0
+      : true;
 
   function handleAddNewGoals() {
     if (!isValidToSubmit) return;
 
-    // TODO
+    switch (requestParams.type) {
+      case "depositFT":
+        depositFungibleTokenToTreasury(requestParams);
+        break;
+      case "depositNFT":
+        depositNonFungibleTokenToTreasury(requestParams);
+        break;
+      case "dropAll":
+        dropTreasury(requestParams);
+        break;
+    }
   }
 </script>
 
@@ -97,7 +125,51 @@
       </button>
     </div>
     {#if requestParams.type === "depositFT"}
-      <FTlist />
+      <FTlist
+        on:select={(e) => {
+          setCurrentToken(e.detail);
+        }}
+      />
+      {#if currentToken}
+        <div class="flex flex-gap mb-1">
+          <label for="tokenAmount" class="flex-auto">
+            <span> Deposit Amount </span>
+            <input
+              type="number"
+              id="tokenAmount"
+              name="tokenAmount"
+              placeholder="0"
+              min="0"
+              max={currentToken.balance}
+              required
+              disabled={$txInProgress}
+              bind:value={requestParams.amount}
+              on:change={(e) => {
+                requestParams.amount = Math.min(
+                  requestParams.amount,
+                  currentToken.balance
+                );
+              }}
+            />
+          </label>
+          <!-- Range slider -->
+          <label for="amountSlider">
+            <span class="highlight">
+              Max:
+              {currentToken.balance}
+            </span>
+            <input
+              type="range"
+              id="amountSlider"
+              name="amountSlider"
+              min="0"
+              max={currentToken.balance}
+              disabled={$txInProgress}
+              bind:value={requestParams.amount}
+            />
+          </label>
+        </div>
+      {/if}
     {:else if requestParams.type === "depositNFT"}
       depositNFT
     {/if}
