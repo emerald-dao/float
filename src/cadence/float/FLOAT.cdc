@@ -137,6 +137,10 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getViews(): [Type] {
              return [
                 Type<MetadataViews.Display>(),
+                Type<MetadataViews.Royalties>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
                 Type<TokenIdentifier>()
             ]
         }
