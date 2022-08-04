@@ -27,11 +27,6 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-// import NonFungibleToken from 0x1d7e57aa55817448
-// import MetadataViews from 0x1d7e57aa55817448
-// import GrantedAccountAccess from 0x2d4c3caffbeab845
-// import FungibleToken from 0xf233dcee88fe0abe
-// import FlowToken from 0x1654653399040a61
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
@@ -154,6 +149,47 @@ pub contract FLOAT: NonFungibleToken {
                         name: self.eventName, 
                         description: self.eventDescription, 
                         thumbnail: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
+                    )
+                case Type<MetadataViews.Royalties>():
+                    return MetadataViews.Royalties([
+						MetadataViews.Royalty(
+							recepient: getAccount(0x5643fd47a29770e7).getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+							cut: 0.05, // 5% royalty on secondary sales
+							description: "Emerald City DAO receives a 5% royalty from secondary sales because this NFT was created using FLOAT (https://floats.city/), a proof of attendance platform created by Emerald City DAO."
+						)
+					])
+                case Type<MetadataViews.ExternalURL>():
+                    return MetadataViews.ExternalURL("https://floats.city/".concat(self.owner!.address.toString()).concat("/float/").concat(self.id.toString()))
+                case Type<MetadataViews.NFTCollectionData>():
+                    return MetadataViews.NFTCollectionData(
+                        storagePath: FLOAT.FLOATCollectionStoragePath,
+                        publicPath: FLOAT.FLOATCollectionPublicPath,
+                        providerPath: /private/FLOATCollectionPrivatePath,
+                        publicCollection: Type<&Collection{CollectionPublic}>(),
+                        publicLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(),
+                        providerLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Provider, MetadataViews.ResolverCollection}>(),
+                        createEmptyCollectionFunction: (fun (): @NonFungibleToken.Collection {
+                            return <- FLOAT.createEmptyCollection()
+                        })
+                    )
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    let media = MetadataViews.Media(
+                        file: MetadataViews.IPFSFile(
+                           cid: self.eventImage,
+                           path: nil
+                        ),
+                        mediaType: "image"
+                    )
+                    return MetadataViews.NFTCollectionDisplay(
+                        name: self.eventName,
+                        description: self.eventDescription,
+                        externalURL: MetadataViews.ExternalURL("https://floats.city/".concat(self.eventHost.toString()).concat("/event/").concat(self.eventId.toString())),
+                        squareImage: media,
+                        bannerImage: media,
+                        socials: {
+                            "twitter": MetadataViews.ExternalURL("https://twitter.com/emerald_dao"),
+                            "discord": MetadataViews.ExternalURL("https://discord.gg/emeraldcity")
+                        }
                     )
                 case Type<TokenIdentifier>():
                     return TokenIdentifier(
