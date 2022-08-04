@@ -11,3 +11,17 @@
   </summary>
   <div>TODO</div>
 </details>
+
+<style>
+  .outline {
+    text-align: left;
+  }
+
+  .outline span {
+    display: block;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    font-weight: 400;
+    opacity: 0.6;
+  }
+</style>

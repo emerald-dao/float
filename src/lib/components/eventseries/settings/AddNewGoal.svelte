@@ -109,7 +109,7 @@
         }}
       >
         By Amount
-        <span>Achieve by collecting amount of FLOATs.</span>
+        <span>Achieve by collecting amount of FLOATs in current series.</span>
       </button>
       <button
         class:secondary={requestParams.type !== "byPercent"}
@@ -122,7 +122,9 @@
         }}
       >
         By Percent
-        <span>Achieve by collecting percentage of FLOATs in this series.</span>
+        <span
+          >Achieve by collecting percentage of FLOATs in current series.</span
+        >
       </button>
       <button
         class:secondary={requestParams.type !== "bySpecifics"}
@@ -135,7 +137,9 @@
         }}
       >
         By Specifics
-        <span>Achieve by collecting some specific FLOATs.</span>
+        <span
+          >Achieve by collecting some specific FLOATs in current series.</span
+        >
       </button>
     </div>
     <label for="points">
@@ -258,9 +262,5 @@
     line-height: 1.2;
     font-weight: 400;
     opacity: 0.6;
-  }
-
-  .highlight {
-    color: var(--primary);
   }
 </style>
