@@ -1,6 +1,7 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
+  import NftCollections from "$lib/components/common/NFTCollections.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
@@ -171,7 +172,7 @@
         </div>
       {/if}
     {:else if requestParams.type === "depositNFT"}
-      depositNFT
+      <NftCollections />
     {/if}
     {#if $txInProgress}
       <button aria-busy="true" disabled>

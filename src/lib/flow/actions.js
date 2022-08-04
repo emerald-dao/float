@@ -3171,3 +3171,17 @@ export const getTokenBalances = async (acct, paths) => {
     []
   )
 }
+
+/**
+ * @param {string} acct 
+ * @returns {Promise<import('../components/eventseries/types').CollectionInfo[]>}
+ */
+export const getCollectionsNotEmpty = async (acct) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetCollectionsNotEmpty, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address)
+    ],
+    []
+  )
+}

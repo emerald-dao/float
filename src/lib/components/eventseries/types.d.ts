@@ -113,3 +113,14 @@ export interface TokenBalance {
   identifier: string;
   path: string;
 }
+
+export interface CollectionInfo {
+  key: string;
+  nftIdentifier: string;
+  contractAddress: string;
+  contractName: string;
+  publicPath: object;
+  storagePath: object;
+  display: object;
+  amount: string;
+}
