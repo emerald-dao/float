@@ -582,6 +582,19 @@ pub contract FLOATEventSeries {
         }
     }
 
+    // return value for getStrategies
+    pub struct StrategyDetail {
+        pub let strategyIdentifier: String
+        pub let strategyData: AnyStruct
+        pub let status: StrategyInformation
+
+        init(id: String, data: AnyStruct, status: StrategyInformation) {
+            self.strategyIdentifier = id
+            self.strategyData = data
+            self.status = status
+        }
+    }
+
     // the general strategy controller
     pub resource StrategyController {
         // basic info
@@ -785,7 +798,7 @@ pub contract FLOATEventSeries {
         // get nft collection public 
         pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?): [StrategyInformation]
+        pub fun getStrategies(states: [StrategyState]?): [StrategyDetail]
         // For the public to check if some strategy is claimable
         pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool
         // For the public to claim rewards
@@ -866,15 +879,20 @@ pub contract FLOATEventSeries {
         }
 
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?): [StrategyInformation] {
-            let infos: [StrategyInformation] = []
+        pub fun getStrategies(states: [StrategyState]?): [StrategyDetail] {
+            let infos: [StrategyDetail] = []
             let len = self.strategies.length
             var i = 0
             while i < len {
                 let strategyRef = &self.strategies[i] as &{ITreasuryStrategy}
+                let detail = strategyRef.getStrategyDetail()
                 let info = strategyRef.controller.getInfo()
                 if states == nil || states!.contains(info.currentState) {
-                    infos.append(info)
+                    infos.append(StrategyDetail(
+                        id: detail.getType().identifier,
+                        data: detail,
+                        status: info
+                    ))
                 }
                 i = i + 1
             }
@@ -1051,14 +1069,14 @@ pub contract FLOATEventSeries {
             var restAmounts: {Type: UFix64} = {}
             var restShares: {Type: UInt64} = {}
             for existsStrategy in availableStrategies {
-                let tokenType = existsStrategy.delivery.deliveryTokenType
-                let restAmount = existsStrategy.delivery.getRestAmount()
+                let tokenType = existsStrategy.status.delivery.deliveryTokenType
+                let restAmount = existsStrategy.status.delivery.getRestAmount()
                 if let oldVal = restAmounts[tokenType] {
                     restAmounts[tokenType] = oldVal + restAmount
                 } else {
                     restAmounts[tokenType] = restAmount
                 }
-                let restShare = existsStrategy.delivery.maxClaimableShares - existsStrategy.delivery.claimedShares
+                let restShare = existsStrategy.status.delivery.maxClaimableShares - existsStrategy.status.delivery.claimedShares
                 if let oldVal = restShares[tokenType] {
                     restShares[tokenType] = oldVal + restShare
                 } else {

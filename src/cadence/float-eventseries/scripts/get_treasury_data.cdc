@@ -1,11 +1,12 @@
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import FungibleToken from "../../core-contracts/FungibleToken.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
+import FLOATEventSeriesViews from "../FLOATEventSeriesViews.cdc"
 
 pub fun main(
   host: Address,
   id: UInt64,
-): TreasuryData {
+): FLOATEventSeriesViews.TreasuryData {
 
   let builderRef = getAccount(host)
     .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
@@ -37,15 +38,5 @@ pub fun main(
     }
   }
 
-  return TreasuryData(balances: balances, ids: ids)
-}
-
-pub struct TreasuryData {
-  pub let tokenBalances: {String: UFix64}
-  pub let collectionIDs: {String: [UInt64]}
-
-  init(balances: {String: UFix64}, ids: {String: [UInt64]}) {
-    self.tokenBalances = balances
-    self.collectionIDs = ids
-  }
+  return FLOATEventSeriesViews.TreasuryData(balances: balances, ids: ids)
 }
