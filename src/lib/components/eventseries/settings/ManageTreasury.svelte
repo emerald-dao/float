@@ -2,6 +2,8 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
   import NftCollections from "$lib/components/common/NFTCollections.svelte";
+  import FungibleTokenDisplay from "$lib/components/eventseries/elements/FungibleTokenDisplay.svelte";
+  import CollectionDisplay from "$lib/components/eventseries/elements/CollectionDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
@@ -10,8 +12,6 @@
     depositNonFungibleTokenToTreasury,
     dropTreasury,
   } from "$lib/flow/actions";
-  import FungibleTokenDisplay from "../elements/FungibleTokenDisplay.svelte";
-  import CollectionDisplay from "../elements/CollectionDisplay.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -79,7 +79,7 @@
         requestParams.publicPath?.length > 0
       : true;
 
-  function handleAddNewGoals() {
+  function handleSubmit() {
     if (!isValidToSubmit) return;
 
     switch (requestParams.type) {
@@ -215,7 +215,7 @@
       </button>
     {:else if $txStatus === false}
       <button
-        on:click|preventDefault={handleAddNewGoals}
+        on:click|preventDefault={handleSubmit}
         disabled={!isValidToSubmit}
       >
         {#if requestParams.type === "depositFT"}

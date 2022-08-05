@@ -2790,22 +2790,9 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
 /**
  * add treasury strategy
  * 
- * @param {number} seriesId
- * @param {string} strategyMode
- * @param {string} deliveryMode
- * @param {object} options
- * @param {boolean} options.consumable if comsume achievement point
- * @param {string} options.threshold how many achievement points in valid to claim
- * @param {boolean} options.autoStart
- * @param {number} options.openingEnding
- * @param {number} options.claimableEnding
- * @param {number} options.minimiumValidAmount
- * // Delivery Parameters
- * @param {string} options.maxClaimableShares
- * @param {string} options.deliveryTokenIdentifier
- * @param {number} [options.deliveryParam1=undefined]
+ * @param {import('../components/eventseries/types').AddStrategyRequest}
  */
-export const addTreasuryStrategy = async (seriesId, strategyMode, deliveryMode, options = {}) => {
+export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode, options}) => {
   const strategyModeCode = {
     [cadence.STRATEGY_LOTTERY]: '0',
     [cadence.STRATEGY_QUEUE]: '1'
@@ -2825,22 +2812,22 @@ export const addTreasuryStrategy = async (seriesId, strategyMode, deliveryMode, 
     cadence.replaceImportAddresses(cadence.txAddTreasuryStrategy, addressMap),
     (arg, t) => [
       arg(String(seriesId), t.UInt64),
-      arg(options.consumable, t.Bool),
-      arg(String(options.threshold), t.UInt64),
-      arg(options.autoStart, t.Bool),
+      arg(options?.consumable, t.Bool),
+      arg(String(options?.threshold), t.UInt64),
+      arg(options?.autoStart, t.Bool),
       // State Parameters
-      arg(typeof options.openingEnding !== 'undefined', t.Bool),
-      arg(options.openingEnding.toFixed(1), t.UFix64),
-      arg(typeof options.claimableEnding !== 'undefined', t.Bool),
-      arg(options.claimableEnding.toFixed(1), t.UFix64),
-      arg(typeof options.minimiumValidAmount !== 'undefined', t.Bool),
-      arg(options.minimiumValidAmount.toFixed(0), t.UInt64),
+      arg(typeof options?.openingEnding !== 'undefined' ?? false, t.Bool),
+      arg(options?.openingEnding.toFixed(1) ?? '0', t.UFix64),
+      arg(typeof options?.claimableEnding !== 'undefined' ?? false, t.Bool),
+      arg(options?.claimableEnding.toFixed(1) ?? '0', t.UFix64),
+      arg(typeof options?.minimiumValidAmount !== 'undefined' ?? false, t.Bool),
+      arg(options?.minimiumValidAmount.toFixed(0) ?? '0', t.UInt64),
       // Delivery Parameters
       arg(String(strategyModeCode), t.UInt8),
-      arg(String(options.maxClaimableShares), t.UInt64),
+      arg(String(options?.maxClaimableShares ?? 1), t.UInt64),
       arg(String(deliveryModeCode), t.UInt8),
-      arg(options.deliveryTokenIdentifier, t.Array(t.String)),
-      arg((options.deliveryParam1 ?? 0.0).toFixed(1), t.Array(t.UFix64)),
+      arg(options?.deliveryTokenIdentifier, t.String),
+      arg(options?.deliveryParam1 ? options?.deliveryParam1.toFixed(1) : null, t.Optional(t.UFix64)),
     ],
     eventSeries.AddTreasuryStrategy.InProgress,
     eventSeries.AddTreasuryStrategy.Status

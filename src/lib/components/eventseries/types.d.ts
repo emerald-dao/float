@@ -113,6 +113,32 @@ export interface TreasuryData {
   collectionIDs: [{ identifier: string , ids: [string] }]
 }
 
+export type StrategyType = 'lotteryStrategy' | 'queueStrategy'
+export type DeliveryType = 'ftIdenticalAmount' | 'ftRandomAmount' | 'nft'
+
+interface AddStrategyOptions {
+  // if comsume achievement point
+  consumable: boolean; 
+  // how many achievement points in valid to claim
+  threshold: string;
+  // auto start strategy
+  autoStart: boolean;
+  openingEnding?: number
+  claimableEnding?: number
+  minimiumValidAmount?: number
+  // Delivery Parameters
+  maxClaimableShares: number
+  deliveryTokenIdentifier: string
+  deliveryParam1?: number
+}
+
+export interface AddStrategyRequest {
+  seriesId: string;
+  strategyMode: StrategyType;
+  deliveryMode: DeliveryType;
+  options: AddStrategyOptions;
+}
+
 export interface TokenBalance {
   balance: string;
   identifier: string;
