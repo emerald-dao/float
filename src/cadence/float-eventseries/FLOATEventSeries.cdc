@@ -1040,18 +1040,46 @@ pub contract FLOATEventSeries {
 
         // add a new strategy
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool) {
+            let id = strategy.getType().identifier
+
+            // get rest required values
+            let availableStrategies = self.getStrategies(states: [
+                StrategyState.preparing,
+                StrategyState.opening,
+                StrategyState.claimable
+            ])
+            var restAmounts: {Type: UFix64} = {}
+            var restShares: {Type: UInt64} = {}
+            for existsStrategy in availableStrategies {
+                let tokenType = existsStrategy.delivery.deliveryTokenType
+                let restAmount = existsStrategy.delivery.getRestAmount()
+                if let oldVal = restAmounts[tokenType] {
+                    restAmounts[tokenType] = oldVal + restAmount
+                } else {
+                    restAmounts[tokenType] = restAmount
+                }
+                let restShare = existsStrategy.delivery.maxClaimableShares - existsStrategy.delivery.claimedShares
+                if let oldVal = restShares[tokenType] {
+                    restShares[tokenType] = oldVal + restShare
+                } else {
+                    restShares[tokenType] = restShare
+                }
+            }
+
+            // ensure FTs and NFTs is enough in the treasury
+            let info = strategy.controller.getInfo()
+            let currentTokenType = info.delivery.deliveryTokenType
+            if !info.delivery.isNFT {
+                let requiredAmount = (restAmounts[currentTokenType] ?? 0.0) + info.delivery.getTotalAmount()
+                self.ensureFTEnough(type: currentTokenType, amount: requiredAmount)
+            } else {
+                let requiredShare = (restShares[currentTokenType] ?? 0) + info.delivery.maxClaimableShares
+                self.ensureNFTEnough(type: currentTokenType, amount: requiredShare)
+            }
+
             // if autoStart is true and preparing, go next stage
             if autoStart && strategy.controller.getInfo().currentState == StrategyState.preparing {
                 strategy.controller.nextStage()
-            }
-
-            let id = strategy.getType().identifier
-            // ensure FTs and NFTs is enough in the treasury
-            let info = strategy.controller.getInfo()
-            if !info.delivery.isNFT {
-                self.ensureFTEnough(type: info.delivery.deliveryTokenType, amount: info.delivery.getTotalAmount())
-            } else {
-                self.ensureNFTEnough(type: info.delivery.deliveryTokenType, amount: info.delivery.maxClaimableShares)
             }
 
             // add to strategies
