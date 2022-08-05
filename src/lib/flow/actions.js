@@ -3090,6 +3090,39 @@ function parseRawGoalData(rawGoal) {
   };
 }
 
+export const getTreasuryData = async (acct, seriesId) => {
+  const raw = await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetTreasuryData, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(seriesId, t.UInt64)
+    ],
+    null
+  )
+  if (!raw) return null
+  return parseRawTreasuryData(raw)
+}
+
+/**
+ * @return {import('../components/eventseries/types').TreasuryData}
+ */
+function parseRawTreasuryData (rawdata) {
+  /** @type {{identifier: string , balance: string}[]} */
+  const balances = []
+  /** @type {{identifier: string , ids: [string]}[]} */
+  const ids = []
+  for (const key in rawdata.tokenBalances) {
+    balances.push({ identifier: key, balance: rawdata.tokenBalances[key] })
+  }
+  for (const key in rawdata.collectionIDs) {
+    ids.push({ identifier: key, ids: rawdata.collectionIDs[key] })
+  }
+  return {
+    tokenBalances: balances,
+    collectionIDs: ids
+  }
+}
+
 // ***********************
 // ** Achievement Board **
 // ***********************

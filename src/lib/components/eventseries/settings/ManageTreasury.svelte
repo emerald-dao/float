@@ -5,10 +5,13 @@
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
+    getTreasuryData,
     depositFungibleTokenToTreasury,
     depositNonFungibleTokenToTreasury,
     dropTreasury,
   } from "$lib/flow/actions";
+  import FungibleTokenDisplay from "../elements/FungibleTokenDisplay.svelte";
+  import CollectionDisplay from "../elements/CollectionDisplay.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -20,6 +23,8 @@
 
   /** @type {import('../types').TreasuryManagementRequeset} */
   let requestParams;
+  /** @type {Promise<import('../types').TreasuryData>} */
+  let treasuryPromise;
   /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
   let currentToken;
 
@@ -41,6 +46,11 @@
       seriesId: eventSeries.identifier.id,
       amount: 0,
     };
+
+    treasuryPromise = getTreasuryData(
+      eventSeries.identifier.host,
+      eventSeries.identifier.id
+    );
   }
 
   /**
@@ -87,6 +97,21 @@
 </script>
 
 {#if isValid}
+  {#await treasuryPromise}
+    <Loading />
+  {:then data}
+    <div class="no-break flex-col flex-gap mb-1">
+      {#each data.tokenBalances as one}
+        <FungibleTokenDisplay
+          identifier={one.identifier}
+          balance={one.balance}
+        />
+      {/each}
+      {#each data.collectionIDs as one}
+        <CollectionDisplay identifier={one.identifier} ids={one.ids} />
+      {/each}
+    </div>
+  {/await}
   <details>
     <summary role="button" class="secondary">
       <b>Manage the treasury →</b>

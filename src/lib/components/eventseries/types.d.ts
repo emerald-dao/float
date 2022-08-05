@@ -108,6 +108,11 @@ export interface TreasuryManagementRequeset {
   ids?: string[];
 }
 
+export interface TreasuryData {
+  tokenBalances: [{ identifier: string , balance: string }]
+  collectionIDs: [{ identifier: string , ids: [string] }]
+}
+
 export interface TokenBalance {
   balance: string;
   identifier: string;

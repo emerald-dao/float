@@ -145,6 +145,10 @@ h3 {
   justify-content: space-between;
 }
 
+.flex-col {
+  flex-direction: column;
+}
+
 .flex-gap {
   gap: 1rem;
 }
