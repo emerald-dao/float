@@ -16,4 +16,15 @@ pub contract FLOATEventSeriesViews {
       self.required = isRequired
     }
   }
+
+  // Treasury return data
+  pub struct TreasuryData {
+    pub let tokenBalances: {String: UFix64}
+    pub let collectionIDs: {String: [UInt64]}
+
+    init(balances: {String: UFix64}, ids: {String: [UInt64]}) {
+      self.tokenBalances = balances
+      self.collectionIDs = ids
+    }
+  }
 }
