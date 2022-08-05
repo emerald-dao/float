@@ -27,16 +27,12 @@
 
 // For more info on GrantedAccountAccess, see GrantedAccountAccess.cdc
 
-// import NonFungibleToken from 0x1d7e57aa55817448
-// import MetadataViews from 0x1d7e57aa55817448
-// import GrantedAccountAccess from 0x2d4c3caffbeab845
-// import FungibleToken from 0xf233dcee88fe0abe
-// import FlowToken from 0x1654653399040a61
 import NonFungibleToken from "../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../sharedaccount/GrantedAccountAccess.cdc"
 import FungibleToken from "../core-contracts/FungibleToken.cdc"
 import FlowToken from "../core-contracts/FlowToken.cdc"
+import FindViews from "../core-contracts/FindViews.cdc"
 
 pub contract FLOAT: NonFungibleToken {
 
@@ -140,10 +136,21 @@ pub contract FLOAT: NonFungibleToken {
 
         // This is for the MetdataStandard
         pub fun getViews(): [Type] {
-             return [
+            let supportedViews = [
                 Type<MetadataViews.Display>(),
+                Type<MetadataViews.Royalties>(),
+                Type<MetadataViews.ExternalURL>(),
+                Type<MetadataViews.NFTCollectionData>(),
+                Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Serial>(),
                 Type<TokenIdentifier>()
             ]
+
+            if self.getEventMetadata()?.transferrable == false {
+                supportedViews.append(Type<FindViews.SoulBound>())
+            }
+
+            return supportedViews
         }
 
         // This is for the MetdataStandard
@@ -155,12 +162,69 @@ pub contract FLOAT: NonFungibleToken {
                         description: self.eventDescription, 
                         thumbnail: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
                     )
+                case Type<MetadataViews.Royalties>():
+                    return MetadataViews.Royalties([
+						MetadataViews.Royalty(
+							recepient: getAccount(0x5643fd47a29770e7).getCapability<&FlowToken.Vault{FungibleToken.Receiver}>(/public/flowTokenReceiver),
+							cut: 0.05, // 5% royalty on secondary sales
+							description: "Emerald City DAO receives a 5% royalty from secondary sales because this NFT was created using FLOAT (https://floats.city/), a proof of attendance platform created by Emerald City DAO."
+						)
+					])
+                case Type<MetadataViews.ExternalURL>():
+                    return MetadataViews.ExternalURL("https://floats.city/".concat(self.owner!.address.toString()).concat("/float/").concat(self.id.toString()))
+                case Type<MetadataViews.NFTCollectionData>():
+                    return MetadataViews.NFTCollectionData(
+                        storagePath: FLOAT.FLOATCollectionStoragePath,
+                        publicPath: FLOAT.FLOATCollectionPublicPath,
+                        providerPath: /private/FLOATCollectionPrivatePath,
+                        publicCollection: Type<&Collection{CollectionPublic}>(),
+                        publicLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(),
+                        providerLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Provider, MetadataViews.ResolverCollection}>(),
+                        createEmptyCollectionFunction: (fun (): @NonFungibleToken.Collection {
+                            return <- FLOAT.createEmptyCollection()
+                        })
+                    )
+                case Type<MetadataViews.NFTCollectionDisplay>():
+                    let squareMedia = MetadataViews.Media(
+                        file: MetadataViews.HTTPFile(
+                           url: "https://i.imgur.com/uzt90wM.png"
+                        ),
+                        mediaType: "image"
+                    )
+                    let bannerMedia = MetadataViews.Media(
+                        file: MetadataViews.HTTPFile(
+                            url: "https://i.imgur.com/lEJuM70.png"
+                        ),
+                        mediaType: "image"
+                    )
+                    return MetadataViews.NFTCollectionDisplay(
+                        name: "FLOAT",
+                        description: "FLOAT is a proof of attendance platform on the Flow blockchain.",
+                        externalURL: MetadataViews.ExternalURL("https://floats.city/".concat(self.eventHost.toString()).concat("/event/").concat(self.eventId.toString())),
+                        squareImage: squareMedia,
+                        bannerImage: bannerMedia,
+                        socials: {
+                            "twitter": MetadataViews.ExternalURL("https://twitter.com/emerald_dao"),
+                            "discord": MetadataViews.ExternalURL("https://discord.gg/emeraldcity")
+                        }
+                    )
+                case Type<MetadataViews.Serial>():
+                    return MetadataViews.Serial(
+                        self.serial
+                    )
                 case Type<TokenIdentifier>():
                     return TokenIdentifier(
                         _id: self.id, 
                         _address: self.owner!.address,
                         _serial: self.serial
                     ) 
+                case Type<FindViews.SoulBound>():
+                    if self.getEventMetadata()?.transferrable == false {
+                        return FindViews.SoulBound(
+                            "This FLOAT is soulbound because the event host toggled off transferring."
+                        )
+                    }
+                    return nil
             }
 
             return nil

@@ -15,6 +15,13 @@
             example: "https://floats.city/0x29d28c3660dbaead/event/252847127",
         },
         {
+            name: "Educational Certificate",
+            description:
+                "Turn off claiming and manually distribute a FLOAT to graduates of your course, bootcamp, or any educational experience.",
+            image: "/certificate.png",
+            example: "https://floats.city/jacob.find/event/241503135",
+        },
+        {
             name: "Giveaways",
             description:
                 "Have participants claim a FLOAT to enter the giveaway. Then, in Discord using the Emerald bot, use the /randomfloats command to pick a winner.",
