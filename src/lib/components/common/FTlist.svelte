@@ -1,14 +1,10 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import {
-    user,
-    getLatestTokenList,
-    eventSeries as seriesStore,
-  } from "$lib/flow/stores";
+  import { user, getLatestTokenList } from "$lib/flow/stores";
   import { getTokenBalances } from "$lib/flow/actions";
 
-  /** @type {{[key: string]:string}} */
-  export let balances = {};
+  /** @type {[{ identifier: string , balance: string }]} */
+  export let balances = [];
   export let watchStatus = null;
 
   // dispatcher
@@ -20,18 +16,19 @@
 
   async function getOwnedTokenList(address, txStatus) {
     const allList = await getLatestTokenList();
-    /** @type {{[key: string]: string}} */
-    let dic = Object.assign({}, balances);
-    if (Object.keys(balances).length === 0 && address) {
-      const result = await getTokenBalances(
+    let balancesToFill = balances;
+    if (balancesToFill.length === 0 && address) {
+      balancesToFill = await getTokenBalances(
         address,
         allList.map((one) => one.path.balance.slice("/public/".length))
       );
-      dic = result.reduce((prev, curr) => {
-        prev[curr.identifier] = curr.balance;
-        return prev;
-      }, {});
     }
+
+    /** @type {{[key: string]: string}} */
+    const dic = balancesToFill.reduce((prev, curr) => {
+      prev[curr.identifier] = curr.balance;
+      return prev;
+    }, {});
 
     if (Object.keys(dic).length > 0) {
       const ret = allList

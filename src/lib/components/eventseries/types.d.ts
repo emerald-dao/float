@@ -139,6 +139,15 @@ export interface AddStrategyRequest {
   options: AddStrategyOptions;
 }
 
+interface StrategyDetail {
+  // TODO
+}
+
+export interface StrategyData {
+  available?: TreasuryData
+  strategies: [StrategyDetail]
+}
+
 export interface TokenBalance {
   balance: string;
   identifier: string;

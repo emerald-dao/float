@@ -3110,6 +3110,9 @@ function parseRawTreasuryData (rawdata) {
   }
 }
 
+/**
+ * @return {import('../components/eventseries/types').StrategyData}
+ */
 export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false) => {
   const raw = await generalQuery(
     cadence.replaceImportAddresses(cadence.scGetSeriesStrategies, addressMap),
@@ -3121,8 +3124,10 @@ export const getSeriesStrategies = async (acct, seriesId, includingAvailables = 
     null
   )
   if (!raw) return null
-  console.log(raw)
-  return raw
+  return {
+    available: raw.available && parseRawTreasuryData(raw.available),
+    strategies: raw.strategies
+  }
 }
 
 // ***********************
