@@ -1,16 +1,20 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { user, getLatestTokenList } from "$lib/flow/stores";
+  import {
+    user,
+    getLatestTokenList,
+    eventSeries as seriesStore,
+  } from "$lib/flow/stores";
   import { getTokenBalances } from "$lib/flow/actions";
 
   // dispatcher
   const dispatch = createEventDispatcher();
 
-  /** @type {import('flow-native-token-registry').TokenInfo} */
+  /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
   let currentToken = undefined;
   let open = false;
 
-  async function getOwnedTokenList(address) {
+  async function getOwnedTokenList(address, txStatus) {
     const allList = await getLatestTokenList();
     if (address) {
       const result = await getTokenBalances(
@@ -22,7 +26,7 @@
         prev.set(curr.identifier, curr);
         return prev;
       }, new Map());
-      return allList
+      const ret = allList
         .map((one) => {
           let balance = 0;
           const identifier = `A.${one.address.slice(2)}.${
@@ -34,12 +38,26 @@
           return Object.assign(one, { balance });
         })
         .filter((one) => one.balance > 0);
+      // update current balance
+      if (currentToken) {
+        const found = ret.find(
+          (one) =>
+            one.address === currentToken.address &&
+            one.contractName == currentToken.contractName
+        );
+        if (found) {
+          currentToken.balance = found.balance;
+        }
+        dispatch("balanceUpdated", currentToken);
+      }
+      return ret;
     } else {
       return [];
     }
   } // end function
 
-  $: ownedList = getOwnedTokenList($user?.addr);
+  const txStatus = seriesStore.TreasuryManegement.Status;
+  $: ownedList = getOwnedTokenList($user?.addr, $txStatus);
 </script>
 
 <details role="list" {open}>

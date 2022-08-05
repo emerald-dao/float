@@ -47,9 +47,15 @@
    * @param {import('flow-native-token-registry').TokenInfo} token
    */
   function setCurrentToken(token) {
-    currentToken = token;
-    requestParams.storagePath = token?.path?.vault?.slice("/storage/".length);
-    requestParams.publicPath = token?.path?.receiver?.slice("/public/".length);
+    if (token) {
+      currentToken = token;
+      requestParams.storagePath = token?.path?.vault?.slice("/storage/".length);
+      requestParams.publicPath = token?.path?.receiver?.slice(
+        "/public/".length
+      );
+    } else {
+      currentToken = null;
+    }
   }
 
   $: isValidToSubmit =
@@ -92,6 +98,7 @@
         on:click={() => {
           requestParams.type = "depositFT";
           requestParams.amount = 0;
+          setCurrentToken(null);
         }}
       >
         Deposit Token
@@ -128,6 +135,9 @@
     {#if requestParams.type === "depositFT"}
       <FTlist
         on:select={(e) => {
+          setCurrentToken(e.detail);
+        }}
+        on:balanceUpdated={(e) => {
           setCurrentToken(e.detail);
         }}
       />
