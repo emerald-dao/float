@@ -3110,6 +3110,21 @@ function parseRawTreasuryData (rawdata) {
   }
 }
 
+export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false) => {
+  const raw = await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetSeriesStrategies, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(seriesId, t.UInt64),
+      arg(includingAvailables, t.Bool)
+    ],
+    null
+  )
+  if (!raw) return null
+  console.log(raw)
+  return raw
+}
+
 // ***********************
 // ** Achievement Board **
 // ***********************

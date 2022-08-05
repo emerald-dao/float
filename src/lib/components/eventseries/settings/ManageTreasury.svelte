@@ -159,6 +159,7 @@
     </div>
     {#if requestParams.type === "depositFT"}
       <FTlist
+        watchStatus={txStatus}
         on:select={(e) => {
           setCurrentToken(e.detail);
         }}

@@ -7,6 +7,10 @@
   } from "$lib/flow/stores";
   import { getTokenBalances } from "$lib/flow/actions";
 
+  /** @type {{[key: string]:string}} */
+  export let balances = {};
+  export let watchStatus = null;
+
   // dispatcher
   const dispatch = createEventDispatcher();
 
@@ -16,26 +20,26 @@
 
   async function getOwnedTokenList(address, txStatus) {
     const allList = await getLatestTokenList();
-    if (address) {
+    /** @type {{[key: string]: string}} */
+    let dic = Object.assign({}, balances);
+    if (Object.keys(balances).length === 0 && address) {
       const result = await getTokenBalances(
         address,
         allList.map((one) => one.path.balance.slice("/public/".length))
       );
-      /** @type {Map<string, import('../types').TokenBalance>} */
-      const dic = result.reduce((prev, curr) => {
-        prev.set(curr.identifier, curr);
+      dic = result.reduce((prev, curr) => {
+        prev[curr.identifier] = curr.balance;
         return prev;
-      }, new Map());
+      }, {});
+    }
+
+    if (Object.keys(dic).length > 0) {
       const ret = allList
         .map((one) => {
-          let balance = 0;
           const identifier = `A.${one.address.slice(2)}.${
             one.contractName
           }.Vault`;
-          if (dic.has(identifier)) {
-            balance = dic.get(identifier).balance;
-          }
-          return Object.assign(one, { balance });
+          return Object.assign(one, { balance: dic[identifier] ?? "0" });
         })
         .filter((one) => one.balance > 0);
       // update current balance
@@ -56,8 +60,7 @@
     }
   } // end function
 
-  const txStatus = seriesStore.TreasuryManegement.Status;
-  $: ownedList = getOwnedTokenList($user?.addr, $txStatus);
+  $: ownedList = getOwnedTokenList($user?.addr, watchStatus && $watchStatus);
 </script>
 
 <details role="list" {open}>

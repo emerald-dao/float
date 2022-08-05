@@ -63,6 +63,7 @@ export { default as scGetEventSeries } from '../../cadence/float-eventseries/scr
 export { default as scGetBalances } from '../../cadence/float-eventseries/scripts/get_balances.cdc?raw'
 export { default as scGetCollectionsNotEmpty } from '../../cadence/float-eventseries/scripts/get_collections_not_empty.cdc?raw'
 export { default as scGetTreasuryData } from '../../cadence/float-eventseries/scripts/get_treasury_data.cdc?raw'
+export { default as scGetSeriesStrategies } from '../../cadence/float-eventseries/scripts/get_series_strategies.cdc?raw'
 
 export { default as scHasAchievementBoard } from '../../cadence/float-eventseries/scripts/has_achievement_board.cdc?raw'
 export { default as scGetAchievementRecords } from '../../cadence/float-eventseries/scripts/get_achievement_records.cdc?raw'

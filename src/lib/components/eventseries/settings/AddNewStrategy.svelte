@@ -2,7 +2,7 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
-  import { addTreasuryStrategy } from "$lib/flow/actions";
+  import { getSeriesStrategies, addTreasuryStrategy } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -52,7 +52,11 @@
       },
     };
 
-    strategiesPromise = Promise.resolve();
+    strategiesPromise = getSeriesStrategies(
+      eventSeries.identifier.host,
+      eventSeries.identifier.id,
+      true
+    );
   }
 
   $: isValidToSubmit = false;
@@ -68,7 +72,9 @@
   {#await strategiesPromise}
     <Loading />
   {:then data}
-    <div class="no-break flex-col flex-gap mb-1">LIST</div>
+    <div class="no-break flex-col flex-gap mb-1">
+      {JSON.stringify(data)}
+    </div>
   {/await}
   <details>
     <summary role="button" class="secondary">
