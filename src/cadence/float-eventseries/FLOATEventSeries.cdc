@@ -778,6 +778,8 @@ pub contract FLOATEventSeries {
 
     // Treasury public interface
     pub resource interface TreasuryPublic {
+        // get token types from treasury
+        pub fun getTreasuryAssets(isNFT: Bool): [Type]
         // get token balance from the token identifier
         pub fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}?
         // get nft collection public 
@@ -846,6 +848,14 @@ pub contract FLOATEventSeries {
         }
 
         // --- Getters - Public Interfaces ---
+
+        pub fun getTreasuryAssets(isNFT: Bool): [Type] {
+            if isNFT {
+                return self.genericNFTPool.keys
+            } else {
+                return self.genericFTPool.keys
+            }
+        }
 
         pub fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}? {
             return &self.genericFTPool[type] as &{FungibleToken.Balance}?
