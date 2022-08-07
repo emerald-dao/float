@@ -48,7 +48,7 @@
         openingEnding: undefined,
         claimableEnding: undefined,
         // by strategy type
-        minimiumValidAmount: undefined,
+        minimumValidAmount: undefined,
         // required to modify
         deliveryTokenIdentifier: null,
         // by delivery
@@ -86,7 +86,7 @@
       ? requestParams.options.deliveryParam1 > 0
       : true) &&
     (requestParams.strategyMode === "lotteryStrategy"
-      ? requestParams.options.minimiumValidAmount > 0
+      ? requestParams.options.minimumValidAmount > 0
       : true);
 
   function handleSubmit() {
@@ -114,7 +114,7 @@
           class="outline"
           on:click={() => {
             requestParams.strategyMode = "queueStrategy";
-            requestParams.options.minimiumValidAmount = undefined;
+            requestParams.options.minimumValidAmount = undefined;
           }}
         >
           Queue Strategy
@@ -127,7 +127,7 @@
           class="outline"
           on:click={() => {
             requestParams.strategyMode = "lotteryStrategy";
-            requestParams.options.minimiumValidAmount = 0;
+            requestParams.options.minimumValidAmount = 0;
           }}
         >
           Lottery Strategy
@@ -142,9 +142,12 @@
           class:secondary={requestParams.deliveryMode !== "ftIdenticalAmount"}
           class="outline"
           on:click={() => {
+            if (requestParams.deliveryMode === "nft") {
+              setCurrentToken(null);
+            }
             requestParams.deliveryMode = "ftIdenticalAmount";
+            requestParams.options.maxClaimableShares = 0;
             requestParams.options.deliveryParam1 = 0;
-            setCurrentToken(null);
           }}
         >
           Identical Amount
@@ -156,9 +159,12 @@
           class:secondary={requestParams.deliveryMode !== "ftRandomAmount"}
           class="outline"
           on:click={() => {
+            if (requestParams.deliveryMode === "nft") {
+              setCurrentToken(null);
+            }
             requestParams.deliveryMode = "ftRandomAmount";
+            requestParams.options.maxClaimableShares = 0;
             requestParams.options.deliveryParam1 = 0;
-            setCurrentToken(null);
           }}
         >
           Random Amount
@@ -169,10 +175,11 @@
         <button
           class:secondary={requestParams.deliveryMode !== "nft"}
           class="outline"
+          disabled={true}
           on:click={() => {
             requestParams.deliveryMode = "nft";
+            requestParams.options.maxClaimableShares = 0;
             requestParams.options.deliveryParam1 = undefined;
-            setCurrentToken(null);
           }}
         >
           NFT
@@ -194,6 +201,8 @@
           max="10000000"
           placeholder="ex. 100"
           step="100"
+          required
+          disabled={$txInProgress}
           bind:value={requestParams.options.threshold}
         />
       </label>
@@ -209,8 +218,119 @@
           }}
         />
         {#if currentToken}
-          TODO
+          <div class="flex-wrap between flex-gap">
+            <span class="emphasis">
+              Strategy Cost: {requestParams.deliveryMode === "ftIdenticalAmount"
+                ? (requestParams.options.deliveryParam1 ?? 0) *
+                  (requestParams.options.maxClaimableShares ?? 0)
+                : requestParams.options.deliveryParam1 ?? 0}
+            </span>
+            <span class="emphasis">Balance: {currentToken.balance}</span>
+          </div>
+          <hr />
+          <div class="flex flex-gap mb-1">
+            <label for="deliveryParam" class="flex-auto">
+              <span>
+                {#if requestParams.deliveryMode === "ftIdenticalAmount"}
+                  Reward amount of each share
+                {:else}
+                  Reward amount in total
+                {/if}
+              </span>
+              <input
+                type="number"
+                id="deliveryParam"
+                name="deliveryParam"
+                min="1"
+                max={currentToken.balance}
+                placeholder="ex. 100"
+                step="10"
+                required
+                disabled={$txInProgress}
+                bind:value={requestParams.options.deliveryParam1}
+                on:change={(e) => {
+                  requestParams.options.deliveryParam1 = Math.min(
+                    requestParams.options.deliveryParam1,
+                    currentToken.balance
+                  );
+                  if (requestParams.deliveryMode === "ftIdenticalAmount") {
+                    requestParams.options.maxClaimableShares = Math.min(
+                      requestParams.options.maxClaimableShares,
+                      Math.floor(
+                        currentToken.balance /
+                          (requestParams.options.deliveryParam1 ?? 1)
+                      )
+                    );
+                  }
+                }}
+              />
+            </label>
+            <!-- Range slider -->
+            <label for="maxClaimableShares">
+              <span>
+                Total Shares:
+                {requestParams.options.maxClaimableShares ?? 0}
+              </span>
+              {#if requestParams.deliveryMode === "ftIdenticalAmount"}
+                <input
+                  type="range"
+                  id="maxClaimableShares"
+                  name="maxClaimableShares"
+                  min="1"
+                  max={Math.floor(
+                    currentToken.balance /
+                      (requestParams.options.deliveryParam1 ?? 1)
+                  )}
+                  required
+                  disabled={$txInProgress ||
+                    !requestParams.options.deliveryParam1}
+                  bind:value={requestParams.options.maxClaimableShares}
+                />
+              {:else}
+                <input
+                  type="number"
+                  id="maxClaimableShares"
+                  name="maxClaimableShares"
+                  min="1"
+                  max="10000"
+                  placeholder="ex. 100"
+                  step="10"
+                  required
+                  disabled={$txInProgress}
+                  bind:value={requestParams.options.maxClaimableShares}
+                  on:change={(e) => {
+                    requestParams.options.maxClaimableShares = Math.min(
+                      requestParams.options.maxClaimableShares,
+                      10000
+                    );
+                  }}
+                />
+              {/if}
+            </label>
+          </div>
         {/if}
+      {:else}
+        TODO: NFT Config
+      {/if}
+
+      {#if requestParams.strategyMode === "lotteryStrategy"}
+        <label for="minimumValidAmount">
+          <span class:highlight={requestParams.options.minimumValidAmount > 0}>
+            Minimum Amount of Eligible Users for the Raffle: {requestParams
+              .options.minimumValidAmount}
+          </span>
+          <input
+            type="range"
+            id="minimumValidAmount"
+            name="minimumValidAmount"
+            min="1"
+            max={requestParams.options.maxClaimableShares}
+            required
+            disabled={$txInProgress ||
+              !requestParams.options.maxClaimableShares}
+            bind:value={requestParams.options.minimumValidAmount}
+          />
+        </label>
       {/if}
 
       {#if $txInProgress}

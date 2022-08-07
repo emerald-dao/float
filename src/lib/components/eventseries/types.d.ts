@@ -125,7 +125,7 @@ interface AddStrategyOptions {
   autoStart: boolean;
   openingEnding?: number
   claimableEnding?: number
-  minimiumValidAmount?: number
+  minimumValidAmount?: number
   // Delivery Parameters
   maxClaimableShares: number
   deliveryTokenIdentifier: string

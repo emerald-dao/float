@@ -134,6 +134,7 @@
       <button
         class:secondary={requestParams.type !== "depositNFT"}
         class="outline"
+        disabled={true}
         on:click={() => {
           requestParams.type = "depositNFT";
           requestParams.ids = [];

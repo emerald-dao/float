@@ -13,7 +13,7 @@ transaction(
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
   hasMinimiumValid: Bool,
-  minimiumValidAmount: UInt64,
+  minimumValidAmount: UInt64,
   // Delivery Parameters
   strategyMode: UInt8,
   maxClaimableShares: UInt64,
@@ -45,7 +45,7 @@ transaction(
     threshold > 0: "threshold should be greator then zero"
     FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode) != nil: "Invalid strategyMode"
     FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) != nil: "Invalid deliveryMode"
-    minimiumValidAmount == nil || minimiumValidAmount! > 0: "minimiumValidAmount should be greator then zero"
+    minimumValidAmount == nil || minimumValidAmount! > 0: "minimumValidAmount should be greator then zero"
   }
 
   execute {
@@ -78,7 +78,7 @@ transaction(
 
     // strategy paramters
     let params: {String: AnyStruct} = {}
-    params["minValid"] = minimiumValidAmount
+    params["minValid"] = minimumValidAmount
     if hasOpeningEnding {
       params["openingEnd"] = openingEnding
     }
