@@ -13,7 +13,7 @@ transaction(
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
   hasMinimiumValid: Bool,
-  minimumValidAmount: UInt64,
+  minimumValidAmount: UInt64?,
   // Delivery Parameters
   strategyMode: UInt8,
   maxClaimableShares: UInt64,
@@ -43,8 +43,7 @@ transaction(
 
   pre {
     threshold > 0: "threshold should be greator then zero"
-    FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode) != nil: "Invalid strategyMode"
-    FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) != nil: "Invalid deliveryMode"
+    maxClaimableShares > 0: "max shares should be greator then zero"
     minimumValidAmount == nil || minimumValidAmount! > 0: "minimumValidAmount should be greator then zero"
   }
 
@@ -53,20 +52,33 @@ transaction(
 
     let tokenType = CompositeType(deliveryTokenIdentifier) ?? panic("Invalid type: ".concat(deliveryTokenIdentifier))
     assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(deliveryTokenIdentifier))
-
+    
+    let deliveryType = FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) ?? panic("Invalid deliveryMode.")
+    let strategyType = FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode) ?? panic("Invalid strategyMode.")
+    
     var delivery: {FLOATEventSeries.StrategyDelivery}? = nil
-
-    switch FLOATEventSeries.StrategyDeliveryType(rawValue: deliveryMode) {
+    switch deliveryType {
       case FLOATEventSeries.StrategyDeliveryType.ftIdenticalAmount:
         assert(deliveryParam1 != nil && deliveryParam1! > 0.0, message: "missing delivery parameter.")
-        delivery = FLOATEventSeries.StrategyDeliveryFTWithIdenticalAmount(tokenType, maxClaimableShares, deliveryParam1!)
+        delivery = FLOATEventSeries.StrategyDeliveryFTWithIdenticalAmount(
+          tokenType,
+          maxClaimableShares,
+          oneShareAmount: deliveryParam1!
+        )
         break
       case FLOATEventSeries.StrategyDeliveryType.ftRandomAmount:
         assert(deliveryParam1 != nil && deliveryParam1! > 0.0, message: "missing delivery parameter.")
-        delivery = FLOATEventSeries.StrategyDeliveryFTWithRandomAmount(tokenType, maxClaimableShares, deliveryParam1!)
+        delivery = FLOATEventSeries.StrategyDeliveryFTWithRandomAmount(
+          tokenType,
+          maxClaimableShares,
+          totalAmount: deliveryParam1!
+        )
         break
       case FLOATEventSeries.StrategyDeliveryType.nft:
-        delivery = FLOATEventSeries.StrategyDeliverNFT(tokenType, maxClaimableShares)
+        delivery = FLOATEventSeries.StrategyDeliverNFT(
+          tokenType,
+          maxClaimableShares
+        )
         break
     }
 
@@ -87,7 +99,7 @@ transaction(
     }
 
     let strategy <- FLOATTreasuryStrategies.createStrategy(
-        type: FLOATTreasuryStrategies.StrategyType(rawValue: strategyMode)!,
+        type: strategyType,
         controller: <- controller,
         params: params
       ) ?? panic("Failed to create strategy")

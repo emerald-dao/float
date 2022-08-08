@@ -86,7 +86,8 @@
       ? requestParams.options.deliveryParam1 > 0
       : true) &&
     (requestParams.strategyMode === "lotteryStrategy"
-      ? requestParams.options.minimumValidAmount > 0
+      ? requestParams.options.minimumValidAmount >=
+        requestParams.options.maxClaimableShares
       : true);
 
   function handleSubmit() {
@@ -189,23 +190,35 @@
         </button>
       </div>
 
-      <label for="threshold">
-        <span class:highlight={requestParams.options.threshold > 0}>
-          Achievement Points Eligible Threshold
-        </span>
-        <input
-          type="number"
-          id="threshold"
-          name="threshold"
-          min="1"
-          max="10000000"
-          placeholder="ex. 100"
-          step="100"
-          required
-          disabled={$txInProgress}
-          bind:value={requestParams.options.threshold}
-        />
-      </label>
+      <div class="flex flex-gap mb-1">
+        <label for="threshold" class="flex-auto">
+          <span class:highlight={requestParams.options.threshold > 0}>
+            Eligible Achievement Points Threshold
+          </span>
+          <input
+            type="number"
+            id="threshold"
+            name="threshold"
+            min="1"
+            max="10000000"
+            placeholder="ex. 100"
+            step="100"
+            required
+            disabled={$txInProgress}
+            bind:value={requestParams.options.threshold}
+          />
+        </label>
+        <label for="consumable">
+          <input
+            type="checkbox"
+            id="consumable"
+            name="consumable"
+            role="switch"
+            bind:value={requestParams.options.consumable}
+          />
+          <span> Consumable </span>
+        </label>
+      </div>
       {#if requestParams.deliveryMode !== "nft"}
         <FTlist
           balances={data.available?.tokenBalances}
@@ -303,6 +316,12 @@
                       requestParams.options.maxClaimableShares,
                       10000
                     );
+                    if (requestParams.strategyMode === "lotteryStrategy") {
+                      requestParams.options.minimumValidAmount = Math.max(
+                        requestParams.options.minimumValidAmount,
+                        requestParams.options.maxClaimableShares
+                      );
+                    }
                   }}
                 />
               {/if}
@@ -323,8 +342,8 @@
             type="range"
             id="minimumValidAmount"
             name="minimumValidAmount"
-            min="1"
-            max={requestParams.options.maxClaimableShares}
+            min={requestParams.options.maxClaimableShares}
+            max={requestParams.options.maxClaimableShares * 5}
             required
             disabled={$txInProgress ||
               !requestParams.options.maxClaimableShares}
