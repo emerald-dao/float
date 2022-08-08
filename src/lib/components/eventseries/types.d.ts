@@ -169,9 +169,11 @@ interface StrategyDetail {
   currentState: StategyStatus;
 }
 
-export interface StrategyData {
-  available?: TreasuryData
-  strategies: [StrategyDetail]
+export interface StrategyQueryResult {
+  strategies: [StrategyDetail];
+  available?: TreasuryData;
+  userTotalScore?: number;
+  userConsumableScore?: number;
 }
 
 export interface TokenBalance {

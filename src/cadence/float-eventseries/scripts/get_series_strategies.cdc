@@ -19,6 +19,8 @@ pub fun main(
   let treasury = eventSeries.borrowTreasury()
 
   var userRecord: &{FLOATEventSeries.AchievementPublic}? = nil
+  var totalScore: UInt64? = nil
+  var consumableScore: UInt64? = nil
   if let currentUser = user {
     let achievementBoardRef = getAccount(currentUser)
       .getCapability<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
@@ -26,6 +28,10 @@ pub fun main(
       .borrow()
     if let record = achievementBoardRef?.borrowAchievementRecordRef(host: host, seriesId: id) {
       userRecord = record
+      if record != nil {
+        totalScore = record!.getTotalScore()
+        consumableScore = record!.getConsumableScore()
+      }
     }
   }
 
@@ -36,7 +42,7 @@ pub fun main(
   ], userRecord)
 
   if !includingAvailables {
-    return Result(strategies, nil)
+    return Result(strategies, nil, totalScore, consumableScore)
   }
 
   // calc frozen data
@@ -81,15 +87,30 @@ pub fun main(
     }
   }
 
-  return Result(strategies, FLOATEventSeriesViews.TreasuryData(balances: balances, ids: ids))
+  return Result(
+    strategies, 
+    FLOATEventSeriesViews.TreasuryData(balances: balances, ids: ids),
+    totalScore,
+    consumableScore,
+  )
 }
 
 pub struct Result {
-  pub let available: FLOATEventSeriesViews.TreasuryData?
   pub let strategies: [FLOATEventSeries.StrategyQueryResult]
+  pub let available: FLOATEventSeriesViews.TreasuryData?
+  // user score
+  pub let userTotalScore: UInt64?
+  pub let userConsumableScore: UInt64?
 
-  init(_ strategies: [FLOATEventSeries.StrategyQueryResult], _ available: FLOATEventSeriesViews.TreasuryData?) {
+  init(
+    _ strategies: [FLOATEventSeries.StrategyQueryResult],
+    _ available: FLOATEventSeriesViews.TreasuryData?,
+    _ totalScore: UInt64?,
+    _ consumableScore: UInt64?,
+  ) {
     self.strategies = strategies
     self.available = available
+    self.userTotalScore = totalScore
+    self.userConsumableScore = consumableScore
   }
 }

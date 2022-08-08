@@ -17,7 +17,7 @@
   $: token = getTokenInfo(identifier);
 </script>
 
-<div class="flex-wrap between flex-gap">
+<div class="flex-auto flex-wrap between flex-gap">
   {#await token then token}
     {#if token}
       <span>

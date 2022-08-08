@@ -90,9 +90,11 @@
   {#await goalsPromise}
     <Loading />
   {:then goals}
-    {#each goals as goal, index}
-      <GoalDisplay {goal} totalSlots={eventSeries.slots.length} />
-    {/each}
+    <div class="mb-1">
+      {#each goals as goal, index}
+        <GoalDisplay {goal} totalSlots={eventSeries.slots.length} />
+      {/each}
+    </div>
   {/await}
   <details>
     <summary role="button" class="secondary"> <b>Add a new goal →</b> </summary>

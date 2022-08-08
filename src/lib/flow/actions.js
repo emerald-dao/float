@@ -3174,7 +3174,7 @@ function parseStrategyDetail (rawdata) {
 }
 
 /**
- * @return {import('../components/eventseries/types').StrategyData}
+ * @return {Promise<import('../components/eventseries/types').StrategyQueryResult>}
  */
 export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false, user = undefined) => {
   const raw = await generalQuery(
@@ -3190,7 +3190,9 @@ export const getSeriesStrategies = async (acct, seriesId, includingAvailables = 
   if (!raw) return null
   return {
     available: raw.available && parseRawTreasuryData(raw.available),
-    strategies: raw.strategies.map(one => parseStrategyDetail(one))
+    strategies: raw.strategies.map(one => parseStrategyDetail(one)),
+    userTotalScore: raw.userTotalScore,
+    userConsumableScore: raw.userConsumableScore,
   }
 }
 

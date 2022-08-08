@@ -1,5 +1,6 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
+  import StrategyDisplay from "../elements/StrategyDisplay.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
@@ -15,7 +16,7 @@
 
   /** @type {import('../types').AddStrategyRequest} */
   let requestParams;
-  /** @type {Promise<import('../types').StrategyData>} */
+  /** @type {Promise<import('../types').StrategyQueryResult>} */
   let strategiesPromise;
   /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
   let currentToken;
@@ -101,8 +102,10 @@
   {#await strategiesPromise}
     <Loading />
   {:then data}
-    <div class="no-break flex-col flex-gap mb-1">
-      {JSON.stringify(data)}
+    <div class="mb-1">
+      {#each data.strategies as strategy}
+        <StrategyDisplay {strategy} />
+      {/each}
     </div>
     <details>
       <summary role="button" class="secondary">
