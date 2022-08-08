@@ -12,7 +12,7 @@ transaction(
   openingEnding: UFix64,
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
-  hasMinimiumValid: Bool,
+  hasMinimumValid: Bool,
   minimumValidAmount: UInt64?,
   // Delivery Parameters
   strategyMode: UInt8,
@@ -90,7 +90,9 @@ transaction(
 
     // strategy paramters
     let params: {String: AnyStruct} = {}
-    params["minValid"] = minimumValidAmount
+    if hasMinimumValid {
+      params["minValid"] = minimumValidAmount
+    }
     if hasOpeningEnding {
       params["openingEnd"] = openingEnding
     }

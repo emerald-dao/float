@@ -3133,7 +3133,44 @@ function parseRawTreasuryData (rawdata) {
  * @return {import('../components/eventseries/types').StrategyDetail}
  */
 function parseStrategyDetail (rawdata) {
-  return rawdata
+  const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'lotteryStrategy'
+  const strategyStatusMap = {
+    '0': 'preparing',
+    '1': 'opening',
+    '2': 'claimable',
+    '3': 'closed'
+  }
+  const status = rawdata.detail.status || {}
+  const deliveryTypeMap = {
+    '0': 'ftIdenticalAmount',
+    '1': 'ftRandomAmount',
+    '2': 'nft'
+  }
+  const deliveryMode = deliveryTypeMap[status.delivery.type?.rawValue]
+  return {
+    index: parseInt(rawdata.index),
+    strategyMode,
+    strategyData: {
+      consumable: status.consumable,
+      threshold: parseInt(status.threshold),
+      openingEnding: rawdata.detail.strategyData.ending['1'],
+      claimableEnding: rawdata.detail.strategyData.ending['2'],
+      minValid: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
+      valid: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.valid : undefined,
+      winners: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.winners : undefined,
+    },
+    currentState: strategyStatusMap[status?.currentState?.rawValue],
+    deliveryMode,
+    deliveryStatus: {
+      deliveryTokenIdentifier: status.delivery.deliveryTokenType.typeID,
+      // status
+      maxClaimableShares: parseInt(status.delivery.maxClaimableShares),
+      claimedShares: parseInt(status.delivery.claimedShares),
+      restAmount: status.delivery.restAmount,
+      oneShareAmount: status.delivery.oneShareAmount,
+      totalAmount: status.delivery.totalAmount,
+    }
+  }
 }
 
 /**

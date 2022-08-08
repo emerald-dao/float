@@ -149,7 +149,12 @@ interface StrategyDetail {
     // if comsume achievement point
     consumable: boolean; 
     // how many achievement points in valid to claim
-    threshold: string;
+    threshold: number;
+    // lottery part -- 
+    // how many users is required to go next stage
+    minValid?: number;
+    valid?: [string];
+    winners?: [string];
   };
   deliveryMode: DeliveryType;
   deliveryStatus: {
