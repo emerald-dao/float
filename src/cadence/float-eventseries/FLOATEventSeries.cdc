@@ -914,7 +914,6 @@ pub contract FLOATEventSeries {
             var i = 0
             while i < len {
                 let strategyRef = &self.strategies[i] as &{ITreasuryStrategy}
-                let detail = strategyRef.getStrategyDetail()
                 let info = strategyRef.controller.getInfo()
                 if states == nil || states!.contains(info.currentState) {
                     var address: Address? = nil
@@ -929,11 +928,12 @@ pub contract FLOATEventSeries {
                             claimable = false
                         }
                     }
+                    let data = strategyRef.getStrategyDetail()
                     infos.append(StrategyQueryResult(
                         index: i,
                         detail: StrategyDetail(
-                            id: detail.getType().identifier,
-                            data: detail,
+                            id: data.getType().identifier,
+                            data: data,
                             status: info
                         ),
                         userAddress: address,
