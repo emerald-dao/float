@@ -595,6 +595,28 @@ pub contract FLOATEventSeries {
         }
     }
 
+    pub struct StrategyQueryResult {
+        pub let index: Int
+        pub let detail: StrategyDetail
+        pub let userAddress: Address?
+        pub let userEligible: Bool?
+        pub let userClaimable: Bool?
+
+        init (
+            index: Int,
+            detail: StrategyDetail,
+            userAddress: Address?,
+            userEligible: Bool?,
+            userClaimable: Bool?
+        ) {
+            self.index = index
+            self.detail = detail
+            self.userAddress = userAddress
+            self.userEligible = userEligible
+            self.userClaimable = userClaimable
+        }
+    }
+
     // the general strategy controller
     pub resource StrategyController {
         // basic info
@@ -798,9 +820,9 @@ pub contract FLOATEventSeries {
         // get nft collection public 
         pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?): [StrategyDetail]
-        // For the public to check if some strategy is claimable
-        pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool
+        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResult]
+        // Refresh strategy status
+        pub fun refreshUserStatus(user: &{AchievementPublic})
         // For the public to claim rewards
         pub fun claim(strategyIndex: Int, user: &{AchievementPublic})
 
@@ -879,8 +901,15 @@ pub contract FLOATEventSeries {
         }
 
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?): [StrategyDetail] {
-            let infos: [StrategyDetail] = []
+        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResult] {
+            // ensure achievement record should be same
+            if user != nil {
+                let achievementIdentifier = user!.getTarget().toString()
+                let seriesIdentifier = self.getParentIdentifier().toString()
+                assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
+            }
+
+            let infos: [StrategyQueryResult] = []
             let len = self.strategies.length
             var i = 0
             while i < len {
@@ -888,27 +917,46 @@ pub contract FLOATEventSeries {
                 let detail = strategyRef.getStrategyDetail()
                 let info = strategyRef.controller.getInfo()
                 if states == nil || states!.contains(info.currentState) {
-                    infos.append(StrategyDetail(
-                        id: detail.getType().identifier,
-                        data: detail,
-                        status: info
+                    var address: Address? = nil
+                    var eligible: Bool? = nil
+                    var claimable: Bool? = nil
+                    if let currentUser = user {
+                        address = currentUser.owner!.address
+                        eligible = strategyRef.controller.verifyScore(user: currentUser)
+                        if info.currentState == StrategyState.claimable {
+                            claimable = eligible! && strategyRef.verifyClaimable(user: currentUser)
+                        } else {
+                            claimable = false
+                        }
+                    }
+                    infos.append(StrategyQueryResult(
+                        index: i,
+                        detail: StrategyDetail(
+                            id: detail.getType().identifier,
+                            data: detail,
+                            status: info
+                        ),
+                        userAddress: address,
+                        userEligible: claimable,
+                        userClaimable: eligible
                     ))
                 }
                 i = i + 1
             }
             return infos
         }
-        
-        // For the public to check if some strategy is claimable
-        pub fun isClaimable(strategyIndex: Int, user: &{AchievementPublic}): Bool {
+
+        pub fun refreshUserStatus(user: &{AchievementPublic}) {
             // ensure achievement record should be same
             let achievementIdentifier = user.getTarget().toString()
             let seriesIdentifier = self.getParentIdentifier().toString()
             assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
 
-            // verify if user can claim
-            let strategy = self.borrowStrategyRef(idx: strategyIndex)
-            return strategy.verifyClaimable(user: user) && strategy.controller.verifyScore(user: user)
+            // refresth opening strategies
+            let openingStrategies = self.borrowStrategiesRef(state: StrategyState.opening)
+            for strategy in openingStrategies {
+                strategy.onGoalAccomplished(user: user)
+            }
         }
 
         // execute claiming
@@ -966,7 +1014,7 @@ pub contract FLOATEventSeries {
         // drop all treasury, if no strategy alive
         pub fun dropTreasury() {
             pre {
-                self.strategies.length == self.getStrategies(states: [StrategyState.closed]).length
+                self.strategies.length == self.getStrategies(states: [StrategyState.closed], nil).length
                     : "All strategies should be closed"
             }
 
@@ -1065,18 +1113,18 @@ pub contract FLOATEventSeries {
                 StrategyState.preparing,
                 StrategyState.opening,
                 StrategyState.claimable
-            ])
+            ], nil)
             var restAmounts: {Type: UFix64} = {}
             var restShares: {Type: UInt64} = {}
             for existsStrategy in availableStrategies {
-                let tokenType = existsStrategy.status.delivery.deliveryTokenType
-                let restAmount = existsStrategy.status.delivery.getRestAmount()
+                let tokenType = existsStrategy.detail.status.delivery.deliveryTokenType
+                let restAmount = existsStrategy.detail.status.delivery.getRestAmount()
                 if let oldVal = restAmounts[tokenType] {
                     restAmounts[tokenType] = oldVal + restAmount
                 } else {
                     restAmounts[tokenType] = restAmount
                 }
-                let restShare = existsStrategy.status.delivery.maxClaimableShares - existsStrategy.status.delivery.claimedShares
+                let restShare = existsStrategy.detail.status.delivery.maxClaimableShares - existsStrategy.detail.status.delivery.claimedShares
                 if let oldVal = restShares[tokenType] {
                     restShares[tokenType] = oldVal + restShare
                 } else {
@@ -1722,7 +1770,7 @@ pub contract FLOATEventSeries {
                 StrategyState.preparing,
                 StrategyState.opening,
                 StrategyState.claimable
-            ])
+            ], nil)
 
             var updated = false
             if availableStrategies.length > 0 && !self.seriesWithTreasuryAvailableList.contains(key) {

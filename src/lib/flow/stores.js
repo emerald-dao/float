@@ -86,6 +86,7 @@ export const eventSeries = {
   TreasuryManegement: buildWraitable(),
   NextTreasuryStrategyStage: buildWraitable(),
   AccompllishGoals: buildWraitable(),
+  RefreshUserStatus: buildWraitable(),
   ClaimTreasuryRewards: buildWraitable(),
 }
 

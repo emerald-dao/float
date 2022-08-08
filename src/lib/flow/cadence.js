@@ -49,6 +49,7 @@ export { default as txDropTreasury } from '../../cadence/float-eventseries/trans
 // ** Events Collector **
 export { default as txAccomplishGoal } from '../../cadence/float-eventseries/transactions/accomplish_goals.cdc?raw'
 export { default as txClaimTreasuryRewards } from '../../cadence/float-eventseries/transactions/claim_rewards_treasury.cdc?raw'
+export { default as txRefreshUserStrategiesStatus } from '../../cadence/float-eventseries/transactions/refresh_user_strategies_status.cdc?raw'
 // For Dev
 export { default as txCleanup } from '../../cadence/float-eventseries/transactions/dev/cleanup.cdc?raw'
 

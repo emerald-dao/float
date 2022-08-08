@@ -6,7 +6,8 @@ import FLOATEventSeriesViews from "../FLOATEventSeriesViews.cdc"
 pub fun main(
   host: Address,
   id: UInt64,
-  includingAvailables: Bool
+  includingAvailables: Bool,
+  user: Address?
 ): Result {
 
   let builderRef = getAccount(host)
@@ -17,11 +18,22 @@ pub fun main(
     ?? panic("Missing FLOAT EventSeries Builder.")
   let treasury = eventSeries.borrowTreasury()
 
+  var userRecord: &{FLOATEventSeries.AchievementPublic}? = nil
+  if let currentUser = user {
+    let achievementBoardRef = getAccount(currentUser)
+      .getCapability<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
+        (FLOATEventSeries.FLOATAchievementBoardPublicPath)
+      .borrow()
+    if let record = achievementBoardRef?.borrowAchievementRecordRef(host: host, seriesId: id) {
+      userRecord = record
+    }
+  }
+
   let strategies = treasury.getStrategies(states: [
       FLOATEventSeries.StrategyState.preparing,
       FLOATEventSeries.StrategyState.opening,
       FLOATEventSeries.StrategyState.claimable
-  ])
+  ], userRecord)
 
   if !includingAvailables {
     return Result(strategies, nil)
@@ -31,16 +43,16 @@ pub fun main(
   var frozenAmounts: {Type: UFix64} = {}
   var frozenShares: {Type: UInt64} = {}
   for strategy in strategies {
-    let tokenType = strategy.status.delivery.deliveryTokenType
+    let tokenType = strategy.detail.status.delivery.deliveryTokenType
 
-    let restAmount = strategy.status.delivery.getRestAmount()
+    let restAmount = strategy.detail.status.delivery.getRestAmount()
     if let oldVal = frozenAmounts[tokenType] {
         frozenAmounts[tokenType] = oldVal + restAmount
     } else {
         frozenAmounts[tokenType] = restAmount
     }
 
-    let restShare = strategy.status.delivery.maxClaimableShares - strategy.status.delivery.claimedShares
+    let restShare = strategy.detail.status.delivery.maxClaimableShares - strategy.detail.status.delivery.claimedShares
     if let oldVal = frozenShares[tokenType] {
         frozenShares[tokenType] = oldVal + restShare
     } else {
@@ -74,9 +86,9 @@ pub fun main(
 
 pub struct Result {
   pub let available: FLOATEventSeriesViews.TreasuryData?
-  pub let strategies: [FLOATEventSeries.StrategyDetail]
+  pub let strategies: [FLOATEventSeries.StrategyQueryResult]
 
-  init(_ strategies: [FLOATEventSeries.StrategyDetail], _ available: FLOATEventSeriesViews.TreasuryData?) {
+  init(_ strategies: [FLOATEventSeries.StrategyQueryResult], _ available: FLOATEventSeriesViews.TreasuryData?) {
     self.strategies = strategies
     self.available = available
   }

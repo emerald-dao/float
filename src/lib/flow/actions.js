@@ -2950,6 +2950,24 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
   )
 }
 
+/**
+ * refresh user strategies status
+ * 
+ * @param {string} host 
+ * @param {number} seriesId 
+ */
+export const refreshUserStrategiesStatus = async (host, seriesId) => {
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txRefreshUserStrategiesStatus, addressMap),
+    (arg, t) => [
+      arg(host, t.Address),
+      arg(seriesId, t.UInt64),
+    ],
+    eventSeries.RefreshUserStatus.InProgress,
+    eventSeries.RefreshUserStatus.Status,
+  )
+}
+
 // For Dev
 export const runCleanUp = async () => {
   return await generalSendTransaction(
@@ -3110,23 +3128,32 @@ function parseRawTreasuryData (rawdata) {
   }
 }
 
+
+/**
+ * @return {import('../components/eventseries/types').StrategyDetail}
+ */
+function parseStrategyDetail (rawdata) {
+  return rawdata
+}
+
 /**
  * @return {import('../components/eventseries/types').StrategyData}
  */
-export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false) => {
+export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false, user = undefined) => {
   const raw = await generalQuery(
     cadence.replaceImportAddresses(cadence.scGetSeriesStrategies, addressMap),
     (arg, t) => [
       arg(acct, t.Address),
       arg(seriesId, t.UInt64),
-      arg(includingAvailables, t.Bool)
+      arg(includingAvailables, t.Bool),
+      arg(user ?? null, t.Optional(t.String))
     ],
     null
   )
   if (!raw) return null
   return {
     available: raw.available && parseRawTreasuryData(raw.available),
-    strategies: raw.strategies
+    strategies: raw.strategies.map(one => parseStrategyDetail(one))
   }
 }
 

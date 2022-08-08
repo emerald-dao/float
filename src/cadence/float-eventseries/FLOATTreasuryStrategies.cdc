@@ -7,7 +7,7 @@ pub contract FLOATTreasuryStrategies {
         *  |___  \/  |___ | \|  |  ___]
          ******************************/
 
-    pub event FLOATStrategyGoalAccomplished(strategyIdentifier: String, user: Address)
+    pub event FLOATStrategyGoalAccomplished(strategyIdentifier: String, strategyUuid: UInt64, user: Address)
     pub event FLOATStrategyLotteryDrawn(strategyIdentifier: String, winners: [Address])
 
     /**    ____ _  _ _  _ ____ ___ _ ____ _  _ ____ _    _ ___ _   _
@@ -145,6 +145,7 @@ pub contract FLOATTreasuryStrategies {
 
                 emit FLOATStrategyGoalAccomplished(
                     strategyIdentifier: self.getType().identifier,
+                    strategyUuid: self.uuid,
                     user: address
                 )
             }
@@ -157,7 +158,7 @@ pub contract FLOATTreasuryStrategies {
             let now = getCurrentBlock().timestamp
             assert(now <= (self.ending[FLOATEventSeries.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
 
-            return self.valid.contains(user.getOwner())
+            return self.winners.contains(user.getOwner())
         }
     }
     

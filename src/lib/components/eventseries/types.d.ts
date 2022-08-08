@@ -115,6 +115,7 @@ export interface TreasuryData {
 
 export type StrategyType = 'lotteryStrategy' | 'queueStrategy'
 export type DeliveryType = 'ftIdenticalAmount' | 'ftRandomAmount' | 'nft'
+export type StategyStatus = 'preparing' | 'opening' | 'claimable' | 'closed'
 
 interface AddStrategyOptions {
   // if comsume achievement point
@@ -140,7 +141,27 @@ export interface AddStrategyRequest {
 }
 
 interface StrategyDetail {
-  // TODO
+  index: number;
+  strategyMode: StrategyType;
+  strategyData: {
+    openingEnding?: number;
+    claimableEnding?: number;
+    // if comsume achievement point
+    consumable: boolean; 
+    // how many achievement points in valid to claim
+    threshold: string;
+  };
+  deliveryMode: DeliveryType;
+  deliveryStatus: {
+    deliveryTokenIdentifier: string;
+    // status
+    maxClaimableShares: number;
+    claimedShares: number;
+    restAmount: string;
+    oneShareAmount?: string;
+    totalAmount?: string;
+  }
+  currentState: StategyStatus;
 }
 
 export interface StrategyData {
