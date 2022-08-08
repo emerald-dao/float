@@ -135,7 +135,7 @@
     align-items: center;
     gap: 0.8rem;
     padding: 0;
-    margin: 0.4rem auto;
+    margin: 0.8rem auto;
     width: 100%;
   }
 
@@ -151,7 +151,7 @@
   }
 
   .panel-content {
-    padding: 0.5rem 0.8rem 0.5rem 0;
+    padding: 0.8rem 0.8rem 0.8rem 0;
     display: flex;
     flex-direction: column;
     gap: 0.4rem;

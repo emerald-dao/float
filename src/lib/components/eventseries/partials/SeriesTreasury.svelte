@@ -35,7 +35,7 @@
   {#if data?.strategies?.length === 0}
     <div class="flex">There is no reward strategy for the FLOAT Series</div>
   {:else}
-    <h4>Rewards strategies</h4>
+    <h4>Rewards</h4>
     {#each data.strategies as strategy}
       <TreasuryStrategyItem
         {strategy}
