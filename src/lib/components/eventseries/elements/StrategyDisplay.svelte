@@ -1,6 +1,7 @@
 <script>
   import FungibleTokenDisplay from "$lib/components/eventseries/elements/FungibleTokenDisplay.svelte";
   import Stack from "$lib/components/eventseries/svgs/stack.svelte";
+  import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
 
   /**
    * @type {import('../types').StrategyDetail}
@@ -60,9 +61,10 @@
         <span class="highlight">
           {strategy.strategyData.threshold}
           {#if strategy.strategyData.consumable}
-            Consumable
+            <EnergyPoint />
+          {:else}
+            Points
           {/if}
-          Points
         </span>
         Required
       </span>

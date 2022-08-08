@@ -3183,7 +3183,7 @@ export const getSeriesStrategies = async (acct, seriesId, includingAvailables = 
       arg(acct, t.Address),
       arg(seriesId, t.UInt64),
       arg(includingAvailables, t.Bool),
-      arg(user ?? null, t.Optional(t.String))
+      arg(user ?? null, t.Optional(t.Address))
     ],
     null
   )

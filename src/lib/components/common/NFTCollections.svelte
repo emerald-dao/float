@@ -69,8 +69,8 @@
 </details>
 
 <style>
-  img.icon {
+  /* img.icon {
     height: 1.5rem;
     width: 1.5rem;
-  }
+  } */
 </style>

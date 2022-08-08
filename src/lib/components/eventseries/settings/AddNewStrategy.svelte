@@ -1,7 +1,7 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
-  import StrategyDisplay from "../elements/StrategyDisplay.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
+  import StrategyDisplay from "../elements/StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import { getSeriesStrategies, addTreasuryStrategy } from "$lib/flow/actions";

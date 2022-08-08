@@ -1,5 +1,6 @@
 <script>
   import GoalDisplay from "../elements/GoalDisplay.svelte";
+  import AchievementPoints from "../elements/AchievementPoints.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import { accomplishGoals } from "$lib/flow/actions";
@@ -48,15 +49,10 @@
   }
 </script>
 
-<h4>
-  Achievement Points: &nbsp;
-  <span
-    class="emphasis"
-    data-tooltip="You can claim POINTs by achieving following goals"
-  >
-    {preview ? 0 : userStatus?.totalScore}
-  </span>
-</h4>
+<AchievementPoints
+  totalScore={preview ? 0 : userStatus?.totalScore}
+  consumableScore={preview ? 0 : userStatus?.consumableScore}
+/>
 {#if !preview && !isAllGoalsDone}
   {#if $txInProgress}
     <button aria-busy="true" disabled> Accomplishing Goals </button>
