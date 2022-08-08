@@ -1,9 +1,9 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
-  import AchievementPoints from "$lib/components/eventSeries/elements/AchievementPoints.svelte";
-  import TreasuryStrategyItem from "$lib/components/eventSeries/elements/TreasuryStrategyItem.svelte";
+  import AchievementPoints from "../elements/AchievementPoints.svelte";
+  import TreasuryStrategyItem from "../elements/TreasuryStrategyItem.svelte";
   import { createEventDispatcher } from "svelte";
-  import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import { user } from "$lib/flow/stores";
   import { getSeriesStrategies } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
