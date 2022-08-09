@@ -1,4 +1,5 @@
 <script>
+  import FungibleTokenDisplay from "./FungibleTokenDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, getLatestTokenList } from "$lib/flow/stores";
   import { getTokenBalances } from "$lib/flow/actions";
@@ -14,7 +15,7 @@
   let currentToken = undefined;
   let open = false;
 
-  async function getOwnedTokenList(address, txStatus) {
+  async function getOwnedTokenList(address) {
     const allList = await getLatestTokenList();
     let balancesToFill = balances;
     if (balancesToFill.length === 0 && address) {
@@ -83,20 +84,16 @@
       {#each list as token}
         <li>
           <!-- svelte-ignore a11y-missing-attribute -->
-          <a
-            on:click={(e) => {
-              dispatch("select", token);
-              currentToken = token;
-              open = false;
-            }}
-          >
-            <div class="flex-wrap between flex-gap">
-              <span>
-                <img src={token.logoURI} class="icon" alt="{token.name} logo" />
-                &nbsp; {token.name}
-              </span>
-              <span class="emphasis">{token.balance}</span>
-            </div>
+          <a>
+            <FungibleTokenDisplay
+              {token}
+              balance={token.balance}
+              on:select={(e) => {
+                dispatch("select", e.detail);
+                currentToken = Object.assign({}, token);
+                open = false;
+              }}
+            />
           </a>
         </li>
       {:else}

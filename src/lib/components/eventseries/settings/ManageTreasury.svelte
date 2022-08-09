@@ -1,9 +1,9 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
+  import FungibleTokenDisplay from "$lib/components/common/FungibleTokenDisplay.svelte";
   import NftCollections from "$lib/components/common/NFTCollections.svelte";
-  import FungibleTokenDisplay from "$lib/components/eventseries/elements/FungibleTokenDisplay.svelte";
-  import CollectionDisplay from "$lib/components/eventseries/elements/CollectionDisplay.svelte";
+  import NFTCollectionDisplay from "$lib/components/common/NFTCollectionDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
@@ -108,7 +108,7 @@
         />
       {/each}
       {#each data.collectionIDs as one}
-        <CollectionDisplay identifier={one.identifier} ids={one.ids} />
+        <NFTCollectionDisplay identifier={one.identifier} ids={one.ids} />
       {/each}
     </div>
   {/await}

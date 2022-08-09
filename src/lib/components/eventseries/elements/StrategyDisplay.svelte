@@ -1,7 +1,7 @@
 <script>
+  import FungibleTokenDisplay from "$lib/components/common/FungibleTokenDisplay.svelte";
   import Stack from "$lib/components/eventseries/svgs/stack.svelte";
   import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
-  import FungibleTokenDisplay from "./FungibleTokenDisplay.svelte";
 
   /**
    * @type {import('../types').StrategyDetail}
