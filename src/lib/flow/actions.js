@@ -2794,7 +2794,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
  */
 export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode, options}) => {
   const strategyModeCode = {
-    [cadence.STRATEGY_LOTTERY]: '0',
+    [cadence.STRATEGY_RAFFLE]: '0',
     [cadence.STRATEGY_QUEUE]: '1'
   }[strategyMode]
 
@@ -3133,7 +3133,7 @@ function parseRawTreasuryData (rawdata) {
  * @return {import('../components/eventseries/types').StrategyDetail}
  */
 function parseStrategyDetail (rawdata) {
-  const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'lotteryStrategy'
+  const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'raffleStrategy'
   const strategyStatusMap = {
     '0': 'preparing',
     '1': 'opening',
@@ -3155,9 +3155,9 @@ function parseStrategyDetail (rawdata) {
       threshold: parseInt(status.threshold),
       openingEnding: rawdata.detail.strategyData.ending['1'],
       claimableEnding: rawdata.detail.strategyData.ending['2'],
-      minValid: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
-      valid: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.valid : undefined,
-      winners: strategyMode === 'lotteryStrategy' ? rawdata.detail.strategyData.winners : undefined,
+      minValid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
+      valid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.valid : undefined,
+      winners: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.winners : undefined,
     },
     currentState: strategyStatusMap[status?.currentState?.rawValue],
     deliveryMode,

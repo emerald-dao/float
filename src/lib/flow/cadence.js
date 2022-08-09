@@ -26,7 +26,7 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  */
 
 // Contants
-export const STRATEGY_LOTTERY = 'lotteryStrategy'
+export const STRATEGY_RAFFLE = 'raffleStrategy'
 export const STRATEGY_QUEUE = 'queueStrategy'
 
 export const DELIVERY_FT_IDENTICAL = 'ftIdenticalAmount'

@@ -112,7 +112,7 @@ export interface TreasuryData {
   collectionIDs: [{ identifier: string; ids: [string] }];
 }
 
-export type StrategyType = "lotteryStrategy" | "queueStrategy";
+export type StrategyType = "raffleStrategy" | "queueStrategy";
 export type DeliveryType = "ftIdenticalAmount" | "ftRandomAmount" | "nft";
 export type StategyStatus = "preparing" | "opening" | "claimable" | "closed";
 
@@ -149,7 +149,6 @@ interface StrategyDetail {
     consumable: boolean;
     // how many achievement points in valid to claim
     threshold: number;
-    // lottery part --
     // how many users is required to go next stage
     minValid?: number;
     valid?: [string];

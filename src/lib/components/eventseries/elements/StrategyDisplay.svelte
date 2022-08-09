@@ -11,7 +11,7 @@
 
 <article class="panel">
   <div class="panel-start flex flex-col flex-gap">
-    {#if strategy.strategyMode === "lotteryStrategy"}
+    {#if strategy.strategyMode === "raffleStrategy"}
       <svg
         t="1659950717064"
         class="icon"
@@ -109,7 +109,7 @@
         Collection Display
       {/if}
     </div>
-    {#if strategy.strategyMode === "lotteryStrategy" && strategy.currentState === "opening"}
+    {#if strategy.strategyMode === "raffleStrategy" && strategy.currentState === "opening"}
       <div class="flex-wrap between">
         <span>
           Eligible users:

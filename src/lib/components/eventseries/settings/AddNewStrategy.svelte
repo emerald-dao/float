@@ -86,7 +86,7 @@
     (requestParams.deliveryMode !== "nft"
       ? requestParams.options.deliveryParam1 > 0
       : true) &&
-    (requestParams.strategyMode === "lotteryStrategy"
+    (requestParams.strategyMode === "raffleStrategy"
       ? requestParams.options.minimumValidAmount >=
         requestParams.options.maxClaimableShares
       : true);
@@ -127,14 +127,14 @@
           </span>
         </button>
         <button
-          class:secondary={requestParams.strategyMode !== "lotteryStrategy"}
+          class:secondary={requestParams.strategyMode !== "raffleStrategy"}
           class="outline"
           on:click={() => {
-            requestParams.strategyMode = "lotteryStrategy";
+            requestParams.strategyMode = "raffleStrategy";
             requestParams.options.minimumValidAmount = 0;
           }}
         >
-          Lottery Strategy
+          Raffle Strategy
           <span>
             Eligible users will get a ticket to join the raffle and only winners
             can claim rewards.
@@ -319,7 +319,7 @@
                       requestParams.options.maxClaimableShares,
                       10000
                     );
-                    if (requestParams.strategyMode === "lotteryStrategy") {
+                    if (requestParams.strategyMode === "raffleStrategy") {
                       requestParams.options.minimumValidAmount = Math.max(
                         requestParams.options.minimumValidAmount,
                         requestParams.options.maxClaimableShares
@@ -335,7 +335,7 @@
         TODO: NFT Config
       {/if}
 
-      {#if requestParams.strategyMode === "lotteryStrategy"}
+      {#if requestParams.strategyMode === "raffleStrategy"}
         <label for="minimumValidAmount">
           <span class:highlight={requestParams.options.minimumValidAmount > 0}>
             Minimum Amount of Eligible Users for the Raffle: {requestParams
