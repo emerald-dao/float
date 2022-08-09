@@ -17,6 +17,7 @@
 
   const txInProgress = seriesStore.ClaimTreasuryRewards.InProgress;
   const txStatus = seriesStore.ClaimTreasuryRewards.Status;
+  const txKey = seriesStore.ClaimTreasuryRewards.Key;
 
   $: preview = !$user?.addr;
   $: progress = Math.min(
@@ -27,6 +28,7 @@
         strategy.strategyData.threshold
     )
   );
+  $: isCurrentItem = $txKey === strategy.index;
   $: isValidToSubmit =
     strategy.currentState === "claimable" && strategy.userStatus.claimable;
 
@@ -36,12 +38,13 @@
     }
     txInProgress.set(false);
     txStatus.set(false);
+    txKey.set(-1);
   }
 
   function handleSubmit() {
     if (!isValidToSubmit) return;
 
-    // TODO
+    txKey.set(strategy.index);
   }
 </script>
 
@@ -52,11 +55,11 @@
 
   <div slot="bottom" class="panel-bottom">
     {#if !preview}
-      {#if $txInProgress}
+      {#if $txInProgress && isCurrentItem}
         <button aria-busy="true" disabled>
           Please wait for the transaction
         </button>
-      {:else if $txStatus === false}
+      {:else if !isCurrentItem || $txStatus === false}
         {#if !isValidToSubmit}
           {#if strategy.userStatus.claimed}
             <button class="secondary outline" disabled>
@@ -81,7 +84,7 @@
             Claim Reward
           </button>
         {/if}
-      {:else}
+      {:else if isCurrentItem}
         {#if $txStatus.success}
           <p>Transaction executed successfully!</p>
         {:else if !$txStatus.success && $txStatus.error}

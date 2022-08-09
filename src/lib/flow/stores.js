@@ -71,6 +71,7 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
   return {
     "InProgress": writable(false),
     "Status": writable(false),
+    "Key": writable(-1),
   }
 }
 
