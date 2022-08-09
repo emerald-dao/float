@@ -83,6 +83,10 @@
                         You can set up drops/raffles on Drizzle that require
                         users to own FLOATs before participating!
                     </li>
+                    <li>
+                        Set up a FLOAT event, have users claim it, and then only
+                        allow those users to participate in the fun :)
+                    </li>
                 </ul>
             </div>
             <img src="/drizzle.png" alt="drizzle" />
