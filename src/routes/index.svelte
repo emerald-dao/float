@@ -40,11 +40,15 @@
 
 <Comparison />
 
-<Testimonials />
-
 <Button />
 
 <IntegratedDapps />
+
+<Button />
+
+<Testimonials />
+
+<Button />
 
 <style>
   .hero {
