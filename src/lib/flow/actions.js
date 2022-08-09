@@ -3169,7 +3169,12 @@ function parseStrategyDetail (rawdata) {
       restAmount: status.delivery.restAmount,
       oneShareAmount: status.delivery.oneShareAmount,
       totalAmount: status.delivery.totalAmount,
-    }
+    },
+    userStatus: rawdata.userAddress ? {
+      eligible: rawdata.userInfo.eligible,
+      claimable: rawdata.userInfo.claimable,
+      claimed: rawdata.userInfo.claimed
+    }: null
   }
 }
 

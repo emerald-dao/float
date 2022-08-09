@@ -1,23 +1,22 @@
-
 export interface PickableEvent {
-  picked: boolean
-  event: FloatEvent
+  picked: boolean;
+  event: FloatEvent;
 }
 
 export interface FloatEvent {
-  host: string
-  eventId: string
-  groups: string[]
+  host: string;
+  eventId: string;
+  groups: string[];
 
-  image: string
-  name: string
-  description: string
-  url: string
+  image: string;
+  name: string;
+  description: string;
+  url: string;
 
-  totalSupply: number
-  claimable: boolean
-  transferrable: boolean
-  dateCreated: number
+  totalSupply: number;
+  claimable: boolean;
+  transferrable: boolean;
+  dateCreated: number;
 }
 
 export interface EventSeriesBasics {
@@ -27,9 +26,9 @@ export interface EventSeriesBasics {
 }
 
 enum GoalStatus {
-  todo = '0',
-  ready = '1',
-  accomplished = '2',
+  todo = "0",
+  ready = "1",
+  accomplished = "2",
 }
 
 export interface EventSeriesAchievementGoal {
@@ -52,7 +51,7 @@ interface Identifier {
 }
 
 interface EventSeriesSlot {
-  event?: Identifier
+  event?: Identifier;
   required: boolean;
 }
 
@@ -62,9 +61,9 @@ export interface EventSeriesData {
   basics: EventSeriesBasics;
   slots: EventSeriesSlot[];
   // calc member
-  sequence?: number
+  sequence?: number;
   // display member
-  owner?: string
+  owner?: string;
 }
 
 export interface EventSeriesCreateRequest {
@@ -74,30 +73,30 @@ export interface EventSeriesCreateRequest {
   emptySlotsAmtRequired: number;
 }
 
-export type GoalType = 'byAmount' | 'byPercent' | 'bySpecifics'
-export type GoalParamsType = ByAmountParams | ByPercentParams | BySpecifics
+export type GoalType = "byAmount" | "byPercent" | "bySpecifics";
+export type GoalParamsType = ByAmountParams | ByPercentParams | BySpecifics;
 
 interface ByAmountParams {
-  eventsAmount: number
-  requiredEventsAmount: number
+  eventsAmount: number;
+  requiredEventsAmount: number;
 }
 
 interface ByPercentParams {
-  percent: number
+  percent: number;
 }
 
 interface BySpecifics {
-  events: Identifier[]
+  events: Identifier[];
 }
 
 export interface AddAchievementGoalRequest {
   type: GoalType;
   seriesId: string;
   points: number;
-  params?: GoalParamsType
+  params?: GoalParamsType;
 }
 
-export type TreasuryMgrType = 'depositFT' | 'depositNFT' | 'dropAll'
+export type TreasuryMgrType = "depositFT" | "depositNFT" | "dropAll";
 
 export interface TreasuryManagementRequeset {
   type: TreasuryMgrType;
@@ -109,28 +108,28 @@ export interface TreasuryManagementRequeset {
 }
 
 export interface TreasuryData {
-  tokenBalances: [{ identifier: string , balance: string }]
-  collectionIDs: [{ identifier: string , ids: [string] }]
+  tokenBalances: [{ identifier: string; balance: string }];
+  collectionIDs: [{ identifier: string; ids: [string] }];
 }
 
-export type StrategyType = 'lotteryStrategy' | 'queueStrategy'
-export type DeliveryType = 'ftIdenticalAmount' | 'ftRandomAmount' | 'nft'
-export type StategyStatus = 'preparing' | 'opening' | 'claimable' | 'closed'
+export type StrategyType = "lotteryStrategy" | "queueStrategy";
+export type DeliveryType = "ftIdenticalAmount" | "ftRandomAmount" | "nft";
+export type StategyStatus = "preparing" | "opening" | "claimable" | "closed";
 
 interface AddStrategyOptions {
   // if comsume achievement point
-  consumable: boolean; 
+  consumable: boolean;
   // how many achievement points in valid to claim
   threshold: string;
   // auto start strategy
   autoStart: boolean;
-  openingEnding?: number
-  claimableEnding?: number
-  minimumValidAmount?: number
+  openingEnding?: number;
+  claimableEnding?: number;
+  minimumValidAmount?: number;
   // Delivery Parameters
-  maxClaimableShares: number
-  deliveryTokenIdentifier: string
-  deliveryParam1?: number
+  maxClaimableShares: number;
+  deliveryTokenIdentifier: string;
+  deliveryParam1?: number;
 }
 
 export interface AddStrategyRequest {
@@ -147,10 +146,10 @@ interface StrategyDetail {
     openingEnding?: number;
     claimableEnding?: number;
     // if comsume achievement point
-    consumable: boolean; 
+    consumable: boolean;
     // how many achievement points in valid to claim
     threshold: number;
-    // lottery part -- 
+    // lottery part --
     // how many users is required to go next stage
     minValid?: number;
     valid?: [string];
@@ -165,8 +164,13 @@ interface StrategyDetail {
     restAmount: string;
     oneShareAmount?: string;
     totalAmount?: string;
-  }
+  };
   currentState: StategyStatus;
+  userStatus?: {
+    eligible: boolean;
+    claimable: boolean;
+    claimed: boolean;
+  };
 }
 
 export interface StrategyQueryResult {
