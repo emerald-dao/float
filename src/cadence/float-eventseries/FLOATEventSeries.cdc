@@ -960,8 +960,8 @@ pub contract FLOATEventSeries {
                             status: info
                         ),
                         userAddress: address,
-                        userEligible: claimable,
-                        userClaimable: eligible,
+                        userEligible: eligible,
+                        userClaimable: claimable,
                         userClaimed: claimed,
                     ))
                 }
