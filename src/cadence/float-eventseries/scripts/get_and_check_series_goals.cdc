@@ -14,10 +14,6 @@ pub fun main(
     .getCapability(FLOAT.FLOATCollectionPublicPath)
     .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
 
-  if floatsColRef == nil {
-    return Status([], [], 0, 0)
-  }
-
   var verifyFunc: ((Int): FLOATEventSeriesGoals.GoalStatus)? = nil
   var totalScore: UInt64 = 0
   var consumableScore: UInt64 = 0
@@ -69,12 +65,14 @@ pub fun main(
 
   // get floats data
   let ownedIds: [FLOATEventSeries.EventIdentifier] = []
+  if floatsColRef != nil {
   let slots = eventSeriesRef.getSlots()
-  for slot in slots {
-    if let eventIdentifier = slot.getIdentifier() {
-      let ids = floatsColRef!.ownedIdsFromEvent(eventId: eventIdentifier.id)
-      if ids.length > 0 {
-        ownedIds.append(eventIdentifier)
+    for slot in slots {
+      if let eventIdentifier = slot.getIdentifier() {
+        let ids = floatsColRef!.ownedIdsFromEvent(eventId: eventIdentifier.id)
+        if ids.length > 0 {
+          ownedIds.append(eventIdentifier)
+        }
       }
     }
   }

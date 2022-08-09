@@ -74,7 +74,7 @@
             ✓ You already claimed this reward.
           </button>
         {:else if !isValidToSubmit}
-          {#if strategy.currentState === "opening" && !strategy.userStatus.eligible}
+          {#if strategy.currentState === "opening" && !strategy.userStatus?.eligible}
             <button disabled>
               You are not eligible, please obtain more POINTS.
             </button>
