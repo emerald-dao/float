@@ -2837,7 +2837,7 @@ export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode,
 /**
  * let strategy go to next stage
  * 
- * @param {number} seriesId
+ * @param {string} seriesId
  * @param {number} strategyIndex
  */
 export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
@@ -2845,7 +2845,7 @@ export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
     cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
-      arg(strategyIndex, t.Int),
+      arg(String(strategyIndex), t.Int),
     ],
     eventSeries.NextTreasuryStrategyStage.InProgress,
     eventSeries.NextTreasuryStrategyStage.Status,
@@ -2943,7 +2943,7 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
     (arg, t) => [
       arg(host, t.Address),
       arg(seriesId, t.UInt64),
-      arg(strategyIndex, t.Int),
+      arg(String(strategyIndex), t.Int),
     ],
     eventSeries.ClaimTreasuryRewards.InProgress,
     eventSeries.ClaimTreasuryRewards.Status,

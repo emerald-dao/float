@@ -1,7 +1,7 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
-  import StrategyDisplay from "../elements/StrategyDisplay.svelte";
+  import StrategyControllerItem from "../elements/StrategyControllerItem.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import { getSeriesStrategies, addTreasuryStrategy } from "$lib/flow/actions";
@@ -57,6 +57,10 @@
       },
     };
 
+    reloadStrategies();
+  }
+
+  function reloadStrategies() {
     strategiesPromise = getSeriesStrategies(
       eventSeries.identifier.host,
       eventSeries.identifier.id,
@@ -104,7 +108,11 @@
   {:then data}
     <div class="mb-1">
       {#each data.strategies as strategy}
-        <StrategyDisplay {strategy} />
+        <StrategyControllerItem
+          {eventSeries}
+          {strategy}
+          on:seriesUpdated={(e) => reloadStrategies()}
+        />
       {/each}
     </div>
     <details>

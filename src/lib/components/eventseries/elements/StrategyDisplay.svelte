@@ -55,7 +55,7 @@
         class:alert-success={strategy.currentState === "claimable"}
         class:alert-danger={strategy.currentState === "closed"}
       >
-        {strategy.currentState}
+        {strategy.currentState.toUpperCase()}
       </div>
       <span>
         <span class="highlight">

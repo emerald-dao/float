@@ -124,7 +124,8 @@ pub contract FLOATTreasuryStrategies {
         // ---------- opening Stage ----------
 
         access(account) fun isEligible (user: &{FLOATEventSeries.AchievementPublic}): Bool {
-            return self.valid.contains(user.getOwner())
+            let address = user.getOwner()
+            return self.valid.contains(address) || self.winners.contains(address)
         }
 
         // update user's achievement

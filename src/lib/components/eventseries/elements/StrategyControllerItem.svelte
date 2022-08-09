@@ -2,6 +2,7 @@
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import { nextTreasuryStrategyStage } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -9,26 +10,25 @@
    * @type {import('../types').StrategyDetail}
    */
   export let strategy;
-  export let totalScore = undefined;
-  export let consumableScore = undefined;
 
   // dispatcher
   const dispatch = createEventDispatcher();
 
-  const txInProgress = seriesStore.ClaimTreasuryRewards.InProgress;
-  const txStatus = seriesStore.ClaimTreasuryRewards.Status;
+  const txInProgress = seriesStore.NextTreasuryStrategyStage.InProgress;
+  const txStatus = seriesStore.NextTreasuryStrategyStage.Status;
 
-  $: preview = !$user?.addr;
-  $: progress = Math.min(
-    100,
-    Math.floor(
-      (100 *
-        (strategy.strategyData.consumable ? consumableScore : totalScore)) /
-        strategy.strategyData.threshold
-    )
-  );
+  $: isValidAdmin = eventSeries.identifier.host === $user?.addr;
   $: isValidToSubmit =
-    strategy.currentState === "claimable" && strategy.userStatus.claimable;
+    strategy.currentState !== "closed" &&
+    (strategy.currentState === "opening" &&
+    strategy.strategyMode === "raffleStrategy"
+      ? strategy.strategyData.minValid <= strategy.strategyData.valid.length
+      : true);
+  $: nextStage = {
+    preparing: "opening",
+    opening: "claimable",
+    claimable: "closed",
+  }[strategy.currentState];
 
   function handleReset() {
     if ($txStatus?.success) {
@@ -41,45 +41,27 @@
   function handleSubmit() {
     if (!isValidToSubmit) return;
 
-    // TODO
+    nextTreasuryStrategyStage(eventSeries.identifier.id, strategy.index);
   }
 </script>
 
 <StrategyDisplay {strategy}>
-  {#if !preview}
-    <div class="panel-bg" style="width: {progress}%;" />
-  {/if}
-
   <div slot="bottom" class="panel-bottom">
-    {#if !preview}
+    {#if isValidAdmin}
       {#if $txInProgress}
         <button aria-busy="true" disabled>
           Please wait for the transaction
         </button>
       {:else if $txStatus === false}
-        {#if !isValidToSubmit}
-          {#if strategy.userStatus.claimed}
-            <button class="secondary outline" disabled>
-              ✓ You already claimed this reward.
-            </button>
-          {:else if strategy.currentState === "opening" && !strategy.userStatus.eligible}
-            <button disabled>
-              You are not eligible, please obtain more POINTS.
-            </button>
-          {:else if strategy.currentState !== "claimable"}
-            <button disabled> Please wait for the CLAIMABLE phase </button>
-          {:else}
-            <button class="secondary outline" disabled>
-              You are not eligible or be a winner to claim the reward.
-            </button>
-          {/if}
-        {:else}
+        {#if isValidToSubmit}
           <button
             on:click|preventDefault={handleSubmit}
             disabled={!isValidToSubmit}
           >
-            Claim Reward
+            Set to {String(nextStage).toUpperCase()}
           </button>
+        {:else}
+          <button disabled>Need more eligible users</button>
         {/if}
       {:else}
         {#if $txStatus.success}

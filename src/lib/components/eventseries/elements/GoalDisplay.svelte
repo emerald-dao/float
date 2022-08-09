@@ -119,7 +119,7 @@
     <b class:emphasis={isGoalReady}>{goal.points} Points</b>
   </div>
   {#if !preview}
-    <div class="panel-bg" style="left: {progress - 100}%;" />
+    <div class="panel-bg" style="width: {progress}%;" />
   {/if}
 </article>
 
