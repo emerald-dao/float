@@ -685,11 +685,16 @@ pub contract FLOATEventSeries {
 
         // execute and go next
         access(contract) fun nextStage(): StrategyState {
+            self.setNextStage(next: StrategyState(rawValue: self.info.currentState.rawValue + 1)!)
+            return self.info.currentState
+        }
+
+        // set next stage
+        access(contract) fun setNextStage(next: StrategyState) {
             pre {
                 self.info.currentState != StrategyState.closed: "Strategy is closed"
             }
-            self.info.setCurrentState(value: StrategyState(rawValue: self.info.currentState.rawValue + 1)!)
-            return self.info.currentState
+            self.info.setCurrentState(value: next)
         }
 
         // ---------- claimable Stage ----------
@@ -1198,6 +1203,7 @@ pub contract FLOATEventSeries {
             if forceClose {
                 // go to closed
                 nextState = StrategyState.closed
+                strategy.controller.setNextStage(next: nextState)
             } else {
                 // go to next stage
                 nextState = strategy.controller.nextStage()
