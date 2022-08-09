@@ -10,7 +10,7 @@
     Achievement Points: &nbsp;
     <span
       class="emphasis"
-      data-tooltip="You can claim POINTs by achieving following goals."
+      data-tooltip="You can claim POINTs by achieving series goals."
     >
       {totalScore}
     </span>
