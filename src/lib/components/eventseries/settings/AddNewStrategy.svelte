@@ -125,6 +125,7 @@
         <button
           class:secondary={requestParams.strategyMode !== "queueStrategy"}
           class="outline"
+          disabled={$txInProgress}
           on:click={() => {
             requestParams.strategyMode = "queueStrategy";
             requestParams.options.minimumValidAmount = undefined;
@@ -138,6 +139,7 @@
         <button
           class:secondary={requestParams.strategyMode !== "raffleStrategy"}
           class="outline"
+          disabled={$txInProgress}
           on:click={() => {
             requestParams.strategyMode = "raffleStrategy";
             requestParams.options.minimumValidAmount = 0;
@@ -154,6 +156,7 @@
         <button
           class:secondary={requestParams.deliveryMode !== "ftIdenticalAmount"}
           class="outline"
+          disabled={$txInProgress}
           on:click={() => {
             if (requestParams.deliveryMode === "nft") {
               setCurrentToken(null);
@@ -171,6 +174,7 @@
         <button
           class:secondary={requestParams.deliveryMode !== "ftRandomAmount"}
           class="outline"
+          disabled={$txInProgress}
           on:click={() => {
             if (requestParams.deliveryMode === "nft") {
               setCurrentToken(null);
@@ -226,6 +230,7 @@
             id="consumable"
             name="consumable"
             role="switch"
+            disabled={$txInProgress}
             bind:checked={requestParams.options.consumable}
           />
           use <EnergyPoint />

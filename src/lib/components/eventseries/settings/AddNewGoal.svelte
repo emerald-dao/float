@@ -102,6 +102,7 @@
       <button
         class:secondary={requestParams.type !== "byAmount"}
         class="outline"
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "byAmount";
           requestParams.params = {
@@ -116,6 +117,7 @@
       <button
         class:secondary={requestParams.type !== "byPercent"}
         class="outline"
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "byPercent";
           requestParams.params = {
@@ -131,6 +133,7 @@
       <button
         class:secondary={requestParams.type !== "bySpecifics"}
         class="outline"
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "bySpecifics";
           requestParams.params = {
@@ -154,6 +157,7 @@
         max="1000"
         placeholder="ex. 100"
         step="10"
+        disabled={$txInProgress}
         bind:value={requestParams.points}
       />
     </label>

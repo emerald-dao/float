@@ -2986,14 +2986,13 @@ export const runCleanUp = async () => {
 // ************************
 
 /**
- * @param {string} host 
  * @param {object} item 
  * @returns {import('../components/eventseries/types').EventSeriesData}
  */
-const parseEventSeries = (host, item) => ({
+const parseEventSeries = (item) => ({
   sequence: item.sequence ? parseInt(item.sequence) : -1,
   identifier: {
-    host: host,
+    host: item.host,
     id: item.id,
   },
   basics: {
@@ -3005,8 +3004,30 @@ const parseEventSeries = (host, item) => ({
 })
 
 /**
- * check if you have achievement board
- * 
+ * Get all event series list
+ */
+export const getGlobalEventSeriesList = async (page = 0, limit = 20, notClosed = true) => {
+  /** @type {import('../components/eventseries/types').EventSeriesData[]} */
+  let ret = []
+  const raw = await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetGlobalEventSeriesList, addressMap),
+    (arg, t) => [
+      arg(String(page), t.UInt64),
+      arg(String(limit), t.UInt64),
+      arg(!!notClosed, t.Bool),
+    ],
+    []
+  )
+  if (raw && Object.keys(raw.result ?? {})?.length > 0) {
+    ret = Object.values(raw.result).map(parseEventSeries);
+  }
+  return {
+    total: parseInt(raw?.total ?? "0") - 1,
+    list: ret
+  }
+}
+
+/**
  * @param {string} 
  */
 export const getEventSeriesList = async (acct) => {
@@ -3020,7 +3041,7 @@ export const getEventSeriesList = async (acct) => {
     []
   )
   if (rawDic && Object.keys(rawDic)?.length > 0) {
-    ret = Object.values(rawDic).map(parseEventSeries.bind(this, acct));
+    ret = Object.values(rawDic).map(parseEventSeries);
   }
   return ret
 }
@@ -3035,7 +3056,7 @@ export const getEventSeries = async (acct, id) => {
     {}
   )
   if (!raw) return null
-  return parseEventSeries(acct, raw)
+  return parseEventSeries(raw)
 }
 
 export const getEventSeriesGoals = async (host, id) => {

@@ -17,6 +17,36 @@ pub contract FLOATEventSeriesViews {
     }
   }
 
+  // EventSeries Metadata
+  pub struct EventSeriesMetadata {
+    pub let host: Address
+    pub let id: UInt64
+    pub let sequence: UInt64
+    pub let display: MetadataViews.Display?
+    pub let slots: [SeriesSlotInfo]
+    pub let extra: {String: AnyStruct}
+
+    init(
+      _ eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic},
+      _ resolver: &{MetadataViews.Resolver},
+    ) {
+      self.host = eventSeries.owner!.address
+      self.id = eventSeries.uuid
+      self.sequence = eventSeries.sequence
+      self.display = MetadataViews.getDisplay(resolver)
+      self.slots = []
+      // fill slots
+      let slots = eventSeries.getSlots()
+      for slot in slots {
+        self.slots.append(SeriesSlotInfo(
+          slot.getIdentifier(),
+          slot.isEventRequired()
+        ))
+      }
+      self.extra = {}
+    }
+  }
+
   // Treasury return data
   pub struct TreasuryData {
     pub let tokenBalances: {String: UFix64}

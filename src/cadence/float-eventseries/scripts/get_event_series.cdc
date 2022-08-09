@@ -5,7 +5,7 @@ import FLOATEventSeriesViews from "../FLOATEventSeriesViews.cdc"
 pub fun main(
   host: Address,
   id: UInt64,
-):  EventSeriesMetadata? {
+):  FLOATEventSeriesViews.EventSeriesMetadata? {
 
   let builderRef = getAccount(host)
     .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
@@ -21,31 +21,5 @@ pub fun main(
     return nil
   }
 
-  return EventSeriesMetadata(eventSeries!, resolver)
-}
-
-// EventSeries Metadata
-pub struct EventSeriesMetadata {
-  pub let id: UInt64
-  pub let sequence: UInt64
-  pub let display: MetadataViews.Display?
-  pub let slots: [FLOATEventSeriesViews.SeriesSlotInfo]
-
-  init(
-    _ eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic},
-    _ resolver: &{MetadataViews.Resolver},
-  ) {
-    self.id = eventSeries.uuid
-    self.sequence = eventSeries.sequence
-    self.display = MetadataViews.getDisplay(resolver)
-    self.slots = []
-    // fill slots
-    let slots = eventSeries.getSlots()
-    for slot in slots {
-      self.slots.append(FLOATEventSeriesViews.SeriesSlotInfo(
-        slot.getIdentifier(),
-        slot.isEventRequired()
-      ))
-    }
-  }
+  return FLOATEventSeriesViews.EventSeriesMetadata(eventSeries!, resolver)
 }

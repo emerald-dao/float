@@ -120,6 +120,7 @@
       <button
         class:secondary={requestParams.type !== "depositFT"}
         class="outline"
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "depositFT";
           requestParams.amount = 0;
@@ -148,6 +149,7 @@
       <button
         class:secondary={requestParams.type !== "dropAll"}
         class="outline"
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "dropAll";
         }}
