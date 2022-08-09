@@ -71,7 +71,23 @@
             </div>
             <img src="/emerald-bot.png" alt="emerald bot" />
         </div>
-        <div class="works-list-element wide">
+        <div class="works-list-element share">
+            <div>
+                <h3>Drizzle</h3>
+                <ul>
+                    <li>
+                        Drizzle is a platform that allows you to easily airdrop
+                        tokens and raffle away NFTs.
+                    </li>
+                    <li>
+                        You can set up drops/raffles on Drizzle that require
+                        users to own FLOATs before participating!
+                    </li>
+                </ul>
+            </div>
+            <img src="/drizzle.png" alt="drizzle" />
+        </div>
+        <div class="works-list-element share">
             <div>
                 <h3>Live Feeds</h3>
                 <ul>
@@ -125,6 +141,9 @@
     }
     .works-list > div:nth-child(4) {
         background-color: rgb(133, 236, 155);
+    }
+    .works-list > div:nth-child(5) {
+        background-color: rgb(186, 240, 178);
     }
 
     .works-list-element {
