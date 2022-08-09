@@ -220,6 +220,10 @@ h3 {
   border-radius: 10rem;
 }
 
+.panel-bottom {
+  padding-bottom: 0.4rem;
+}
+
 .input-button-group {
   display: flex;
 }

@@ -2,6 +2,7 @@
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import AchievementPoints from "./AchievementPoints.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -48,35 +49,47 @@
 <StrategyDisplay {strategy}>
   {#if !preview}
     <div class="panel-bg" style="left: {progress - 100}%;" />
-
-    {#if $txInProgress}
-      <button aria-busy="true" disabled>
-        Please wait for the transaction
-      </button>
-    {:else if $txStatus === false}
-      {#if !isValidToSubmit}
-        <button disabled>
-          {#if strategy.currentState !== "claimable"}
-            Please wait for claimable
-          {:else}
-            You are not eligible to claim the reward.
-          {/if}
-        </button>
-      {:else}
-        <button
-          on:click|preventDefault={handleSubmit}
-          disabled={!isValidToSubmit}
-        >
-          Claim Reward
-        </button>
-      {/if}
-    {:else}
-      {#if $txStatus.success}
-        <p>Transaction executed successfully!</p>
-      {:else if !$txStatus.success && $txStatus.error}
-        <p>{JSON.stringify($txStatus.error)}</p>
-      {/if}
-      <button on:click|preventDefault={handleReset}> Continue </button>
-    {/if}
   {/if}
+
+  <div slot="bottom" class="panel-bottom">
+    {#if !preview}
+      {#if $txInProgress}
+        <button aria-busy="true" disabled>
+          Please wait for the transaction
+        </button>
+      {:else if $txStatus === false}
+        {#if !isValidToSubmit}
+          {#if strategy.userStatus.claimed}
+            <button class="secondary outline" disabled>
+              ✓ You already claimed this reward.
+            </button>
+          {:else if !strategy.userStatus.eligible}
+            <button disabled>
+              You are not eligible, please obtain more POINTS.
+            </button>
+          {:else if strategy.currentState !== "claimable"}
+            <button disabled> Please wait for the claimable phase </button>
+          {:else}
+            <button class="secondary outline" disabled>
+              You are not eligible or be a winner to claim the reward.
+            </button>
+          {/if}
+        {:else}
+          <button
+            on:click|preventDefault={handleSubmit}
+            disabled={!isValidToSubmit}
+          >
+            Claim Reward
+          </button>
+        {/if}
+      {:else}
+        {#if $txStatus.success}
+          <p>Transaction executed successfully!</p>
+        {:else if !$txStatus.success && $txStatus.error}
+          <p>{JSON.stringify($txStatus.error)}</p>
+        {/if}
+        <button on:click|preventDefault={handleReset}> Continue </button>
+      {/if}
+    {/if}
+  </div>
 </StrategyDisplay>

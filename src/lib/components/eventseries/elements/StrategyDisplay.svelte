@@ -126,8 +126,15 @@
   </div>
   <slot />
 </article>
+<slot name="bottom">
+  <div class="panel-bottom" />
+</slot>
 
 <style>
+  .panel {
+    margin-bottom: 0rem;
+  }
+
   .panel-content {
     padding: 0.8rem 0.8rem 0.8rem 0;
     display: flex;
