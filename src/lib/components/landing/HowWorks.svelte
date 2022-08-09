@@ -3,17 +3,31 @@
     <div class="works-list">
         <div class="works-list-element wide">
             <div>
-                <h3>FLOAT Overview</h3>
+                <h3>Overview</h3>
                 <ul>
                     <li>
-                        You can create an event on your own completely for free.
+                        <b>What is a FLOAT?</b> The name "FLOAT" comes from "Flow
+                        Attendance". FLOATs are NFTs that represent users' attendance
+                        in whatever aspect you choose, whether it be attending a
+                        Twitter Space, receiving a certificate for graduating a bootcamp,
+                        or participating in a fundraiser.
                     </li>
                     <li>
-                        You can add multiple requirements to claiming your
-                        FLOAT, such as a password, limited capacity, minimum
-                        $FLOW balance, and more.
+                        <b>What is their use?</b> The utility of a FLOAT is entirely
+                        up to its creator. Someone (let's say a community manager)
+                        can create a FLOAT for an event, have their community claim
+                        it, and then give access rights, perks, and whatever else
+                        to people who own that unique FLOAT. One way a community
+                        manager would do this is by using Emerald bot (see section
+                        below).
                     </li>
-                    <li>Users can claim your FLOAT at no cost.</li>
+                    <li>
+                        <b>Who can make a FLOAT?</b> Anyone, for free.
+                    </li>
+                    <li>
+                        <b>Can I see some examples?</b> Check the "Use Cases" section
+                        above.
+                    </li>
                 </ul>
             </div>
             <img src="/social-card.png" alt="social card" />
@@ -86,9 +100,8 @@
         color: rgb(43, 43, 43);
     }
     a:hover {
-      text-decoration: underline;
+        text-decoration: underline;
     }
-
 
     .how-works {
         padding-top: 0;
