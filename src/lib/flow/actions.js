@@ -68,7 +68,7 @@ const configureFCL = (wallet) => {
   if (wallet === 'blocto') {
     config()
       .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
-      .put("discovery.wallet.method", "IFRAME/RPC")
+      .put("discovery.wallet.method", import.meta.env.VITE_FLOW_NETWORK === 'testnet' ? "HTTP/POST" : "IFRAME/RPC")
   } else if (wallet === 'dapper') {
     config()
       .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
