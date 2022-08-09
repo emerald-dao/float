@@ -7,9 +7,11 @@
    * @type {import('../types').StrategyDetail}
    */
   export let strategy;
+  export let ready = false;
+  export let done = false;
 </script>
 
-<article class="panel">
+<article class="panel" class:ready class:done>
   <div class="panel-start flex flex-col flex-gap">
     {#if strategy.strategyMode === "raffleStrategy"}
       <svg

@@ -31,9 +31,11 @@
   );
   $: isCurrentItem = $txKey === strategy.index;
   $: isValidToSubmit =
+    !preview &&
     !strategy.userStatus?.claimed &&
     strategy.currentState === "claimable" &&
     strategy.userStatus?.claimable;
+  $: isClaimed = !preview && strategy.userStatus?.claimed;
 
   function handleReset() {
     if ($txStatus?.success) {
@@ -57,8 +59,8 @@
   }
 </script>
 
-<StrategyDisplay {strategy}>
-  {#if !preview}
+<StrategyDisplay {strategy} ready={isValidToSubmit} done={isClaimed}>
+  {#if !preview && !isClaimed}
     <div class="panel-bg" style="width: {progress}%;" />
   {/if}
 

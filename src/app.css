@@ -182,8 +182,8 @@ h3 {
 }
 
 .panel.done {
-  border: 1px solid var(--primary);
-  opacity: 0.3;
+  border: 1px solid var(--secondary);
+  opacity: 0.2;
 }
 
 .panel .panel-bg {
