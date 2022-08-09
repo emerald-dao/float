@@ -217,7 +217,7 @@
             id="consumable"
             name="consumable"
             role="switch"
-            bind:value={requestParams.options.consumable}
+            bind:checked={requestParams.options.consumable}
           />
           <span> Consumable </span>
         </label>

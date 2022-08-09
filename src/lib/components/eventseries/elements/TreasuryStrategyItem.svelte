@@ -1,5 +1,5 @@
 <script>
-  import StrategyDisplay from "$lib/components/eventSeries/elements/StrategyDisplay.svelte";
+  import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
 
@@ -9,12 +9,28 @@
    * @type {import('../types').StrategyDetail}
    */
   export let strategy;
+  export let totalScore = undefined;
+  export let consumableScore = undefined;
 
   // dispatcher
   const dispatch = createEventDispatcher();
 
   const txInProgress = seriesStore.ClaimTreasuryRewards.InProgress;
   const txStatus = seriesStore.ClaimTreasuryRewards.Status;
+
+  $: preview = !$user?.addr;
+  $: progress = Math.min(
+    100,
+    Math.floor(
+      (100 *
+        (strategy.strategyData.consumable ? consumableScore : totalScore)) /
+        strategy.strategyData.threshold
+    )
+  );
 </script>
 
-<StrategyDisplay {strategy} />
+<StrategyDisplay {strategy}>
+  {#if !preview}
+    <div class="panel-bg" style="left: {progress - 100}%;" />
+  {/if}
+</StrategyDisplay>

@@ -1,7 +1,7 @@
 <script>
-  import FungibleTokenDisplay from "$lib/components/eventseries/elements/FungibleTokenDisplay.svelte";
   import Stack from "$lib/components/eventseries/svgs/stack.svelte";
   import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
+  import FungibleTokenDisplay from "./FungibleTokenDisplay.svelte";
 
   /**
    * @type {import('../types').StrategyDetail}
@@ -124,32 +124,10 @@
       </div>
     {/if}
   </div>
+  <slot />
 </article>
 
 <style>
-  .panel {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0;
-    margin: 0.8rem auto;
-    width: 100%;
-  }
-
-  .panel-start {
-    padding: 0.8rem;
-  }
-
-  .panel-start .icon {
-    color: currentColor;
-    fill: currentColor;
-    width: 3rem;
-    height: 3rem;
-  }
-
   .panel-content {
     padding: 0.8rem 0.8rem 0.8rem 0;
     display: flex;
@@ -157,12 +135,8 @@
     gap: 0.4rem;
   }
 
-  .panel-tag {
-    display: inline-block;
-    text-align: center;
-    padding: 0rem 0.4rem;
-    border-width: 1px;
-    border-style: solid;
-    border-radius: 10rem;
+  .panel-start .icon {
+    width: 3rem;
+    height: 3rem;
   }
 </style>

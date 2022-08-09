@@ -106,6 +106,8 @@
       <TreasuryStrategyItem
         {strategy}
         {eventSeries}
+        totalScore={data?.userTotalScore}
+        consumableScore={data?.userConsumableScore}
         on:seriesUpdated={(e) => dispatch("seriesUpdated")}
       />
     {/each}

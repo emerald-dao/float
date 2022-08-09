@@ -36,7 +36,7 @@
 </script>
 
 <article class="panel" class:ready={isGoalReady} class:done={isGoalDone}>
-  <div class="panel-container">
+  <div class="panel-start">
     {#if isGoalReady || isGoalDone}
       <Badge owned={true} huge={true} />
     {:else if isByAmount}
@@ -124,42 +124,6 @@
 </article>
 
 <style>
-  .panel {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 0;
-    margin: 0.4rem auto;
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .panel .panel-bg {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--primary);
-    opacity: 0.1;
-  }
-  .panel > :not(.panel-bg) {
-    z-index: 10;
-  }
-
-  .panel-container {
-    padding: 0.8rem;
-  }
-
-  .panel-container .icon {
-    color: currentColor;
-    fill: currentColor;
-    width: 2rem;
-    height: 2rem;
-  }
   .panel-content {
     flex: 1 1 auto;
     padding: 0.2rem 1rem 0.2rem 0;
@@ -167,14 +131,5 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-  }
-
-  .panel.ready {
-    border: 1px dotted var(--primary);
-  }
-
-  .panel.done {
-    border: 1px solid var(--primary);
-    opacity: 0.3;
   }
 </style>

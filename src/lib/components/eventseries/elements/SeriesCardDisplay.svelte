@@ -3,7 +3,7 @@
   export let eventSeriesData = {};
 </script>
 
-<article class="panel">
+<article class="card-wrapper">
   <div class="card">
     {#if eventSeriesData.basics?.image}
       <img
@@ -12,7 +12,7 @@
       />
     {/if}
   </div>
-  <div class="panel-content">
+  <div class="card-content">
     <h1>{eventSeriesData.basics?.name}</h1>
     <div class="desc">
       {eventSeriesData.basics?.description}
@@ -38,7 +38,7 @@
 </article>
 
 <style>
-  .panel {
+  .card-wrapper {
     display: flex;
     justify-items: center;
     align-items: flex-start;
@@ -48,35 +48,35 @@
   }
 
   @media screen and (max-width: 520px) {
-    .panel {
+    .card-wrapper {
       flex-wrap: wrap;
     }
   }
 
-  .panel:hover {
+  .card-wrapper:hover {
     border: 1px solid var(--primary);
   }
 
-  .panel .desc:last-child {
+  .card-wrapper .desc:last-child {
     margin-bottom: 0;
   }
 
-  .panel > .card {
+  .card-wrapper > .card {
     flex: none;
     border-width: 0px;
     margin: 0;
     padding: 1rem;
   }
-  .panel > .card img {
+  .card-wrapper > .card img {
     margin-bottom: 0px;
   }
 
-  .panel > .panel-content {
+  .card-wrapper > .card-content {
     flex: 1 1 auto;
     padding: 1rem 0.5rem;
   }
 
-  .panel-content h1 {
+  .card-content h1 {
     margin-top: 10px;
     margin-bottom: 10px;
     font-size: 1.3rem;
@@ -84,7 +84,7 @@
     word-break: break-all;
   }
 
-  .panel-content .desc {
+  .card-content .desc {
     min-height: 72px;
     overflow-wrap: break-word;
   }
