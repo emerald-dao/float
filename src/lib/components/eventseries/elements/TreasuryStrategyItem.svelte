@@ -31,9 +31,9 @@
   );
   $: isCurrentItem = $txKey === strategy.index;
   $: isValidToSubmit =
-    !strategy.userStatus.claimed &&
+    !strategy.userStatus?.claimed &&
     strategy.currentState === "claimable" &&
-    strategy.userStatus.claimable;
+    strategy.userStatus?.claimable;
 
   function handleReset() {
     if ($txStatus?.success) {
@@ -69,7 +69,7 @@
           Please wait for the transaction
         </button>
       {:else if !isCurrentItem || $txStatus === false}
-        {#if strategy.userStatus.claimed}
+        {#if strategy.userStatus?.claimed}
           <button class="secondary outline" disabled>
             ✓ You already claimed this reward.
           </button>

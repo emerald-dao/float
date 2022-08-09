@@ -214,6 +214,7 @@ h3 {
 .panel .panel-tag {
   display: inline-block;
   text-align: center;
+  font-size: small;
   padding: 0rem 0.4rem;
   border-width: 1px;
   border-style: solid;
