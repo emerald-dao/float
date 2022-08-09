@@ -868,7 +868,7 @@ pub contract FLOATEventSeries {
         // add new strategy to the treasury
         pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool)
         // update strategy status
-        pub fun nextStrategyStage(idx: Int): StrategyState
+        pub fun nextStrategyStage(idx: Int, _ forceClose: Bool): StrategyState
     }
 
     // Treasury resource of each EventSeries (Optional)
@@ -1020,7 +1020,7 @@ pub contract FLOATEventSeries {
 
             // check if all shares claimed, go next stage
             if strategy.controller.getClaimedShares() >= strategy.controller.getTotalShares() {
-                self.nextStrategyStage(idx: strategyIndex)
+                self.nextStrategyStage(idx: strategyIndex, false)
             }
         }
 
@@ -1191,14 +1191,20 @@ pub contract FLOATEventSeries {
         }
 
         // go next strategy stage
-        pub fun nextStrategyStage(idx: Int): StrategyState {
+        pub fun nextStrategyStage(idx: Int, _ forceClose: Bool): StrategyState {
             let strategy = self.borrowStrategyRef(idx: idx)
-            let currentState = strategy.controller.getInfo().currentState
+            var nextState: StrategyState = StrategyState.opening
 
-            // go to next stage
-            let ret = strategy.controller.nextStage()
+            if forceClose {
+                // go to closed
+                nextState = StrategyState.closed
+            } else {
+                // go to next stage
+                nextState = strategy.controller.nextStage()
+            }
+
             // execute on state changed
-            strategy.onStateChanged(state: ret)
+            strategy.onStateChanged(state: nextState)
 
             let host = self.owner!.address
             // update global
@@ -1210,9 +1216,9 @@ pub contract FLOATEventSeries {
                 host: host,
                 strategyIdentifier: strategy.getType().identifier,
                 index: idx,
-                stage: ret.rawValue
+                stage: nextState.rawValue
             )
-            return ret
+            return nextState
         }
 
         // --- Setters - Contract Only ---

@@ -2840,12 +2840,13 @@ export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode,
  * @param {string} seriesId
  * @param {number} strategyIndex
  */
-export const nextTreasuryStrategyStage = async (seriesId, strategyIndex) => {
+export const nextTreasuryStrategyStage = async (seriesId, strategyIndex, forceClose = false) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
       arg(String(strategyIndex), t.Int),
+      arg(!!forceClose, t.Bool)
     ],
     eventSeries.NextTreasuryStrategyStage.InProgress,
     eventSeries.NextTreasuryStrategyStage.Status,

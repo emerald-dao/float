@@ -5,6 +5,7 @@ import FLOATEventSeries from "../FLOATEventSeries.cdc"
 transaction(
   seriesId: UInt64,
   strategyIndex: Int,
+  forceClose: Bool
 ) {
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
@@ -28,7 +29,7 @@ transaction(
 
   execute {
     let treasury = self.eventSeries.borrowTreasuryPrivate()
-    treasury.nextStrategyStage(idx: strategyIndex)
+    treasury.nextStrategyStage(idx: strategyIndex, forceClose)
 
     log("Strategy go to next step.")
   }
