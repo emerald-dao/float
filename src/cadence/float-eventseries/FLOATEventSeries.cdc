@@ -769,6 +769,8 @@ pub contract FLOATEventSeries {
 
         // ---------- opening Stage ----------
 
+        access(account) fun isEligible (user: &{AchievementPublic}): Bool
+
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{AchievementPublic}) {
             pre {
@@ -943,7 +945,7 @@ pub contract FLOATEventSeries {
                     var claimed: Bool? = nil
                     if let currentUser = user {
                         address = currentUser.owner!.address
-                        eligible = strategyRef.controller.verifyScore(user: currentUser)
+                        eligible = strategyRef.isEligible(user: currentUser) && strategyRef.controller.verifyScore(user: currentUser)
                         if info.currentState == StrategyState.claimable {
                             claimable = eligible! && strategyRef.verifyClaimable(user: currentUser)
                         } else {

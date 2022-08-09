@@ -123,6 +123,10 @@ pub contract FLOATTreasuryStrategies {
 
         // ---------- opening Stage ----------
 
+        access(account) fun isEligible (user: &{FLOATEventSeries.AchievementPublic}): Bool {
+            return self.valid.contains(user.getOwner())
+        }
+
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventSeries.AchievementPublic}) {
             var isValid = false
@@ -208,6 +212,10 @@ pub contract FLOATTreasuryStrategies {
         }
 
         // ---------- opening Stage ----------
+
+        access(account) fun isEligible (user: &{FLOATEventSeries.AchievementPublic}): Bool {
+            return true
+        }
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &{FLOATEventSeries.AchievementPublic}) {
