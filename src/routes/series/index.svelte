@@ -5,7 +5,7 @@
   import SeriesList from "$lib/components/eventseries/SeriesList.svelte";
   import { setContext } from "svelte";
   import { user } from "$lib/flow/stores";
-  import { getGlobalEventSeriesList } from "$lib/flow/actions";
+  import { authenticate, getGlobalEventSeriesList } from "$lib/flow/actions";
 
   let page = 0;
   let pageIndex = 0;
@@ -58,6 +58,10 @@
     <a href="/series/create" role="button" class="addnew">
       Create a new FLOAT EventSeries
     </a>
+  {:else}
+    <button class="contrast small-button" on:click={authenticate}>
+      Connect Wallet
+    </button>
   {/if}
 </article>
 
