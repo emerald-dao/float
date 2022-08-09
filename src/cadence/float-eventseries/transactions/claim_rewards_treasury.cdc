@@ -4,7 +4,7 @@ import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 transaction(
   host: Address,
   seriesId: UInt64,
-  strategyIndex: UInt64,
+  strategyIndex: Int,
 ) {
   let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
   let eventSeries: &{FLOATEventSeries.EventSeriesPublic}
@@ -41,7 +41,7 @@ transaction(
 
   execute {
     let treasury = self.eventSeries.borrowTreasury()
-    treasury.claim(strategyIndex: Int(strategyIndex), user: self.achievementRecord)
+    treasury.claim(strategyIndex: strategyIndex, user: self.achievementRecord)
 
     log("Claimed your rewards from treasury.")
   }

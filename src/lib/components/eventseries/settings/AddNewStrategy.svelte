@@ -1,6 +1,7 @@
 <script>
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
+  import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
   import StrategyControllerItem from "../elements/StrategyControllerItem.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
@@ -227,7 +228,7 @@
             role="switch"
             bind:checked={requestParams.options.consumable}
           />
-          <span> Consumable </span>
+          use <EnergyPoint />
         </label>
       </div>
       {#if requestParams.deliveryMode !== "nft"}

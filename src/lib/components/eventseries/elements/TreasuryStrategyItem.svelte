@@ -2,6 +2,7 @@
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import { claimTreasuryRewards } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -30,7 +31,9 @@
   );
   $: isCurrentItem = $txKey === strategy.index;
   $: isValidToSubmit =
-    strategy.currentState === "claimable" && strategy.userStatus.claimable;
+    !strategy.userStatus.claimed &&
+    strategy.currentState === "claimable" &&
+    strategy.userStatus.claimable;
 
   function handleReset() {
     if ($txStatus?.success) {
@@ -45,6 +48,12 @@
     if (!isValidToSubmit) return;
 
     txKey.set(strategy.index);
+
+    claimTreasuryRewards(
+      eventSeries.identifier.host,
+      eventSeries.identifier.id,
+      strategy.index
+    );
   }
 </script>
 
@@ -60,12 +69,12 @@
           Please wait for the transaction
         </button>
       {:else if !isCurrentItem || $txStatus === false}
-        {#if !isValidToSubmit}
-          {#if strategy.userStatus.claimed}
-            <button class="secondary outline" disabled>
-              ✓ You already claimed this reward.
-            </button>
-          {:else if strategy.currentState === "opening" && !strategy.userStatus.eligible}
+        {#if strategy.userStatus.claimed}
+          <button class="secondary outline" disabled>
+            ✓ You already claimed this reward.
+          </button>
+        {:else if !isValidToSubmit}
+          {#if strategy.currentState === "opening" && !strategy.userStatus.eligible}
             <button disabled>
               You are not eligible, please obtain more POINTS.
             </button>
