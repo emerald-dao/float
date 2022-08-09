@@ -76,7 +76,7 @@
             ✓ You already claimed this reward.
           </button>
         {:else if !isValidToSubmit}
-          {#if strategy.currentState === "opening" && !strategy.userStatus?.eligible}
+          {#if !strategy.userStatus?.eligible && (strategy.strategyMode === "queueStrategy" || strategy.currentState === "opening")}
             <button disabled>
               You are not eligible, please obtain more POINTS.
             </button>
@@ -84,7 +84,7 @@
             <button disabled> Please wait for the CLAIMABLE phase </button>
           {:else}
             <button class="secondary outline" disabled>
-              You are not eligible or be a winner to claim the reward.
+              You are not eligible to claim the reward.
             </button>
           {/if}
         {:else}
