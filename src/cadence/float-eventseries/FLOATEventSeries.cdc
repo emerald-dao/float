@@ -598,22 +598,43 @@ pub contract FLOATEventSeries {
     pub struct StrategyQueryResult {
         pub let index: Int
         pub let detail: StrategyDetail
+
+        init (
+            index: Int,
+            detail: StrategyDetail
+        ) {
+            self.index = index
+            self.detail = detail
+        }
+    }
+
+    pub struct StrategyQueryResultWithUser {
+        pub let index: Int
+        pub let detail: StrategyDetail
         pub let userAddress: Address?
-        pub let userEligible: Bool?
-        pub let userClaimable: Bool?
+        pub let userInfo: {String: Bool}
 
         init (
             index: Int,
             detail: StrategyDetail,
             userAddress: Address?,
             userEligible: Bool?,
-            userClaimable: Bool?
+            userClaimable: Bool?,
+            userClaimed: Bool?
         ) {
             self.index = index
             self.detail = detail
             self.userAddress = userAddress
-            self.userEligible = userEligible
-            self.userClaimable = userClaimable
+            self.userInfo = {}
+            if userEligible != nil {
+                self.userInfo["eligible"] = userEligible!
+            }
+            if userClaimable != nil {
+                self.userInfo["claimable"] = userClaimable!
+            }
+            if userClaimed != nil {
+                self.userInfo["claimed"] = userClaimed!
+            }
         }
     }
 
@@ -820,7 +841,7 @@ pub contract FLOATEventSeries {
         // get nft collection public 
         pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResult]
+        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResultWithUser]
         // Refresh strategy status
         pub fun refreshUserStatus(user: &{AchievementPublic})
         // For the public to claim rewards
@@ -901,7 +922,7 @@ pub contract FLOATEventSeries {
         }
 
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResult] {
+        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResultWithUser] {
             // ensure achievement record should be same
             if user != nil {
                 let achievementIdentifier = user!.getTarget().toString()
@@ -909,7 +930,7 @@ pub contract FLOATEventSeries {
                 assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
             }
 
-            let infos: [StrategyQueryResult] = []
+            let infos: [StrategyQueryResultWithUser] = []
             let len = self.strategies.length
             var i = 0
             while i < len {
@@ -919,6 +940,7 @@ pub contract FLOATEventSeries {
                     var address: Address? = nil
                     var eligible: Bool? = nil
                     var claimable: Bool? = nil
+                    var claimed: Bool? = nil
                     if let currentUser = user {
                         address = currentUser.owner!.address
                         eligible = strategyRef.controller.verifyScore(user: currentUser)
@@ -927,9 +949,10 @@ pub contract FLOATEventSeries {
                         } else {
                             claimable = false
                         }
+                        claimed = strategyRef.controller.hasClaimed(address: address!)
                     }
                     let data = strategyRef.getStrategyDetail()
-                    infos.append(StrategyQueryResult(
+                    infos.append(StrategyQueryResultWithUser(
                         index: i,
                         detail: StrategyDetail(
                             id: data.getType().identifier,
@@ -938,7 +961,8 @@ pub contract FLOATEventSeries {
                         ),
                         userAddress: address,
                         userEligible: claimable,
-                        userClaimable: eligible
+                        userClaimable: eligible,
+                        userClaimed: claimed,
                     ))
                 }
                 i = i + 1

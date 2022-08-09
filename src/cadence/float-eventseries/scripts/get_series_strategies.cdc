@@ -96,14 +96,14 @@ pub fun main(
 }
 
 pub struct Result {
-  pub let strategies: [FLOATEventSeries.StrategyQueryResult]
+  pub let strategies: [FLOATEventSeries.StrategyQueryResultWithUser]
   pub let available: FLOATEventSeriesViews.TreasuryData?
   // user score
   pub let userTotalScore: UInt64?
   pub let userConsumableScore: UInt64?
 
   init(
-    _ strategies: [FLOATEventSeries.StrategyQueryResult],
+    _ strategies: [FLOATEventSeries.StrategyQueryResultWithUser],
     _ available: FLOATEventSeriesViews.TreasuryData?,
     _ totalScore: UInt64?,
     _ consumableScore: UInt64?,
