@@ -1678,7 +1678,11 @@ pub contract FLOATEventSeries {
             let one <- self.series.remove(key: seriesId) ?? panic("The event series does not exist")
             self.revoked[seriesId] <-! one
             
-            emit FLOATEventSeriesRevoked(seriesId: seriesId, host: self.owner!.address)
+            let host = self.owner!.address
+            let global = FLOATEventSeries.borrowEventSeriesGlobal()
+            global.seriesRevoked(host, seriesId: seriesId)
+
+            emit FLOATEventSeriesRevoked(seriesId: seriesId, host: host)
         }
 
         pub fun recoverEventSeries(seriesId: UInt64) {
@@ -1742,6 +1746,8 @@ pub contract FLOATEventSeries {
         access(contract) fun seriesUpdateGoals(_ host: Address, seriesId: UInt64)
         // update event series by its treasury strategy
         access(contract) fun seriesUpdateTreasuryStrategy(_ host: Address, seriesId: UInt64)
+        // event series revoked
+        access(contract) fun seriesRevoked(_ host: Address, seriesId: UInt64)
     }
 
     pub resource EventSeriesGlobal: EventSeriesGlobalPublic {
@@ -1780,6 +1786,22 @@ pub contract FLOATEventSeries {
         }
 
         // --- Setters - Contract Only ---
+        
+        // event series revoked
+        access(contract) fun seriesRevoked(_ host: Address, seriesId: UInt64) {
+            let id = EventSeriesIdentifier(host, seriesId)
+            let key = id.toString()
+            // Already exists
+            if self.seriesMapping.containsKey(key) {
+                if let index = self.seriesWithTreasuryAvailableList.firstIndex(of: key) {
+                    self.seriesWithTreasuryAvailableList.remove(at: index!)
+                }
+
+                if let index = self.seriesList.firstIndex(of: key) {
+                    self.seriesList.remove(at: index!)
+                }
+            }
+        }
 
         // add a event series with goal to global
         access(contract) fun seriesUpdateGoals(_ host: Address, seriesId: UInt64) {
