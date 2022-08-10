@@ -69,7 +69,7 @@
                     </li>
                 </ul>
             </div>
-            <img src="/emerald-bot.png" alt="emerald bot" />
+            <img src="/emerald-bot-min.png" alt="emerald bot" />
         </div>
         <div class="works-list-element wide">
             <div>
@@ -88,7 +88,7 @@
                     </li>
                 </ul>
             </div>
-            <img src="/live-page.jpeg" alt="live page" />
+            <img src="/live-page-min.jpg" alt="live page" />
         </div>
     </div>
 </div>

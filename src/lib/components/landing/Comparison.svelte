@@ -66,8 +66,8 @@
 <div class="comparison home-page-padding">
     <h2>POAP vs. FLOAT</h2>
     <div class="pictures">
-        <img src="/poapad.png" alt="POAP ad" />
-        <img src="/freakizoid.png" alt="FLOAT ad" />
+        <img src="/poapad-min.png" alt="POAP ad" />
+        <img src="/freakizoid-min.jpg" alt="FLOAT ad" />
     </div>
     {#each differences as difference}
         <div class="row">

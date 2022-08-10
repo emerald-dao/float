@@ -1,5 +1,5 @@
 <div class="how-works home-page-padding">
-  <h2>DApps that Use FLOAT</h2>
+  <h2>Apps that Integrate FLOAT</h2>
   <div class="works-list">
     <div class="works-list-element share">
       <div>
@@ -9,13 +9,13 @@
         <p>
           Emerald bot is a Discord bot that verifies NFTs/tokens on Flow,
           provides a bunch of useful utilities, and more. Specifically, it can
-          verify a user owns a FLOAT in Discord and give them special roles for
+          verify that a Discord user owns a specific FLOAT and award special Discord roles for
           doing so. Check out <a
             href="https://www.notion.so/emeralddao/FLOAT-Commands-8517b547c87e43a6a5fd4fdc93edbb9f"
             target="_blank">the docs</a> for some useful tips and tricks.
         </p>
       </div>
-      <img src="/emerald-bot.png" alt="emerald bot" />
+      <a href="https://bot.ecdao.org/" target="_blank"><img src="/emerald-bot-min.png" alt="emerald bot" /></a>
     </div>
     <div class="works-list-element share">
       <div>
@@ -25,11 +25,10 @@
           raffle away NFTs. You can set up drops/raffles on Drizzle that require
           users to own FLOATs before participating! Set up a FLOAT event, have
           users claim it, and then only allow those users to participate in the
-          fun :) Drizzle is a platform that allows you to easily airdrop tokens
-          and raffle away NFTs.
+          fun :)
         </p>
       </div>
-      <img src="/drizzle.png" alt="drizzle" />
+      <a href="https://drizzle33.app/" target="_blank"><img src="/drizzle-min.png" alt="drizzle" /></a>
     </div>
     <div class="works-list-element share">
       <div>
@@ -40,7 +39,7 @@
           at any time! You can also Geeft FLOATs {"<3"}.
         </p>
       </div>
-      <img src="/geeft.jpeg" alt="geeft" />
+      <a href="https://geeft.ecdao.org/" target="_blank"><img src="/geeft-min.png" alt="geeft" /></a>
     </div>
     <div class="works-list-element share">
       <div>
@@ -52,7 +51,7 @@
           can also require users to own a FLOAT to mint from your collection!
         </p>
       </div>
-      <img src="/touchstone.png" alt="touchstone" />
+      <a href="https://touchstone.city/"><img src="/touchstone-min.jpg" alt="touchstone" /></a>
     </div>
   </div>
 </div>
