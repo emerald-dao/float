@@ -53,7 +53,7 @@
     );
   }
 
-  function onToggleSelect(eventId) {
+  function onToggleSelect(host, eventId) {
     if (requestParams.type !== "bySpecifics") return;
 
     /** @type {import('../types').Identifier[]}  */
@@ -63,7 +63,7 @@
       slots.splice(idx, 1);
       selected[eventId] = false;
     } else {
-      slots.push({ host: eventSeries.identifier.host, id: eventId });
+      slots.push({ host, id: eventId });
       selected[eventId] = true;
     }
     requestParams.params.events = slots;
@@ -232,7 +232,7 @@
             ghost={!selected[slot.event.id]}
             pending={selected[slot.event.id]}
             disabled={$txInProgress}
-            on:clickItem={(e) => onToggleSelect(slot.event.id)}
+            on:clickItem={(e) => onToggleSelect(slot.event.host, slot.event.id)}
           />
         {/each}
       </div>

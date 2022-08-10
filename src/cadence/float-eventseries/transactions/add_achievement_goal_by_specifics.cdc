@@ -38,7 +38,9 @@ transaction(
     let presetLen = eventHosts.length
     var i = 0
     while i < presetLen {
-      floats.append(FLOATEventSeries.EventIdentifier(eventHosts[i], eventIds[i]))
+      let goal = FLOATEventSeries.EventIdentifier(eventHosts[i], eventIds[i])
+      goal.getEventPublic() // ensure float exits
+      floats.append(goal)
       i = i + 1
     }
 
