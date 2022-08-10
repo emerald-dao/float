@@ -23,7 +23,7 @@
     <a class="no-style" href="/{float.owner}/float/{float.id}">
       <article class="card">
         <img
-          src="https://ipfs.infura.io/ipfs/{float.eventImage}"
+          src="https://cloudflare-ipfs.com/ipfs/{float.eventImage}"
           alt="{float.eventName} Image" />
         <h1>{float.eventName}</h1>
         <p>
@@ -42,7 +42,7 @@
       {#if float.eventImage}
         <img
           class:smaller
-          src="https://ipfs.infura.io/ipfs/{float.eventImage}"
+          src="https://cloudflare-ipfs.com/ipfs/{float.eventImage}"
           alt="{float.eventName} Image" />
       {/if}
       <h1 class:smaller>{float.eventName}</h1>

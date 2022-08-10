@@ -61,7 +61,7 @@
     uploading = false;
     const hash = added.path;
     $draftFloat.ipfsHash = hash;
-    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${hash}`;
   };
 
   function ipfsReady() {

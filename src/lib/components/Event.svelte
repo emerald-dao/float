@@ -19,7 +19,7 @@
     <article class="card">
       {#if floatEvent?.image}
         <img
-          src="https://ipfs.infura.io/ipfs/{floatEvent?.image}"
+          src="https://cloudflare-ipfs.com/ipfs/{floatEvent?.image}"
           alt="{floatEvent.name} Image" />
       {/if}
       <h1>{floatEvent?.name}</h1>

@@ -51,7 +51,7 @@
     uploading = false;
     const hash = added.path;
     $draftGroup.ipfsHash = hash;
-    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${hash}`;
   };
 
   function ipfsReady() {
@@ -157,7 +157,7 @@
           <Group
             {resolvedName}
             name={group.name}
-            imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
+            imagePreviewSrc={`https://cloudflare-ipfs.com/ipfs/${group.image}`}
             description={group.description} />
         {/each}
       {:else}
