@@ -169,7 +169,7 @@
 
     <br />
 
-    {#if ipfsIsReady}
+    {#if ipfsIsReady && false} <!-- remove 'false' once fixed -->
       <label for="image"
         >Event Image
         <input
@@ -190,6 +190,11 @@
     {:else}
       <p>IPFS not loaded</p>
     {/if}
+
+    <div class="alert alert-danger text-center info">
+      <strong>IMPORTANT!</strong> <br/>Our web3 image pinning provider is currently broken (Infura). <br/>
+      We are working on a solution/alternative. We will remove this warning once we resolve the issue.
+    </div>
 
     {#if imagePreviewSrc}
       <h3>Preview</h3>
