@@ -33,6 +33,17 @@ transaction(
   }
 
   execute {
+    if requiredEventsAmount > 0 {
+      let slots = self.eventSeries.getSlots()
+      var totalRequiredAmount: UInt64 = 0
+      for slot in slots {
+        if slot.isEventRequired() {
+          totalRequiredAmount = totalRequiredAmount + 1
+        }
+      }
+      assert(requiredEventsAmount <= totalRequiredAmount, message: "Too many required amount, max = ".concat(totalRequiredAmount.toString()))
+    }
+
     let goal = FLOATEventSeriesGoals.CollectByAmountGoal(
       points: points,
       amount: eventsAmount,
