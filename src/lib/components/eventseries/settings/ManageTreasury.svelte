@@ -162,6 +162,7 @@
     </div>
     {#if requestParams.type === "depositFT"}
       <FTlist
+        loadBalance={true}
         watchStatus={txStatus}
         on:select={(e) => {
           setCurrentToken(e.detail);

@@ -6,6 +6,7 @@
 
   /** @type {[{ identifier: string , balance: string }]} */
   export let balances = [];
+  export let loadBalance = false;
   export let watchStatus = null;
 
   // dispatcher
@@ -18,7 +19,7 @@
   async function getOwnedTokenList(address) {
     const allList = await getLatestTokenList();
     let balancesToFill = balances;
-    if (balancesToFill.length === 0 && address) {
+    if (balancesToFill.length === 0 && address && loadBalance) {
       balancesToFill = await getTokenBalances(
         address,
         allList.map((one) => one.path.balance.slice("/public/".length))
