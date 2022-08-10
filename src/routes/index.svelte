@@ -4,6 +4,7 @@
   import Button from "$lib/components/landing/Button.svelte";
   import Comparison from "$lib/components/landing/Comparison.svelte";
   import HowWorks from "$lib/components/landing/HowWorks.svelte";
+  import IntegratedDapps from "$lib/components/landing/IntegratedDapps.svelte";
   import Testimonials from "$lib/components/landing/Testimonials.svelte";
   import UseCases from "$lib/components/landing/UseCases.svelte";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
@@ -38,6 +39,12 @@
 <Button />
 
 <Comparison />
+
+<Button />
+
+<IntegratedDapps />
+
+<Button />
 
 <Testimonials />
 
