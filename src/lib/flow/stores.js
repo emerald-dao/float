@@ -80,9 +80,10 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  */
 export const eventSeries = {
   Creation: buildWraitable(),
-  AddAchievementGoal: buildWraitable(),
+  Revoke: buildWraitable(),
   UpdateBasics: buildWraitable(),
   UpdateSlots: buildWraitable(),
+  AddAchievementGoal: buildWraitable(),
   AddTreasuryStrategy: buildWraitable(),
   TreasuryManegement: buildWraitable(),
   NextTreasuryStrategyStage: buildWraitable(),

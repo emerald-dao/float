@@ -36,6 +36,7 @@ export const DELIVERY_NFT = 'nft'
 // -------------- Setter - Transactions --------------
 // ** Event Series Builder **
 export { default as txCreateEventSeries } from '../../cadence/float-eventseries/transactions/create_eventseries.cdc?raw'
+export { default as txRevokeEventSeries } from '../../cadence/float-eventseries/transactions/revoke_event_series.cdc?raw'
 export { default as txUpdateEventSeriesBasics } from '../../cadence/float-eventseries/transactions/update_eventseries_basics.cdc?raw'
 export { default as txUpdateEventSeriesSlots } from '../../cadence/float-eventseries/transactions/update_eventseries_slots.cdc?raw'
 export { default as txAddEventSeriesGoalByAmount } from '../../cadence/float-eventseries/transactions/add_achievement_goal_by_amount.cdc?raw'

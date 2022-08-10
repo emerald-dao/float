@@ -2787,6 +2787,17 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
   )
 }
 
+export const revokeEventSeries = async (seriesId) => {
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txRevokeEventSeries, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+    ],
+    eventSeries.Revoke.InProgress,
+    eventSeries.Revoke.Status
+  )
+}
+
 /**
  * add treasury strategy
  * 

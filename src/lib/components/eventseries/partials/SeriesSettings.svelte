@@ -4,6 +4,7 @@
   import AddNewStrategy from "$lib/components/eventseries/settings/AddNewStrategy.svelte";
   import ManageTreasury from "$lib/components/eventseries/settings/ManageTreasury.svelte";
   import UpdateSlots from "$lib/components/eventseries/settings/UpdateSlots.svelte";
+  import DangerZone from "$lib/components/eventseries/settings/DangerZone.svelte";
 
   // dispatcher
   const dispatch = createEventDispatcher();
@@ -29,3 +30,5 @@
   {eventSeries}
   on:seriesUpdated={(e) => dispatch("seriesUpdated")}
 />
+<h4>Danger Zone</h4>
+<DangerZone {eventSeries} />
