@@ -98,11 +98,11 @@
       {/if}
     {/if}
   {/if}
-  {#if data?.strategies?.length === 0}
+  {#if !data?.strategies?.length}
     <div class="flex">There is no reward strategy for the FLOAT Series</div>
   {:else}
     <h4>Rewards</h4>
-    {#each data.strategies as strategy}
+    {#each data?.strategies as strategy}
       <TreasuryStrategyItem
         {strategy}
         {eventSeries}
