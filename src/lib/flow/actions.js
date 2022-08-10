@@ -2681,7 +2681,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
         arg(seriesId, t.UInt64),
         arg(String(points), t.UInt64),
         arg(String(eventsAmount), t.UInt64),
-        arg(String(requiredEventsAmount || eventsAmount), t.UInt64),
+        arg(String(requiredEventsAmount), t.UInt64),
       ]
       break;
 
