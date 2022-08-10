@@ -1670,6 +1670,11 @@ pub contract FLOATEventSeries {
         }
 
         pub fun revokeEventSeries(seriesId: UInt64) {
+            // drop treasury first
+            let seriesRef = (&self.series[seriesId] as &EventSeries{EventSeriesPrivate}?) ?? panic("The event series does not exist")
+            let treasury = seriesRef.borrowTreasuryPrivate()
+            treasury.dropTreasury()
+
             let one <- self.series.remove(key: seriesId) ?? panic("The event series does not exist")
             self.revoked[seriesId] <-! one
             
