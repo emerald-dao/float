@@ -10,6 +10,7 @@
   export let totalSlots = 0;
   /** @type {import('../types').Identifier[]} */
   export let owned = [];
+  export let ownedRequiredAmount = 0;
 
   $: isByAmount = goal.type === "byAmount";
   $: isByPercent = goal.type === "byPercent";
@@ -23,7 +24,16 @@
     Math.floor(
       100 *
         (isByAmount
-          ? owned.length / (goal.params?.eventsAmount ?? 1)
+          ? !goal.params?.eventsAmount
+            ? 0
+            : !goal.params?.requiredEventsAmount
+            ? owned.length / goal.params?.eventsAmount
+            : (ownedRequiredAmount +
+                Math.min(
+                  goal.params?.eventsAmount - goal.params?.requiredEventsAmount,
+                  owned.length - ownedRequiredAmount
+                )) /
+              goal.params?.eventsAmount
           : isByPercent
           ? ((owned.length / totalSlots) * 100) / (goal.params?.percent ?? 100)
           : owned.filter((one) => specificEventIds.indexOf(one.id) > -1)

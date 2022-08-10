@@ -91,7 +91,7 @@
 </script>
 
 <div class="flex-wrap flex-gap mb-1">
-  {#each mergedSlots as slot, index (slot.event ? `${slot.event.host}#${slot.event.id}` : "emptySlot#" + index)}
+  {#each mergedSlots as slot, index (slot.event ? `${slot.event.host}#${slot.event.id}@${index}` : "emptySlot#" + index)}
     <EventItem item={slot} preview={true} pending={!!slot.pending} />
   {/each}
 </div>

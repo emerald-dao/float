@@ -24,6 +24,22 @@
     !preview &&
     userStatus?.goals.filter((one) => one.status !== "2").length === 0;
 
+  let ownedRequiredEventsAmount = 0;
+  $: {
+    if (eventSeries && userStatus && userStatus?.owned?.length > 0) {
+      let totalRequiredIds = eventSeries.slots
+        .filter((one) => one.required && one.event)
+        .map((one) => one.event?.id);
+      let count = 0;
+      for (const one of userStatus?.owned) {
+        if (totalRequiredIds.indexOf(one.id) > -1) {
+          count++;
+        }
+      }
+      ownedRequiredEventsAmount = count;
+    }
+  }
+
   function handleRequest() {
     if (!isValidToSubmit) return;
 
@@ -83,5 +99,6 @@
     {preview}
     totalSlots={eventSeries.slots.length}
     owned={preview ? [] : userStatus?.owned}
+    ownedRequiredAmount={ownedRequiredEventsAmount}
   />
 {/each}
