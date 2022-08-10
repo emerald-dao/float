@@ -43,7 +43,7 @@
       role="switch"
       bind:checked={withTreasury}
     />
-    Treasury available
+    Filter for Treasury
   </label>
   {#await promise}
     <Loading />
