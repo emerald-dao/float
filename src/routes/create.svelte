@@ -63,6 +63,7 @@
     uploading = false;
     $draftFloat.ipfsHash = cid;
     imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
+    // imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`; // if CF is slow, use <-
   };
 
   function ipfsReady() {
@@ -181,7 +182,7 @@
           name="image"
           accept="image/png, image/gif, image/jpeg" />
         {#if uploading}
-          <progress value={uploadingPercent * 100} max="100" />
+          <progress indeterminate />
         {/if}
 
         {#if uploadedSuccessfully}
