@@ -7,6 +7,11 @@
   import { addGroupInProgress, addGroupStatus, user } from "$lib/flow/stores";
   import { authenticate } from "$lib/flow/actions";
   import { getResolvedName } from "$lib/flow/utils";
+  import { NFTStorage } from "nft.storage";
+
+  const NFT_STORAGE_TOKEN = import.meta.env.VITE_NFT_STORAGE_ACCESS_TOKEN;
+  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
+
   export let addressObject;
 
   async function initialize() {
@@ -39,19 +44,17 @@
     }
     console.log("uploading");
 
-    const client = window.IpfsHttpClient.create({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-    });
+    // const client = window.IpfsHttpClient.create({
+    //   host: "ipfs.infura.io",
+    //   port: 5001,
+    //   protocol: "https",
+    // });
 
-    console.log(file);
-    const added = await client.add(file, { progress });
+    const cid = await client.storeBlob(file);
     uploadedSuccessfully = true;
     uploading = false;
-    const hash = added.path;
-    $draftGroup.ipfsHash = hash;
-    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`;
+    $draftGroup.ipfsHash = cid;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
   };
 
   function ipfsReady() {
@@ -157,13 +160,11 @@
           <Group
             {resolvedName}
             name={group.name}
-            imagePreviewSrc={`https://ipfs.infura.io/ipfs/${group.image}`}
+            imagePreviewSrc={`https://cloudflare-ipfs.com/ipfs/${group.image}`}
             description={group.description} />
         {/each}
       {:else}
-        <p class="text-center">
-          This account has not created any groups yet.
-        </p>
+        <p class="text-center">This account has not created any groups yet.</p>
       {/if}
     {/await}
   {/await}

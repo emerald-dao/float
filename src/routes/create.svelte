@@ -21,6 +21,10 @@
   import { getKeysFromClaimCode } from "$lib/flow/utils";
   import { slide } from "svelte/transition";
   import Loading from "$lib/components/common/Loading.svelte";
+  import { NFTStorage } from "nft.storage";
+
+  const NFT_STORAGE_TOKEN = import.meta.env.VITE_NFT_STORAGE_ACCESS_TOKEN;
+  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
   let timezone = new Date()
     .toLocaleTimeString("en-us", { timeZoneName: "short" })
@@ -49,19 +53,16 @@
       uploadingPercent = len / file.size;
     }
 
-    const client = window.IpfsHttpClient.create({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-      apiPath: "/api/v0",
-    });
+    // const client = window.IpfsHttpClient.create({
+    //   url: "https://api.pinata.cloud/psa",
+    //   repo: "file-path" + Math.random(),
+    // });
 
-    const added = await client.add(file, { progress });
+    const cid = await client.storeBlob(file);
     uploadedSuccessfully = true;
     uploading = false;
-    const hash = added.path;
-    $draftFloat.ipfsHash = hash;
-    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`;
+    $draftFloat.ipfsHash = cid;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
   };
 
   function ipfsReady() {
@@ -190,6 +191,13 @@
     {:else}
       <p>IPFS not loaded</p>
     {/if}
+
+    <!-- <div class="alert alert-danger text-center info">
+      <strong>IMPORTANT!</strong> <br />Our web3 image pinning provider is
+      currently broken (Infura). <br />
+      We are working on a solution/alternative. We will remove this warning once
+      we resolve the issue.
+    </div> -->
 
     {#if imagePreviewSrc}
       <h3>Preview</h3>

@@ -131,7 +131,7 @@
             <div class="float transition" bind:this={card}>
               <div class="image transition" bind:this={image}>
                 <img
-                  src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
+                  src={`https://cloudflare-ipfs.com/ipfs/${data.eventImage}`}
                   alt="float" />
               </div>
               <div class="info">
@@ -155,7 +155,7 @@
             <div class="float transition" bind:this={card}>
               <div class="image transition" bind:this={image}>
                 <img
-                  src={`https://ipfs.infura.io/ipfs/${data.eventImage}`}
+                  src={`https://cloudflare-ipfs.com/ipfs/${data.eventImage}`}
                   alt="float" />
               </div>
               <div class="info">

@@ -73,7 +73,7 @@
             ><img
               alt=""
               class="table-image"
-              src="https://ipfs.infura.io/ipfs/{row.eventImage}" /></a
+              src="https://cloudflare-ipfs.com/ipfs/{row.eventImage}" /></a
           ></td>
         <td data-label="Name"
           ><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a

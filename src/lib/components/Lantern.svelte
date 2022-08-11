@@ -18,7 +18,7 @@
     style="left: {direction === 'creation'
       ? Math.floor(Math.random() * (90 - 10 + 1)) + 10
       : Math.floor(Math.random() * (70 - 30 + 1)) + 30}vw;"
-    src="https://ipfs.infura.io/ipfs/{ipfsHash}"
+    src="https://cloudflare-ipfs.com/ipfs/{ipfsHash}"
     alt="lantern" />
 {/if}
 
