@@ -1,21 +1,12 @@
 <script>
-  import LibLoader from "$lib/components/LibLoader.svelte";
   import { onMount, createEventDispatcher } from "svelte";
+  import { NFTStorage } from "nft.storage";
+
+  const NFT_STORAGE_TOKEN = import.meta.env.VITE_NFT_STORAGE_ACCESS_TOKEN;
+  const client = new NFTStorage({ token: NFT_STORAGE_TOKEN });
 
   /** event dispatch */
   const dispatch = createEventDispatcher();
-
-  /* States related to image upload */
-  let ipfsIsReady = false;
-
-  onMount(() => {
-    ipfsIsReady = window?.IpfsHttpClient ?? false;
-  });
-
-  let ipfsReady = function () {
-    console.log("ipfs is ready");
-    ipfsIsReady = true;
-  };
 
   // ipfs uploading related
   let uploading = false;
@@ -34,32 +25,16 @@
       uploadingPercent = len / file.size;
     }
 
-    const client = window.IpfsHttpClient.create({
-      host: "ipfs.infura.io",
-      port: 5001,
-      protocol: "https",
-    });
-
-    const added = await client.add(file, { progress });
-    /** @type {string} */
-    const hash = added.path;
-
+    const cid = await client.storeBlob(file);
     uploadedSuccessfully = true;
     uploading = false;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
 
-    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${hash}`;
-
-    dispatch("ipfsAdded", hash);
+    dispatch("ipfsAdded", cid);
   };
 </script>
 
-<LibLoader
-  url="https://cdn.jsdelivr.net/npm/ipfs-http-client@56.0.0/index.min.js"
-  on:loaded={ipfsReady}
-  uniqueId={+new Date()}
-/>
-
-{#if ipfsIsReady}
+{#if !imagePreviewSrc}
   <label for="image">
     <slot>Image</slot>
     <input
@@ -69,19 +44,16 @@
       id="image"
       name="image"
       accept="image/png, image/gif, image/jpeg"
+      disabled={uploading}
     />
     {#if uploading}
       <progress value={uploadingPercent * 100} max="100" />
     {/if}
-
-    {#if uploadedSuccessfully}
-      <small>✓ Image uploaded successfully to IPFS!</small>
-    {/if}
   </label>
-{:else}
-  <p>IPFS not loaded</p>
 {/if}
-
+{#if uploadedSuccessfully}
+  <small>✓ Image uploaded successfully to IPFS!</small>
+{/if}
 {#if imagePreviewSrc}
   <h3>Preview</h3>
   <slot name="preview">
