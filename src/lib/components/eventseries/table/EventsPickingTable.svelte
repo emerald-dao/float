@@ -98,7 +98,7 @@
                 <img
                   alt=""
                   class="table-image"
-                  src="https://ipfs.infura.io/ipfs/{row.event.image}"
+                  src="https://cloudflare-ipfs.com/ipfs/{row.event.image}"
                 />
               </a>
             </div>

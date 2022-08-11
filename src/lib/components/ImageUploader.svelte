@@ -47,7 +47,7 @@
     uploadedSuccessfully = true;
     uploading = false;
 
-    imagePreviewSrc = `https://ipfs.infura.io/ipfs/${hash}`;
+    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${hash}`;
 
     dispatch("ipfsAdded", hash);
   };

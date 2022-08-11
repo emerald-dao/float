@@ -7,7 +7,7 @@
   <div class="card">
     {#if eventSeriesData.basics?.image}
       <img
-        src="https://ipfs.infura.io/ipfs/{eventSeriesData.basics?.image}"
+        src="https://cloudflare-ipfs.com/ipfs/{eventSeriesData.basics?.image}"
         alt="{eventSeriesData.basics?.name} Image"
       />
     {/if}

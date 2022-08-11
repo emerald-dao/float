@@ -64,7 +64,7 @@
           <h3 class="unclaimed">Empty<br />Slot</h3>
         {:else}
           <img
-            src="https://ipfs.infura.io/ipfs/{floatEvent.image}"
+            src="https://cloudflare-ipfs.com/ipfs/{floatEvent.image}"
             alt="{floatEvent.name} Image"
             class:unclaimed={!preview && !owned}
           />
