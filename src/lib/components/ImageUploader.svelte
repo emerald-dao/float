@@ -10,20 +10,14 @@
 
   // ipfs uploading related
   let uploading = false;
-  let uploadingPercent = 0;
   let uploadedSuccessfully = false;
   let imagePreviewSrc = null;
 
   let uploadToIPFS = async (e) => {
     uploading = true;
-    uploadingPercent = 0;
     uploadedSuccessfully = false;
 
     let file = e.target.files[0];
-
-    function progress(len) {
-      uploadingPercent = len / file.size;
-    }
 
     const cid = await client.storeBlob(file);
     uploadedSuccessfully = true;
@@ -47,7 +41,7 @@
       disabled={uploading}
     />
     {#if uploading}
-      <progress value={uploadingPercent * 100} max="100" />
+      <progress indeterminate />
     {/if}
   </label>
 {/if}
