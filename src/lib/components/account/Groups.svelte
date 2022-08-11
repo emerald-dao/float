@@ -9,8 +9,7 @@
   import { getResolvedName } from "$lib/flow/utils";
   import { NFTStorage } from "nft.storage";
 
-  const NFT_STORAGE_TOKEN =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU5RmNGZmJmMzM2ZjkyQTJhZkNBOTQwRWUyZUM5RTc0NUIxRjllNjciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2MDE3MzkyMjYzMSwibmFtZSI6IkZMT0FUIn0.WucMen5C2i-7wnXo1J-cheP3oTFQ1JTl3QJFfUf5NTU";
+  const NFT_STORAGE_TOKEN = import.meta.env.VITE_NFT_STORAGE_ACCESS_TOKEN;
   console.log(import.meta.env.VITE_NFT_STORAGE_ACCESS_TOKEN);
   console.log(
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJkaWQ6ZXRocjoweDU5RmNGZmJmMzM2ZjkyQTJhZkNBOTQwRWUyZUM5RTc0NUIxRjllNjciLCJpc3MiOiJuZnQtc3RvcmFnZSIsImlhdCI6MTY2MDE3MzkyMjYzMSwibmFtZSI6IkZMT0FUIn0.WucMen5C2i-7wnXo1J-cheP3oTFQ1JTl3QJFfUf5NTU"
