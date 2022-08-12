@@ -2888,14 +2888,14 @@ export const depositFungibleTokenToTreasury = async ({seriesId, storagePath, pub
  * 
  * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
  */
-export const depositNonFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, ids}) => {
+export const depositNonFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, amount}) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
     (arg, t) => [
       arg(seriesId, t.UInt64),
       arg(storagePath, t.String),
       arg(publicPath, t.String),
-      arg(ids, t.Array(t.UInt64)),
+      arg(amount.toFixed(0), t.UInt64),
     ],
     eventSeries.TreasuryManegement.InProgress,
     eventSeries.TreasuryManegement.Status,
@@ -3325,6 +3325,19 @@ export const getCollectionsNotEmpty = async (acct) => {
     cadence.replaceImportAddresses(cadence.scGetCollectionsNotEmpty, addressMap),
     (arg, t) => [
       arg(acct, t.Address)
+    ],
+    []
+  )
+}
+
+/**
+ * @returns {Promise<import('../components/eventseries/types').CollectionInfo[]>}
+ */
+export const getCollections = async (identifer) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scGetCollections, addressMap),
+    (arg, t) => [
+      arg(identifer ?? null, t.Optional(t.String)),
     ],
     []
   )

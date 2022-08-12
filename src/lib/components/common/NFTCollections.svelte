@@ -2,24 +2,39 @@
   import { createEventDispatcher } from "svelte";
   import { user } from "$lib/flow/stores";
   import { getCollectionsNotEmpty } from "$lib/flow/actions";
+  import NftCollectionDisplay from "./NFTCollectionDisplay.svelte";
+
+  /** @type {[{ nftIdentifier: string , amount: string }]} */
+  export let collections = [];
+  export let loadBalance = false;
+  export let watchStatus = null;
 
   // dispatcher
   const dispatch = createEventDispatcher();
 
+  /** @type {import('../eventseries/types').CollectionInfo} */
   let currentCollection = undefined;
   let open = false;
 
   async function getOwnedList(address) {
-    if (address) {
-      const result = await getCollectionsNotEmpty(address);
-      console.log(result);
-      return [];
-    } else {
-      return [];
+    let collectionsToFill = collections;
+    if (collectionsToFill.length === 0 && address && loadBalance) {
+      collectionsToFill = await getCollectionsNotEmpty(address);
     }
+    // update current balance
+    if (currentCollection) {
+      const found = collectionsToFill.find(
+        (one) => one.nftIdentifier === currentCollection.nftIdentifier
+      );
+      if (found) {
+        currentCollection.amount = found.amount;
+      }
+      dispatch("amountUpdated", currentCollection);
+    }
+    return collectionsToFill ?? [];
   } // end function
 
-  $: ownedList = getOwnedList($user?.addr);
+  $: ownedList = getOwnedList($user?.addr, watchStatus && $watchStatus);
 </script>
 
 <details role="list" {open}>
@@ -36,7 +51,12 @@
     {#if !currentCollection}
       please choose your collection
     {:else}
-      TODO
+      <img
+        src={currentCollection.display.squareImage.file?.url}
+        class="icon"
+        alt="current Collection logo"
+      />
+      &nbsp; {currentCollection.display.name}
     {/if}
   </summary>
   <ul role="listbox">
@@ -44,21 +64,17 @@
       {#each list as one}
         <li>
           <!-- svelte-ignore a11y-missing-attribute -->
-          <a
-            on:click={(e) => {
-              dispatch("select", one);
-              currentCollection = one;
-              open = false;
-            }}
-          >
-            TODO
-            <!-- <div class="flex-wrap between flex-gap">
-              <span>
-                <img src={token.logoURI} class="icon" alt="{token.name} logo" />
-                &nbsp; {token.name}
-              </span>
-              <span class="emphasis">{token.balance}</span>
-            </div> -->
+          <a>
+            <NftCollectionDisplay
+              collection={one.key ? one : undefined}
+              identifier={one.nftIdentifier}
+              amount={parseInt(one.amount)}
+              on:select={(e) => {
+                dispatch("select", e.detail);
+                currentCollection = Object.assign({}, one);
+                open = false;
+              }}
+            />
           </a>
         </li>
       {:else}
@@ -69,8 +85,8 @@
 </details>
 
 <style>
-  /* img.icon {
+  img.icon {
     height: 1.5rem;
     width: 1.5rem;
-  } */
+  }
 </style>

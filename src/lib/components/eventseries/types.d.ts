@@ -103,8 +103,7 @@ export interface TreasuryManagementRequeset {
   seriesId: string;
   storagePath?: string;
   publicPath?: string;
-  amount?: number;
-  ids?: string[];
+  amount: number;
 }
 
 export interface TreasuryData {
@@ -185,13 +184,47 @@ export interface TokenBalance {
   path: string;
 }
 
+interface PathInfo {
+  domain: "public" | "private" | "storage";
+  identifier: string;
+}
+
+interface CollectionDisplay {
+  name: string;
+  description: string;
+  externalURL: {
+    url: string;
+  };
+  squareImage: {
+    file: {
+      url: string;
+    };
+  };
+  bannerImage: {
+    file: {
+      url: string;
+    };
+  };
+  socials: {
+    discord?: {
+      url: string;
+    };
+    twitter?: {
+      url: string;
+    };
+    instagram?: {
+      url: string;
+    };
+  };
+}
+
 export interface CollectionInfo {
   key: string;
   nftIdentifier: string;
   contractAddress: string;
   contractName: string;
-  publicPath: object;
-  storagePath: object;
-  display: object;
+  publicPath: PathInfo;
+  storagePath: PathInfo;
+  display: CollectionDisplay;
   amount: string;
 }

@@ -27,6 +27,8 @@
   let treasuryPromise;
   /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
   let currentToken;
+  /** @type {import('../types').CollectionInfo & {amount: number}} */
+  let currentCollection;
 
   const txInProgress = seriesStore.TreasuryManegement.InProgress;
   const txStatus = seriesStore.TreasuryManegement.Status;
@@ -68,13 +70,26 @@
     }
   }
 
+  /**
+   * @param {import('../types').CollectionInfo & {amount: number}} collection
+   */
+  function setCurrentCollection(collection) {
+    if (collection) {
+      currentCollection = collection;
+      requestParams.storagePath = collection.storagePath.identifier;
+      requestParams.publicPath = collection.publicPath.identifier;
+    } else {
+      currentCollection = null;
+    }
+  }
+
   $: isValidToSubmit =
     requestParams.type === "depositFT"
       ? requestParams.amount > 0 &&
         requestParams.storagePath?.length > 0 &&
         requestParams.publicPath?.length > 0
       : requestParams.type === "depositNFT"
-      ? requestParams.ids?.length > 0 &&
+      ? requestParams.amount > 0 &&
         requestParams.storagePath?.length > 0 &&
         requestParams.publicPath?.length > 0
       : true;
@@ -135,10 +150,11 @@
       <button
         class:secondary={requestParams.type !== "depositNFT"}
         class="outline"
-        disabled={true}
+        disabled={$txInProgress}
         on:click={() => {
           requestParams.type = "depositNFT";
-          requestParams.ids = [];
+          requestParams.amount = 0;
+          setCurrentCollection(null);
         }}
       >
         Deposit NFT
@@ -160,18 +176,32 @@
         </span>
       </button>
     </div>
-    {#if requestParams.type === "depositFT"}
-      <FTlist
-        loadBalance={true}
-        watchStatus={txStatus}
-        on:select={(e) => {
-          setCurrentToken(e.detail);
-        }}
-        on:balanceUpdated={(e) => {
-          setCurrentToken(e.detail);
-        }}
-      />
-      {#if currentToken}
+    {#if requestParams.type !== "dropAll"}
+      {#if requestParams.type === "depositFT"}
+        <FTlist
+          loadBalance={true}
+          watchStatus={txStatus}
+          on:select={(e) => {
+            setCurrentToken(e.detail);
+          }}
+          on:balanceUpdated={(e) => {
+            setCurrentToken(e.detail);
+          }}
+        />
+      {:else}
+        <NftCollections
+          loadBalance={true}
+          watchStatus={txStatus}
+          on:select={(e) => {
+            setCurrentCollection(e.detail);
+          }}
+          on:amountUpdated={(e) => {
+            setCurrentCollection(e.detail);
+          }}
+        />
+      {/if}
+
+      {#if (requestParams.type === "depositFT" && currentToken) || (requestParams.type === "depositNFT" && currentCollection)}
         <div class="flex flex-gap mb-1">
           <label for="tokenAmount" class="flex-auto">
             <span> Deposit Amount </span>
@@ -181,14 +211,18 @@
               name="tokenAmount"
               placeholder="0"
               min="0"
-              max={currentToken.balance}
+              max={requestParams.type === "depositFT"
+                ? currentToken.balance
+                : currentCollection.amount}
               required
               disabled={$txInProgress}
               bind:value={requestParams.amount}
               on:change={(e) => {
                 requestParams.amount = Math.min(
                   requestParams.amount,
-                  currentToken.balance
+                  requestParams.type === "depositFT"
+                    ? currentToken.balance
+                    : currentCollection.amount
                 );
               }}
             />
@@ -197,23 +231,25 @@
           <label for="amountSlider">
             <span class="highlight">
               Max:
-              {currentToken.balance}
+              {requestParams.type === "depositFT"
+                ? currentToken.balance
+                : currentCollection.amount}
             </span>
             <input
               type="range"
               id="amountSlider"
               name="amountSlider"
               min="0"
-              max={currentToken.balance}
+              max={requestParams.type === "depositFT"
+                ? currentToken.balance
+                : currentCollection.amount}
               disabled={$txInProgress}
               bind:value={requestParams.amount}
             />
           </label>
         </div>
       {/if}
-    {:else if requestParams.type === "depositNFT"}
-      <NftCollections />
-    {/if}
+    {:else if requestParams.type === "depositNFT"}{/if}
     {#if $txInProgress}
       <button aria-busy="true" disabled>
         Please wait for the transaction

@@ -104,3 +104,5 @@ export const getLatestTokenList = async () => {
   }
   return cachedList
 }
+/** @type {import('svelte/store').Writable<{[key: string]: import('../../lib/components/eventseries/types').CollectionInfo}>} */
+export const cachedCollections = writable({});

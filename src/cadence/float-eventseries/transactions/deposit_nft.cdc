@@ -6,7 +6,7 @@ transaction(
   seriesId: UInt64,
   storagePath: String,
   publicPath: String,
-  ids: [UInt64]
+  amount: UInt64
 ) {
   let serieshelf: &FLOATEventSeries.EventSeriesBuilder
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
@@ -44,11 +44,14 @@ transaction(
   }
 
   pre {
-    ids.length > 0: "amount should be greator then zero"
+    amount > 0: "amount should be greator then zero"
   }
 
   execute {
-    let tokenType = self.collection.borrowNFT(id: ids[0]).getType()
+    let allIDs = self.collection.getIDs()
+    assert(allIDs.length >= Int(amount), message: "NFT not enought.")
+
+    let tokenType = self.collection.borrowNFT(id: allIDs[0]).getType()
     // check if fungible token registered
     if FLOATEventSeries.getTokenDefinition(tokenType) == nil {
       self.serieshelf.registerToken(path: self.nftPublicPath, isNFT: true)
@@ -56,6 +59,7 @@ transaction(
 
     // NFTs
     let nftsToDeposit: @[NonFungibleToken.NFT] <- []
+    let ids = allIDs.slice(from: 0, upTo: Int(amount))
     for id in ids {
       nftsToDeposit.append(<- self.collection.withdraw(withdrawID: id))
     }
