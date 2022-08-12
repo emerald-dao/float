@@ -518,8 +518,6 @@ pub contract FLOATEventSeries {
             // ensure enough
             treasury.ensureNFTEnough(type: self.deliveryTokenType, amount: 1)
 
-            // ensure type is same
-            assert(recipient.getType() == self.deliveryTokenType, message: "Recipient identifier should be same as definition")
             let treasuryRef = &treasury.genericNFTPool[self.deliveryTokenType] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}?
             let ids = treasuryRef!.getIDs()
 

@@ -4,13 +4,13 @@
   import { getCollections } from "$lib/flow/actions";
 
   /** @type {import('../eventseries/types').CollectionInfo} */
-  export let collection;
+  export let collection = null;
   /** @type {string} */
-  export let identifier;
+  export let identifier = null;
   /** @type {string[]} */
   export let ids = [];
   /** @type {number} */
-  export let amount;
+  export let amount = undefined;
 
   // dispatcher
   const dispatch = createEventDispatcher();
@@ -22,8 +22,7 @@
       if (collections && collections[0]) {
         info = collections[0];
         cachedCollections.set(
-          { [info.nftIdentifier]: info },
-          $cachedCollections
+          Object.assign({ [info.nftIdentifier]: info }, $cachedCollections)
         );
       }
     }
@@ -42,10 +41,10 @@
     <div
       class="flex-auto flex-wrap between flex-gap"
       on:click={(e) => {
-        dispatch(
-          "select",
-          Object.assign({}, collectionInfo, { amount: amount ?? ids.length })
-        );
+        let obj = Object.assign({}, collectionInfo, {
+          amount: amount ?? ids.length,
+        });
+        dispatch("select", obj);
       }}
     >
       <span>

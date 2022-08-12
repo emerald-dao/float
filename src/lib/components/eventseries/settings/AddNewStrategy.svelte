@@ -6,6 +6,7 @@
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import { getSeriesStrategies, addTreasuryStrategy } from "$lib/flow/actions";
+  import NftCollections from "$lib/components/common/NFTCollections.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -21,6 +22,8 @@
   let strategiesPromise;
   /** @type {import('flow-native-token-registry').TokenInfo & {balance: number}} */
   let currentToken;
+  /** @type {import('../types').CollectionInfo & {amount: number}} */
+  let currentCollection;
 
   const txInProgress = seriesStore.AddTreasuryStrategy.InProgress;
   const txStatus = seriesStore.AddTreasuryStrategy.Status;
@@ -80,6 +83,19 @@
       )}.${token.contractName}.Vault`;
     } else {
       currentToken = null;
+      requestParams.options.deliveryTokenIdentifier = null;
+    }
+  }
+
+  /**
+   * @param {import('../types').CollectionInfo & {amount: number}} collection
+   */
+  function setCurrentCollection(collection) {
+    if (collection) {
+      currentCollection = collection;
+      requestParams.options.deliveryTokenIdentifier = collection.nftIdentifier;
+    } else {
+      currentCollection = null;
       requestParams.options.deliveryTokenIdentifier = null;
     }
   }
@@ -192,8 +208,11 @@
         <button
           class:secondary={requestParams.deliveryMode !== "nft"}
           class="outline"
-          disabled={true}
+          disabled={$txInProgress}
           on:click={() => {
+            if (requestParams.deliveryMode !== "nft") {
+              setCurrentCollection(null);
+            }
             requestParams.deliveryMode = "nft";
             requestParams.options.maxClaimableShares = 0;
             requestParams.options.deliveryParam1 = undefined;
@@ -346,7 +365,42 @@
           </div>
         {/if}
       {:else}
-        TODO: NFT Config
+        <NftCollections
+          collections={data.available?.collectionIDs}
+          watchStatus={txStatus}
+          on:select={(e) => {
+            setCurrentCollection(e.detail);
+          }}
+          on:amountUpdated={(e) => {
+            setCurrentCollection(e.detail);
+          }}
+        />
+        {#if currentCollection}
+          <div class="flex-wrap between flex-gap">
+            <span class="emphasis">
+              Strategy Cost: {requestParams.options.maxClaimableShares ?? 0}
+            </span>
+            <span class="emphasis">Remaining: {currentCollection.amount}</span>
+          </div>
+          <hr />
+          <!-- Range slider -->
+          <label for="maxClaimableShares">
+            <span>
+              Total Shares:
+              {requestParams.options.maxClaimableShares ?? 0}
+            </span>
+            <input
+              type="range"
+              id="maxClaimableShares"
+              name="maxClaimableShares"
+              min="1"
+              max={currentCollection.amount}
+              required
+              disabled={$txInProgress}
+              bind:value={requestParams.options.maxClaimableShares}
+            />
+          </label>
+        {/if}
       {/if}
 
       {#if requestParams.strategyMode === "raffleStrategy"}

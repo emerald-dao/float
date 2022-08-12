@@ -1,5 +1,6 @@
 <script>
   import FungibleTokenDisplay from "$lib/components/common/FungibleTokenDisplay.svelte";
+  import NftCollectionDisplay from "$lib/components/common/NFTCollectionDisplay.svelte";
   import Stack from "$lib/components/eventseries/svgs/stack.svelte";
   import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
 
@@ -96,7 +97,7 @@
           <span class="highlight">{strategy.deliveryStatus.totalAmount}</span> in
           Total
         {:else}
-          <span class="highlight">1 NFT</span> / <Stack />
+          <span class="highlight">x 1</span> / <Stack />
         {/if}
       </span>
     </div>
@@ -108,7 +109,11 @@
           balance={strategy.deliveryStatus.restAmount}
         />
       {:else}
-        Collection Display
+        <NftCollectionDisplay
+          identifier={strategy.deliveryStatus.deliveryTokenIdentifier}
+          amount={strategy.deliveryStatus.maxClaimableShares -
+            strategy.deliveryStatus.claimedShares}
+        />
       {/if}
     </div>
     {#if strategy.strategyMode === "raffleStrategy" && strategy.currentState === "opening"}

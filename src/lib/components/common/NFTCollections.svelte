@@ -1,10 +1,10 @@
 <script>
+  import NftCollectionDisplay from "./NFTCollectionDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user } from "$lib/flow/stores";
   import { getCollectionsNotEmpty } from "$lib/flow/actions";
-  import NftCollectionDisplay from "./NFTCollectionDisplay.svelte";
 
-  /** @type {[{ nftIdentifier: string , amount: string }]} */
+  /** @type {[{ identifier: string , ids: string[] }]} */
   export let collections = [];
   export let loadBalance = false;
   export let watchStatus = null;
@@ -17,7 +17,10 @@
   let open = false;
 
   async function getOwnedList(address) {
-    let collectionsToFill = collections;
+    let collectionsToFill = collections?.map((one) => ({
+      nftIdentifier: one.identifier,
+      amount: one.ids.length,
+    }));
     if (collectionsToFill.length === 0 && address && loadBalance) {
       collectionsToFill = await getCollectionsNotEmpty(address);
     }
@@ -52,11 +55,11 @@
       please choose your collection
     {:else}
       <img
-        src={currentCollection.display.squareImage.file?.url}
+        src={currentCollection?.display?.squareImage?.file?.url}
         class="icon"
         alt="current Collection logo"
       />
-      &nbsp; {currentCollection.display.name}
+      &nbsp; {currentCollection?.display?.name}
     {/if}
   </summary>
   <ul role="listbox">
@@ -71,7 +74,7 @@
               amount={parseInt(one.amount)}
               on:select={(e) => {
                 dispatch("select", e.detail);
-                currentCollection = Object.assign({}, one);
+                currentCollection = Object.assign({}, one, e.detail);
                 open = false;
               }}
             />

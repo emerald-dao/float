@@ -91,7 +91,7 @@
               balance={token.balance}
               on:select={(e) => {
                 dispatch("select", e.detail);
-                currentToken = Object.assign({}, token);
+                currentToken = Object.assign({}, token, e.detail);
                 open = false;
               }}
             />
