@@ -2637,7 +2637,7 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
       typeof curr.event?.id === 'string' && 
       (typeof curr.required === 'boolean' || curr.required === undefined)) {
       all.hosts.push(curr.event.host)
-      all.eventIds.push(curr.event.id)
+      all.eventIds.push(curr.event.id ?? curr.event.eventId)
       all.required.push(curr.required ?? true)
     }
     return all
