@@ -69,7 +69,7 @@ pub fun main(
   let slots = eventSeriesRef.getSlots()
     for slot in slots {
       if let eventIdentifier = slot.getIdentifier() {
-        let ids = floatsColRef!.ownedIdsFromEvent(eventId: eventIdentifier.id)
+        let ids = floatsColRef!.ownedIdsFromEvent(eventId: eventIdentifier.eventId)
         if ids.length > 0 {
           ownedIds.append(eventIdentifier)
         }
