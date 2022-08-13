@@ -19,9 +19,7 @@
 {#each slicedList as item}
   <SeriesCard eventSeriesData={item} />
 {:else}
-  <p class="text-center">
-    This account has not created any FLOAT EventSeries yet.
-  </p>
+  <p class="text-center">There is no no any FLOAT EventSeries.</p>
 {/each}
 
 {#if currentAnchor + maxSize < total}
