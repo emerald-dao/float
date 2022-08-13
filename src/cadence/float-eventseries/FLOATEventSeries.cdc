@@ -92,7 +92,7 @@ pub contract FLOATEventSeries {
         }
     }
 
-    access(account) fun setTokenDefintion(token: Type, path: PublicPath, isNFT: Bool) {
+    access(account) fun setTokenDefinition(token: Type, path: PublicPath, isNFT: Bool) {
         self.tokenDefinitions[token] = TokenDefinition(
             type: token,
             path: path,
@@ -124,7 +124,7 @@ pub contract FLOATEventSeries {
         // get ft receiver by address and identifier
         access(contract) fun getFungibleTokenReceiver(): &{FungibleToken.Receiver} {
             let tokenInfo = FLOATEventSeries.getTokenDefinition(self.identifier) ?? panic("Unknown token")
-            assert(!tokenInfo.isNFT, message: "The token should be Fungiable Token")
+            assert(!tokenInfo.isNFT, message: "The token should be Fungible Token")
 
             let receiverVault = getAccount(self.address)
                 .getCapability(tokenInfo.path)
@@ -163,11 +163,11 @@ pub contract FLOATEventSeries {
         // event owner address
         pub let host: Address
         // event id
-        pub let id: UInt64
+        pub let eventId: UInt64
 
-        init(_ address: Address, _ id: UInt64) {
+        init(_ address: Address, _ eventId: UInt64) {
             self.host = address
-            self.id = id
+            self.eventId = eventId
         }
 
         // get the reference of the given event
@@ -176,17 +176,17 @@ pub contract FLOATEventSeries {
                 .getCapability(FLOAT.FLOATEventsPublicPath)
                 .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                 ?? panic("Could not borrow the public FLOATEvents.")
-            return ownerEvents.borrowPublicEventRef(eventId: self.id)
+            return ownerEvents.borrowPublicEventRef(eventId: self.eventId)
                 ?? panic("Failed to get event reference.")
         }
 
         // convert identifier to string
         pub fun toString(): String {
-            return self.host.toString().concat("#").concat(self.id.toString())
+            return self.host.toString().concat("#").concat(self.eventId.toString())
         }
     }
 
-    // identifier of a EventSeries
+    // identifier of an EventSeries
     pub struct EventSeriesIdentifier {
         // series owner address
         pub let host: Address
@@ -199,7 +199,7 @@ pub contract FLOATEventSeries {
         }
 
         // get the reference of the given series
-        pub fun getEventSeriesPublic(): &{EventSeriesPublic} {
+        pub fun getEventSeriesPublic(): &FLOATEventSeries.EventSeries{EventSeriesPublic} {
             let ref = getAccount(self.host)
                 .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
                 .borrow<&EventSeriesBuilder{EventSeriesBuilderPublic}>()
@@ -221,7 +221,7 @@ pub contract FLOATEventSeries {
         // if the event is required for achievement
         pub fun isEventRequired(): Bool
         // set the event identifier
-        access(account) fun setIdentifier (_ identifier: EventIdentifier)
+        access(account) fun setIdentifier(_ identifier: EventIdentifier)
     }
 
     // set a required event slot of some specific event
@@ -299,7 +299,7 @@ pub contract FLOATEventSeries {
         pub fun getGoalDetail(): {String: AnyStruct}
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventSeries: &{EventSeriesPublic}, user: Address): Bool
+        access(account) fun verify(_ eventSeries: &FLOATEventSeries.EventSeries{EventSeriesPublic}, user: Address): Bool
     }
 
     // Declare an enum to describe status
@@ -399,10 +399,10 @@ pub contract FLOATEventSeries {
             treasury.ensureFTEnough(type: self.deliveryTokenType, amount: self.oneShareAmount)
             // ensure type is same
             assert(recipient.getType() == self.deliveryTokenType, message: "Recipient identifier should be same as definition")
-            let treasuryRef = &treasury.genericFTPool[self.deliveryTokenType] as &{FungibleToken.Provider, FungibleToken.Balance}?
+            let treasuryRef = (&treasury.genericFTPool[self.deliveryTokenType] as &{FungibleToken.Provider}?)!
 
             // do 'transfer' action
-            let ft <- treasuryRef!.withdraw(amount: self.oneShareAmount)
+            let ft <- treasuryRef.withdraw(amount: self.oneShareAmount)
             // reduce the restAmount
             self.restAmount = self.restAmount - ft.balance
             recipient.deposit(from: <- ft)
@@ -469,10 +469,10 @@ pub contract FLOATEventSeries {
 
             // ensure type is same
             assert(recipient.getType() == self.deliveryTokenType, message: "Recipient identifier should be same as definition")
-            let treasuryRef = &treasury.genericFTPool[self.deliveryTokenType] as &{FungibleToken.Provider, FungibleToken.Balance}?
+            let treasuryRef = (&treasury.genericFTPool[self.deliveryTokenType] as &{FungibleToken.Provider}?)!
 
             // do 'transfer' action
-            let ft <- treasuryRef!.withdraw(amount: randShareAmount)
+            let ft <- treasuryRef.withdraw(amount: randShareAmount)
             // reduce the restAmount
             self.restAmount = self.restAmount - ft.balance
             recipient.deposit(from: <- ft)
@@ -518,12 +518,12 @@ pub contract FLOATEventSeries {
             // ensure enough
             treasury.ensureNFTEnough(type: self.deliveryTokenType, amount: 1)
 
-            let treasuryRef = &treasury.genericNFTPool[self.deliveryTokenType] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}?
-            let ids = treasuryRef!.getIDs()
+            let treasuryRef = (&treasury.genericNFTPool[self.deliveryTokenType] as &{NonFungibleToken.Provider, NonFungibleToken.CollectionPublic}?)!
+            let ids = treasuryRef.getIDs()
 
             let transferedIds: [UInt64] = []
             // do 'batch transfer' action
-            let nft <- treasuryRef!.withdraw(withdrawID: ids.remove(at: unsafeRandom() % UInt64(ids.length)))
+            let nft <- treasuryRef.withdraw(withdrawID: ids.remove(at: unsafeRandom() % UInt64(ids.length)))
             assert(nft.getType().identifier == self.deliveryTokenType.identifier, message: "Recipient identifier should be same as definition")
 
             transferedIds.append(nft.id)
@@ -541,7 +541,7 @@ pub contract FLOATEventSeries {
         pub let consumable: Bool
         // minimium threshold of achievement score
         pub let threshold: UInt64
-        // delivery inforamtion
+        // delivery information
         pub let delivery: {StrategyDelivery}
 
         // current strategy stage
@@ -613,15 +613,9 @@ pub contract FLOATEventSeries {
             self.detail = detail
             self.userAddress = userAddress
             self.userInfo = {}
-            if userEligible != nil {
-                self.userInfo["eligible"] = userEligible!
-            }
-            if userClaimable != nil {
-                self.userInfo["claimable"] = userClaimable!
-            }
-            if userClaimed != nil {
-                self.userInfo["claimed"] = userClaimed!
-            }
+            self.userInfo["eligible"] = userEligible != nil ? userEligible! : nil
+            self.userInfo["claimable"] = userEligible != nil ? userClaimable! : nil
+            self.userInfo["claimed"] = userEligible != nil ? userClaimed! : nil
         }
     }
 
@@ -780,7 +774,7 @@ pub contract FLOATEventSeries {
         }
     }
 
-    // Tresury Collection
+    // Treasury Collection
     //
     pub resource TreasuryCollection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
         // Dictionary to hold the NFTs in the Collection
@@ -802,11 +796,7 @@ pub contract FLOATEventSeries {
         // and adds the ID to the id array
         pub fun deposit(token: @NonFungibleToken.NFT) {
             let id: UInt64 = token.id
-
-            // add the new token to the dictionary which removes the old one
-            let oldToken <- self.depositedNFTs[id] <- token
-
-            destroy oldToken
+            self.depositedNFTs[id] <-! token
         }
 
         // getIDs returns an array of the IDs that are in the collection
@@ -867,7 +857,7 @@ pub contract FLOATEventSeries {
     pub resource Treasury: TreasuryPublic, TreasuryPrivate {
         // Treasury seriesID
         pub let seriesId: UInt64
-        // generic tokens will be dropped to this address, when treasury destory
+        // generic tokens will be dropped to this address, when treasury destroy
         access(self) var receiver: Address
         // all treasury strategies
         access(self) var strategies: @[{ITreasuryStrategy}]
@@ -1248,11 +1238,10 @@ pub contract FLOATEventSeries {
                 ?? panic("This token is not defined.")
             assert(!tokenInfo.isNFT, message: "This token should be FT.")
             assert(tokenInfo.type == type, message: "The identifer of input and definition should be same")
-            assert(self.genericFTPool[tokenInfo.type] != nil, message: "There is no ft in the treasury.")
 
             // ensure amount enough
-            let treasuryRef = &self.genericFTPool[tokenInfo.type] as &{FungibleToken.Balance}?
-            assert(treasuryRef!.balance >= amount, message: "The balance is not enough.")
+            let treasuryRef = (&self.genericFTPool[tokenInfo.type] as &{FungibleToken.Balance}?) ?? panic("There is no ft in the treasury.")
+            assert(treasuryRef.balance >= amount, message: "The balance is not enough.")
         }
 
         // ensure NFT is enough
@@ -1261,11 +1250,10 @@ pub contract FLOATEventSeries {
                 ?? panic("This token is not defined.")
             assert(tokenInfo.isNFT, message: "This token should be NFT.")
             assert(tokenInfo.type == type, message: "The identifer of input and definition should be same")
-            assert(self.genericNFTPool[tokenInfo.type] != nil, message: "There is no nft in the treasury.")
 
             // ensure amount enough
-            let treasuryRef = &self.genericNFTPool[tokenInfo.type] as &{NonFungibleToken.CollectionPublic}?
-            let ids = treasuryRef!.getIDs()
+            let treasuryRef = (&self.genericNFTPool[tokenInfo.type] as &{NonFungibleToken.CollectionPublic}?) ?? panic("There is no nft in the treasury.")
+            let ids = treasuryRef.getIDs()
             assert(ids.length > 0 && UInt64(ids.length) >= amount, message: "NFTs is not enough.")
         }
 
@@ -1449,7 +1437,7 @@ pub contract FLOATEventSeries {
             }
             // get
             for goal in checkingGoals {
-                ret.append(goal.verify(&self as &{EventSeriesPublic}, user: user))
+                ret.append(goal.verify(&self as &FLOATEventSeries.EventSeries{EventSeriesPublic}, user: user))
             }
             return ret
         }
@@ -1492,7 +1480,7 @@ pub contract FLOATEventSeries {
                 host: self.host,
                 index: idx,
                 eventHost: identifier.host,
-                eventId: identifier.id
+                eventId: identifier.eventId
             )
         }
 
@@ -1687,11 +1675,11 @@ pub contract FLOATEventSeries {
                     ?? panic("Could not borrow the &{NonFungibleToken.CollectionPublic}")
                 let id = collection.getIDs().removeFirst()
                 let nft = collection.borrowNFT(id: id)
-                FLOATEventSeries.setTokenDefintion(token: nft.getType(), path: path, isNFT: true)
+                FLOATEventSeries.setTokenDefinition(token: nft.getType(), path: path, isNFT: true)
             } else {
                 let ft = tokenCap.borrow<&{FungibleToken.Receiver}>()
                     ?? panic("Could not borrow the &{FungibleToken.Receiver}")
-                FLOATEventSeries.setTokenDefintion(token: ft.getType(), path: path, isNFT: false)
+                FLOATEventSeries.setTokenDefinition(token: ft.getType(), path: path, isNFT: false)
             }
         }
 
