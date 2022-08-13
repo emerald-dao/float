@@ -2997,6 +2997,14 @@ export const runCleanUp = async () => {
 // ************************
 
 /**
+ * @returns {import('../components/eventseries/types').Identifier}
+ */
+const parseEventIdentifier = event => (event ? {
+  host: event.host,
+  id: event.eventId ?? event.id,
+}: undefined)
+
+/**
  * @param {object} item 
  * @returns {import('../components/eventseries/types').EventSeriesData}
  */
@@ -3013,10 +3021,7 @@ const parseEventSeries = (item) => ({
   },
   slots: (item.slots || []).map(one => ({
     required: one.required,
-    event: one.event && {
-      host: one.event.host,
-      id: one.event.eventId ?? one.event.id,
-    }
+    event: parseEventIdentifier(one.event)
   })),
 })
 
@@ -3300,7 +3305,7 @@ export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
   if (!raw) return null
   return {
     goals: raw.goals.map(one => parseRawGoalData(one)).filter(one => !!one),
-    owned: raw.owned,
+    owned: raw.owned.map(one => parseEventIdentifier(one)).filter(one => !!one),
     totalScore: parseInt(raw.totalScore) ?? 0,
     consumableScore: parseInt(raw.consumableScore) ?? 0,
   }
