@@ -567,17 +567,6 @@ pub contract FLOATEventSeries {
         access(contract) fun setCurrentState(value: StrategyState) {
             self.currentState = value
         }
-
-        // clone an object
-        access(contract) fun clone(): StrategyInformation {
-            let ret = StrategyInformation(
-                self.consumable,
-                self.threshold,
-                self.delivery
-            )
-            ret.currentState = self.currentState
-            return ret
-        }
     }
 
     // return value for getStrategies
@@ -653,7 +642,7 @@ pub contract FLOATEventSeries {
 
         // get a copy of strategy information
         pub fun getInfo(): StrategyInformation {
-            return self.info.clone()
+            return self.info
         }
 
         // get current state of the strategy
