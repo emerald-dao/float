@@ -1727,6 +1727,9 @@ pub contract FLOATEventSeries {
 
         pub fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier] {
             let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
+            if arr.length == 0 {
+                return []
+            }
             let startAt = Int(page.saturatingMultiply(limit))
             assert(startAt < arr.length, message: "page is out of bound")
 
