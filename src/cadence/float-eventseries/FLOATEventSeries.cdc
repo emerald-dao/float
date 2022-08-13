@@ -582,19 +582,6 @@ pub contract FLOATEventSeries {
         }
     }
 
-    pub struct StrategyQueryResult {
-        pub let index: Int
-        pub let detail: StrategyDetail
-
-        init (
-            index: Int,
-            detail: StrategyDetail
-        ) {
-            self.index = index
-            self.detail = detail
-        }
-    }
-
     pub struct StrategyQueryResultWithUser {
         pub let index: Int
         pub let detail: StrategyDetail
