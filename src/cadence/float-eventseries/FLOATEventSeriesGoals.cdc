@@ -41,7 +41,7 @@ pub contract FLOATEventSeriesGoals {
         }
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventSeries: &{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
+        access(account) fun verify(_ eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
             var claimedTotal: UInt64 = 0
             var claimedRequired: UInt64 = 0
 
@@ -51,7 +51,7 @@ pub contract FLOATEventSeriesGoals {
                     // ensure event exists
                     eventIdentifier.getEventPublic()
                     // check if FLOAT is claimed
-                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.eventId)
                     if isOwned {
                         claimedTotal = claimedTotal + 1
                         // required update
@@ -92,7 +92,7 @@ pub contract FLOATEventSeriesGoals {
         }
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventSeries: &{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
+        access(account) fun verify(_ eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
             var claimedTotal: UFix64 = 0.0
             var slotTotal: UFix64 = 0.0
 
@@ -103,7 +103,7 @@ pub contract FLOATEventSeriesGoals {
                     // ensure event exists
                     eventIdentifier.getEventPublic()
                     // check if FLOAT is claimed
-                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                    let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.eventId)
                     if isOwned {
                         claimedTotal = claimedTotal + 1.0
                     }
@@ -140,7 +140,7 @@ pub contract FLOATEventSeriesGoals {
         } 
 
         // Check if user fits some criteria.
-        access(account) fun verify(_ eventSeries: &{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
+        access(account) fun verify(_ eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic}, user: Address): Bool {
             let requiredIDs: [String] = []
             for requiredFloat in self.floats {
                 requiredIDs.append(requiredFloat.toString())
@@ -155,7 +155,7 @@ pub contract FLOATEventSeriesGoals {
                         // ensure event exists
                         eventIdentifier.getEventPublic()
                         // check if FLOAT is claimed
-                        let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.id)
+                        let isOwned = FLOATEventSeriesGoals.isOwnedFLOAT(user: user, eventId: eventIdentifier.eventId)
                         if isOwned {
                             claimedTotal = claimedTotal + 1
                         }

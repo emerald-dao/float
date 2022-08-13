@@ -3011,7 +3011,13 @@ const parseEventSeries = (item) => ({
     description: item.display?.description,
     image: item.display?.thumbnail?.cid ?? "",
   },
-  slots: item.slots || [],
+  slots: (item.slots || []).map(one => ({
+    required: one.required,
+    event: one.event && {
+      host: one.event.host,
+      id: one.event.eventId ?? one.event.id,
+    }
+  })),
 })
 
 /**
