@@ -2066,15 +2066,15 @@ pub contract FLOATEventSeries {
         self.totalAchievementBoards = 0
         self.tokenDefinitions = {}
 
-        self.FLOATEventSeriesBuilderStoragePath = /storage/FLOATEventSeriesBuilderPath
-        self.FLOATEventSeriesBuilderPrivatePath = /private/FLOATEventSeriesBuilderPath
-        self.FLOATEventSeriesBuilderPublicPath = /public/FLOATEventSeriesBuilderPath
+        self.FLOATEventSeriesBuilderStoragePath = /storage/FLOATEventSeriesBuilderPathV2
+        self.FLOATEventSeriesBuilderPrivatePath = /private/FLOATEventSeriesBuilderPathV2
+        self.FLOATEventSeriesBuilderPublicPath = /public/FLOATEventSeriesBuilderPathV2
 
-        self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPath
-        self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPath
+        self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPathV2
+        self.FLOATAchievementBoardPublicPath = /public/FLOATAchievementBoardPathV2
 
-        self.FLOATEventSeriesGlobalStoragePath = /storage/FLOATEventSeriesGlobalPath
-        self.FLOATEventSeriesGlobalPublicPath = /public/FLOATEventSeriesGlobalPath
+        self.FLOATEventSeriesGlobalStoragePath = /storage/FLOATEventSeriesGlobalPathV2
+        self.FLOATEventSeriesGlobalPublicPath = /public/FLOATEventSeriesGlobalPathV2
 
         self.account.save(<- create EventSeriesGlobal(), to: self.FLOATEventSeriesGlobalStoragePath)
         self.account.link<&EventSeriesGlobal{EventSeriesGlobalPublic}>(
