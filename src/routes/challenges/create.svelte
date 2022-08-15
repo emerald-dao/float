@@ -243,7 +243,7 @@
         <a
           role="button"
           class="d-block"
-          href="/series/{$user?.addr}/"
+          href="/{$user?.addr}/?tab=challenges"
           style="display:block"
         >
           Event Series created successfully!

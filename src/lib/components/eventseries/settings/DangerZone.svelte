@@ -36,7 +36,7 @@
   {:else if $txStatus.success}
     <p>Revoke EventSeries successfully!</p>
     <a
-      href="/series/{eventSeries.identifier.host}"
+      href="/{eventSeries.identifier.host}/?tab=challenges"
       role="button"
       style="width: 100%;"
     >

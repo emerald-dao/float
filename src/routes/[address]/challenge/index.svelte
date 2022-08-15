@@ -8,9 +8,9 @@
 </script>
 
 <Meta
-  title="EventSeries hosted by {$page.params.host}"
-  author={$page.params.host}
-  description="EventSeries hosted by {$page.params.host}"
+  title="EventSeries hosted by {$page.params.address}"
+  author={$page.params.address}
+  description="EventSeries hosted by {$page.params.address}"
   url={$page.url}
   removeTitleSuffix={true}
 />
@@ -18,9 +18,9 @@
 <article>
   <header class="text-center">
     <h3>Event Series</h3>
-    <span class="address-hint">by {$page.params.host}</span>
+    <span class="address-hint">by {$page.params.address}</span>
   </header>
-  {#await resolveAddressObject($page.params.host)}
+  {#await resolveAddressObject($page.params.address)}
     <Loading />
   {:then addressObject}
     {#if !addressObject.address}
@@ -29,7 +29,7 @@
       </p>
     {:else}
       {#if $user?.addr == addressObject.address}
-        <a href="/series/create" role="button" class="addnew">
+        <a href="/challenges/create" role="button" class="addnew">
           Create a new FLOAT EventSeries
         </a>
       {/if}

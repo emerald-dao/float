@@ -9,7 +9,7 @@
       return { status: 200 };
     }
 
-    const resolvedNameObject = await resolveAddressObject(params.host);
+    const resolvedNameObject = await resolveAddressObject(params.address);
     let response;
     try {
       response = await getEventSeries(
@@ -24,7 +24,7 @@
         preloadEventSeries: response,
       },
       stuff: {
-        title: response?.basics?.name + " | EventSeries by " + params.host,
+        title: response?.basics?.name + " | EventSeries by " + params.address,
         description: response?.basics?.description,
         author: response?.identifier?.host,
         removeTitleSuffix: true,
@@ -68,7 +68,7 @@
   <article>
     {#if !resolvedNameObject?.address}
       <p>
-        Invalid Address: {$page.params.host}
+        Invalid Address: {$page.params.address}
       </p>
     {:else if !eventSeries}
       <p>

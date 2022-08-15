@@ -25,7 +25,7 @@
         <small class="flex-auto">
           <span class="credit">Created by</span>
           <a
-            href="/series/{eventSeriesData.owner}"
+            href="/{eventSeriesData.owner}/?tab=challenges"
             target="_blank"
             class="host"
           >

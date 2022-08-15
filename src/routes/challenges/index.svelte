@@ -55,7 +55,7 @@
   {/await}
 
   {#if $user?.addr}
-    <a href="/series/create" role="button" class="addnew">
+    <a href="/challenges/create" role="button" class="addnew">
       Create a new FLOAT EventSeries
     </a>
   {:else}
