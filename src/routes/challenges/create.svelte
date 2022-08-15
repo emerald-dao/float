@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { authenticate, createEventSeries } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
@@ -53,22 +54,22 @@
 
   async function checkInputs() {
     let errorArray = [];
-    let messageString = "The following mandatory fields are missing";
+    let messageString = $t("errors.challenges.fields-missing");
 
     // add conditions here
     if (!draftEventSeries.basics.name) {
-      errorArray.push("EventSeries Name");
+      errorArray.push($t("errors.challenges.name-missing"));
     } else if (!draftEventSeries.basics.description) {
-      errorArray.push("EventSeries Description");
+      errorArray.push($t("errors.challenges.desc-missing"));
     } else if (!draftEventSeries.basics.image) {
-      errorArray.push("EventSeries Image");
+      errorArray.push($t("errors.challenges.image-missing"));
     }
 
     if (
       draftEventSeries.emptySlotsAmt === 0 &&
       draftEventSeries.presetEvents.length === 0
     ) {
-      errorArray.push("EventSeries need one slot at least.");
+      errorArray.push($t("errors.challenges.slot-required"));
     }
 
     if (errorArray.length > 0) {
@@ -122,14 +123,20 @@
 </script>
 
 <svelte:head>
-  <title>Create a new Event Series {PAGE_TITLE_EXTENSION}</title>
+  <title>
+    {$t("challenges.create.head", {
+      values: { extension: PAGE_TITLE_EXTENSION },
+    })}
+  </title>
 </svelte:head>
 
 <div class="container">
   <article>
-    <h1 class="mb-1 text-center">Create a new FLOAT Event Series</h1>
+    <h1 class="mb-1 text-center">
+      {$t("challenges.common.create")}
+    </h1>
     <label for="seriesName">
-      Event Series Name
+      {$t("challenges.create.name")}
       <input
         type="text"
         id="seriesName"
@@ -139,7 +146,7 @@
     </label>
 
     <label for="seriesDescription">
-      Event Series Description
+      {$t("challenges.create.desc")}
       <textarea
         id="seriesDescription"
         name="seriesDescription"
@@ -152,7 +159,7 @@
         draftEventSeries.basics.image = e.detail;
       }}
     >
-      Event Series Image
+      {$t("challenges.create.image")}
       <SeriesCard
         slot="preview"
         preview={true}
@@ -167,44 +174,52 @@
     </ImageUploader>
 
     {#if isPreviewOk}
-      <h3 class="mb-1 text-center">Configure your Event Series</h3>
+      <h3 class="mb-1 text-center">
+        {$t("challenges.create.conifg-title")}
+      </h3>
 
       <hr />
 
       <h5 class:highlight={draftEventSeries.presetEvents.length > 0}>
-        Preset FLOAT Slots
+        {$t("challenges.create.preset-title")}
       </h5>
 
       <div class="flex-wrap flex-gap mb-1">
         {#each draftEventSeries.presetEvents as slot (slot.event?.host + slot.event?.id)}
           <EventItem
             item={slot}
-            on:clickItem={(e) =>
-              onToggleRequired(slot.event?.host, slot.event?.id)}
+            on:clickItem={function (e) {
+              onToggleRequired(slot.event?.host, slot.event?.id);
+            }}
           />
         {/each}
-        <EventItem empty={true} on:clickEmpty={(e) => (dialogOpened = true)} />
+        <EventItem
+          empty={true}
+          on:clickEmpty={function (e) {
+            dialogOpened = true;
+          }}
+        />
       </div>
 
       <hr />
 
-      <h5>Empty FLOAT Slots (to configure later)</h5>
+      <h5>{$t("challenges.create.empty-slots-title")}</h5>
 
       <div class="flex flex-gap mb-1">
         <label for="emptySlotsAmt" class="flex-auto">
           <span class:highlight={draftEventSeries.emptySlotsAmt > 0}>
-            Amount
+            {$t("challenges.common.amount")}
           </span>
           <input
             type="number"
             id="emptySlotsAmt"
             name="emptySlotsAmt"
-            placeholder="Empty Slot Amount"
+            placeholder={$t("challenges.common.empty-slot-amount")}
             min="0"
             max="25"
             required
             bind:value={draftEventSeries.emptySlotsAmt}
-            on:change={(e) => {
+            on:change={function (e) {
               draftEventSeries.emptySlotsAmt = Math.min(
                 draftEventSeries.emptySlotsAmt,
                 25
@@ -215,7 +230,11 @@
         <!-- Range slider -->
         <label for="emptySlotsAmtRequired">
           <span class:highlight={draftEventSeries.emptySlotsAmtRequired > 0}>
-            Required Slots: {draftEventSeries.emptySlotsAmtRequired ?? ""}
+            {$t("challenges.common.label-required-slots", {
+              values: {
+                n: draftEventSeries.emptySlotsAmtRequired ?? "",
+              },
+            })}
           </span>
           <input
             type="range"
@@ -234,11 +253,13 @@
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
           <button class="contrast small-button" on:click={authenticate}>
-            Connect Wallet
+            {$t("common.btn.connectWallet")}
           </button>
         </div>
       {:else if $creationInProgress}
-        <button aria-busy="true" disabled>Creating FLOAT</button>
+        <button aria-busy="true" disabled>
+          {$t("common.hint.please-wait-for-tx")}
+        </button>
       {:else if $creationStatus.success}
         <a
           role="button"
@@ -246,7 +267,12 @@
           href="/{$user?.addr}/?tab=challenges"
           style="display:block"
         >
-          Event Series created successfully!
+          {$t("common.hint.action-successful", {
+            values: {
+              what: "Challenge",
+              action: "created",
+            },
+          })}
         </a>
       {:else if !$creationStatus.success && $creationStatus.error}
         <button class="error" disabled>
@@ -258,9 +284,9 @@
           disabled={!isPreviewOk}
         >
           {#if isPreviewOk}
-            Create Event Series
+            {$t("challenges.create.button")}
           {:else}
-            Incomplete parameters
+            {$t("common.hint.incomplete-params")}
           {/if}
         </button>
       {/if}
@@ -270,7 +296,9 @@
 
 <DialogPickingEvents
   bind:opened={dialogOpened}
-  on:add={(e) => onEventsAdded(e.detail)}
+  on:add={function (e) {
+    onEventsAdded(e.detail);
+  }}
 />
 
 <style>

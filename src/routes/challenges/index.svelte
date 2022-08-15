@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import Pagination from "$lib/components/common/table/Pagination.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
@@ -28,12 +29,16 @@
 </script>
 
 <svelte:head>
-  <title>Event Series {PAGE_TITLE_EXTENSION}</title>
+  <title>
+    {$t("challenges.list.head", {
+      values: { extension: PAGE_TITLE_EXTENSION },
+    })}
+  </title>
 </svelte:head>
 
 <article>
   <header class="text-center">
-    <h3>FLOAT Event Series</h3>
+    <h3>{$t("challenges.list.title")}</h3>
   </header>
   <label for="withTreasury">
     <input
@@ -43,7 +48,7 @@
       role="switch"
       bind:checked={withTreasury}
     />
-    Filter for Treasury
+    {$t("challenges.list.filter")}
   </label>
   {#await promise}
     <Loading />
@@ -56,11 +61,11 @@
 
   {#if $user?.addr}
     <a href="/challenges/create" role="button" class="addnew">
-      Create a new FLOAT EventSeries
+      {$t("challenges.common.create")}
     </a>
   {:else}
     <button class="contrast small-button" on:click={authenticate}>
-      Connect Wallet
+      {$t("common.btn.connectWallet")}
     </button>
   {/if}
 </article>

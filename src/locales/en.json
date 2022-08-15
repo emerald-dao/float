@@ -1,6 +1,44 @@
 {
   "challenges": {
-    "head": "Challenges {extension}",
-    "title": "Title"
+    "list": {
+      "head": "Challenges {extension}",
+      "title": "FLOAT Challenges",
+      "filter": "Filter for Treasury"
+    },
+    "create": {
+      "head": "Creating a new FLOAT Challenge {extension}",
+      "name": "Challenge Name",
+      "desc": "Challenge Description",
+      "image": "Challenge Image",
+      "conifg-title": "Configure your Challenge",
+      "preset-title": "Preset FLOAT Slots",
+      "empty-slots-title": "Empty FLOAT Slots (to configure later)",
+      "button": "Create FLOAT Challenge"
+    },
+    "common": {
+      "create": "Create a new FLOAT Challenge",
+      "amount": "Amount",
+      "empty-slot-amount": "Empty Slot Amount",
+      "label-required-slots": "Required Slots: {n}"
+    }
+  },
+  "common": {
+    "btn": {
+      "connectWallet": "Connect Wallet"
+    },
+    "hint": {
+      "please-wait-for-tx": "Please wait for the transaction",
+      "action-successful": "{what} {action} successfully!",
+      "incomplete-params": "Incomplete parameters"
+    }
+  },
+  "errors": {
+    "challenges": {
+      "fields-missing": "The following mandatory fields are missing",
+      "name-missing": "Challenge name is missing.",
+      "desc-missing": "Challenge description is missing.",
+      "image-missing": "Challenge image is missing.",
+      "slot-required": "Challenge need one slot at least."
+    }
   }
 }
