@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
 
   export let totalScore;
@@ -7,7 +8,7 @@
 
 <h4 class="flex-wrap between">
   <span>
-    Achievement Points: &nbsp;
+    {$t("challenges.detail.summary.achievement-point")}
     <span
       class="emphasis"
       data-tooltip="You can claim POINTs by achieving series goals."

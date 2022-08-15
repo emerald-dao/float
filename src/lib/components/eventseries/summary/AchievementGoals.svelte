@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import GoalDisplay from "../elements/GoalDisplay.svelte";
   import AchievementPoints from "../elements/AchievementPoints.svelte";
   import { createEventDispatcher } from "svelte";
@@ -71,25 +72,29 @@
 />
 {#if !preview && !isAllGoalsDone}
   {#if $txInProgress}
-    <button aria-busy="true" disabled> Accomplishing Goals </button>
+    <button aria-busy="true" disabled>
+      {$t("common.hint.please-wait-for-tx")}
+    </button>
   {:else if $txStatus === false}
     {#if !isValidToSubmit}
-      <button disabled> Please collect more FLOATs in the series </button>
+      <button disabled> {$t("challenges.detail.summary.collect-more")} </button>
     {:else}
       <button
         on:click|preventDefault={handleRequest}
         disabled={!isValidToSubmit}
       >
-        Accomplish Goals
+        {$t("challenges.detail.summary.accomplish-goals")}
       </button>
     {/if}
   {:else}
     {#if $txStatus.success}
-      <p>Goals accomplished successfully!</p>
+      <p>{$t("common.hint.tx-successful")}</p>
     {:else if !$txStatus.success && $txStatus.error}
       <p>{JSON.stringify($txStatus.error)}</p>
     {/if}
-    <button on:click|preventDefault={handleReset}> Continue </button>
+    <button on:click|preventDefault={handleReset}>
+      {$t("common.btn.continue")}
+    </button>
   {/if}
   <br />
 {/if}

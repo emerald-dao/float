@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import IntersectionObserver from "svelte-intersection-observer";
   import Loading from "$lib/components/common/Loading.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
@@ -19,13 +20,13 @@
 {#each slicedList as item}
   <SeriesCard eventSeriesData={item} />
 {:else}
-  <p class="text-center">There is no any FLOAT EventSeries.</p>
+  <p class="text-center">{$t("challenges.list.no-challege")}</p>
 {/each}
 
 {#if currentAnchor + maxSize < total}
   <IntersectionObserver
     element={moreInView}
-    on:intersect={(e) => {
+    on:intersect={function () {
       currentAnchor += maxSize;
     }}
     let:intersecting

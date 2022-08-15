@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { getEvents, resolveAddressObject } from "$lib/flow/actions";
   import Dialog from "$lib/components/eventseries/elements/Dialog.svelte";
   import EventsPickingTable from "$lib/components/eventseries/table/EventsPickingTable.svelte";
@@ -88,16 +89,20 @@
 </script>
 
 <Dialog {opened}>
-  <header>Add FLOAT Events to Series</header>
+  <header>
+    {$t("challenges.common.dialog.title")}
+  </header>
   <div class="flex flex-gap">
     <label for="seriesName" class="flex-auto">
-      Owner Address
+      {$t("challenges.common.dialog.label-owner")}
       <input
         type="text"
         id="addressToQuery"
         name="addressToQuery"
         placeholder="0x00000000000"
-        on:keyup={(e) => (addressToQueryValid = undefined)}
+        on:keyup={function () {
+          addressToQueryValid = undefined;
+        }}
         bind:value={addressToQuery}
         aria-invalid={typeof addressToQueryValid === "boolean"
           ? !addressToQueryValid
@@ -113,7 +118,7 @@
       aria-busy={addressIsQuerying}
       on:click={onSearchAddress}
     >
-      Query
+      {$t("challenges.common.dialog.btn-query")}
     </a>
   </div>
   {#if addressToQueryValid && floatEventLoadingPromise}
@@ -125,12 +130,13 @@
         <EventsPickingTable
           ownerAddress={addressToQuery}
           {pickableEvents}
-          on:pickChanged={(e) =>
-            onPickChanged(e.detail.host, e.detail.eventId, e.detail.picked)}
+          on:pickChanged={function (e) {
+            onPickChanged(e.detail.host, e.detail.eventId, e.detail.picked);
+          }}
         />
       {:else}
         <p class="text-center">
-          This account has not created any FLOAT events yet.
+          {$t("errors.events.account-no-events")}
         </p>
       {/if}
     {/await}
@@ -143,7 +149,7 @@
       class="secondary"
       on:click={toggleModal}
     >
-      Close
+      {$t("common.btn.close")}
     </a>
     <!-- svelte-ignore a11y-invalid-attribute -->
     <a
@@ -152,7 +158,7 @@
       disabled={isNoEventPicked}
       on:click={onAddToSeries}
     >
-      Add To Series
+      {$t("challenges.common.dialog.add-to-challenge")}
     </a>
   </footer>
 </Dialog>

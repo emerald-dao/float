@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
   import EnergyPoint from "$lib/components/eventseries/svgs/EnergyPoint.svelte";
@@ -128,13 +129,13 @@
         <StrategyControllerItem
           {eventSeries}
           {strategy}
-          on:seriesUpdated={(e) => reloadStrategies()}
+          on:seriesUpdated={reloadStrategies}
         />
       {/each}
     </div>
     <details>
       <summary role="button" class="secondary">
-        <b>Add a new strategy →</b>
+        <b>{$t("challenges.detail.settings.strategy.title")}</b>
       </summary>
 
       <div class="grid no-break mb-1">
@@ -142,29 +143,28 @@
           class:secondary={requestParams.strategyMode !== "queueStrategy"}
           class="outline"
           disabled={$txInProgress}
-          on:click={() => {
+          on:click={function () {
             requestParams.strategyMode = "queueStrategy";
             requestParams.options.minimumValidAmount = undefined;
           }}
         >
-          Queue Strategy
+          {$t("challenges.detail.settings.strategy.select-queue")}
           <span>
-            Eligible users can claim reward one by one util all rewards claimed.
+            {$t("challenges.detail.settings.strategy.select-queue-desc")}
           </span>
         </button>
         <button
           class:secondary={requestParams.strategyMode !== "raffleStrategy"}
           class="outline"
           disabled={$txInProgress}
-          on:click={() => {
+          on:click={function () {
             requestParams.strategyMode = "raffleStrategy";
             requestParams.options.minimumValidAmount = 0;
           }}
         >
-          Raffle Strategy
+          {$t("challenges.detail.settings.strategy.select-raffle")}
           <span>
-            Eligible users will get a ticket to join the raffle and only winners
-            can claim rewards.
+            {$t("challenges.detail.settings.strategy.select-raffle-desc")}
           </span>
         </button>
       </div>
@@ -173,7 +173,7 @@
           class:secondary={requestParams.deliveryMode !== "ftIdenticalAmount"}
           class="outline"
           disabled={$txInProgress}
-          on:click={() => {
+          on:click={function () {
             if (requestParams.deliveryMode === "nft") {
               setCurrentToken(null);
             }
@@ -182,16 +182,18 @@
             requestParams.options.deliveryParam1 = 0;
           }}
         >
-          Identical Amount
+          {$t("challenges.detail.settings.strategy.select-identical-amt")}
           <span>
-            Distribute <b>Fungible Token</b> with same amount for each claimer.
+            {@html $t(
+              "challenges.detail.settings.strategy.select-identical-amt-desc"
+            )}
           </span>
         </button>
         <button
           class:secondary={requestParams.deliveryMode !== "ftRandomAmount"}
           class="outline"
           disabled={$txInProgress}
-          on:click={() => {
+          on:click={function () {
             if (requestParams.deliveryMode === "nft") {
               setCurrentToken(null);
             }
@@ -200,16 +202,18 @@
             requestParams.options.deliveryParam1 = 0;
           }}
         >
-          Random Amount
+          {$t("challenges.detail.settings.strategy.select-random-amt")}
           <span>
-            Distribute <b>Fungible Token</b> with random amount within a total amount.
+            {@html $t(
+              "challenges.detail.settings.strategy.select-random-amt-desc"
+            )}
           </span>
         </button>
         <button
           class:secondary={requestParams.deliveryMode !== "nft"}
           class="outline"
           disabled={$txInProgress}
-          on:click={() => {
+          on:click={function () {
             if (requestParams.deliveryMode !== "nft") {
               setCurrentCollection(null);
             }
@@ -218,9 +222,11 @@
             requestParams.options.deliveryParam1 = undefined;
           }}
         >
-          NFT
+          {$t("common.main.nft")}
           <span>
-            Distribute one share of <b>NFT</b> reward to each claimer.
+            {@html $t(
+              "challenges.detail.settings.strategy.select-nft-deliver-desc"
+            )}
           </span>
         </button>
       </div>
@@ -228,7 +234,7 @@
       <div class="flex flex-gap mb-1">
         <label for="threshold" class="flex-auto">
           <span class:highlight={requestParams.options.threshold > 0}>
-            Eligible Achievement Points Threshold
+            {$t("challenges.detail.settings.strategy.label-eligible-threshold")}
           </span>
           <input
             type="number"
@@ -252,7 +258,8 @@
             disabled={$txInProgress}
             bind:checked={requestParams.options.consumable}
           />
-          use <EnergyPoint />
+          {$t("common.label.use")}
+          <EnergyPoint />
         </label>
       </div>
       {#if requestParams.deliveryMode !== "nft"}
@@ -269,22 +276,33 @@
         {#if currentToken}
           <div class="flex-wrap between flex-gap">
             <span class="emphasis">
-              Strategy Cost: {requestParams.deliveryMode === "ftIdenticalAmount"
-                ? (requestParams.options.deliveryParam1 ?? 0) *
-                  (requestParams.options.maxClaimableShares ?? 0)
-                : requestParams.options.deliveryParam1 ?? 0}
+              {$t("challenges.detail.settings.strategy.label-cost", {
+                values: {
+                  cost:
+                    requestParams.deliveryMode === "ftIdenticalAmount"
+                      ? (requestParams.options.deliveryParam1 ?? 0) *
+                        (requestParams.options.maxClaimableShares ?? 0)
+                      : requestParams.options.deliveryParam1 ?? 0,
+                },
+              })}
             </span>
-            <span class="emphasis">Balance: {currentToken.balance}</span>
+            <span class="emphasis">
+              {$t("challenges.detail.settings.strategy.label-balance", {
+                values: { balance: currentToken.balance },
+              })}
+            </span>
           </div>
           <hr />
           <div class="flex flex-gap mb-1">
             <label for="deliveryParam" class="flex-auto">
               <span>
-                {#if requestParams.deliveryMode === "ftIdenticalAmount"}
-                  Reward amount of each share
-                {:else}
-                  Reward amount in total
-                {/if}
+                {requestParams.deliveryMode === "ftIdenticalAmount"
+                  ? $t(
+                      "challenges.detail.settings.strategy.label-reward-identical"
+                    )
+                  : $t(
+                      "challenges.detail.settings.strategy.label-reward-random"
+                    )}
               </span>
               <input
                 type="number"
@@ -297,7 +315,7 @@
                 required
                 disabled={$txInProgress}
                 bind:value={requestParams.options.deliveryParam1}
-                on:change={(e) => {
+                on:change={function (e) {
                   requestParams.options.deliveryParam1 = Math.min(
                     requestParams.options.deliveryParam1,
                     currentToken.balance
@@ -317,8 +335,11 @@
             <!-- Range slider -->
             <label for="maxClaimableShares">
               <span>
-                Total Shares:
-                {requestParams.options.maxClaimableShares ?? 0}
+                {$t("challenges.detail.settings.strategy.label-total-shares", {
+                  values: {
+                    share: requestParams.options.maxClaimableShares ?? 0,
+                  },
+                })}
               </span>
               {#if requestParams.deliveryMode === "ftIdenticalAmount"}
                 <input
@@ -378,16 +399,27 @@
         {#if currentCollection}
           <div class="flex-wrap between flex-gap">
             <span class="emphasis">
-              Strategy Cost: {requestParams.options.maxClaimableShares ?? 0}
+              {$t("challenges.detail.settings.strategy.label-cost", {
+                values: {
+                  cost: requestParams.options.maxClaimableShares ?? 0,
+                },
+              })}
             </span>
-            <span class="emphasis">Remaining: {currentCollection.amount}</span>
+            <span class="emphasis">
+              {$t("challenges.elements.strategy.display.remaining", {
+                values: { n: currentCollection.amount },
+              })}
+            </span>
           </div>
           <hr />
           <!-- Range slider -->
           <label for="maxClaimableShares">
             <span>
-              Total Shares:
-              {requestParams.options.maxClaimableShares ?? 0}
+              {$t("challenges.detail.settings.strategy.label-total-shares", {
+                values: {
+                  shares: requestParams.options.maxClaimableShares ?? 0,
+                },
+              })}
             </span>
             <input
               type="range"
@@ -406,8 +438,11 @@
       {#if requestParams.strategyMode === "raffleStrategy"}
         <label for="minimumValidAmount">
           <span class:highlight={requestParams.options.minimumValidAmount > 0}>
-            Minimum Amount of Eligible Users for the Raffle: {requestParams
-              .options.minimumValidAmount}
+            {$t("challenges.detail.settings.strategy.label-min-valid-users", {
+              values: {
+                amount: requestParams.options.minimumValidAmount,
+              },
+            })}
           </span>
           <input
             type="range"
@@ -425,22 +460,24 @@
 
       {#if $txInProgress}
         <button aria-busy="true" disabled>
-          Please wait for the transaction
+          {$t("common.hint.please-wait-for-tx")}
         </button>
       {:else if $txStatus === false}
         <button
           on:click|preventDefault={handleSubmit}
           disabled={!isValidToSubmit}
         >
-          Add new Strategy
+          {$t("challenges.detail.settings.strategy.btn-submit")}
         </button>
       {:else}
         {#if $txStatus.success}
-          <p>Strategy added successfully!</p>
+          <p>{$t("common.hint.tx-successful")}</p>
         {:else if !$txStatus.success && $txStatus.error}
           <p>{JSON.stringify($txStatus.error)}</p>
         {/if}
-        <button on:click|preventDefault={handleReset}> Continue </button>
+        <button on:click|preventDefault={handleReset}>
+          {$t("common.btn.continue")}
+        </button>
       {/if}
     </details>
   {/await}

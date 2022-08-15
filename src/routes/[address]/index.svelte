@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { page } from "$app/stores";
   import Meta from "$lib/components/common/Meta.svelte";
 
@@ -19,65 +20,69 @@
 </script>
 
 <Meta
-  title="FLOATs owned by {$page.params.address}"
+  title={$t("common.headmeta.title-floats", {
+    values: { address: $page.params.address },
+  })}
   author={$page.params.address}
-  description="FLOATs owned by {$page.params.address}"
+  description={$t("common.headmeta.title-floats", {
+    values: { address: $page.params.address },
+  })}
   url={$page.url}
 />
 
 <div class="">
   <ul class="tabs">
     <li
-      on:click={() => {
+      on:click={function () {
         query.set("tab", "floats");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "floats"}
       class:selected={tab === "floats"}
     >
-      FLOATs
+      {$t("common.main.floats")}
     </li>
     <li
-      on:click={() => {
+      on:click={function () {
         query.set("tab", "events");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "events"}
       class:selected={tab === "events"}
     >
-      Events
+      {$t("common.main.events")}
     </li>
     <li
-      on:click={() => {
+      on:click={function () {
         query.set("tab", "groups");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "groups"}
       class:selected={tab === "groups"}
     >
-      Groups
+      {$t("common.main.groups")}
     </li>
     <li
-      on:click={() => {
+      on:click={function () {
         query.set("tab", "challenges");
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "challenges"}
       class:selected={tab === "challenges"}
     >
-      Challenges
+      {$t("common.main.challenges")}
     </li>
     {#await addressObject then addressObject}
       {#if $user?.addr == addressObject.address}
         <li
-          on:click={() => {
+          on:click={function () {
             query.set("tab", "account");
             goto(`?${query.toString()}`);
           }}
           class:animatedlink={tab !== "account"}
           class:selected={tab === "account"}
         >
-          Account
+          {$t("common.main.account")}
         </li>
       {/if}
     {/await}

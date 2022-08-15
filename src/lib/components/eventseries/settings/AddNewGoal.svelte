@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
   import GoalDisplay from "../elements/GoalDisplay.svelte";
@@ -97,13 +98,15 @@
     </div>
   {/await}
   <details>
-    <summary role="button" class="secondary"> <b>Add a new goal →</b> </summary>
+    <summary role="button" class="secondary">
+      <b>{$t("challenges.detail.settings.goal.title")}</b>
+    </summary>
     <div class="grid no-break mb-1">
       <button
         class:secondary={requestParams.type !== "byAmount"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "byAmount";
           requestParams.params = {
             eventsAmount: 1,
@@ -111,44 +114,48 @@
           };
         }}
       >
-        By Amount
-        <span>Achieve by collecting amount of FLOATs in current series.</span>
+        {$t("challenges.detail.settings.goal.select-by-amount")}
+        <span
+          >{$t("challenges.detail.settings.goal.select-by-amount-desc")}</span
+        >
       </button>
       <button
         class:secondary={requestParams.type !== "byPercent"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "byPercent";
           requestParams.params = {
             percent: 100,
           };
         }}
       >
-        By Percent
-        <span
-          >Achieve by collecting percentage of FLOATs in current series.</span
-        >
+        {$t("challenges.detail.settings.goal.select-by-percent")}
+        <span>
+          {$t("challenges.detail.settings.goal.select-by-percent-desc")}
+        </span>
       </button>
       <button
         class:secondary={requestParams.type !== "bySpecifics"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "bySpecifics";
           requestParams.params = {
             events: [],
           };
         }}
       >
-        By Specifics
-        <span
-          >Achieve by collecting some specific FLOATs in current series.</span
-        >
+        {$t("challenges.detail.settings.goal.select-by-specifics")}
+        <span>
+          {$t("challenges.detail.settings.goal.select-by-specifics-desc")}
+        </span>
       </button>
     </div>
     <label for="points">
-      <span class:highlight={requestParams.points > 0}> Goal points </span>
+      <span class:highlight={requestParams.points > 0}>
+        {$t("challenges.detail.settings.goal.points")}
+      </span>
       <input
         type="number"
         id="points"
@@ -165,7 +172,7 @@
       <div class="flex flex-gap mb-1">
         <label for="eventsAmount" class="flex-auto">
           <span class:highlight={requestParams.params.eventsAmount > 0}>
-            FLOATs Amount
+            {$t("challenges.detail.settings.goal.floats-amount")}
           </span>
           <input
             type="number"
@@ -177,7 +184,7 @@
             required
             disabled={$txInProgress}
             bind:value={requestParams.params.eventsAmount}
-            on:change={(e) => {
+            on:change={function () {
               requestParams.params.eventsAmount = Math.min(
                 requestParams.params.eventsAmount,
                 eventSeries.slots.length
@@ -188,8 +195,9 @@
         <!-- Range slider -->
         <label for="requiredEventsAmount">
           <span class:highlight={requestParams.params.requiredEventsAmount > 0}>
-            With <i>Required</i> Amount:
-            {requestParams.params.requiredEventsAmount ?? 0}
+            {$t("challenges.detail.settings.goal.with-required-amount", {
+              values: { n: requestParams.params.requiredEventsAmount ?? 0 },
+            })}
           </span>
           <input
             type="range"
@@ -232,27 +240,33 @@
             ghost={!selected[slot.event.id]}
             pending={selected[slot.event.id]}
             disabled={$txInProgress}
-            on:clickItem={(e) => onToggleSelect(slot.event.host, slot.event.id)}
+            on:clickItem={function () {
+              onToggleSelect(slot.event.host, slot.event.id);
+            }}
           />
         {/each}
       </div>
     {/if}
     {#if $txInProgress}
-      <button aria-busy="true" disabled> Adding new Goal </button>
+      <button aria-busy="true" disabled>
+        {$t("common.hint.please-wait-for-tx")}
+      </button>
     {:else if $txStatus === false}
       <button
         on:click|preventDefault={handleAddNewGoals}
         disabled={!isValidToSubmit}
       >
-        Submit new Goal
+        {$t("challenges.detail.settings.goal.btn-submit")}
       </button>
     {:else}
       {#if $txStatus.success}
-        <p>Goals updated successfully!</p>
+        <p>{$t("common.hint.tx-successful")}</p>
       {:else if !$txStatus.success && $txStatus.error}
         <p>{JSON.stringify($txStatus.error)}</p>
       {/if}
-      <button on:click|preventDefault={handleReset}> Continue </button>
+      <button on:click|preventDefault={handleReset}>
+        {$t("common.btn.continue")}
+      </button>
     {/if}
   </details>
 {/if}

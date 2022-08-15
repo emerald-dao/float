@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   //Row component is optional and only serves to render odd/even row, you can use <tr> instead.
   //Sort component is optional
   import Table, { Row, Sort } from "../../common/table/Table.svelte";
@@ -63,17 +64,17 @@
 >
   <thead slot="head">
     <tr>
-      <th> Select </th>
+      <th> {$t("common.eventsTable.select")} </th>
       <th>
-        Event
+        {$t("common.eventsTable.event")}
         <Sort key="name" on:sort={onSortString} />
       </th>
       <th>
-        Created
+        {$t("common.eventsTable.created")}
         <Sort key="dateCreated" dir="desc" on:sort={onSortNumber} />
       </th>
-      <th> Groups </th>
-      <th> Claimed </th>
+      <th> {$t("common.main.groups")} </th>
+      <th> {$t("common.eventsTable.claimed")} </th>
     </tr>
   </thead>
 
@@ -85,7 +86,9 @@
             type="checkbox"
             name="picked"
             bind:checked={row.picked}
-            on:change={() => onSelected(row)}
+            on:change={function () {
+              onSelected(row);
+            }}
           />
         </td>
         <td data-label="Event">

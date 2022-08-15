@@ -3,7 +3,8 @@
     "list": {
       "head": "Challenges {extension}",
       "title": "FLOAT Challenges",
-      "filter": "Filter for Treasury"
+      "filter": "Filter for Treasury",
+      "no-challege": "There is no any FLOAT Challenge."
     },
     "create": {
       "head": "Creating a new FLOAT Challenge {extension}",
@@ -15,21 +16,160 @@
       "empty-slots-title": "Empty FLOAT Slots (to configure later)",
       "button": "Create FLOAT Challenge"
     },
+    "detail": {
+      "head": "{name} | FLOAT Challenges by {host}",
+      "summary": {
+        "achievement-point": "Achievement Points: &nbsp;",
+        "collect-more": "Please collect more FLOATs of the Challenge",
+        "accomplish-goals": "Accomplish Goals"
+      },
+      "settings": {
+        "goal": {
+          "title": "Add a new goal →",
+          "select-by-amount": "By Amount",
+          "select-by-amount-desc": "Achieve by collecting amount of FLOATs in current challenge.",
+          "select-by-percent": "By Percent",
+          "select-by-percent-desc": "Achieve by collecting percentage of FLOATs in current challenge.",
+          "select-by-specifics": "By Specifics",
+          "select-by-specifics-desc": "Achieve by collecting some specific FLOATs incurrent challenge.",
+          "points": "Goal points",
+          "floats-amount": "FLOATs Amount",
+          "with-required-amount": "With Required Amount: {n}",
+          "btn-submit": "Submit new Goal"
+        },
+        "strategy": {
+          "title": "Add a new strategy →",
+          "select-queue": "Queue Strategy",
+          "select-queue-desc": "Eligible users can claim reward one by one util all rewards claimed.",
+          "select-raffle": "Raffle Strategy",
+          "select-raffle-desc": "Eligible users will get a ticket to join the raffle and only winners can claim rewards.",
+          "select-identical-amt": "Identical Amount",
+          "select-identical-amt-desc": "Distribute <b>Fungible Token</b> with same amount for each claimer.",
+          "select-random-amt": "Random Amount",
+          "select-random-amt-desc": "Distribute <b>Fungible Token</b> with random amount within a total amount.",
+          "select-nft-deliver-desc": "Distribute one share of <b>NFT</b> reward to each claimer.",
+          "label-eligible-threshold": "Eligible Achievement Points Threshold",
+          "label-cost": "Strategy Cost: {cost}",
+          "label-balance": "Balance: {balance}",
+          "label-total-shares": "Total Shares: {shares}",
+          "label-reward-identical": "Reward amount of each share",
+          "label-reward-random": "Reward amount in total",
+          "label-min-valid-users": "Minimum Amount of Eligible Users for the Raffle: {amount}",
+          "btn-submit": "Add new Strategy"
+        },
+        "danger": {
+          "title": "Danger Zone",
+          "btn-submit": "Revoke Challenge",
+          "on-success-next": "View Challenges"
+        },
+        "slots": {
+          "btn-fill-events": "Fill Challenge with Events",
+          "btn-submit": "Submit Slots Update"
+        },
+        "treasury": {
+          "title": "Manage the treasury →",
+          "select-deposit-ft": "Deposit Token",
+          "select-deposit-ft-desc": "Deposit any <b>Fungible Tokens</b> to the treasury of current Challenge.",
+          "select-deposit-nft": "Deposit NFT",
+          "select-deposit-nft-desc": "Deposit any <b>NFTs</b> to the treasury of current Challenge.",
+          "select-drop": "Drop Treasury",
+          "select-drop-desc": "Drop <b>ALL</b> assets in the treasury and transfer to owner's account.",
+          "btn-submit-deposit-ft": "Deposit Tokens",
+          "btn-submit-deposit-nft": "Deposit NFTs",
+          "btn-submit-drop": "Drop ALL ASSETs",
+          "label-deposit": "Deposit Amount",
+          "label-max": "Max: {amount}"
+        }
+      },
+      "main": {
+        "title-slots": "Events in the Challenge",
+        "title-goals": "Challenge Goals",
+        "title-treasury": "Challenge Treasury",
+        "title-rewards": "Challenge Rewards"
+      },
+      "treasury": {
+        "btn-sync-status": "Sync Status"
+      }
+    },
     "common": {
       "create": "Create a new FLOAT Challenge",
       "amount": "Amount",
       "empty-slot-amount": "Empty Slot Amount",
-      "label-required-slots": "Required Slots: {n}"
+      "label-required-slots": "Required Slots: {n}",
+      "dialog": {
+        "title": "Add FLOAT Events to Challenge",
+        "label-owner": "Owner Address",
+        "btn-query": "Query",
+        "add-to-challenge": "Add To Challenge"
+      }
+    },
+    "elements": {
+      "floats-of-challenge": "FLOATs of the challenge",
+      "card": {
+        "slot": "Event Slots: {n}",
+        "created-by": "Created by"
+      },
+      "goal": {
+        "label-collect": "Collect",
+        "by-amount-with": "with",
+        "label-points": "{points} Points"
+      },
+      "strategy": {
+        "display": {
+          "points": "Points",
+          "required": "Required",
+          "remaining": "Remaining: {n}",
+          "in-total": " in Total",
+          "one-share": "x 1",
+          "treasury": "Treasury: ",
+          "eligible-users": "Eligible users: ",
+          "at-least": "({n} at least)"
+        },
+        "set-state": "Set to {state}",
+        "no-more-eligible": "Need more eligible users",
+        "fore-close": "Force Close",
+        "claim-reward": "Claim Reward"
+      }
     }
   },
   "common": {
+    "main": {
+      "floats": "FLOATs",
+      "events": "Events",
+      "groups": "Groups",
+      "challenges": "Challenges",
+      "account": "Account",
+      "nft": "NFT"
+    },
+    "tabs": {
+      "summary": "Summary",
+      "treasury": "Treasury",
+      "settings": "Settings"
+    },
+    "eventsTable": {
+      "select": "Select",
+      "event": "Event",
+      "created": "Created",
+      "claimed": "Claimed"
+    },
+    "label": {
+      "use": "use"
+    },
     "btn": {
-      "connectWallet": "Connect Wallet"
+      "connectWallet": "Connect Wallet",
+      "close": "Close",
+      "continue": "Continue"
     },
     "hint": {
       "please-wait-for-tx": "Please wait for the transaction",
+      "tx-successful": "Transaction executed successfully!",
       "action-successful": "{what} {action} successfully!",
-      "incomplete-params": "Incomplete parameters"
+      "incomplete-params": "Incomplete parameters",
+      "invalid-address": "Invalid Address: {address}",
+      "claimed-reward": "✓ You already claimed this reward."
+    },
+    "headmeta": {
+      "title-floats": "FLOATs owned by {address}"
     }
   },
   "errors": {
@@ -38,7 +178,15 @@
       "name-missing": "Challenge name is missing.",
       "desc-missing": "Challenge description is missing.",
       "image-missing": "Challenge image is missing.",
-      "slot-required": "Challenge need one slot at least."
+      "slot-required": "Challenge need one slot at least.",
+      "failed-to-load": "Failed to load Challenge: #{id} by {host}.",
+      "not-eligible-user-need-points": "You are not eligible, please obtain more POINTS.",
+      "wait-for-claimable": "Please wait for the CLAIMABLE phase",
+      "not-eligible-to-claim": "You are not eligible to claim the reward.",
+      "no-reward-strategy": "There is no reward strategy for the Challenge"
+    },
+    "events": {
+      "account-no-events": "This account has not created any FLOAT events yet."
     }
   }
 }

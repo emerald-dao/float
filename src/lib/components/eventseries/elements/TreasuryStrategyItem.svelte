@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
@@ -68,23 +69,25 @@
     {#if !preview}
       {#if $txInProgress && isCurrentItem}
         <button aria-busy="true" disabled>
-          Please wait for the transaction
+          {$t("common.hint.please-wait-for-tx")}
         </button>
       {:else if !isCurrentItem || $txStatus === false}
         {#if strategy.userStatus?.claimed}
           <button class="secondary outline" disabled>
-            ✓ You already claimed this reward.
+            {$t("common.hint.claimed-reward")}
           </button>
         {:else if !isValidToSubmit}
           {#if !strategy.userStatus?.eligible && (strategy.strategyMode === "queueStrategy" || strategy.currentState === "opening")}
             <button disabled>
-              You are not eligible, please obtain more POINTS.
+              {$t("errors.challenges.not-eligible-user-need-points")}
             </button>
           {:else if strategy.currentState !== "claimable"}
-            <button disabled> Please wait for the CLAIMABLE phase </button>
+            <button disabled>
+              {$t("errors.challenges.wait-for-claimable")}
+            </button>
           {:else}
             <button class="secondary outline" disabled>
-              You are not eligible to claim the reward.
+              {$t("errors.challenges.not-eligible-to-claim")}
             </button>
           {/if}
         {:else}
@@ -92,16 +95,18 @@
             on:click|preventDefault={handleSubmit}
             disabled={!isValidToSubmit}
           >
-            Claim Reward
+            {$t("challenges.elements.strategy.claim-reward")}
           </button>
         {/if}
       {:else if isCurrentItem}
         {#if $txStatus.success}
-          <p>Transaction executed successfully!</p>
+          <p>{$t("common.hint.tx-successful")}</p>
         {:else if !$txStatus.success && $txStatus.error}
           <p>{JSON.stringify($txStatus.error)}</p>
         {/if}
-        <button on:click|preventDefault={handleReset}> Continue </button>
+        <button on:click|preventDefault={handleReset}>
+          {$t("common.btn.continue")}
+        </button>
       {/if}
     {/if}
   </div>

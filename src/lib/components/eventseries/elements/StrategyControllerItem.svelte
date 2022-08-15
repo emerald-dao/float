@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
@@ -58,7 +59,7 @@
     {#if isValidAdmin}
       {#if $txInProgress && isCurrentItem}
         <button aria-busy="true" disabled>
-          Please wait for the transaction
+          {$t("common.hint.please-wait-for-tx")}
         </button>
       {:else if !isCurrentItem || $txStatus === false}
         <div class="flex-wrap flex-gap">
@@ -68,14 +69,16 @@
               on:click|preventDefault={(e) => handleSubmit(false)}
               disabled={!isValidToSubmit}
             >
-              Set to {String(nextStage).toUpperCase()}
+              {$t("challenges.elements.strategy.set-state", {
+                values: { state: String(nextStage).toUpperCase() },
+              })}
             </button>
           {:else}
             <button
               class:part-one={strategy.currentState !== "claimable"}
               disabled
             >
-              Need more eligible users
+              {$t("challenges.elements.strategy.no-more-eligible")}
             </button>
           {/if}
           {#if strategy.currentState !== "claimable"}
@@ -83,17 +86,21 @@
               class="outline red part-two"
               on:click|preventDefault={(e) => handleSubmit(true)}
             >
-              Force Close
+              {$t("challenges.elements.strategy.fore-close")}
             </button>
           {/if}
         </div>
       {:else if isCurrentItem}
         {#if $txStatus.success}
-          <p>Transaction executed successfully!</p>
+          <p>
+            {$t("common.hint.tx-successful")}
+          </p>
         {:else if !$txStatus.success && $txStatus.error}
           <p>{JSON.stringify($txStatus.error)}</p>
         {/if}
-        <button on:click|preventDefault={handleReset}> Continue </button>
+        <button on:click|preventDefault={handleReset}>
+          {$t("common.btn.continue")}
+        </button>
       {/if}
     {/if}
   </div>

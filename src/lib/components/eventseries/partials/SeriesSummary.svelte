@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import Loading from "$lib/components/common/Loading.svelte";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import AchievementGoals from "$lib/components/eventseries/summary/AchievementGoals.svelte";
@@ -50,7 +51,7 @@
 {#await statusPromise}
   <Loading />
 {:then userStatus}
-  <h4>FLOAT Events in the series</h4>
+  <h4>{$t("challenges.detail.main.title-slots")}</h4>
   <div class="flex-wrap flex-gap mb-1">
     {#each eventSeries.slots as slot, index ("slot#" + index)}
       <EventItem

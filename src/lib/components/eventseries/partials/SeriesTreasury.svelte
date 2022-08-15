@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import Loading from "$lib/components/common/Loading.svelte";
   import AchievementPoints from "../elements/AchievementPoints.svelte";
   import TreasuryStrategyItem from "../elements/TreasuryStrategyItem.svelte";
@@ -79,36 +80,42 @@
     {#if isNotSynced(data)}
       {#if $txInProgress}
         <button aria-busy="true" disabled>
-          Please wait for the transaction
+          {$t("common.hint.please-wait-for-tx")}
         </button>
       {:else if $txStatus === false}
         <button
           on:click|preventDefault={handleSubmit}
           disabled={!isValidToSubmit}
         >
-          Sync Status
+          {$t("challenges.detail.treasury.btn-sync-status")}
         </button>
       {:else}
         {#if $txStatus.success}
-          <p>Status synced successfully!</p>
+          <p>{$t("common.hint.tx-successful")}</p>
         {:else if !$txStatus.success && $txStatus.error}
           <p>{JSON.stringify($txStatus.error)}</p>
         {/if}
-        <button on:click|preventDefault={handleReset}> Continue </button>
+        <button on:click|preventDefault={handleReset}>
+          {$t("common.btn.continue")}
+        </button>
       {/if}
     {/if}
   {/if}
   {#if !data?.strategies?.length}
-    <div class="flex">There is no reward strategy for the FLOAT Series</div>
+    <div class="flex">{$t("errors.challenges.no-reward-strategy")}</div>
   {:else}
-    <h4>Rewards</h4>
+    <h4>
+      {$t("challenges.detail.main.title-rewards")}
+    </h4>
     {#each data?.strategies as strategy}
       <TreasuryStrategyItem
         {strategy}
         {eventSeries}
         totalScore={data?.userTotalScore}
         consumableScore={data?.userConsumableScore}
-        on:seriesUpdated={(e) => dispatch("seriesUpdated")}
+        on:seriesUpdated={function () {
+          dispatch("seriesUpdated");
+        }}
       />
     {/each}
   {/if}

@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import Loading from "$lib/components/common/Loading.svelte";
   import FTlist from "$lib/components/common/FTlist.svelte";
   import FungibleTokenDisplay from "$lib/components/common/FungibleTokenDisplay.svelte";
@@ -129,50 +130,54 @@
   {/await}
   <details>
     <summary role="button" class="secondary">
-      <b>Manage the treasury →</b>
+      <b>{$t("challenges.detail.settings.treasury.title")}</b>
     </summary>
     <div class="grid no-break mb-1">
       <button
         class:secondary={requestParams.type !== "depositFT"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "depositFT";
           requestParams.amount = 0;
           setCurrentToken(null);
         }}
       >
-        Deposit Token
+        {$t("challenges.detail.settings.treasury.select-deposit-ft")}
         <span>
-          Deposit any <b>Fungible Tokens</b> to the treasury of current Event Series.
+          {@html $t(
+            "challenges.detail.settings.treasury.select-deposit-ft-desc"
+          )}
         </span>
       </button>
       <button
         class:secondary={requestParams.type !== "depositNFT"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "depositNFT";
           requestParams.amount = 0;
           setCurrentCollection(null);
         }}
       >
-        Deposit NFT
+        {$t("challenges.detail.settings.treasury.select-deposit-nft")}
         <span>
-          Deposit any <b>NFTs</b> to the treasury of current Event Series.
+          {@html $t(
+            "challenges.detail.settings.treasury.select-deposit-nft-desc"
+          )}
         </span>
       </button>
       <button
         class:secondary={requestParams.type !== "dropAll"}
         class="outline"
         disabled={$txInProgress}
-        on:click={() => {
+        on:click={function () {
           requestParams.type = "dropAll";
         }}
       >
-        Drop Treasury
+        {$t("challenges.detail.settings.treasury.select-drop")}
         <span>
-          Drop <b>ALL</b> assets in the treasury and transfer to owner's account.
+          {@html $t("challenges.detail.settings.treasury.select-drop-desc")}
         </span>
       </button>
     </div>
@@ -181,10 +186,10 @@
         <FTlist
           loadBalance={true}
           watchStatus={txStatus}
-          on:select={(e) => {
+          on:select={function (e) {
             setCurrentToken(e.detail);
           }}
-          on:balanceUpdated={(e) => {
+          on:balanceUpdated={function (e) {
             setCurrentToken(e.detail);
           }}
         />
@@ -192,10 +197,10 @@
         <NftCollections
           loadBalance={true}
           watchStatus={txStatus}
-          on:select={(e) => {
+          on:select={function (e) {
             setCurrentCollection(e.detail);
           }}
-          on:amountUpdated={(e) => {
+          on:amountUpdated={function (e) {
             setCurrentCollection(e.detail);
           }}
         />
@@ -204,7 +209,9 @@
       {#if (requestParams.type === "depositFT" && currentToken) || (requestParams.type === "depositNFT" && currentCollection)}
         <div class="flex flex-gap mb-1">
           <label for="tokenAmount" class="flex-auto">
-            <span> Deposit Amount </span>
+            <span>
+              {$t("challenges.detail.settings.treasury.label-deposit")}
+            </span>
             <input
               type="number"
               id="tokenAmount"
@@ -217,7 +224,7 @@
               required
               disabled={$txInProgress}
               bind:value={requestParams.amount}
-              on:change={(e) => {
+              on:change={function (e) {
                 requestParams.amount = Math.min(
                   requestParams.amount,
                   requestParams.type === "depositFT"
@@ -230,10 +237,14 @@
           <!-- Range slider -->
           <label for="amountSlider">
             <span class="highlight">
-              Max:
-              {requestParams.type === "depositFT"
-                ? currentToken.balance
-                : currentCollection.amount}
+              {$t("challenges.detail.settings.treasury.label-max", {
+                values: {
+                  amount:
+                    requestParams.type === "depositFT"
+                      ? currentToken.balance
+                      : currentCollection.amount,
+                },
+              })}
             </span>
             <input
               type="range"
@@ -252,28 +263,28 @@
     {:else if requestParams.type === "depositNFT"}{/if}
     {#if $txInProgress}
       <button aria-busy="true" disabled>
-        Please wait for the transaction
+        {$t("common.hint.please-wait-for-tx")}
       </button>
     {:else if $txStatus === false}
       <button
         on:click|preventDefault={handleSubmit}
         disabled={!isValidToSubmit}
       >
-        {#if requestParams.type === "depositFT"}
-          Deposit Tokens
-        {:else if requestParams.type === "depositNFT"}
-          Deposit NFTs
-        {:else}
-          Drop ALL ASSETs
-        {/if}
+        {requestParams.type === "depositFT"
+          ? $t("challenges.detail.settings.treasury.btn-submit-deposit-ft")
+          : requestParams.type === "depositNFT"
+          ? $t("challenges.detail.settings.treasury.btn-submit-deposit-nft")
+          : $t("challenges.detail.settings.treasury.btn-submit-drop")}
       </button>
     {:else}
       {#if $txStatus.success}
-        <p>Treasury updated successfully!</p>
+        <p>{$t("common.hint.tx-successful")}</p>
       {:else if !$txStatus.success && $txStatus.error}
         <p>{JSON.stringify($txStatus.error)}</p>
       {/if}
-      <button on:click|preventDefault={handleReset}> Continue </button>
+      <button on:click|preventDefault={handleReset}>
+        {$t("common.btn.continue")}
+      </button>
     {/if}
   </details>
 {/if}

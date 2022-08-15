@@ -1,4 +1,5 @@
 <script context="module">
+  import { t } from "svelte-i18n";
   import { getEventSeries, resolveAddressObject } from "$lib/flow/actions";
 
   export const prerender = true;
@@ -68,12 +69,20 @@
   <article>
     {#if !resolvedNameObject?.address}
       <p>
-        Invalid Address: {$page.params.address}
+        {$t("common.hint.invalid-address", {
+          values: {
+            address: $page.params.address,
+          },
+        })}
       </p>
     {:else if !eventSeries}
       <p>
-        Failed to load eventSeries: #{$page.params.seriesId} by {$page.params
-          .host}.
+        {$t("errors.challenges.failed-to-load", {
+          values: {
+            id: $page.params.seriesId,
+            host: $page.params.host,
+          },
+        })}
       </p>
     {:else}
       <header>
@@ -86,7 +95,7 @@
       </header>
       <ul class="tabs">
         <li
-          on:click={() => {
+          on:click={function () {
             if (!isIndexPage) {
               seriesTab.set("summary");
             }
@@ -94,10 +103,10 @@
           class:animatedlink={!isIndexPage}
           class:selected={isIndexPage}
         >
-          Summary
+          {$t("common.tabs.summary")}
         </li>
         <li
-          on:click={() => {
+          on:click={function () {
             if (!isTreasuryPage) {
               seriesTab.set("treasury");
             }
@@ -105,11 +114,11 @@
           class:animatedlink={!isTreasuryPage}
           class:selected={isTreasuryPage}
         >
-          Treasury
+          {$t("common.tabs.treasury")}
         </li>
         {#if $user?.addr == resolvedNameObject.address}
           <li
-            on:click={() => {
+            on:click={function () {
               if (!isSettingsPage) {
                 seriesTab.set("settings");
               }
@@ -117,7 +126,7 @@
             class:animatedlink={!isSettingsPage}
             class:selected={isSettingsPage}
           >
-            Settings
+            {$t("common.tabs.settings")}
           </li>
         {/if}
       </ul>

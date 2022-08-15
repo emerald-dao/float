@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   /** @type {import('../types').EventSeriesData} */
   export let eventSeriesData = {};
 </script>
@@ -19,11 +20,17 @@
     </div>
     <div class="flex-wrap flex-gap">
       <code data-tooltip="Total slots" class="flex-none">
-        Event Slots: {eventSeriesData.slots?.length ?? 0}
+        {$t("challenges.elements.card.slot", {
+          values: {
+            n: eventSeriesData.slots?.length ?? 0,
+          },
+        })}
       </code>
       {#if eventSeriesData.owner}
         <small class="flex-auto">
-          <span class="credit">Created by</span>
+          <span class="credit">
+            {$t("challenges.elements.card.created-by")}
+          </span>
           <a
             href="/{eventSeriesData.owner}/?tab=challenges"
             target="_blank"

@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import FungibleTokenDisplay from "$lib/components/common/FungibleTokenDisplay.svelte";
   import NftCollectionDisplay from "$lib/components/common/NFTCollectionDisplay.svelte";
   import Stack from "$lib/components/eventseries/svgs/stack.svelte";
@@ -66,15 +67,17 @@
           {#if strategy.strategyData.consumable}
             <EnergyPoint />
           {:else}
-            Points
+            {$t("challenges.elements.strategy.display.points")}
           {/if}
         </span>
-        Required
+        {$t("challenges.elements.strategy.display.required")}
       </span>
     </div>
     <div class="flex-wrap between">
       <span>
-        Remaining:
+        {$t("challenges.elements.strategy.display.remaining", {
+          values: { n: "" },
+        })}
         <span class="highlight">
           {strategy.deliveryStatus.maxClaimableShares -
             strategy.deliveryStatus.claimedShares}
@@ -94,15 +97,20 @@
           >
           / <Stack />
         {:else if strategy.deliveryMode === "ftRandomAmount"}
-          <span class="highlight">{strategy.deliveryStatus.totalAmount}</span> in
-          Total
+          <span class="highlight">{strategy.deliveryStatus.totalAmount}</span>
+          {$t("challenges.elements.strategy.display.in-total")}
         {:else}
-          <span class="highlight">x 1</span> / <Stack />
+          <span class="highlight">
+            {$t("challenges.elements.strategy.display.one-share")}
+          </span>
+          / <Stack />
         {/if}
       </span>
     </div>
     <div class="flex-wrap between flex-gap">
-      <span class="flex-none"> Treasury: </span>
+      <span class="flex-none">
+        {$t("challenges.elements.strategy.display.treasury")}
+      </span>
       {#if strategy.deliveryMode !== "nft"}
         <FungibleTokenDisplay
           identifier={strategy.deliveryStatus.deliveryTokenIdentifier}
@@ -119,9 +127,11 @@
     {#if strategy.strategyMode === "raffleStrategy" && strategy.currentState === "opening"}
       <div class="flex-wrap between">
         <span>
-          Eligible users:
+          {$t("challenges.elements.strategy.display.eligible-users")}
           <span class="highlight">{strategy.strategyData.valid?.length}</span>
-          ({strategy.strategyData.minValid} at least)
+          {$t("challenges.elements.strategy.display.at-least", {
+            values: { n: strategy.strategyData.minValid },
+          })}
         </span>
         <progress
           style="margin-top: 0.25rem;"

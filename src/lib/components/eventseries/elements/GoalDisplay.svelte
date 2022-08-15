@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import Badge from "../svgs/badge.svelte";
   import EventItem from "./EventItem.svelte";
 
@@ -96,12 +97,13 @@
   <div class="panel-content">
     {#if isByAmount}
       <div>
-        Collect <span class="emphasis">
+        {$t("challenges.elements.goal.label-collect")}
+        <span class="emphasis">
           {goal.params.eventsAmount}
         </span>
-        FLOATs
+        {$t("common.main.floats")}
         {#if goal.params.requiredEventsAmount > 0}
-          with
+          {$t("challenges.elements.goal.by-amount-with")}
           <span class="emphasis">
             {goal.params.requiredEventsAmount}
           </span>
@@ -110,8 +112,9 @@
       </div>
     {:else if isByPercent}
       <div>
-        Collect <span class="emphasis">{goal.params.percent}% </span>
-        FLOATs of the series
+        {$t("challenges.elements.goal.label-collect")}
+        <span class="emphasis">{goal.params.percent}% </span>
+        {$t("challenges.elements.floats-of-challenge")}
       </div>
     {:else}
       <div class="flex-wrap flex-gap">
@@ -126,7 +129,13 @@
         {/each}
       </div>
     {/if}
-    <b class:emphasis={isGoalReady}>{goal.points} Points</b>
+    <b class:emphasis={isGoalReady}>
+      {$t("challenges.elements.goal.label-points", {
+        values: {
+          points: "goal.points",
+        },
+      })}
+    </b>
   </div>
   {#if !preview}
     <div class="panel-bg" style="width: {progress}%;" />

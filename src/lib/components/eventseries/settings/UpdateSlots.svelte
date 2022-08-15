@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { createEventDispatcher } from "svelte";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import DialogPickingEvents from "$lib/components/eventseries/DialogPickingEvents.svelte";
@@ -97,31 +98,37 @@
 </div>
 {#if emptySlotAmount > 0}
   {#if $txInProgress}
-    <button aria-busy="true" disabled> Updating Event Slots </button>
+    <button aria-busy="true" disabled>
+      {$t("common.hint.please-wait-for-tx")}
+    </button>
   {:else if $txStatus === false}
     {#if pendingSlots.length === 0}
       <button on:click={(e) => (dialogOpened = true)}>
-        Fill Event Slots
+        {$t("challenges.detail.settings.slots.btn-fill-events")}
       </button>
     {:else}
       <button
         on:click|preventDefault={handleUpdateSlots}
         disabled={!isValidToSumbit}
       >
-        Submit Slots Update
+        {$t("challenges.detail.settings.slots.btn-submit")}
       </button>
     {/if}
   {:else}
     {#if $txStatus.success}
-      <p>Series slots updated successfully!</p>
+      <p>{$t("common.hint.tx-successful")}</p>
     {:else if !$txStatus.success && $txStatus.error}
       <p>{JSON.stringify($txStatus.error)}</p>
     {/if}
-    <button on:click|preventDefault={handleReset}> Continue </button>
+    <button on:click|preventDefault={handleReset}>
+      {$t("common.btn.continue")}
+    </button>
   {/if}
 {/if}
 
 <DialogPickingEvents
   bind:opened={dialogOpened}
-  on:add={(e) => onEventsAdded(e.detail)}
+  on:add={function (e) {
+    onEventsAdded(e.detail);
+  }}
 />
