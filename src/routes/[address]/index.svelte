@@ -2,6 +2,7 @@
   import { page } from "$app/stores";
   import Meta from "$lib/components/common/Meta.svelte";
 
+  import Challenges from "$lib/components/Challenges.svelte";
   import Groups from "$lib/components/account/Groups.svelte";
   import Floats from "$lib/components/Floats.svelte";
   import Events from "$lib/components/Events.svelte";
@@ -21,7 +22,8 @@
   title="FLOATs owned by {$page.params.address}"
   author={$page.params.address}
   description="FLOATs owned by {$page.params.address}"
-  url={$page.url} />
+  url={$page.url}
+/>
 
 <div class="">
   <ul class="tabs">
@@ -31,7 +33,8 @@
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "floats"}
-      class:selected={tab === "floats"}>
+      class:selected={tab === "floats"}
+    >
       FLOATs
     </li>
     <li
@@ -40,7 +43,8 @@
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "events"}
-      class:selected={tab === "events"}>
+      class:selected={tab === "events"}
+    >
       Events
     </li>
     <li
@@ -49,8 +53,19 @@
         goto(`?${query.toString()}`);
       }}
       class:animatedlink={tab !== "groups"}
-      class:selected={tab === "groups"}>
+      class:selected={tab === "groups"}
+    >
       Groups
+    </li>
+    <li
+      on:click={() => {
+        query.set("tab", "challenges");
+        goto(`?${query.toString()}`);
+      }}
+      class:animatedlink={tab !== "challenges"}
+      class:selected={tab === "challenges"}
+    >
+      Challenges
     </li>
     {#await addressObject then addressObject}
       {#if $user?.addr == addressObject.address}
@@ -60,7 +75,8 @@
             goto(`?${query.toString()}`);
           }}
           class:animatedlink={tab !== "account"}
-          class:selected={tab === "account"}>
+          class:selected={tab === "account"}
+        >
           Account
         </li>
       {/if}
@@ -76,6 +92,8 @@
       <Events {addressObject} />
     {:else if tab === "groups"}
       <Groups {addressObject} />
+    {:else if tab === "challenges"}
+      <Challenges {addressObject} />
     {:else if tab === "account"}
       <Shared />
     {:else}
