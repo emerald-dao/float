@@ -28,6 +28,7 @@
     "scrypt-async": "2.0.1",
     "sha3": "2.1.4",
     "svelte": "3.48.0",
+    "svelte-i18n": "^3.4.0",
     "svelte-intersection-observer": "0.10.0",
     "vite": "3.0.0"
   },
