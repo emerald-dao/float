@@ -815,6 +815,8 @@ pub contract FLOATEventSeries {
         pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResultWithUser]
         // Refresh strategy status
         pub fun refreshUserStatus(user: &{AchievementPublic})
+        // For the public to get strategy information
+        pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail
         // For the public to claim rewards
         pub fun claim(strategyIndex: Int, user: &{AchievementPublic})
 
@@ -939,6 +941,20 @@ pub contract FLOATEventSeries {
                 i = i + 1
             }
             return infos
+        }
+        
+        // For the public to get strategy information
+        pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail {
+            pre {
+                self.strategies[strategyIndex] != nil: "strategy does not exist."
+            }
+            let strategyRef = &self.strategies[strategyIndex] as &{ITreasuryStrategy}
+            let data = strategyRef.getStrategyDetail()
+            return StrategyDetail(
+                id: data.getType().identifier,
+                data: data,
+                status: strategyRef.controller.getInfo()
+            )
         }
 
         pub fun refreshUserStatus(user: &{AchievementPublic}) {
