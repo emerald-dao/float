@@ -132,7 +132,7 @@
     <b class:emphasis={isGoalReady}>
       {$t("challenges.elements.goal.label-points", {
         values: {
-          points: "goal.points",
+          points: goal.points,
         },
       })}
     </b>
