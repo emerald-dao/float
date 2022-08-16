@@ -1,4 +1,5 @@
 <script>
+  import { t } from "svelte-i18n";
   import { page } from "$app/stores";
   import Loading from "$lib/components/common/Loading.svelte";
   import SeriesList from "$lib/components/eventseries/SeriesList.svelte";
@@ -10,16 +11,20 @@
 
 <article>
   <header class="text-center">
-    <h3>Challenges</h3>
+    <h3>{$t("common.main.challenges")}</h3>
   </header>
   {#if !addressObject.address}
     <p>
-      Invalid Address: {$page.params.address}
+      {$t("common.hint.invalid-address", {
+        values: {
+          address: $page.params.address,
+        },
+      })}
     </p>
   {:else}
     {#if $user?.addr == addressObject.address}
       <a href="/challenges/create" role="button" class="addnew">
-        Create a new FLOAT Challenge
+        {$t("challenges.common.create")}
       </a>
     {/if}
     {#await getEventSeriesList(addressObject.address)}

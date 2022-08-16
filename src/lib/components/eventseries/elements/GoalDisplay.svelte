@@ -114,7 +114,7 @@
       <div>
         {$t("challenges.elements.goal.label-collect")}
         <span class="emphasis">{goal.params.percent}% </span>
-        {$t("challenges.elements.floats-of-challenge")}
+        {$t("challenges.detail.main.title-slots")}
       </div>
     {:else}
       <div class="flex-wrap flex-gap">

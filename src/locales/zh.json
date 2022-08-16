@@ -2,7 +2,191 @@
   "challenges": {
     "list": {
       "head": "挑战 {extension}",
-      "title": "FLOAT 挑战"
+      "title": "FLOAT 挑战",
+      "filter": "过滤存在奖池的挑战",
+      "no-challege": "没有任何 FLOAT 挑战。"
+    },
+    "common": {
+      "amount": "数量",
+      "create": "创建新的 FLOAT 挑战",
+      "dialog": {
+        "add-to-challenge": "添加到挑战",
+        "btn-query": "查询",
+        "label-owner": "所有者地址",
+        "title": "添加 FLOAT 活动到挑战"
+      },
+      "empty-slot-amount": "空槽位数量",
+      "label-required-slots": "必要槽位: {n}"
+    },
+    "create": {
+      "button": "创建 FLOAT 挑战",
+      "desc": "挑战描述",
+      "conifg-title": "配置你的挑战",
+      "empty-slots-title": "空白FLOAT槽位（可后续配置）",
+      "head": "创建一个新的 FLOAT 挑战 {extension}",
+      "image": "挑战图像",
+      "name": "挑战名称",
+      "preset-title": "预设 FLOAT 槽位"
+    },
+    "detail": {
+      "head": "{name} | 由 {host} 创建的 FLOAT 挑战",
+      "main": {
+        "title-goals": "挑战目标",
+        "title-rewards": "挑战奖励",
+        "title-slots": "挑战中的FLOAT",
+        "title-treasury": "挑战金库"
+      },
+      "settings": {
+        "danger": {
+          "btn-submit": "挑战作废",
+          "on-success-next": "查看更多挑战",
+          "title": "危险区域"
+        },
+        "goal": {
+          "btn-submit": "递交新的目标",
+          "floats-amount": "FLOATs 数量",
+          "points": "目标积分",
+          "select-by-amount": "根据数量",
+          "select-by-amount-desc": "通过收集挑战内指定数量的 FLOATs 达成。",
+          "select-by-percent": "根据百分比",
+          "select-by-percent-desc": "通过收集挑战内指定百分比的 FLOATs 达成。",
+          "select-by-specifics": "根据特定",
+          "select-by-specifics-desc": "通过收集挑战内特定的数个 FLOATs 达成。",
+          "title": "添加新的目标 →",
+          "with-required-amount": "包含必要数量：{n}"
+        },
+        "slots": {
+          "btn-fill-events": "为本挑战填充活动槽位",
+          "btn-submit": "递交槽位更新"
+        },
+        "strategy": {
+          "btn-submit": "添加新的奖励策略",
+          "label-balance": "余额：{balance}",
+          "label-cost": "策略耗费： {cost}",
+          "label-eligible-threshold": "成就积分要求",
+          "label-min-valid-users": "抽奖所需的最小有效用户数：{amount}",
+          "label-reward-identical": "每份奖励金额",
+          "label-reward-random": "全部奖励金额",
+          "label-total-shares": "总份数：{shares}",
+          "select-identical-amt": "人均相同",
+          "select-identical-amt-desc": "为每个申领者分发相同的 <b>Fungible Tokens</b> ",
+          "select-nft-deliver-desc": "为每个申领者分发一份 <b>NFT</b>",
+          "select-queue": "队列策略",
+          "select-queue-desc": "符合条件的用户可按顺序一一领取奖励，直至所有奖励被领取完。",
+          "select-raffle": "抽奖策略",
+          "select-raffle-desc": "符合条件的用户将获得一张参加抽奖的门票，只有获胜者才能领取奖励。",
+          "select-random-amt": "随机数量",
+          "select-random-amt-desc": "在总量内分配随机数量的 <b>Fungible Tokens</b>。",
+          "title": "添加新的策略 →"
+        },
+        "treasury": {
+          "btn-submit-deposit-ft": "存入代币",
+          "btn-submit-deposit-nft": "存入 NFT",
+          "btn-submit-drop": "清空资产",
+          "label-deposit": "存款金额",
+          "label-max": "最大：{amount}",
+          "select-deposit-ft": "存入代币",
+          "select-deposit-ft-desc": "将任何 <b>Fungible Tokens</b> 存入当前挑战的奖金库。",
+          "select-deposit-nft": "存入 NFT",
+          "select-deposit-nft-desc": "将任何 <b>NFT</b> 存入当前挑战的金库。",
+          "select-drop": "清空金库资产",
+          "select-drop-desc": "将<b>所有</b>金库中的资产清空并转移到所有者的帐户中。",
+          "title": "管理金库 →"
+        }
+      },
+      "summary": {
+        "accomplish-goals": "完成目标",
+        "achievement-point": "成就积分：",
+        "collect-more": "请收集更多挑战中的 FLOATs"
+      },
+      "treasury": {
+        "btn-sync-status": "同步状态"
+      }
+    },
+    "elements": {
+      "card": {
+        "created-by": "制作者 ",
+        "slot": "活动槽位：{n}"
+      },
+      "floats-of-challenge": "挑战中的FLOAT",
+      "goal": {
+        "by-amount-with": "包含",
+        "label-collect": "收集",
+        "label-points": "{points} 分"
+      },
+      "strategy": {
+        "claim-reward": "领取奖励",
+        "display": {
+          "at-least": "(至少{n}个)",
+          "eligible-users": "符合条件的用户：",
+          "in-total": "总量",
+          "one-share": "x 1",
+          "points": "积分",
+          "remaining": "剩余：{n}",
+          "required": "必要",
+          "treasury": "奖池剩余："
+        },
+        "fore-close": "强制关闭",
+        "no-more-eligible": "需要更多符合条件的用户",
+        "set-state": "设置为 {state}"
+      }
+    }
+  },
+  "common": {
+    "btn": {
+      "close": "关闭",
+      "connectWallet": "连接钱包",
+      "continue": "继续"
+    },
+    "eventsTable": {
+      "claimed": "已领取",
+      "created": "创建时间",
+      "event": "活动名称",
+      "select": "选择"
+    },
+    "headmeta": {
+      "title-floats": "{address} 所持有的 FLOATs"
+    },
+    "hint": {
+      "action-successful": "{what} {action} 成功!",
+      "claimed-reward": "✓ 您已领取过此奖励。",
+      "incomplete-params": "参数不完整",
+      "please-wait-for-tx": "请等待交易的执行",
+      "invalid-address": "无效地址：{address}",
+      "tx-successful": "交易执行成功！"
+    },
+    "label": {
+      "use": "使用"
+    },
+    "main": {
+      "account": "帐户",
+      "challenges": "挑战",
+      "events": "活动",
+      "floats": "FLOATs",
+      "groups": "活动组",
+      "nft": "NFT"
+    },
+    "tabs": {
+      "settings": "设置",
+      "summary": "概述",
+      "treasury": "奖池金库"
+    }
+  },
+  "errors": {
+    "challenges": {
+      "desc-missing": "缺少挑战说明。",
+      "failed-to-load": "无法加载挑战：{host} 的 #{id}.",
+      "fields-missing": "缺少以下必填字段",
+      "image-missing": "挑战图片丢失。",
+      "name-missing": "缺少挑战名称。",
+      "no-reward-strategy": "该挑战没有奖励策略",
+      "not-eligible-to-claim": "您没有资格领取奖励。",
+      "not-eligible-user-need-points": "您不符合条件，请获得更多积分。",
+      "slot-required": "挑战至少需要一个插槽。",
+      "wait-for-claimable": "请等待 CLAIMABLE 阶段"
+    },
+    "events": {
+      "account-no-events": "此帐户尚未创建任何 FLOAT 活动。"
     }
   }
 }

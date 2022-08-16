@@ -3,7 +3,7 @@
     "list": {
       "head": "Challenges {extension}",
       "title": "FLOAT Challenges",
-      "filter": "Filter for Treasury",
+      "filter": "Filter Challenges with treasury available",
       "no-challege": "There is no any FLOAT Challenge."
     },
     "create": {
@@ -19,7 +19,7 @@
     "detail": {
       "head": "{name} | FLOAT Challenges by {host}",
       "summary": {
-        "achievement-point": "Achievement Points: &nbsp;",
+        "achievement-point": "Achievement Points: ",
         "collect-more": "Please collect more FLOATs of the Challenge",
         "accomplish-goals": "Accomplish Goals"
       },
@@ -40,7 +40,7 @@
         "strategy": {
           "title": "Add a new strategy →",
           "select-queue": "Queue Strategy",
-          "select-queue-desc": "Eligible users can claim reward one by one util all rewards claimed.",
+          "select-queue-desc": "Eligible users can claim reward one by one, till all rewards claimed.",
           "select-raffle": "Raffle Strategy",
           "select-raffle-desc": "Eligible users will get a ticket to join the raffle and only winners can claim rewards.",
           "select-identical-amt": "Identical Amount",
@@ -82,7 +82,7 @@
         }
       },
       "main": {
-        "title-slots": "Events in the Challenge",
+        "title-slots": "FLOATs of the Challenge",
         "title-goals": "Challenge Goals",
         "title-treasury": "Challenge Treasury",
         "title-rewards": "Challenge Rewards"
@@ -104,7 +104,6 @@
       }
     },
     "elements": {
-      "floats-of-challenge": "FLOATs of the challenge",
       "card": {
         "slot": "Event Slots: {n}",
         "created-by": "Created by"

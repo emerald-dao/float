@@ -8,7 +8,7 @@
 
 <h4 class="flex-wrap between">
   <span>
-    {$t("challenges.detail.summary.achievement-point")}
+    {$t("challenges.detail.summary.achievement-point")} &nbsp;
     <span
       class="emphasis"
       data-tooltip="You can claim POINTs by achieving series goals."
