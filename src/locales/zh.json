@@ -34,7 +34,7 @@
       "main": {
         "title-goals": "挑战目标",
         "title-rewards": "挑战奖励",
-        "title-slots": "挑战中的FLOAT",
+        "title-slots": "挑战内待收集的 FLOATs",
         "title-treasury": "挑战金库"
       },
       "settings": {
@@ -98,7 +98,7 @@
       "summary": {
         "accomplish-goals": "完成目标",
         "achievement-point": "成就积分：",
-        "collect-more": "请收集更多挑战中的 FLOATs"
+        "collect-more": "请收集更多挑战内的 FLOATs"
       },
       "treasury": {
         "btn-sync-status": "同步状态"
@@ -112,6 +112,7 @@
       "goal": {
         "by-amount-with": "包含",
         "label-collect": "收集",
+        "label-target": "挑战内的 FLOATs",
         "label-points": "{points} 分"
       },
       "strategy": {
@@ -165,7 +166,7 @@
       "account": "帐户",
       "challenges": "挑战",
       "events": "活动",
-      "floats": "FLOATs",
+      "floats": "{n, plural, =0 {FLOAT} one {FLOAT} other {FLOATs}}",
       "groups": "活动组",
       "nft": "NFT"
     },

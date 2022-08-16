@@ -82,7 +82,7 @@
         }
       },
       "main": {
-        "title-slots": "FLOATs of the Challenge",
+        "title-slots": "FLOAT Events of the Challenge",
         "title-goals": "Challenge Goals",
         "title-treasury": "Challenge Treasury",
         "title-rewards": "Challenge Rewards"
@@ -112,6 +112,7 @@
       "goal": {
         "label-collect": "Collect",
         "by-amount-with": "with",
+        "label-target": "FLOATs of the Challenge",
         "label-points": "{points} Points"
       },
       "strategy": {
@@ -134,7 +135,7 @@
   },
   "common": {
     "main": {
-      "floats": "FLOATs",
+      "floats": "{n, plural, =0 {FLOAT} one {FLOAT} other {FLOATs}}",
       "events": "Events",
       "groups": "Groups",
       "challenges": "Challenges",

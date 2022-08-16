@@ -40,7 +40,7 @@
       class:animatedlink={tab !== "floats"}
       class:selected={tab === "floats"}
     >
-      {$t("common.main.floats")}
+      {$t("common.main.floats", { values: { n: 2 } })}
     </li>
     <li
       on:click={function () {

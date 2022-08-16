@@ -101,7 +101,9 @@
         <span class="emphasis">
           {goal.params.eventsAmount}
         </span>
-        {$t("common.main.floats")}
+        {$t("common.main.floats", {
+          values: { n: goal.params.eventsAmount },
+        })}
         {#if goal.params.requiredEventsAmount > 0}
           {$t("challenges.elements.goal.by-amount-with")}
           <span class="emphasis">
@@ -114,7 +116,7 @@
       <div>
         {$t("challenges.elements.goal.label-collect")}
         <span class="emphasis">{goal.params.percent}% </span>
-        {$t("challenges.detail.main.title-slots")}
+        {$t("challenges.elements.goal.label-target")}
       </div>
     {:else}
       <div class="flex-wrap flex-gap">
