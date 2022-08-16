@@ -62,6 +62,7 @@
         {strategy.currentState.toUpperCase()}
       </div>
       <span>
+        {$t("challenges.elements.strategy.display.require")}&nbsp;
         <span class="highlight">
           {strategy.strategyData.threshold}
           {#if strategy.strategyData.consumable}
@@ -70,7 +71,6 @@
             {$t("challenges.elements.strategy.display.points")}
           {/if}
         </span>
-        {$t("challenges.elements.strategy.display.required")}
       </span>
     </div>
     <div class="flex-wrap between">

@@ -117,7 +117,7 @@
       "strategy": {
         "display": {
           "points": "Points",
-          "required": "Required",
+          "require": "Requires",
           "remaining": "Remaining: {n}",
           "in-total": " in Total",
           "one-share": "x 1",
