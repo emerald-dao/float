@@ -44,7 +44,7 @@
           "title": "危险区域"
         },
         "goal": {
-          "btn-submit": "递交新的目标",
+          "btn-submit": "添加新的目标",
           "floats-amount": "FLOATs 数量",
           "points": "目标积分",
           "select-by-amount": "根据数量",
@@ -68,7 +68,7 @@
           "label-min-valid-users": "抽奖所需的最小有效用户数：{amount}",
           "label-reward-identical": "每份奖励金额",
           "label-reward-random": "全部奖励金额",
-          "label-total-shares": "总份数：{shares}",
+          "label-total-shares": "总份数：{share}",
           "select-identical-amt": "人均相同",
           "select-identical-amt-desc": "为每个申领者分发相同的 <b>Fungible Tokens</b> ",
           "select-nft-deliver-desc": "为每个申领者分发一份 <b>NFT</b>",

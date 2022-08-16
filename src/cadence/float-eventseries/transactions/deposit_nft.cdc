@@ -1,5 +1,6 @@
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
+import NFTCatalog from "../../core-contracts/NFTCatalog.cdc"
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 
 transaction(
@@ -52,6 +53,12 @@ transaction(
     assert(allIDs.length >= Int(amount), message: "NFT not enought.")
 
     let tokenType = self.collection.borrowNFT(id: allIDs[0]).getType()
+
+    // ensure collection exists
+    let dic = NFTCatalog.getCollectionsForType(nftTypeIdentifier: tokenType.identifier)
+      ?? panic("Failed to find nft collection in nft catalog.")
+    assert(dic.keys.length > 0, message: "the nft is regsitered to nft catalog.")
+
     // check if fungible token registered
     if FLOATEventSeries.getTokenDefinition(tokenType) == nil {
       self.serieshelf.registerToken(path: self.nftPublicPath, isNFT: true)

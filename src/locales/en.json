@@ -51,7 +51,7 @@
           "label-eligible-threshold": "Eligible Achievement Points Threshold",
           "label-cost": "Strategy Cost: {cost}",
           "label-balance": "Balance: {balance}",
-          "label-total-shares": "Total Shares: {shares}",
+          "label-total-shares": "Total Shares: {share}",
           "label-reward-identical": "Reward amount of each share",
           "label-reward-random": "Reward amount in total",
           "label-min-valid-users": "Minimum Amount of Eligible Users for the Raffle: {amount}",

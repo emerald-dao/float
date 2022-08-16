@@ -2,7 +2,11 @@
   import { t } from "svelte-i18n";
   import StrategyDisplay from "./StrategyDisplay.svelte";
   import { createEventDispatcher } from "svelte";
-  import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import {
+    user,
+    eventSeries as seriesStore,
+    getLatestTokenList,
+  } from "$lib/flow/stores";
   import { claimTreasuryRewards } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
@@ -47,15 +51,43 @@
     txKey.set(-1);
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!isValidToSubmit) return;
 
     txKey.set(strategy.index);
 
+    let identifier = strategy.deliveryStatus.deliveryTokenIdentifier;
+    if (!identifier) return;
+
+    let tokenIdInfo = identifier.split("."); // A.{address}.{contract}.Collection|Vault
+
+    // setup additionalMap
+    const additionalMap = {
+      PLACEHOLDER_CONTRACT: tokenIdInfo[2],
+      PLACEHOLDER_ADDRESS: `0x${tokenIdInfo[1]}`,
+      PLACEHOLDER_STORAGE_PATH: "/storage/unknown",
+      PLACEHOLDER_FT_RECEIVER_PATH: "/public/unknown",
+      PLACEHOLDER_FT_BALANCE_PATH: "/public/unknown",
+    };
+    const isNFT = strategy.deliveryMode === "nft";
+    if (!isNFT) {
+      const allList = await getLatestTokenList();
+      const tokenData = allList.find(
+        (one) =>
+          identifier === `A.${one.address.slice(2)}.${one.contractName}.Vault`
+      );
+      if (!tokenData) return;
+      additionalMap.PLACEHOLDER_STORAGE_PATH = tokenData.path.vault;
+      additionalMap.PLACEHOLDER_FT_RECEIVER_PATH = tokenData.path.receiver;
+      additionalMap.PLACEHOLDER_FT_BALANCE_PATH = tokenData.path.balance;
+    }
+
     claimTreasuryRewards(
       eventSeries.identifier.host,
       eventSeries.identifier.id,
-      strategy.index
+      strategy.index,
+      isNFT,
+      additionalMap
     );
   }
 </script>

@@ -2949,9 +2949,41 @@ export const accomplishGoals = async (host, seriesId, goals) => {
  * @param {number} seriesId 
  * @param {number} strategyIndex 
  */
-export const claimTreasuryRewards = async (host, seriesId, strategyIndex) => {
+export const claimTreasuryRewards = async (host, seriesId, strategyIndex, isNFT, additionalMap = {}) => {
+  let code = cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap);
+  if (isNFT) {
+    // setup NFT initialize
+    code = code
+      .replaceAll('PLACEHOLDER_FT_SETUP', "")
+      .replaceAll('PLACEHOLDER_NFT_SETUP', `
+        acct.save(<- PLACEHOLDER_CONTRACT.createEmptyCollection(), to: catalogMetadata.collectionData.storagePath)
+        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_CONTRACT.CollectionPublic, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, NonFungibleToken.Receiver}>
+          (catalogMetadata.collectionData.publicPath, target: catalogMetadata.collectionData.storagePath)
+        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_CONTRACT.CollectionPublic, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, NonFungibleToken.Provider}>
+          (catalogMetadata.collectionData.privatePath, target: catalogMetadata.collectionData.storagePath)
+      `)
+    } else {
+    // setup FT initialize
+    code = code
+      .replaceAll('PLACEHOLDER_NFT_SETUP', "")
+      .replaceAll('PLACEHOLDER_FT_SETUP', `
+        acct.save(<- PLACEHOLDER_CONTRACT.createEmptyVault(), to: PLACEHOLDER_STORAGE_PATH)
+        acct.link<&PLACEHOLDER_CONTRACT.Vault{FungibleToken.Receiver}>(
+          PLACEHOLDER_FT_RECEIVER_PATH,
+          target: PLACEHOLDER_STORAGE_PATH
+        )
+        acct.link<&PLACEHOLDER_CONTRACT.Vault{FungibleToken.Balance}>(
+          PLACEHOLDER_FT_BALANCE_PATH,
+          target: PLACEHOLDER_STORAGE_PATH
+        )
+      `)
+  }
+  // update placeholders
+  for (const key in additionalMap) {
+    code = code.replaceAll(key, additionalMap[key])
+  }
   return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap),
+    code,
     (arg, t) => [
       arg(host, t.Address),
       arg(seriesId, t.UInt64),
@@ -3125,7 +3157,7 @@ function parseRawGoalData(rawGoal) {
     if (!rawGoal.detail?.floats || !rawGoal.detail?.floats.length)
       return null;
     params = {
-      events: rawGoal.detail?.floats,
+      events: (rawGoal.detail?.floats ?? []).map(parseEventIdentifier),
     };
   } else {
     return null;
