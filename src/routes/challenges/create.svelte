@@ -269,8 +269,8 @@
         >
           {$t("common.hint.action-successful", {
             values: {
-              what: "Challenge",
-              action: "created",
+              what: $t("challenges.common.name"),
+              action: $t("common.action.created"),
             },
           })}
         </a>

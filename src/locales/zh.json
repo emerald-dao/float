@@ -7,6 +7,7 @@
       "no-challege": "没有任何 FLOAT 挑战。"
     },
     "common": {
+      "name": "FLOAT 挑战",
       "amount": "数量",
       "create": "创建新的 FLOAT 挑战",
       "dialog": {
@@ -108,7 +109,6 @@
         "created-by": "制作者 ",
         "slot": "活动槽位：{n}"
       },
-      "floats-of-challenge": "挑战中的FLOAT",
       "goal": {
         "by-amount-with": "包含",
         "label-collect": "收集",
@@ -148,12 +148,15 @@
       "title-floats": "{address} 所持有的 FLOATs"
     },
     "hint": {
-      "action-successful": "{what} {action} 成功!",
+      "action-successful": "{what}{action}成功!",
       "claimed-reward": "✓ 您已领取过此奖励。",
       "incomplete-params": "参数不完整",
       "please-wait-for-tx": "请等待交易的执行",
       "invalid-address": "无效地址：{address}",
       "tx-successful": "交易执行成功！"
+    },
+    "action": {
+      "created": "创建"
     },
     "label": {
       "use": "使用"

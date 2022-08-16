@@ -92,6 +92,7 @@
       }
     },
     "common": {
+      "name": "FLOAT Challenge",
       "create": "Create a new FLOAT Challenge",
       "amount": "Amount",
       "empty-slot-amount": "Empty Slot Amount",
@@ -150,6 +151,9 @@
       "event": "Event",
       "created": "Created",
       "claimed": "Claimed"
+    },
+    "action": {
+      "created": "created"
     },
     "label": {
       "use": "use"
