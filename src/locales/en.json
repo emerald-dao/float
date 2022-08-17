@@ -79,13 +79,22 @@
           "btn-submit-drop": "Drop ALL ASSETs",
           "label-deposit": "Deposit Amount",
           "label-max": "Max: {amount}"
+        },
+        "cert": {
+          "title": "Manage Certificates →",
+          "select-generate": "Generate Certificate Code",
+          "select-generate-desc": "Generate a specific certificate code which can be configured in FLOAT creation.",
+          "select-sync": "Sync Certificates",
+          "select-sync-desc": "Sync related FLOATs as Certificates of the Challenge.",
+          "btn-submit-sync": "Sync FLOAT Certificates"
         }
       },
       "main": {
         "title-slots": "FLOAT Events of the Challenge",
         "title-goals": "Challenge Goals",
         "title-treasury": "Challenge Treasury",
-        "title-rewards": "Challenge Rewards"
+        "title-rewards": "Challenge Rewards",
+        "title-certificate": "Challenge Certificates"
       },
       "treasury": {
         "btn-sync-status": "Sync Status"
@@ -170,18 +179,21 @@
       "action-successful": "{what} {action} successfully!",
       "incomplete-params": "Incomplete parameters",
       "invalid-address": "Invalid Address: {address}",
-      "claimed-reward": "✓ You already claimed this reward."
+      "claimed-reward": "✓ You already claimed this reward.",
+      "placeholder-ex": "ex. {ex}"
     },
     "headmeta": {
       "title-floats": "FLOATs owned by {address}"
     }
   },
   "errors": {
+    "common": {
+      "fields-missing": "The following mandatory fields are missing"
+    },
     "challenges": {
-      "fields-missing": "The following mandatory fields are missing",
-      "name-missing": "Challenge name is missing.",
-      "desc-missing": "Challenge description is missing.",
-      "image-missing": "Challenge image is missing.",
+      "name-missing": "Challenge name",
+      "desc-missing": "Challenge description",
+      "image-missing": "Challenge image",
       "slot-required": "Challenge need one slot at least.",
       "failed-to-load": "Failed to load Challenge: #{id} by {host}.",
       "not-eligible-user-need-points": "You are not eligible, please obtain more POINTS.",
@@ -190,7 +202,27 @@
       "no-reward-strategy": "There is no reward strategy for the Challenge"
     },
     "events": {
-      "account-no-events": "This account has not created any FLOAT events yet."
+      "account-no-events": "This account has not created any FLOAT events yet.",
+      "name-missing": "Event Name",
+      "desc": "Event Description",
+      "image": "Event Image",
+      "cannot-mint-for": "You cannot mint for"
+    }
+  },
+  "events": {
+    "common": {
+      "create": "Create a new FLOAT Event",
+      "verifier": {
+        "label-challenge-false": "No Challenge",
+        "label-challenge-false-desc": "This FLOAT is not a challenge certificate.",
+        "label-challenge-true": "Challenge Certificate",
+        "label-challenge-true-desc": "This FLOAT is a challenge certificate, You need to reach certain achievement points to claim."
+      }
+    },
+    "create": {
+      "hint": {
+        "enter-cert-code": "Enter a certificate code generated in Challenge Settings"
+      }
     }
   }
 }

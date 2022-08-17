@@ -8,6 +8,7 @@
   class:huge
   viewBox="0 0 20 20"
   fill="currentColor"
+  preserveAspectRatio="xMidYMid meet"
 >
   <path
     fill-rule="evenodd"

@@ -162,7 +162,9 @@
         name="points"
         min="1"
         max="1000"
-        placeholder="ex. 100"
+        placeholder={$t("common.hint.placeholder-ex", {
+          values: { ex: 100 },
+        })}
         step="10"
         disabled={$txInProgress}
         bind:value={requestParams.points}
@@ -178,7 +180,9 @@
             type="number"
             id="eventsAmount"
             name="eventsAmount"
-            placeholder="ex. 1"
+            placeholder={$t("common.hint.placeholder-ex", {
+              values: { ex: 1 },
+            })}
             min="1"
             max={eventSeries.slots.length}
             required

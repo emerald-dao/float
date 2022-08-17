@@ -6,6 +6,7 @@
   import ManageTreasury from "$lib/components/eventseries/settings/ManageTreasury.svelte";
   import UpdateSlots from "$lib/components/eventseries/settings/UpdateSlots.svelte";
   import DangerZone from "$lib/components/eventseries/settings/DangerZone.svelte";
+  import ManageCertificate from "../settings/ManageCertificate.svelte";
 
   // dispatcher
   const dispatch = createEventDispatcher();
@@ -23,6 +24,13 @@
 />
 <h4>{$t("challenges.detail.main.title-goals")}</h4>
 <AddNewGoal
+  {eventSeries}
+  on:seriesUpdated={function () {
+    dispatch("seriesUpdated");
+  }}
+/>
+<h4>{$t("challenges.detail.main.title-certificate")}</h4>
+<ManageCertificate
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");

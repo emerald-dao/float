@@ -242,7 +242,9 @@
             name="threshold"
             min="1"
             max="10000000"
-            placeholder="ex. 100"
+            placeholder={$t("common.hint.placeholder-ex", {
+              values: { ex: 100 },
+            })}
             step="100"
             required
             disabled={$txInProgress}
@@ -310,7 +312,9 @@
                 name="deliveryParam"
                 min="1"
                 max={currentToken.balance}
-                placeholder="ex. 100"
+                placeholder={$t("common.hint.placeholder-ex", {
+                  values: { ex: 100 },
+                })}
                 step="10"
                 required
                 disabled={$txInProgress}
@@ -363,7 +367,9 @@
                   name="maxClaimableShares"
                   min="1"
                   max="10000"
-                  placeholder="ex. 100"
+                  placeholder={$t("common.hint.placeholder-ex", {
+                    values: { ex: 100 },
+                  })}
                   step="10"
                   required
                   disabled={$txInProgress}

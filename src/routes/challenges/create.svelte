@@ -54,14 +54,16 @@
 
   async function checkInputs() {
     let errorArray = [];
-    let messageString = $t("errors.challenges.fields-missing");
+    let messageString = $t("errors.common.fields-missing");
 
     // add conditions here
     if (!draftEventSeries.basics.name) {
       errorArray.push($t("errors.challenges.name-missing"));
-    } else if (!draftEventSeries.basics.description) {
+    }
+    if (!draftEventSeries.basics.description) {
       errorArray.push($t("errors.challenges.desc-missing"));
-    } else if (!draftEventSeries.basics.image) {
+    }
+    if (!draftEventSeries.basics.image) {
       errorArray.push($t("errors.challenges.image-missing"));
     }
 
