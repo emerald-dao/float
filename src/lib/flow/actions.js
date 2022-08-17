@@ -2810,6 +2810,28 @@ export const dropTreasury = async ({seriesId}) => {
   )
 }
 
+export const syncCertificateFloats = async({seriesId, events}) => {
+  const reduced = events.reduce((all, curr) => {
+    if (typeof curr.host === 'string' &&
+      (typeof curr.id === 'string' || typeof curr.eventId === 'string')) {
+      all.hosts.push(curr.host)
+      all.eventIds.push(curr.id ?? curr.eventId)
+    }
+    return all
+  }, { hosts:[], eventIds: []})
+
+  return await generalSendTransaction(
+    cadence.replaceImportAddresses(cadence.txSyncCertificates, addressMap),
+    (arg, t) => [
+      arg(seriesId, t.UInt64),
+      arg(reduced.hosts, t.Array(t.Address)),
+      arg(reduced.eventIds, t.Array(t.UInt64)),
+    ],
+    eventSeries.SyncCertificates.InProgress,
+    eventSeries.SyncCertificates.Status,
+  )
+}
+
 // **********************
 // ** Events Collector **
 // **********************
@@ -2947,6 +2969,7 @@ const parseEventSeries = (item) => ({
     required: one.required,
     event: parseEventIdentifier(one.event)
   })),
+  extra: item.extra
 })
 
 /**

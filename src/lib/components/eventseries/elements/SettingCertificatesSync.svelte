@@ -1,8 +1,9 @@
 <script>
   import { t } from "svelte-i18n";
+  import EventCertificateItem from "./EventCertificateItem.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
-  import EventCertificateItem from "./EventCertificateItem.svelte";
+  import { syncCertificateFloats } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -24,6 +25,8 @@
     if ($txStatus?.success) {
       dispatch("seriesUpdated");
     }
+    txInProgress.set(false);
+    txStatus.set(false);
   }
 
   $: isValidToSubmit = isValid;
@@ -31,7 +34,10 @@
   async function handleSubmit() {
     if (!isValidToSubmit) return;
 
-    // TODO
+    syncCertificateFloats({
+      seriesId: eventSeries.identifier.id,
+      events: events.map((one) => one.event),
+    });
   }
 </script>
 

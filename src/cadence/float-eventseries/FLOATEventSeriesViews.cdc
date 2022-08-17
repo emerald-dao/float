@@ -43,7 +43,7 @@ pub contract FLOATEventSeriesViews {
           slot.isEventRequired()
         ))
       }
-      self.extra = {}
+      self.extra = eventSeries.getExtra()
     }
   }
 

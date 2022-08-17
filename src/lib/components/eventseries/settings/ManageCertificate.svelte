@@ -3,9 +3,10 @@
   import CopyBadge from "$lib/components/common/CopyBadge.svelte";
   import ExternalLink from "../svgs/ExternalLink.svelte";
   import EventsQuery from "../EventsQuery.svelte";
+  import EventCertificateItem from "../elements/EventCertificateItem.svelte";
   import SettingCertificatesSync from "../elements/SettingCertificatesSync.svelte";
   import { createEventDispatcher } from "svelte";
-  import { user, eventSeries as seriesStore } from "$lib/flow/stores";
+  import { user } from "$lib/flow/stores";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -58,9 +59,18 @@
     }
     return validEvents;
   }
+
+  $: certificates = Object.values(eventSeries.extra?.Certificates ?? {});
 </script>
 
 {#if isValid}
+  {#if certificates.length > 0}
+    <div class="flex-wrap flex-gap mb-1">
+      {#each certificates as one, index (one ? `${one.host}#${one.eventId}@${index}` : "emptySlot#" + index)}
+        <EventCertificateItem event={one} points={undefined} />
+      {/each}
+    </div>
+  {/if}
   <details>
     <summary role="button" class="secondary">
       <b>{$t("challenges.detail.settings.cert.title")}</b>

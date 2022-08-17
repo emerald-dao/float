@@ -55,11 +55,22 @@ interface EventSeriesSlot {
   required: boolean;
 }
 
+interface EventSeriesExtra {
+  CertificatesAmount?: string;
+  Certificates?: {
+    [key: string]: {
+      host: string;
+      eventId: string;
+    };
+  };
+}
+
 export interface EventSeriesData {
   // data memeber
   identifier: Identifier;
   basics: EventSeriesBasics;
   slots: EventSeriesSlot[];
+  extra?: EventSeriesExtra;
   // calc member
   sequence?: number;
   // display member

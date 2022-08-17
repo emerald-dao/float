@@ -22,7 +22,10 @@
 
   $: itemRequired = item.required ?? false;
 
-  /** @type {Promise<import('./types').FloatEvent>} */
+  /** @type {import('../types').FloatEvent} */
+  let eventData = null;
+
+  /** @type {Promise<import('../types').FloatEvent>} */
   const floatEventCallback = async () => {
     if (!item.event) return null;
 
@@ -33,7 +36,7 @@
       let resolvedNameObject = await resolveAddressObject(item.event?.host);
       hostAddress = resolvedNameObject.address;
     }
-    let eventData = await getEvent(hostAddress, String(item.event?.id));
+    eventData = await getEvent(hostAddress, String(item.event?.id));
     if (!eventData) {
       return null;
     }
@@ -101,6 +104,8 @@
     </span>
   {/if}
 </article>
+
+<slot name="after" {eventData} />
 
 <style>
   .card-item {

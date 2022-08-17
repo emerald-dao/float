@@ -1290,6 +1290,8 @@ pub contract FLOATEventSeries {
         pub fun getGoals(): [{IAchievementGoal}]
         // get an achievement goal by index
         pub fun getGoal(idx: Int): {IAchievementGoal}
+        // get extra information of event series
+        pub fun getExtra(): {String: AnyStruct}
         // check if goals of this user reached
         pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool]
         // borrow the treasury public reference
@@ -1306,6 +1308,8 @@ pub contract FLOATEventSeries {
         pub fun updateSlotData(idx: Int, identifier: EventIdentifier)
         // add a new achievement goal to the event series
         pub fun addAchievementGoal(goal: {IAchievementGoal})
+        // sync eventseries related certificate FLOATs
+        pub fun syncCertificates(events: [EventIdentifier])
     }
 
     // The event series defination
@@ -1422,6 +1426,10 @@ pub contract FLOATEventSeries {
             return self.goals[idx]
         }
 
+        pub fun getExtra(): {String: AnyStruct} {
+            return self.extra
+        }
+
         pub fun borrowTreasury(): &Treasury{TreasuryPublic} {
             return &self.treasury as &Treasury{TreasuryPublic}
         }
@@ -1499,6 +1507,40 @@ pub contract FLOATEventSeries {
                 goalTitle: goal.title,
                 points: goal.getPoints()
             )
+        }
+
+        // sync eventseries related certificate FLOATs
+        pub fun syncCertificates(events: [EventIdentifier]) {
+            pre {
+                events.length > 0: "Length of events should not be zero."
+            }
+            let certDic: {String: EventIdentifier} = self.extra["Certificates"] as! {String: EventIdentifier}? ?? {}
+
+            for one in events {
+                // ensure exists
+                let eventIns = one.getEventPublic()
+                let eventKey = one.toString()
+                // skip
+                if certDic.containsKey(eventKey) {
+                    continue
+                }
+                let verifiers = eventIns.getVerifiers()
+                var isValid = false
+                for key in verifiers.keys {
+                    // Length of "A.XXXXX." is 19
+                    let contractName = key.slice(from: 19, upTo: key.length)
+                    if contractName == "FLOATChallengeVerifiers.ChallengeAchievementPoint" {
+                        isValid = true
+                        break
+                    }
+                }
+                assert(isValid, message: "Invalid Certificates Event.")
+                certDic[eventKey] = one
+            }
+            
+            // update certificates
+            self.extra["Certificates"] = certDic
+            self.extra["CertificatesAmount"] = certDic.keys.length
         }
 
         // --- Setters - Contract Only ---

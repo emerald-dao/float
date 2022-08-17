@@ -55,6 +55,7 @@ export { default as txDepositFungibleTokenToTreasury } from '../../cadence/float
 export { default as txDepositNonFungibleTokenToTreasury } from '../../cadence/float-eventseries/transactions/deposit_nft.cdc?raw'
 export { default as txNextTreasuryStrategyStage } from '../../cadence/float-eventseries/transactions/next_strategy_stage.cdc?raw'
 export { default as txDropTreasury } from '../../cadence/float-eventseries/transactions/drop_treasury.cdc?raw'
+export { default as txSyncCertificates } from '../../cadence/float-eventseries/transactions/sync_certificate_floats.cdc?raw'
 // ** Events Collector **
 export { default as txAccomplishGoal } from '../../cadence/float-eventseries/transactions/accomplish_goals.cdc?raw'
 export { default as txClaimTreasuryRewards } from '../../cadence/float-eventseries/transactions/claim_rewards_treasury.cdc?raw'

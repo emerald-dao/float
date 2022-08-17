@@ -5,6 +5,18 @@
   export let event;
   export let points;
   export let owned = false;
+
+  function getPoints(data) {
+    const challengeCertificateVerifier =
+      data?.verifiers[
+        Object.keys(data?.verifiers ?? {}).find((key) =>
+          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+        )
+      ];
+    return !challengeCertificateVerifier
+      ? 0
+      : challengeCertificateVerifier[0].challengeThresholdPoints;
+  }
 </script>
 
 <div class="cert-panel flex-wrap flex-gap" class:owned>
@@ -18,11 +30,14 @@
     }}
     {owned}
     preview={true}
-  />
-  <div class="flex-auto flex flex-col">
-    <span> {$t("challenges.elements.strategy.display.points")} </span>
-    <span class="emphasis"> {points} </span>
-  </div>
+    let:eventData
+  >
+    <div class="flex-auto flex flex-col" slot="after">
+      <small> {$t("challenges.elements.strategy.display.require")} </small>
+      <small> {$t("challenges.elements.strategy.display.points")} </small>
+      <span class="emphasis"> {points ?? getPoints(eventData)} </span>
+    </div>
+  </EventItem>
 </div>
 
 <style>

@@ -116,7 +116,7 @@
       data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.MinimumBalance`];
     challengeCertificateVerifier =
       data.verifiers[
-        Object.keys(data.verifiers ?? []).find((key) =>
+        Object.keys(data.verifiers ?? {}).find((key) =>
           key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
         )
       ];
