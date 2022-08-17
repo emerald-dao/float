@@ -180,7 +180,7 @@
     cursor: pointer;
     position: absolute;
     top: -10px;
-    right: -4px;
+    left: -4px;
   }
 
   .unclaimed {

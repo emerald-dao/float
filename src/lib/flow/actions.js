@@ -3300,3 +3300,18 @@ export const getCollections = async (identifer) => {
     []
   )
 }
+
+/**
+ * @returns {Promise<boolean[]>}
+ */
+export const ownsSpecificFloatsAll = async (acct, eventIds) => {
+  console.log(acct, eventIds)
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scOwnsSpecificFloatsAll, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+      arg(eventIds, t.Array(t.UInt64)),
+    ],
+    (eventIds ?? []).map(one => false)
+  )
+}

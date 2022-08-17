@@ -3,11 +3,13 @@
   import Loading from "$lib/components/common/Loading.svelte";
   import AchievementPoints from "../elements/AchievementPoints.svelte";
   import TreasuryStrategyItem from "../elements/TreasuryStrategyItem.svelte";
+  import EventCertificateItem from "../elements/EventCertificateItem.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
     getSeriesStrategies,
     refreshUserStrategiesStatus,
+    ownsSpecificFloatsAll,
   } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
@@ -17,6 +19,8 @@
   const dispatch = createEventDispatcher();
 
   $: preview = !$user?.addr;
+
+  $: certificates = Object.values(eventSeries.extra?.Certificates ?? {});
 
   /** @type {Promise<import('../types').StrategyQueryResult>} */
   $: strategiesPromise = getSeriesStrategies(
@@ -28,6 +32,15 @@
 
   const txInProgress = seriesStore.RefreshUserStatus.InProgress;
   const txStatus = seriesStore.RefreshUserStatus.Status;
+
+  async function queryOwnsStatus() {
+    if (preview || certificates.length === 0) return [];
+
+    return await ownsSpecificFloatsAll(
+      $user?.addr,
+      certificates.map((one) => one.eventId)
+    );
+  }
 
   /**
    * @param {import('../types').StrategyQueryResult} data
@@ -101,6 +114,23 @@
       {/if}
     {/if}
   {/if}
+
+  {#if certificates.length > 0}
+    <h4>{$t("challenges.detail.main.title-certificate")}</h4>
+    {#await queryOwnsStatus() then ownsStatus}
+      <div class="flex-wrap flex-gap mb-1">
+        {#each certificates as one, index (one ? `${one.host}#${one.eventId}@${index}` : "emptySlot#" + index)}
+          <EventCertificateItem
+            event={one}
+            points={undefined}
+            {preview}
+            owned={ownsStatus[index]}
+          />
+        {/each}
+      </div>
+    {/await}
+  {/if}
+
   {#if !data?.strategies?.length}
     <div class="flex">{$t("errors.challenges.no-reward-strategy")}</div>
   {:else}

@@ -5,6 +5,7 @@
   export let event;
   export let points;
   export let owned = false;
+  export let preview = true;
 
   function getPoints(data) {
     const challengeCertificateVerifier =
@@ -29,7 +30,7 @@
       required: false,
     }}
     {owned}
-    preview={true}
+    {preview}
     let:eventData
   >
     <div class="flex-auto flex flex-col" slot="after">
@@ -49,6 +50,5 @@
 
   .cert-panel.owned {
     border: 1px solid var(--secondary);
-    opacity: 0.2;
   }
 </style>

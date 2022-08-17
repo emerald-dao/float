@@ -27,6 +27,8 @@ ____ _  _ ____ _  _ ___
 
 export { default as txCreateEvent } from '../../cadence/float/transactions/create_event.cdc?raw'
 
+export { default as scOwnsSpecificFloatsAll } from '../../cadence/float/scripts/owns_specific_floats_all.cdc?raw'
+
 /**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
