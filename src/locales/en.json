@@ -199,7 +199,8 @@
       "not-eligible-user-need-points": "You are not eligible, please obtain more POINTS.",
       "wait-for-claimable": "Please wait for the CLAIMABLE phase",
       "not-eligible-to-claim": "You are not eligible to claim the reward.",
-      "no-reward-strategy": "There is no reward strategy for the Challenge"
+      "no-reward-strategy": "There is no reward strategy for the Challenge",
+      "no-related-cert-float": "There is no related challenge certificate FLOAT in this account"
     },
     "events": {
       "account-no-events": "This account has not created any FLOAT events yet.",

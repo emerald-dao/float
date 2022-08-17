@@ -199,7 +199,8 @@
       "not-eligible-to-claim": "您没有资格领取奖励。",
       "not-eligible-user-need-points": "您不符合条件，请获得更多积分。",
       "slot-required": "挑战至少需要一个插槽。",
-      "wait-for-claimable": "请等待 CLAIMABLE 阶段"
+      "wait-for-claimable": "请等待 CLAIMABLE 阶段",
+      "no-related-cert-float": "此账户中没有相关的挑战证书 FLOAT"
     },
     "events": {
       "account-no-events": "此帐户尚未创建任何 FLOAT 活动。",

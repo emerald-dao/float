@@ -1,9 +1,11 @@
 <script>
   import { t } from "svelte-i18n";
+  import CopyBadge from "$lib/components/common/CopyBadge.svelte";
+  import ExternalLink from "../svgs/ExternalLink.svelte";
+  import EventsQuery from "../EventsQuery.svelte";
+  import SettingCertificatesSync from "../elements/SettingCertificatesSync.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
-  import ExternalLink from "../svgs/ExternalLink.svelte";
-  import CopyBadge from "$lib/components/common/CopyBadge.svelte";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -12,9 +14,6 @@
   const dispatch = createEventDispatcher();
 
   $: isValid = eventSeries.identifier.host === $user?.addr;
-
-  const txInProgress = seriesStore.SyncCertificates.InProgress;
-  const txStatus = seriesStore.SyncCertificates.Status;
 
   /** @type {'generate' | 'sync'} */
   let mode;
@@ -31,20 +30,33 @@
   handleReset();
 
   function handleReset() {
-    if ($txStatus?.success) {
-      dispatch("seriesUpdated");
-    }
-
     mode = "generate";
     generatePoints = 0;
   }
 
-  $: isValidToSubmit = false;
-
-  async function handleSubmit() {
-    if (!isValidToSubmit) return;
-
-    // TODO
+  async function filterForCertificates(eventObjects) {
+    const validEvents = [];
+    for (const one of eventObjects) {
+      const anyCertVerifier = Object.keys(one.event?.verifiers ?? {}).find(
+        (key) =>
+          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+      );
+      if (anyCertVerifier) {
+        const verifier = one.event?.verifiers[anyCertVerifier][0];
+        const challengeIdentifier = verifier.challengeIdentifier;
+        if (
+          challengeIdentifier &&
+          challengeIdentifier.host === eventSeries.identifier.host &&
+          challengeIdentifier.id === eventSeries.identifier.id
+        ) {
+          validEvents.push({
+            event: one.event,
+            points: verifier.challengeThresholdPoints,
+          });
+        }
+      }
+    }
+    return validEvents;
   }
 </script>
 
@@ -57,7 +69,6 @@
       <button
         class:secondary={mode !== "generate"}
         class="outline"
-        disabled={$txInProgress}
         on:click={function () {
           mode = "generate";
           generatePoints = 0;
@@ -72,7 +83,6 @@
       <button
         class:secondary={mode !== "sync"}
         class="outline"
-        disabled={$txInProgress}
         on:click={function () {
           mode = "sync";
         }}
@@ -99,7 +109,6 @@
             min="1"
             step="100"
             required
-            disabled={$txInProgress}
             bind:value={generatePoints}
           />
         </label>
@@ -125,30 +134,25 @@
         </div>
       {/if}
     {:else}
-      <div class="flex-wrap flex-gap mb-1">
-        <!-- TODO -->
+      <div class="flex flex-col">
+        <EventsQuery let:events let:address>
+          {#await filterForCertificates(events) then filteredEvents}
+            {#if filteredEvents.length > 0}
+              <SettingCertificatesSync
+                {eventSeries}
+                events={filteredEvents}
+                on:seriesUpdated={function () {
+                  dispatch("seriesUpdated");
+                }}
+              />
+            {:else}
+              <p class="text-center">
+                {$t("errors.challenges.no-related-cert-float")}
+              </p>
+            {/if}
+          {/await}
+        </EventsQuery>
       </div>
-      {#if $txInProgress}
-        <button aria-busy="true" disabled>
-          {$t("common.hint.please-wait-for-tx")}
-        </button>
-      {:else if $txStatus === false}
-        <button
-          on:click|preventDefault={handleSubmit}
-          disabled={!isValidToSubmit}
-        >
-          {$t("challenges.detail.settings.cert.btn-submit-sync")}
-        </button>
-      {:else}
-        {#if $txStatus.success}
-          <p>{$t("common.hint.tx-successful")}</p>
-        {:else if !$txStatus.success && $txStatus.error}
-          <p>{JSON.stringify($txStatus.error)}</p>
-        {/if}
-        <button on:click|preventDefault={handleReset}>
-          {$t("common.btn.continue")}
-        </button>
-      {/if}
     {/if}
   </details>
 {/if}

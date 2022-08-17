@@ -110,7 +110,7 @@
     height: 128px;
 
     padding: 8px;
-    margin: 0 4px 4px 0;
+    margin: 0;
 
     border: 1px solid transparent;
   }
