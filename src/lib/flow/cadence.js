@@ -20,6 +20,14 @@ export const replaceImportAddresses = (code, addressMap, byName = true) => {
 };
 
 /**
+____ _  _ ____ _  _ ___
+|___ |  | |___ |\ |  | 
+|___  \/  |___ | \|  | 
+ */
+
+export { default as txCreateEvent } from '../../cadence/float/transactions/create_event.cdc?raw'
+
+/**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
 |___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 

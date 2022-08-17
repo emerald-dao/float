@@ -3,6 +3,7 @@ import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
+import FLOATChallengeVerifiers from "../../float-eventseries/FLOATChallengeVerifiers.cdc"
 
 transaction(
   forHost: Address, 
@@ -23,7 +24,11 @@ transaction(
   flowTokenPurchase: Bool, 
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
-  minimumBalance: UFix64
+  minimumBalance: UFix64,
+  challengeCertificate: Bool,
+  challengeHost: Address?,
+  challengeId: UInt64?,
+  challengeAchievementThreshold: UInt64?
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -65,6 +70,8 @@ transaction(
     var SecretV2: FLOATVerifiers.SecretV2? = nil
     var Limited: FLOATVerifiers.Limited? = nil
     var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
+    var ChallengeAchievementPoint: FLOATChallengeVerifiers.ChallengeAchievementPoint? = nil
+
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
@@ -82,12 +89,18 @@ transaction(
       MinimumBalance = FLOATVerifiers.MinimumBalance(_amount: minimumBalance)
       verifiers.append(MinimumBalance!)
     }
+    if challengeCertificate && challengeHost != nil && challengeId != nil && challengeAchievementThreshold != nil {
+      ChallengeAchievementPoint = FLOATChallengeVerifiers.ChallengeAchievementPoint(
+        _challengeHost: challengeHost!, _challengeId: challengeId!, thresholdPoints: challengeAchievementThreshold!
+      )
+      verifiers.append(ChallengeAchievementPoint!)
+    }
     let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchase {
       let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-      extraMetadata["prices"] = {"A.1654653399040a61.FlowToken.Vault": tokenInfo}
+      extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
     }
     self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
     log("Started a new event for host.")
   }
-}  
+}

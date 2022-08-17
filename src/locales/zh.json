@@ -206,7 +206,8 @@
       "name-missing": "活动名称",
       "desc": "活动说明",
       "image": "活动图片",
-      "cannot-mint-for": "你不是Minter"
+      "cannot-mint-for": "你不是Minter",
+      "invalid-certificate-code": "无效的证书代码"
     }
   },
   "events": {
@@ -223,6 +224,11 @@
       "hint": {
         "enter-cert-code": "输入在挑战设置中生成的证书代码"
       }
+    },
+    "detail": {
+      "section-info-cert-label": "挑战证书",
+      "section-info-cert-desc": "此 FLOAT 要求在挑战中获得的最低成就点为 <span class=\"emphasis\"> {n} </span>。",
+      "section-info-link": "链接"
     }
   }
 }

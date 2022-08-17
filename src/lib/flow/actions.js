@@ -89,7 +89,21 @@ export const configureFCLAndLogin = async (wallet) => {
 }
 
 const convertDraftFloat = (draftFloat) => {
-  return {
+  const challengeVerifierData = {
+    challengeCertificate: false,
+    challengeHost: null,
+    challengeId: null,
+    challengeAchievementThreshold: null
+  }
+  if (draftFloat.challengeCertificate) {
+    const parts = String(draftFloat.challengeCertificate).split(':')
+    challengeVerifierData.challengeCertificate = true
+    challengeVerifierData.challengeHost = parts[0]
+    challengeVerifierData.challengeId = parts[1]
+    challengeVerifierData.challengeAchievementThreshold = parts[2]
+  }
+
+  return Object.assign({
     claimable: draftFloat.claimable,
     name: draftFloat.name,
     description: draftFloat.description,
@@ -108,7 +122,7 @@ const convertDraftFloat = (draftFloat) => {
     flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0",
     minimumBalanceToggle: draftFloat.minimumBalance ? true : false,
     minimumBalance: draftFloat.minimumBalance ? String(draftFloat.minimumBalance.toFixed(2)) : "0.0"
-  };
+  }, challengeVerifierData);
 }
 
 /****************************** SETTERS ******************************/
@@ -194,164 +208,42 @@ export const setupAccount = async () => {
 }
 
 export const createEvent = async (forHost, draftFloat) => {
-
   let floatObject = convertDraftFloat(draftFloat);
   console.log(floatObject);
 
-  eventCreationInProgress.set(true);
+  let code = cadence.replaceImportAddresses(cadence.txCreateEvent, addressMap)
+  code = code.replaceAll("${flowTokenIdentifier}", flowTokenIdentifier)
 
-  let transactionId = false;
-  initTransactionState()
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
-      import FLOAT from 0xFLOAT
-      import FLOATVerifiers from 0xFLOAT
-      import NonFungibleToken from 0xCORE
-      import MetadataViews from 0xCORE
-      import GrantedAccountAccess from 0xFLOAT
-
-      transaction(
-        forHost: Address, 
-        claimable: Bool, 
-        name: String, 
-        description: String, 
-        image: String, 
-        url: String, 
-        transferrable: Bool, 
-        timelock: Bool, 
-        dateStart: UFix64, 
-        timePeriod: UFix64, 
-        secret: Bool, 
-        secretPK: String, 
-        limited: Bool, 
-        capacity: UInt64, 
-        initialGroups: [String], 
-        flowTokenPurchase: Bool, 
-        flowTokenCost: UFix64,
-        minimumBalanceToggle: Bool,
-        minimumBalance: UFix64
-      ) {
-      
-        let FLOATEvents: &FLOAT.FLOATEvents
-      
-        prepare(acct: AuthAccount) {
-          // SETUP COLLECTION
-          if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
-              acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-              acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
-                      (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
-          }
-      
-          // SETUP FLOATEVENTS
-          if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
-            acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-            acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
-                      (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
-          }
-      
-          // SETUP SHARED MINTING
-          if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
-              acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
-              acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
-                      (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
-          }
-          
-          if forHost != acct.address {
-            let FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-                              ?? panic("Could not borrow the FLOATEvents from the signer.")
-            self.FLOATEvents = FLOATEvents.borrowSharedRef(fromHost: forHost)
-          } else {
-            self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
-                              ?? panic("Could not borrow the FLOATEvents from the signer.")
-          }
-        }
-      
-        execute {
-          var Timelock: FLOATVerifiers.Timelock? = nil
-          var SecretV2: FLOATVerifiers.SecretV2? = nil
-          var Limited: FLOATVerifiers.Limited? = nil
-          var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
-          var verifiers: [{FLOAT.IVerifier}] = []
-          if timelock {
-            Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
-            verifiers.append(Timelock!)
-          }
-          if secret {
-            SecretV2 = FLOATVerifiers.SecretV2(_publicKey: secretPK)
-            verifiers.append(SecretV2!)
-          }
-          if limited {
-            Limited = FLOATVerifiers.Limited(_capacity: capacity)
-            verifiers.append(Limited!)
-          }
-          if minimumBalanceToggle {
-            MinimumBalance = FLOATVerifiers.MinimumBalance(_amount: minimumBalance)
-            verifiers.append(MinimumBalance!)
-          }
-          let extraMetadata: {String: AnyStruct} = {}
-          if flowTokenPurchase {
-            let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-            extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
-          }
-          self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
-          log("Started a new event for host.")
-        }
-      }  
-      `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(floatObject.claimable, t.Bool),
-        arg(floatObject.name, t.String),
-        arg(floatObject.description, t.String),
-        arg(floatObject.image, t.String),
-        arg(floatObject.url, t.String),
-        arg(floatObject.transferrable, t.Bool),
-        arg(floatObject.timelock, t.Bool),
-        arg(floatObject.dateStart.toFixed(1), t.UFix64),
-        arg(floatObject.timePeriod.toFixed(1), t.UFix64),
-        arg(floatObject.secret, t.Bool),
-        arg(floatObject.secretPK, t.String),
-        arg(floatObject.limited, t.Bool),
-        arg(floatObject.capacity, t.UInt64),
-        arg(floatObject.initialGroups, t.Array(t.String)),
-        arg(floatObject.flowTokenPurchase, t.Bool),
-        arg(floatObject.flowTokenCost, t.UFix64),
-        arg(floatObject.minimumBalanceToggle, t.Bool),
-        arg(floatObject.minimumBalance, t.UFix64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 9999
-    })
-
-    txId.set(transactionId);
-
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          eventCreatedStatus.set(respondWithSuccess());
-        } else {
-          eventCreatedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        eventCreationInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
-
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    eventCreatedStatus.set(false);
-    transactionStatus.set(99)
-    console.log(e)
-
-    setTimeout(() => transactionInProgress.set(false), 10000)
-  }
+  return generalSendTransaction(
+    code,
+    (arg, t) => [
+      arg(forHost, t.Address),
+      arg(floatObject.claimable, t.Bool),
+      arg(floatObject.name, t.String),
+      arg(floatObject.description, t.String),
+      arg(floatObject.image, t.String),
+      arg(floatObject.url, t.String),
+      arg(floatObject.transferrable, t.Bool),
+      arg(floatObject.timelock, t.Bool),
+      arg(floatObject.dateStart.toFixed(1), t.UFix64),
+      arg(floatObject.timePeriod.toFixed(1), t.UFix64),
+      arg(floatObject.secret, t.Bool),
+      arg(floatObject.secretPK, t.String),
+      arg(floatObject.limited, t.Bool),
+      arg(floatObject.capacity, t.UInt64),
+      arg(floatObject.initialGroups, t.Array(t.String)),
+      arg(floatObject.flowTokenPurchase, t.Bool),
+      arg(floatObject.flowTokenCost, t.UFix64),
+      arg(floatObject.minimumBalanceToggle, t.Bool),
+      arg(floatObject.minimumBalance, t.UFix64),
+      arg(floatObject.challengeCertificate, t.Bool),
+      arg(floatObject.challengeHost, t.Optional(t.Address)),
+      arg(floatObject.challengeId, t.Optional(t.UInt64)),
+      arg(floatObject.challengeAchievementThreshold, t.Optional(t.UInt64))
+    ],
+    eventCreationInProgress,
+    eventCreatedStatus
+  )
 }
 
 export const claimFLOAT = async (eventId, host, secret) => {

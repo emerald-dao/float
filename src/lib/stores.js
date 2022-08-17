@@ -17,6 +17,7 @@ export const draftFloat = writable({
   initialGroup: "",
   flowTokenPurchase: false,
   minimumBalance: false,
+  challengeCertificate: false
 });
 
 export const draftGroup = writable({

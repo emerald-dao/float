@@ -21,10 +21,10 @@
         eventData: response,
       },
       stuff: {
-        title: response?.name + ' | Claim this FLOAT by ' + addr,
+        title: response?.name + " | Claim this FLOAT by " + addr,
         description: response?.description,
         author: response?.host,
-        removeTitleSuffix : true
+        removeTitleSuffix: true,
         //image: `https://cloudflare-ipfs.com/ipfs/${response.image}`
         //image: `https://cloudflare-ipfs.com/ipfs/${response.image}`
       },
@@ -33,6 +33,7 @@
 </script>
 
 <script>
+  import { t } from "svelte-i18n";
   import { page } from "$app/stores";
   import {
     user,
@@ -78,6 +79,7 @@
   let limitedVerifier;
   let flowTokenCost;
   let minimumBalanceVerifier;
+  let challengeCertificateVerifier;
   let confirmed = false;
   let groups;
   let groupsWeCanAddTo;
@@ -112,6 +114,12 @@
       data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.Limited`];
     minimumBalanceVerifier =
       data.verifiers[`${verifiersIdentifier}.FLOATVerifiers.MinimumBalance`];
+    challengeCertificateVerifier =
+      data.verifiers[
+        Object.keys(data.verifiers ?? []).find((key) =>
+          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+        )
+      ];
     let prices = data.extraMetadata["prices"];
     if (prices) {
       flowTokenCost = prices[`${flowTokenIdentifier}.FlowToken.Vault`]?.price;
@@ -177,10 +185,11 @@
           <QrCode data={window.location.href} image={floatEvent?.image} />
           <p>FLOAT Event #{$page.params.eventId}</p>
           <p>
-            <small class="muted"
-              >Created on {new Date(
+            <small class="muted">
+              Created on {new Date(
                 floatEvent?.dateCreated * 1000
-              ).toLocaleString()}</small>
+              ).toLocaleString()}
+            </small>
           </p>
         </header>
         {#if floatEvent?.hasClaimed}
@@ -195,7 +204,8 @@
               totalSupply: floatEvent.totalSupply,
               serial: floatEvent.hasClaimed.serial,
             }}
-            claimed={true} />
+            claimed={true}
+          />
         {:else}
           <Float
             float={{
@@ -203,11 +213,12 @@
               eventImage: floatEvent.image,
               eventName: floatEvent.name,
               totalSupply: floatEvent.totalSupply,
-            }} />
+            }}
+          />
         {/if}
         <blockquote>
-          <strong><small class="muted">DESCRIPTION</small></strong
-          ><br />{floatEvent?.description}
+          <strong><small class="muted">DESCRIPTION</small></strong><br
+          />{floatEvent?.description}
         </blockquote>
         {#if floatEvent?.groups.length > 0}
           <blockquote>
@@ -215,7 +226,8 @@
             <br />
             {#each floatEvent?.groups as group}
               <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"
-                ><div class="group-badge">{group}</div></a>
+                ><div class="group-badge">{group}</div></a
+              >
             {/each}
           </blockquote>
         {/if}
@@ -224,17 +236,18 @@
           <br />
           {#if flowTokenCost}
             {#await getFlowTokenBalance($user?.addr) then balance}
-              This FLOAT costs <span class="emphasis"
-                >{parseFloat(flowTokenCost).toFixed(2)}</span>
+              This FLOAT costs
+              <span class="emphasis">
+                {parseFloat(flowTokenCost).toFixed(2)}
+              </span>
               $FLOW to claim.
               {#if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) >= 0}
-                You have <span class="emphasis"
-                  >{parseFloat(balance).toFixed(2)}</span>
+                You have
+                <span class="emphasis"> {parseFloat(balance).toFixed(2)} </span>
                 $FLOW. After purchasing, your final balance will be
-                <span class="emphasis"
-                  >{(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(
-                    2
-                  )}</span> $FLOW.
+                <span class="emphasis">
+                  {(parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2)}
+                </span> $FLOW.
               {:else if !floatEvent?.hasClaimed && (parseFloat(balance) - parseFloat(flowTokenCost)).toFixed(2) < 0}
                 You cannot afford this FLOAT.
               {/if}
@@ -246,18 +259,41 @@
         {#if minimumBalanceVerifier && minimumBalanceVerifier[0]}
           <blockquote>
             <strong><small class="muted">MINIMUM BALANCE</small></strong>
-            This FLOAT requires a minimum balance of <span class="emphasis">
+            This FLOAT requires a minimum balance of
+            <span class="emphasis">
               {" " +
                 parseFloat(minimumBalanceVerifier[0].amount).toFixed(2) +
                 " "}
-            </span> $FLOW to claim. 
-            This amount will <strong>NOT</strong> be withdrawn from your account.
+            </span>
+            $FLOW to claim. This amount will <strong>NOT</strong> be withdrawn from
+            your account.
+          </blockquote>
+        {/if}
+        {#if challengeCertificateVerifier && challengeCertificateVerifier[0]}
+          <blockquote>
+            <strong>
+              <small class="muted">
+                {$t("events.detail.section-info-cert-label")}
+                <a
+                  href={`/${challengeCertificateVerifier[0].challengeIdentifier.host}/challenge/${challengeCertificateVerifier[0].challengeIdentifier.id}`}
+                  target="_blank"
+                >
+                  {$t("events.detail.section-info-link")}
+                </a>
+              </small>
+            </strong>
+            <br />
+            {@html $t("events.detail.section-info-cert-desc", {
+              values: {
+                n: challengeCertificateVerifier[0].challengeThresholdPoints,
+              },
+            })}
           </blockquote>
         {/if}
         <p>
-          <span class="emphasis"
-            >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been
-          minted.
+          <span class="emphasis">
+            {parseInt(floatEvent?.totalSupply).toLocaleString()}
+          </span> have been minted.
         </p>
         {#if limitedVerifier && limitedVerifier[0]}
           <p>
@@ -270,7 +306,8 @@
             <ClaimButton
               {flowTokenCost}
               {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed} />
+              hasClaimed={floatEvent?.hasClaimed}
+            />
           {:else}
             <button id="connect" on:click={authenticate}>Connect Wallet</button>
           {/if}
@@ -289,7 +326,8 @@
                   toggleClaimable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}>
+                  )}
+              >
                 {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
               </button>
               <button
@@ -300,7 +338,8 @@
                   toggleTransferrable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}>
+                  )}
+              >
                 {floatEvent?.transferrable
                   ? "Stop transfers"
                   : "Allow transfers"}
@@ -320,7 +359,8 @@
                     deleteEvent(
                       resolvedNameObject.address,
                       floatEvent?.eventId
-                    )}>
+                    )}
+                >
                   Delete this event
                 </button>
               {/if}
@@ -333,7 +373,8 @@
                   id="address"
                   name="address"
                   placeholder="0x00000000000"
-                  bind:value={recipientAddr} />
+                  bind:value={recipientAddr}
+                />
                 {#if $floatDistributingInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
@@ -361,7 +402,8 @@
                   id="list"
                   name="list"
                   placeholder="0x00000000000"
-                  on:change={uploadList} />
+                  on:change={uploadList}
+                />
                 {#if $floatDistributingManyInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
@@ -383,15 +425,18 @@
               {#if listOfAddresses && listOfAddresses !== "error"}
                 <small>Minting to: {listOfAddresses.toString()}</small>
               {:else if listOfAddresses === "error"}
-                <small class="red"
-                  >This file is not supported. Please upload a .csv file.</small>
+                <small class="red">
+                  This file is not supported. Please upload a .csv file.
+                </small>
               {:else}
-                <small
-                  >Upload a .csv file <a href="/example.csv" download
-                    >(here is an example)</a> of addresses.</small
-                ><br />
-                <small
-                  >NOTE: 1) FLOATs will only be given to people who have set up
+                <small>
+                  Upload a .csv file <a href="/example.csv" download>
+                    (here is an example)
+                  </a> of addresses.
+                </small>
+                <br />
+                <small>
+                  NOTE: 1) FLOATs will only be given to people who have set up
                   their collection already. 2) You can only distribute a maximum
                   of 200 FLOATs at a time.
                 </small>
@@ -419,7 +464,10 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Add</button>
+                        )}
+                    >
+                      Add
+                    </button>
                   {/if}
                 </div>
                 <small>Add to a pre-existing Group.</small>
@@ -449,15 +497,17 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Remove</button>
+                        )}>Remove</button
+                    >
                   {/if}
                 </div>
                 <small>Remove from a Group.</small>
               </div>
             {/if}
 
-            <button id="download" on:click={downloadList}
-              >Download list of claimers</button>
+            <button id="download" on:click={downloadList}>
+              Download list of claimers
+            </button>
           </article>
         {/if}
       {/await}
@@ -471,7 +521,8 @@
               <ClaimsTable
                 address={floatEvent?.host}
                 eventId={floatEvent?.eventId}
-                totalClaimed={floatEvent?.totalSupply} />
+                totalClaimed={floatEvent?.totalSupply}
+              />
             {/if}
           </div>
         </IntersectionObserver>

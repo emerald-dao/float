@@ -206,7 +206,8 @@
       "name-missing": "Event Name",
       "desc": "Event Description",
       "image": "Event Image",
-      "cannot-mint-for": "You cannot mint for"
+      "cannot-mint-for": "You cannot mint for",
+      "invalid-certificate-code": "Invalid certificate code"
     }
   },
   "events": {
@@ -223,6 +224,11 @@
       "hint": {
         "enter-cert-code": "Enter a certificate code generated in Challenge Settings"
       }
+    },
+    "detail": {
+      "section-info-cert-label": "CHALLENGE CERTIFICATE",
+      "section-info-cert-desc": "This FLOAT requires a minimium achievement points of <span class=\"emphasis\"> {n} </span> for the Challenge to claim.",
+      "section-info-link": "LINK"
     }
   }
 }
