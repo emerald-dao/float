@@ -218,7 +218,7 @@
         "label-challenge-false": "无需挑战",
         "label-challenge-false-desc": "此 FLOAT 不是挑战证书。",
         "label-challenge-true": "挑战证书",
-        "label-challenge-true-desc": "此 FLOAT 是挑战证书，您需要达到一定的成就点才能领取。"
+        "label-challenge-true-desc": "此 FLOAT 是挑战证书，您需要达到一定的成就积分才能领取。"
       }
     },
     "create": {
@@ -228,7 +228,7 @@
     },
     "detail": {
       "section-info-cert-label": "挑战证书",
-      "section-info-cert-desc": "此 FLOAT 要求在挑战中获得的最低成就点为 <span class=\"emphasis\"> {n} </span>。",
+      "section-info-cert-desc": "此 FLOAT 要求在挑战中获得的最低成就积分为 <span class=\"emphasis\"> {n} </span>。",
       "section-info-link": "链接"
     }
   }
