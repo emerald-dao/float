@@ -62,7 +62,7 @@
     uploadedSuccessfully = true;
     uploading = false;
     $draftFloat.ipfsHash = cid;
-    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
+    imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`;
     // imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`; // if CF is slow, use <-
   };
 

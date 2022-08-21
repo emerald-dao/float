@@ -54,7 +54,7 @@
     uploadedSuccessfully = true;
     uploading = false;
     $draftGroup.ipfsHash = cid;
-    imagePreviewSrc = `https://cloudflare-ipfs.com/ipfs/${cid}`;
+    imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`;
   };
 
   function ipfsReady() {
@@ -160,7 +160,7 @@
           <Group
             {resolvedName}
             name={group.name}
-            imagePreviewSrc={`https://cloudflare-ipfs.com/ipfs/${group.image}`}
+            imagePreviewSrc={`https://nftstorage.link/ipfs/${group.image}`}
             description={group.description} />
         {/each}
       {:else}
