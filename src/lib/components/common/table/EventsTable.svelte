@@ -71,7 +71,7 @@
                 <img
                   alt=""
                   class="table-image"
-                  src="https://cloudflare-ipfs.com/ipfs/{row.image}" />
+                  src="https://nftstorage.link/ipfs/{row.image}" />
               </a>
             </div>
             <div>

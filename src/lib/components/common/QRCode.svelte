@@ -16,7 +16,7 @@
         height: 200,
         type: "svg",
         data: data,
-        image: image ?  "https://cloudflare-ipfs.com/ipfs/" + image : "/emeraldCityLogo.png",
+        image: image ?  "https://nftstorage.link/ipfs/" + image : "/emeraldCityLogo.png",
         qrOptions: {
           typeNumber: 0,
           mode: "Byte",

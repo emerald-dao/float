@@ -89,7 +89,7 @@
           ><img
             alt=""
             class="table-image"
-            src="https://cloudflare-ipfs.com/ipfs/{row.eventImage}" /></td>
+            src="https://nftstorage.link/ipfs/{row.eventImage}" /></td>
         <td data-label="Name">{row.eventName}</td>
         <td data-label="Serial"><code>#{row.serial}</code></td>
         <td data-label="Received"
