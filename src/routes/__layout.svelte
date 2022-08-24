@@ -30,9 +30,9 @@
   console.log($page.url.pathname);
 </script>
 
-<div class="notice">
+<!-- <div class="notice">
   <strong>Important!</strong> Flow Mainnet is undergoing scheduled <a href="https://status.onflow.org" target="_blank">maintenance</a> around 8-11am PT. Transactions will fail during this time.
-</div>
+</div> -->
 
 <Meta
   title={$page.stuff.title}
