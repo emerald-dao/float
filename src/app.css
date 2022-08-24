@@ -450,3 +450,12 @@ main {
     padding-right: 2rem;
   }
 }
+
+
+.notice {
+  display:block;
+  padding: 20px;
+  text-align:center;
+  background-color: #2d3d4b;
+  color:white;
+}
