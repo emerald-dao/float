@@ -31,7 +31,7 @@
 </script>
 
 <div class="notice">
-  <strong>Important!</strong> Flow Mainnet is undergoing scheduled <a href="https://status.onflow.org" target="_blank">maintenance</a> until ~11am PT. Transactions will fail during this time.
+  <strong>Important!</strong> Flow Mainnet is undergoing scheduled <a href="https://status.onflow.org" target="_blank">maintenance</a> around 8-11am PT. Transactions will fail during this time.
 </div>
 
 <Meta
