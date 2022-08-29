@@ -94,6 +94,7 @@
   nav {
     background-color: var(--card-background-color);
     height: 10vh;
+    min-height: 70px;
     box-shadow: var(--card-box-shadow);
     margin-bottom: 20px;
   }
