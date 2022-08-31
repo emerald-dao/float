@@ -350,7 +350,7 @@
                   type="range"
                   id="maxClaimableShares"
                   name="maxClaimableShares"
-                  min="1"
+                  min="0"
                   max={Math.floor(
                     currentToken.balance /
                       (requestParams.options.deliveryParam1 ?? 1)
@@ -365,7 +365,7 @@
                   type="number"
                   id="maxClaimableShares"
                   name="maxClaimableShares"
-                  min="1"
+                  min="0"
                   max="10000"
                   placeholder={$t("common.hint.placeholder-ex", {
                     values: { ex: 100 },
@@ -423,7 +423,7 @@
             <span>
               {$t("challenges.detail.settings.strategy.label-total-shares", {
                 values: {
-                  shares: requestParams.options.maxClaimableShares ?? 0,
+                  share: requestParams.options.maxClaimableShares ?? 0,
                 },
               })}
             </span>
@@ -431,7 +431,7 @@
               type="range"
               id="maxClaimableShares"
               name="maxClaimableShares"
-              min="1"
+              min="0"
               max={currentCollection.amount}
               required
               disabled={$txInProgress}
@@ -441,7 +441,7 @@
         {/if}
       {/if}
 
-      {#if requestParams.strategyMode === "raffleStrategy"}
+      {#if requestParams.strategyMode === "raffleStrategy" && requestParams.options.deliveryTokenIdentifier !== null}
         <label for="minimumValidAmount">
           <span class:highlight={requestParams.options.minimumValidAmount > 0}>
             {$t("challenges.detail.settings.strategy.label-min-valid-users", {
