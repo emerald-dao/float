@@ -19,7 +19,14 @@
       {eventSeriesData.basics?.description}
     </div>
     <div class="flex-wrap flex-gap">
-      <code data-tooltip="Total slots" class="flex-none">
+      <code
+        data-tooltip={$t("challenges.elements.card.slot-tip", {
+          values: {
+            n: eventSeriesData.slots?.length ?? 0,
+          },
+        })}
+        class="flex-none"
+      >
         {$t("challenges.elements.card.slot", {
           values: {
             n: eventSeriesData.slots?.length ?? 0,

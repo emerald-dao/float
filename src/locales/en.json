@@ -115,8 +115,9 @@
     },
     "elements": {
       "card": {
-        "slot": "Event Slots: {n}",
-        "created-by": "Created by"
+        "created-by": "Created by",
+        "slot-tip": "Collect {n} FLOATs to get Rewards",
+        "slot": "Slots: {n}"
       },
       "goal": {
         "label-collect": "Collect",

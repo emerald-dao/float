@@ -115,8 +115,9 @@
     },
     "elements": {
       "card": {
-        "created-by": "制作者 ",
-        "slot": "槽位：{n}"
+        "created-by": "制作者",
+        "slot-tip": "收集 {n} 个 FLOAT 以获得奖励",
+        "slot": "槽位: {n}"
       },
       "goal": {
         "by-amount-with": "包含",
