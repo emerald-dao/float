@@ -3325,7 +3325,6 @@ export const getCollectionInfo = async function (identifier) {
  * @returns {Promise<boolean[]>}
  */
 export const ownsSpecificFloatsAll = async (acct, eventIds) => {
-  console.log(acct, eventIds)
   return await generalQuery(
     cadence.replaceImportAddresses(cadence.scOwnsSpecificFloatsAll, addressMap),
     (arg, t) => [
