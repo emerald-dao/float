@@ -55,7 +55,7 @@
       <div
         class="panel-tag"
         class:alert-warning={strategy.currentState === "preparing"}
-        class:alert-info={strategy.currentState === "opening"}
+        class:alert-info={strategy.currentState === "pending"}
         class:alert-success={strategy.currentState === "claimable"}
         class:alert-danger={strategy.currentState === "closed"}
       >
@@ -124,7 +124,7 @@
         />
       {/if}
     </div>
-    {#if strategy.strategyMode === "raffleStrategy" && strategy.currentState === "opening"}
+    {#if strategy.strategyMode === "raffleStrategy" && strategy.currentState === "pending"}
       <div class="flex-wrap between">
         <span>
           {$t("challenges.elements.strategy.display.eligible-users")}

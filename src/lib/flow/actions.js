@@ -2721,8 +2721,8 @@ export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode,
       arg(String(options?.threshold), t.UInt64),
       arg(options?.autoStart, t.Bool),
       // State Parameters
-      arg(typeof options?.openingEnding !== 'undefined' ?? false, t.Bool),
-      arg(options?.openingEnding?.toFixed(1) ?? '0.0', t.UFix64),
+      arg(typeof options?.pendingEnding !== 'undefined' ?? false, t.Bool),
+      arg(options?.pendingEnding?.toFixed(1) ?? '0.0', t.UFix64),
       arg(typeof options?.claimableEnding !== 'undefined' ?? false, t.Bool),
       arg(options?.claimableEnding?.toFixed(1) ?? '0.0', t.UFix64),
       arg(typeof options?.minimumValidAmount !== 'undefined' ?? false, t.Bool),
@@ -3129,7 +3129,7 @@ function parseStrategyDetail (rawdata) {
   const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'raffleStrategy'
   const strategyStatusMap = {
     '0': 'preparing',
-    '1': 'opening',
+    '1': 'pending',
     '2': 'claimable',
     '3': 'closed'
   }
@@ -3146,7 +3146,7 @@ function parseStrategyDetail (rawdata) {
     strategyData: {
       consumable: status.consumable,
       threshold: parseInt(status.threshold),
-      openingEnding: rawdata.detail.strategyData.ending['1'],
+      pendingEnding: rawdata.detail.strategyData.ending['1'],
       claimableEnding: rawdata.detail.strategyData.ending['2'],
       minValid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
       valid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.valid : undefined,

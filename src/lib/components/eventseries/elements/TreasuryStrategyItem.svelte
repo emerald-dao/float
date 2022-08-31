@@ -125,7 +125,7 @@
             {$t("common.hint.claimed-reward")}
           </button>
         {:else if !isValidToSubmit}
-          {#if !strategy.userStatus?.eligible && (strategy.strategyMode === "queueStrategy" || strategy.currentState === "opening")}
+          {#if !strategy.userStatus?.eligible && (strategy.strategyMode === "queueStrategy" || strategy.currentState === "pending")}
             <button disabled>
               {$t("errors.challenges.not-eligible-user-need-points")}
             </button>

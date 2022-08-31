@@ -124,7 +124,7 @@ export interface TreasuryData {
 
 export type StrategyType = "raffleStrategy" | "queueStrategy";
 export type DeliveryType = "ftIdenticalAmount" | "ftRandomAmount" | "nft";
-export type StategyStatus = "preparing" | "opening" | "claimable" | "closed";
+export type StategyStatus = "preparing" | "pending" | "claimable" | "closed";
 
 interface AddStrategyOptions {
   // if comsume achievement point
@@ -133,7 +133,7 @@ interface AddStrategyOptions {
   threshold: string;
   // auto start strategy
   autoStart: boolean;
-  openingEnding?: number;
+  pendingEnding?: number;
   claimableEnding?: number;
   minimumValidAmount?: number;
   // Delivery Parameters
@@ -153,7 +153,7 @@ interface StrategyDetail {
   index: number;
   strategyMode: StrategyType;
   strategyData: {
-    openingEnding?: number;
+    pendingEnding?: number;
     claimableEnding?: number;
     // if comsume achievement point
     consumable: boolean;

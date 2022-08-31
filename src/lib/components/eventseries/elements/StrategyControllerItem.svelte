@@ -24,13 +24,13 @@
   $: isValidAdmin = eventSeries.identifier.host === $user?.addr;
   $: isValidToSubmit =
     strategy.currentState !== "closed" &&
-    (strategy.currentState === "opening" &&
+    (strategy.currentState === "pending" &&
     strategy.strategyMode === "raffleStrategy"
       ? strategy.strategyData.minValid <= strategy.strategyData.valid.length
       : true);
   $: nextStage = {
-    preparing: "opening",
-    opening: "claimable",
+    preparing: "pending",
+    pending: "claimable",
     claimable: "closed",
   }[strategy.currentState];
 

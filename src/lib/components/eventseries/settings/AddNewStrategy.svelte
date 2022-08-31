@@ -51,7 +51,7 @@
         threshold: 0,
         maxClaimableShares: 1,
         // TODO: add time limit
-        openingEnding: undefined,
+        pendingEnding: undefined,
         claimableEnding: undefined,
         // by strategy type
         minimumValidAmount: undefined,

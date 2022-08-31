@@ -8,8 +8,8 @@ transaction(
   threshold: UInt64,
   autoStart: Bool,
   // State Parameters
-  hasOpeningEnding: Bool,
-  openingEnding: UFix64,
+  hasPendingEnding: Bool,
+  pendingEnding: UFix64,
   hasClaimableEnding: Bool,
   claimableEnding: UFix64,
   hasMinimumValid: Bool,
@@ -93,8 +93,8 @@ transaction(
     if hasMinimumValid {
       params["minValid"] = minimumValidAmount
     }
-    if hasOpeningEnding {
-      params["openingEnd"] = openingEnding
+    if hasPendingEnding {
+      params["openingEnd"] = pendingEnding
     }
     if hasClaimableEnding {
       params["claimableEnd"] = claimableEnding
