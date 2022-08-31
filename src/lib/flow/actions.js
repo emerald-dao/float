@@ -41,6 +41,7 @@ import {
   incinerateInProgress,
   incinerateStatus,
   eventSeries,
+  cachedCollections,
 } from './stores.js';
 import { get } from 'svelte/store'
 
@@ -2872,9 +2873,9 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex, isNFT,
       .replaceAll('PLACEHOLDER_FT_SETUP', "")
       .replaceAll('PLACEHOLDER_NFT_SETUP', `
         acct.save(<- PLACEHOLDER_CONTRACT.createEmptyCollection(), to: catalogMetadata.collectionData.storagePath)
-        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_CONTRACT.CollectionPublic, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, NonFungibleToken.Receiver}>
+        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS, MetadataViews.ResolverCollection, NonFungibleToken.Receiver}>
           (catalogMetadata.collectionData.publicPath, target: catalogMetadata.collectionData.storagePath)
-        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_CONTRACT.CollectionPublic, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, NonFungibleToken.Provider}>
+        acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS, MetadataViews.ResolverCollection, NonFungibleToken.Provider}>
           (catalogMetadata.collectionData.privatePath, target: catalogMetadata.collectionData.storagePath)
       `)
     } else {
@@ -3300,6 +3301,24 @@ export const getCollections = async (identifer) => {
     ],
     []
   )
+}
+
+/**
+ * @returns {Promise<import('../components/eventseries/types').CollectionInfo>}
+ */
+export const getCollectionInfo = async function (identifier) {
+  const dic = get(cachedCollections) ?? {};
+  let info = dic[identifier];
+  if (!info) {
+    const collections = await getCollections(identifier);
+    if (collections && collections[0]) {
+      info = collections[0];
+      cachedCollections.set(
+        Object.assign(dic, { [info.nftIdentifier]: info })
+      );
+    }
+  }
+  return info;
 }
 
 /**

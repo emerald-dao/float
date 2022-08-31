@@ -7,7 +7,7 @@
     eventSeries as seriesStore,
     getLatestTokenList,
   } from "$lib/flow/stores";
-  import { claimTreasuryRewards } from "$lib/flow/actions";
+  import { getCollectionInfo, claimTreasuryRewards } from "$lib/flow/actions";
 
   /** @type {import('../types').EventSeriesData} */
   export let eventSeries;
@@ -66,6 +66,7 @@
       PLACEHOLDER_CONTRACT: tokenIdInfo[2],
       PLACEHOLDER_ADDRESS: `0x${tokenIdInfo[1]}`,
       PLACEHOLDER_STORAGE_PATH: "/storage/unknown",
+      PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS: "",
       PLACEHOLDER_FT_RECEIVER_PATH: "/public/unknown",
       PLACEHOLDER_FT_BALANCE_PATH: "/public/unknown",
     };
@@ -80,6 +81,21 @@
       additionalMap.PLACEHOLDER_STORAGE_PATH = tokenData.path.vault;
       additionalMap.PLACEHOLDER_FT_RECEIVER_PATH = tokenData.path.receiver;
       additionalMap.PLACEHOLDER_FT_BALANCE_PATH = tokenData.path.balance;
+    } else {
+      const info = await getCollectionInfo(identifier);
+      const ownedCollectionPublic = `${PLACEHOLDER_CONTRACT}.CollectionPublic`;
+      if (
+        info.publicLinkedType.restrictions.find(
+          (one) =>
+            one.kind === "Restriction" &&
+            one.typeID.indexOf(ownedCollectionPublic) > -1
+        )
+      ) {
+        additionalMap.PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS = `${ownedCollectionPublic}, NonFungibleToken.CollectionPublic`;
+      } else {
+        additionalMap.PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS =
+          "NonFungibleToken.CollectionPublic";
+      }
     }
 
     claimTreasuryRewards(

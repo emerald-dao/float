@@ -1,7 +1,6 @@
 <script>
   import { createEventDispatcher } from "svelte";
-  import { cachedCollections } from "$lib/flow/stores";
-  import { getCollections } from "$lib/flow/actions";
+  import { getCollectionInfo } from "$lib/flow/actions";
 
   /** @type {import('../eventseries/types').CollectionInfo} */
   export let collection = null;
@@ -14,20 +13,6 @@
 
   // dispatcher
   const dispatch = createEventDispatcher();
-
-  async function getCollectionInfo(identifier) {
-    let info = $cachedCollections[identifier];
-    if (!info) {
-      const collections = await getCollections(identifier);
-      if (collections && collections[0]) {
-        info = collections[0];
-        cachedCollections.set(
-          Object.assign({ [info.nftIdentifier]: info }, $cachedCollections)
-        );
-      }
-    }
-    return info;
-  }
 
   $: collectionPromise = collection
     ? Promise.resolve(collection)

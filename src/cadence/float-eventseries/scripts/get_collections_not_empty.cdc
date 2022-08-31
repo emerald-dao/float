@@ -32,6 +32,7 @@ pub fun main(
           contractName: value.contractName,
           publicPath: value.collectionData.publicPath,
           storagePath: value.collectionData.storagePath,
+          publicLinkedType: value.collectionData.publicLinkedType,
           display: value.collectionDisplay,
           amount: count
         ))
@@ -47,6 +48,7 @@ pub struct NFTCollectionInfo {
   pub let contractName: String
   pub let publicPath: PublicPath
   pub let storagePath: StoragePath
+  pub let publicLinkedType: Type
   pub let display: MetadataViews.NFTCollectionDisplay
   pub let amount: UInt64
 
@@ -57,6 +59,7 @@ pub struct NFTCollectionInfo {
     contractName: String,
     publicPath: PublicPath,
     storagePath: StoragePath,
+    publicLinkedType: Type,
     display: MetadataViews.NFTCollectionDisplay,
     amount: UInt64,
   ) {
@@ -66,6 +69,7 @@ pub struct NFTCollectionInfo {
     self.contractName = contractName
     self.publicPath = publicPath
     self.storagePath = storagePath
+    self.publicLinkedType = publicLinkedType
     self.display = display
     self.amount = amount
   }

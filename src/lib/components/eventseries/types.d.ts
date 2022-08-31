@@ -200,6 +200,16 @@ interface PathInfo {
   identifier: string;
 }
 
+interface BasicTypeInfo {
+  kind: "Restriction" | "Resource" | "ResourceInterface";
+  typeID: string;
+}
+
+interface RestrictionTypeInfo extends BasicTypeInfo {
+  type: BasicTypeInfo;
+  restrictions: BasicTypeInfo[];
+}
+
 interface CollectionDisplay {
   name: string;
   description: string;
@@ -236,6 +246,7 @@ export interface CollectionInfo {
   contractName: string;
   publicPath: PathInfo;
   storagePath: PathInfo;
+  publicLinkedType: RestrictionTypeInfo;
   display: CollectionDisplay;
   amount: string;
 }
