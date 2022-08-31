@@ -12,7 +12,7 @@
       "desc": "Challenge Description",
       "image": "Challenge Image",
       "conifg-title": "Configure your Challenge",
-      "preset-title": "Preset FLOAT Slots",
+      "preset-title": "Select the FLOATs you want to be a part of your challenge",
       "empty-slots-title": "Empty FLOAT Slots (to configure later)",
       "button": "Create FLOAT Challenge"
     },
