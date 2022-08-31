@@ -83,7 +83,7 @@
         on:click|preventDefault={handleRequest}
         disabled={!isValidToSubmit}
       >
-        {$t("challenges.detail.summary.accomplish-goals")}
+        {$t("challenges.detail.summary.claim-points")}
       </button>
     {/if}
   {:else}
