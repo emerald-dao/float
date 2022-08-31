@@ -153,9 +153,9 @@
       "nft": "NFT"
     },
     "tabs": {
+      "settings": "Settings",
       "summary": "Summary",
-      "treasury": "Treasury",
-      "settings": "Settings"
+      "rewards": "Rewards"
     },
     "eventsTable": {
       "select": "Select",

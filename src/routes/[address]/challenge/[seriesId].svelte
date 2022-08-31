@@ -50,7 +50,7 @@
   seriesTab.set("summary");
 
   $: isIndexPage = $seriesTab === "summary";
-  $: isTreasuryPage = $seriesTab === "treasury";
+  $: isRewardsPage = $seriesTab === "rewards";
   $: isSettingsPage = $seriesTab === "settings";
 
   // merged eventSeries
@@ -107,14 +107,14 @@
         </li>
         <li
           on:click={function () {
-            if (!isTreasuryPage) {
-              seriesTab.set("treasury");
+            if (!isRewardsPage) {
+              seriesTab.set("rewards");
             }
           }}
-          class:animatedlink={!isTreasuryPage}
-          class:selected={isTreasuryPage}
+          class:animatedlink={!isRewardsPage}
+          class:selected={isRewardsPage}
         >
-          {$t("common.tabs.treasury")}
+          {$t("common.tabs.rewards")}
         </li>
         {#if $user?.addr == resolvedNameObject.address}
           <li
@@ -133,7 +133,7 @@
 
       {#if isIndexPage}
         <SeriesSummary {eventSeries} on:seriesUpdated={refreshEventSeries} />
-      {:else if isTreasuryPage}
+      {:else if isRewardsPage}
         <SeriesTreasury {eventSeries} on:seriesUpdated={refreshEventSeries} />
       {:else if isSettingsPage && $user?.addr == resolvedNameObject.address}
         <SeriesSettings {eventSeries} on:seriesUpdated={refreshEventSeries} />
