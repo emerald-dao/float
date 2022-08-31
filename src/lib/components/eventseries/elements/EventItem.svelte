@@ -2,6 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { resolveAddressObject, getEvent } from "$lib/flow/actions";
   import Badge from "../svgs/badge.svelte";
+  import Primary from "./PrimaryTag.svelte";
 
   // dispatcher
   const dispatch = createEventDispatcher();

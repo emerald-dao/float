@@ -140,6 +140,9 @@
         "no-more-eligible": "Need more eligible users",
         "fore-close": "Force Close",
         "claim-reward": "Claim Reward"
+      },
+      "item": {
+        "primary": "PRIMARY"
       }
     }
   },

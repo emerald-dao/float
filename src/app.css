@@ -211,7 +211,7 @@ h3 {
   height: 2rem;
 }
 
-.panel .panel-tag {
+.panel-tag {
   display: inline-block;
   text-align: center;
   font-size: small;

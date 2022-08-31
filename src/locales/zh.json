@@ -140,6 +140,9 @@
         "fore-close": "强制关闭",
         "no-more-eligible": "需要更多符合条件的用户",
         "set-state": "设置为 {state}"
+      },
+      "item": {
+        "primary": "主要"
       }
     }
   },
