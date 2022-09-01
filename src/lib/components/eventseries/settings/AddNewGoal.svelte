@@ -172,7 +172,7 @@
       />
     </label>
     {#if requestParams.type === "byAmount"}
-      <div class="flex flex-gap mb-1">
+      <div class="flex flex-gap">
         <label for="eventsAmount" class="flex-auto">
           <span class:highlight={requestParams.params.eventsAmount > 0}>
             {$t("challenges.detail.settings.goal.floats-amount")}
@@ -226,8 +226,9 @@
     {:else if requestParams.type === "byPercent"}
       <label for="percent">
         <span class:highlight={requestParams.params.percent > 0}>
-          Percent:
-          {requestParams.params.percent ?? 0} %
+          {$t("challenges.detail.settings.goal.floats-percent", {
+            values: { percent: requestParams.params.percent ?? 0 },
+          })}
         </span>
         <input
           type="range"
@@ -241,7 +242,7 @@
         />
       </label>
     {:else}
-      <div class="flex-wrap flex-gap mb-1">
+      <div class="flex-wrap flex-gap">
         {#each eventSlots as slot (`${slot.event.host}#${slot.event.id}`)}
           <EventItem
             item={slot}
@@ -256,6 +257,19 @@
         {/each}
       </div>
     {/if}
+
+    <label for="goal-title mb-1">
+      <span class:highlight={!!requestParams.title}>
+        {$t("challenges.detail.settings.goal.set-title")}
+      </span>
+      <input
+        type="text"
+        id="goal-title"
+        name="goal-title"
+        maxlength="30"
+        bind:value={requestParams.title}
+      />
+    </label>
 
     {#if $txInProgress}
       <button aria-busy="true" disabled>

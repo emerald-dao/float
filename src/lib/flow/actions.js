@@ -2559,7 +2559,7 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
  * 
  * @param {import('../components/eventseries/types').AddAchievementGoalRequest}
  */
-export const addAchievementGoalToEventSeries = async ({type, seriesId, points, params}) => {
+export const addAchievementGoalToEventSeries = async ({type, seriesId, points, params, title}) => {
   let code
   /** @type {fcl.ArgsFn} */
   let args
@@ -2576,6 +2576,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
         arg(String(points), t.UInt64),
         arg(String(eventsAmount), t.UInt64),
         arg(String(requiredEventsAmount), t.UInt64),
+        arg(title || null, t.Optional(t.String)),
       ]
       break;
 
@@ -2590,6 +2591,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
         arg(seriesId, t.UInt64),
         arg(String(points), t.UInt64),
         arg((percent / 100.0).toFixed(1), t.UFix64),
+        arg(title || null, t.Optional(t.String)),
       ]
       break;
 
@@ -2613,6 +2615,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
         arg(String(points), t.UInt64),
         arg(reduced.hosts, t.Array(t.Address)),
         arg(reduced.eventIds, t.Array(t.UInt64)),
+        arg(title || null, t.Optional(t.String)),
       ]
       break;
     default:
@@ -3082,6 +3085,7 @@ function parseRawGoalData(rawGoal) {
 
   return {
     type,
+    title: rawGoal.title ?? "",
     points: parseInt(rawGoal.points),
     status: rawGoal.status.rawValue,
     params,

@@ -35,7 +35,9 @@
           "points": "Goal points",
           "floats-amount": "FLOATs Amount",
           "with-required-amount": "With {n}",
-          "btn-submit": "Submit new Goal"
+          "btn-submit": "Submit new Goal",
+          "set-title": "Title (Optional)",
+          "floats-percent": "Percent: {percent} %"
         },
         "strategy": {
           "title": "Add a new strategy →",

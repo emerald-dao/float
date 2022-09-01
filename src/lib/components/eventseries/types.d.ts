@@ -36,6 +36,7 @@ export interface EventSeriesAchievementGoal {
   points: number;
   params?: GoalParamsType;
   status?: GoalStatus;
+  title: string;
 }
 
 export interface EventSeriesUserStatus {
@@ -104,6 +105,7 @@ export interface AddAchievementGoalRequest {
   seriesId: string;
   points: number;
   params?: GoalParamsType;
+  title?: string;
 }
 
 export type TreasuryMgrType = "depositFT" | "depositNFT" | "dropAll";
