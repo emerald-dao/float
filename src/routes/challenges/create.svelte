@@ -3,6 +3,7 @@
   import { authenticate, createEventSeries } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
+  import { notifications } from "$lib/notifications";
   import ImageUploader from "$lib/components/ImageUploader.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
@@ -28,14 +29,32 @@
       image: "",
     },
     presetEvents: [],
-    emptySlotsAmt: 0,
-    emptySlotsAmtRequired: 0,
+    emptySlots: [],
   };
 
-  $: isPreviewOk =
-    !!draftEventSeries.basics.image &&
-    !!draftEventSeries.basics.name &&
-    !!draftEventSeries.basics.description;
+  let totalSlots = 0;
+  let totalPrimarySlots = 0;
+
+  $: isPreviewOk = true;
+  // !!draftEventSeries.basics.image &&
+  // !!draftEventSeries.basics.name &&
+  // !!draftEventSeries.basics.description;
+
+  $: presetPrimaryAmt = draftEventSeries.presetEvents.filter(
+    (one) => one.required
+  ).length;
+  $: {
+    const presetRequired = draftEventSeries.presetEvents.filter(
+      (one) => one.required
+    ).length;
+    const emptyRequired = Math.max(totalPrimarySlots - presetRequired, 0);
+    const initIndex = draftEventSeries.presetEvents.length;
+    let slots = [];
+    for (let i = initIndex; i < totalSlots; i++) {
+      slots.push({ event: null, required: i < initIndex + emptyRequired });
+    }
+    draftEventSeries.emptySlots = slots;
+  }
 
   async function initCreateEventSeries() {
     let canCreateEventSeries = await checkInputs();
@@ -47,8 +66,8 @@
     createEventSeries(
       draftEventSeries.basics,
       draftEventSeries.presetEvents,
-      draftEventSeries.emptySlotsAmt,
-      draftEventSeries.emptySlotsAmtRequired
+      totalSlots - draftEventSeries.presetEvents.length,
+      totalPrimarySlots - presetPrimaryAmt
     );
   }
 
@@ -67,10 +86,7 @@
       errorArray.push($t("errors.challenges.image-missing"));
     }
 
-    if (
-      draftEventSeries.emptySlotsAmt === 0 &&
-      draftEventSeries.presetEvents.length === 0
-    ) {
+    if (totalSlots === 0 && draftEventSeries.presetEvents.length === 0) {
       errorArray.push($t("errors.challenges.slot-required"));
     }
 
@@ -109,6 +125,9 @@
         required: true,
       })),
     ];
+
+    // update primary slots
+    totalPrimarySlots = Math.min(totalSlots, totalPrimarySlots + events.length);
   }
 
   function onToggleRequired(host, eventId) {
@@ -182,73 +201,78 @@
 
       <hr />
 
-      <h5 class:highlight={draftEventSeries.presetEvents.length > 0}>
-        {$t("challenges.create.preset-title")}
-      </h5>
-
-      <div class="flex-wrap flex-gap mb-1">
-        {#each draftEventSeries.presetEvents as slot (slot.event?.host + slot.event?.id)}
-          <EventItem
-            item={slot}
-            on:clickItem={function (e) {
-              onToggleRequired(slot.event?.host, slot.event?.id);
-            }}
-          />
-        {/each}
-        <EventItem
-          empty={true}
-          on:clickEmpty={function (e) {
-            dialogOpened = true;
-          }}
-        />
-      </div>
-
-      <hr />
-
       <h5>{$t("challenges.create.empty-slots-title")}</h5>
-
       <div class="flex flex-gap mb-1">
-        <label for="emptySlotsAmt" class="flex-auto">
-          <span class:highlight={draftEventSeries.emptySlotsAmt > 0}>
+        <label for="totalSlots" class="flex-auto">
+          <span class:highlight={totalSlots > 0}>
             {$t("challenges.common.amount")}
           </span>
           <input
             type="number"
-            id="emptySlotsAmt"
-            name="emptySlotsAmt"
-            placeholder={$t("challenges.common.empty-slot-amount")}
-            min="0"
-            max="25"
+            id="totalSlots"
+            name="totalSlots"
+            min={totalPrimarySlots}
+            max="50"
             required
-            bind:value={draftEventSeries.emptySlotsAmt}
+            bind:value={totalSlots}
             on:change={function (e) {
-              draftEventSeries.emptySlotsAmt = Math.min(
-                draftEventSeries.emptySlotsAmt,
-                25
+              totalSlots = Math.max(
+                Math.max(
+                  draftEventSeries.presetEvents.length,
+                  Math.min(totalSlots, 50)
+                ),
+                totalPrimarySlots
               );
             }}
           />
         </label>
         <!-- Range slider -->
-        <label for="emptySlotsAmtRequired">
-          <span class:highlight={draftEventSeries.emptySlotsAmtRequired > 0}>
-            {$t("challenges.common.label-required-slots", {
+        <label for="totalPrimarySlots">
+          <span class:highlight={totalPrimarySlots > 0}>
+            {$t("challenges.common.label-primary-slots", {
               values: {
-                n: draftEventSeries.emptySlotsAmtRequired ?? "",
+                n: totalPrimarySlots ?? "",
               },
             })}
           </span>
           <input
             type="range"
-            id="emptySlotsAmtRequired"
-            name="emptySlotsAmtRequired"
-            min="0"
-            max={draftEventSeries.emptySlotsAmt}
+            id="totalPrimarySlots"
+            name="totalPrimarySlots"
+            min={presetPrimaryAmt}
+            max={totalSlots}
             required
-            bind:value={draftEventSeries.emptySlotsAmtRequired}
+            bind:value={totalPrimarySlots}
           />
         </label>
       </div>
+
+      {#if totalSlots > 0}
+        <hr />
+
+        <h5>
+          {$t("challenges.create.preset-title")}
+        </h5>
+        <div class="flex-wrap flex-gap mb-1">
+          {#each draftEventSeries.presetEvents as slot (slot.event?.host + slot.event?.id)}
+            <EventItem
+              item={slot}
+              on:clickItem={function (e) {
+                onToggleRequired(slot.event?.host, slot.event?.id);
+              }}
+            />
+          {/each}
+          {#each draftEventSeries.emptySlots as slot, index (`empty_${index}`)}
+            <EventItem
+              item={slot}
+              empty={true}
+              on:clickEmpty={function (e) {
+                dialogOpened = true;
+              }}
+            />
+          {/each}
+        </div>
+      {/if}
     {/if}
 
     <footer>

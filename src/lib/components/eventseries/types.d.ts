@@ -80,8 +80,7 @@ export interface EventSeriesData {
 export interface EventSeriesCreateRequest {
   basics: EventSeriesBasics;
   presetEvents: EventSeriesSlot[];
-  emptySlotsAmt: number;
-  emptySlotsAmtRequired: number;
+  emptySlots: EventSeriesSlot[];
 }
 
 export type GoalType = "byAmount" | "byPercent" | "bySpecifics";

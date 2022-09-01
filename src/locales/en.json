@@ -13,7 +13,7 @@
       "image": "Challenge Image",
       "conifg-title": "Configure your Challenge",
       "preset-title": "Select the FLOATs you want to be a part of your challenge",
-      "empty-slots-title": "Empty FLOAT Slots (to configure later)",
+      "empty-slots-title": "Please set how many FLOATs can be included in the challenge?",
       "button": "Create FLOAT Challenge"
     },
     "detail": {
@@ -113,8 +113,7 @@
       "name": "FLOAT Challenge",
       "create": "Create a new FLOAT Challenge",
       "amount": "Amount",
-      "empty-slot-amount": "Empty Slot Amount",
-      "label-required-slots": "Required Slots: {n}",
+      "label-primary-slots": "Primary: {n}",
       "dialog": {
         "title": "Add FLOAT Events to Challenge",
         "label-owner": "Owner Address",
