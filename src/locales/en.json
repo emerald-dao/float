@@ -34,7 +34,7 @@
           "select-by-specifics-desc": "Achieve by collecting some specific FLOATs incurrent challenge.",
           "points": "Goal points",
           "floats-amount": "FLOATs Amount",
-          "with-required-amount": "With Required Amount: {n}",
+          "with-required-amount": "With {n}",
           "btn-submit": "Submit new Goal"
         },
         "strategy": {

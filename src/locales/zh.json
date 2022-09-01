@@ -63,7 +63,7 @@
           "select-by-specifics": "根据特定",
           "select-by-specifics-desc": "通过收集挑战内特定的数个 FLOATs 达成。",
           "title": "添加新的目标 →",
-          "with-required-amount": "包含必要数量：{n}"
+          "with-required-amount": "包含 {n} "
         },
         "slots": {
           "btn-fill-events": "为本挑战填充活动槽位",

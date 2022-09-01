@@ -3,6 +3,7 @@
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
   import Loading from "$lib/components/common/Loading.svelte";
   import GoalDisplay from "../elements/GoalDisplay.svelte";
+  import PrimaryTag from "../elements/PrimaryTag.svelte";
   import { createEventDispatcher } from "svelte";
   import { user, eventSeries as seriesStore } from "$lib/flow/stores";
   import {
@@ -198,11 +199,15 @@
         </label>
         <!-- Range slider -->
         <label for="requiredEventsAmount">
-          <span class:highlight={requestParams.params.requiredEventsAmount > 0}>
+          <small
+            class="flex-wrap center flex-gap narrow"
+            class:highlight={requestParams.params.requiredEventsAmount > 0}
+          >
             {$t("challenges.detail.settings.goal.with-required-amount", {
               values: { n: requestParams.params.requiredEventsAmount ?? 0 },
             })}
-          </span>
+            <PrimaryTag />
+          </small>
           <input
             type="range"
             id="requiredEventsAmount"
@@ -251,6 +256,7 @@
         {/each}
       </div>
     {/if}
+
     {#if $txInProgress}
       <button aria-busy="true" disabled>
         {$t("common.hint.please-wait-for-tx")}
