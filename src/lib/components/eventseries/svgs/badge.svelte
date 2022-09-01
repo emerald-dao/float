@@ -1,6 +1,6 @@
 <script>
   export let owned = false;
-  export let required = false;
+  export let ownedOutline = false;
   export let huge = false;
 </script>
 
@@ -18,7 +18,7 @@
       clip-rule="evenodd"
     />
   </svg>
-{:else if required}
+{:else if ownedOutline}
   <svg
     class="badge outline opacity"
     class:huge

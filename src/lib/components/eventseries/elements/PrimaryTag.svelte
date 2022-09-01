@@ -11,4 +11,9 @@
   .full-width {
     width: 100%;
   }
+  .panel-tag {
+    font-family: monospace;
+    font-weight: 600;
+    font-size: xx-small;
+  }
 </style>

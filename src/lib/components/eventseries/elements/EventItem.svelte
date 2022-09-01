@@ -2,7 +2,7 @@
   import { createEventDispatcher } from "svelte";
   import { resolveAddressObject, getEvent } from "$lib/flow/actions";
   import Badge from "../svgs/badge.svelte";
-  import Primary from "./PrimaryTag.svelte";
+  import PrimaryTag from "./PrimaryTag.svelte";
 
   // dispatcher
   const dispatch = createEventDispatcher();
@@ -61,11 +61,11 @@
 <article class="card-item" class:ghost class:pending on:click={handleClick}>
   {#if !empty}
     {#await floatEventCallback()}
-      <div class="center" aria-busy="true" />
+      <div class="content center" aria-busy="true" />
     {:then floatEvent}
-      <div>
+      <div class="content">
         {#if !floatEvent}
-          <h3 class="unclaimed">Empty<br />Slot</h3>
+          <h3 class="empty unclaimed">Empty<br />Slot</h3>
         {:else}
           <img
             src="https://nftstorage.link/ipfs/{floatEvent.image}"
@@ -84,7 +84,7 @@
       </div>
     {/await}
   {:else}
-    <div class="center pointer" on:click={handleClick}>
+    <div class="content center pointer" on:click={handleClick}>
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -101,8 +101,13 @@
 
   {#if !empty}
     <span class="badge">
-      <Badge {owned} required={itemRequired} />
+      <Badge {owned} />
     </span>
+  {/if}
+  {#if itemRequired}
+    <div class="primary" class:unclaimed={!preview && !owned}>
+      <PrimaryTag full={true} />
+    </div>
   {/if}
 </article>
 
@@ -113,12 +118,13 @@
     position: relative;
 
     width: 96px;
-    height: 128px;
+    height: 140px;
 
-    padding: 8px;
+    padding: 8px 8px 20px 8px;
     margin: 0;
 
     border: 1px solid transparent;
+    border-radius: 10px;
   }
 
   .card-item.ghost {
@@ -133,12 +139,12 @@
     border: 1px solid var(--primary);
   }
 
-  .card-item > div > * {
+  .card-item > .content > * {
     max-width: 80px;
     max-height: 80px;
   }
 
-  .card-item > div {
+  .card-item > .content {
     display: flex;
     flex-direction: column;
     justify-content: end;
@@ -148,15 +154,15 @@
     width: 100%;
     height: 100%;
   }
-  .card-item > div.pointer {
+  .card-item > .content.pointer {
     cursor: pointer;
   }
 
-  .card-item > div.center {
+  .card-item > .content.center {
     justify-content: center;
   }
 
-  .card-item > div.center > svg {
+  .card-item > .content.center > svg {
     width: 64px;
     height: 64px;
   }
@@ -178,10 +184,18 @@
 
   .card-item .badge {
     display: block;
-    cursor: pointer;
     position: absolute;
-    top: -10px;
+    top: -12px;
     left: -4px;
+  }
+
+  .card-item .primary {
+    display: block;
+    width: 100%;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    padding: 0;
   }
 
   .unclaimed {
