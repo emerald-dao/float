@@ -94,7 +94,16 @@
         "title-goals": "Challenge Goals",
         "title-treasury": "Challenge Treasury",
         "title-rewards": "Challenge Rewards",
-        "title-certificate": "Challenge Certificates"
+        "title-certificate": "Challenge Certificates",
+        "title-desc-summary": "Collect FLOATs in the Challenge, complete Goals and obtain Achievement Points",
+        "title-desc-certificate": "When the achievement points obtained reach the specified number, you can go to claim the specific FLOAT as a challenge certificate",
+        "title-desc-rewards": "When your achievement points or consumable points reach the target of Reward requirements, you will have the opportunity to claim the corresponding reward.",
+        "title-desc-settings-slots": "Here you can fill FLOATs in the challenge, and you can set any FLOAT before slots are filled.",
+        "title-desc-settings-goals": "Here you can set goals of the challenge. You can set different achievement points for each goal.",
+        "title-desc-setting-certificate": "Here, Code of the challenge certificate can be generated. After the challenge certificate FLOAT is created, the FLOAT can be associated with the challenge through the synchronization.",
+        "title-desc-settings-treasury": "You can deposit any Fungible Token or NFT to the Treasury, and these assets can be distributed to users in the challenge rewards.",
+        "title-desc-settings-strategies": "Here you can set rewards for the challenge, and rewards will be limited. There are two reward strategies and three distribution strategies.",
+        "title-desc-settings-danger": "You can revoke the challenge here. The challenge can be revoded only when all challenge rewards are closed. After the challenge is revoked, the assets in Treasury will be automatically transferred to your account."
       },
       "treasury": {
         "btn-sync-status": "Sync Status"

@@ -15,40 +15,58 @@
   export let eventSeries;
 </script>
 
-<h4>{$t("challenges.detail.main.title-slots")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.main.title-slots")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-settings-slots")}
+</p>
 <UpdateSlots
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");
   }}
 />
-<h4>{$t("challenges.detail.main.title-goals")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.main.title-goals")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-settings-goals")}
+</p>
 <AddNewGoal
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");
   }}
 />
-<h4>{$t("challenges.detail.main.title-certificate")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.main.title-certificate")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-setting-certificate")}
+</p>
 <ManageCertificate
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");
   }}
 />
-<h4>{$t("challenges.detail.main.title-treasury")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.main.title-treasury")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-settings-treasury")}
+</p>
 <ManageTreasury
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");
   }}
 />
-<h4>{$t("challenges.detail.main.title-rewards")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.main.title-rewards")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-settings-strategies")}
+</p>
 <AddNewStrategy
   {eventSeries}
   on:seriesUpdated={function () {
     dispatch("seriesUpdated");
   }}
 />
-<h4>{$t("challenges.detail.settings.danger.title")}</h4>
+<h4 class="subtitle">{$t("challenges.detail.settings.danger.title")}</h4>
+<p class="subtitle-desc">
+  {$t("challenges.detail.main.title-desc-settings-danger")}
+</p>
 <DangerZone {eventSeries} />

@@ -116,7 +116,10 @@
   {/if}
 
   {#if certificates.length > 0}
-    <h4>{$t("challenges.detail.main.title-certificate")}</h4>
+    <h4 class="subtitle">{$t("challenges.detail.main.title-certificate")}</h4>
+    <p class="subtitle-desc">
+      {$t("challenges.detail.main.title-desc-certificate")}
+    </p>
     {#await queryOwnsStatus() then ownsStatus}
       <div class="flex-wrap flex-gap mb-1">
         {#each certificates as one, index (one ? `${one.host}#${one.eventId}@${index}` : "emptySlot#" + index)}
@@ -134,9 +137,12 @@
   {#if !data?.strategies?.length}
     <div class="flex">{$t("errors.challenges.no-reward-strategy")}</div>
   {:else}
-    <h4>
+    <h4 class="subtitle">
       {$t("challenges.detail.main.title-rewards")}
     </h4>
+    <p class="subtitle-desc">
+      {$t("challenges.detail.main.title-desc-rewards")}
+    </p>
     {#each data?.strategies as strategy}
       <TreasuryStrategyItem
         {strategy}

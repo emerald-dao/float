@@ -165,6 +165,14 @@ h3 {
   color: var(--primary);
 }
 
+.subtitle {
+  margin-bottom: 0.5rem;
+}
+.subtitle-desc {
+  font-size: 0.8rem;
+  opacity: 0.7;
+}
+
 .panel {
   position: relative;
   display: flex;

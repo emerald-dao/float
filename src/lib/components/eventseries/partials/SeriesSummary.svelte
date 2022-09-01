@@ -51,7 +51,10 @@
 {#await statusPromise}
   <Loading />
 {:then userStatus}
-  <h4>{$t("challenges.detail.main.title-slots")}</h4>
+  <h4 class="subtitle">{$t("challenges.detail.main.title-slots")}</h4>
+  <p class="subtitle-desc">
+    {$t("challenges.detail.main.title-desc-summary")}
+  </p>
   <div class="flex-wrap flex-gap mb-1">
     {#each eventSeries.slots as slot, index ("slot#" + index)}
       <EventItem
