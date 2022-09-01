@@ -9,6 +9,8 @@
   import { resolver, walletModal } from "$lib/stores.js";
   import WalletModal from "$lib/components/WalletModal.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
+  import banner from '../../static/banner.json';
+  import Banner from "$lib/components/Banner.svelte";
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -30,9 +32,9 @@
   console.log($page.url.pathname);
 </script>
 
-<!-- <div class="notice">
-  <strong>Important!</strong> Flow Mainnet is undergoing scheduled <a href="https://status.onflow.org" target="_blank">maintenance</a> around 8-11am PT. Transactions will fail during this time.
-</div> -->
+{#if banner.enabled}
+    <Banner time={banner.time} isScheduled={banner.isScheduled} />
+{/if}
 
 <Meta
   title={$page.stuff.title}
