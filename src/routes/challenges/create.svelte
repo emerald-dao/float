@@ -35,10 +35,10 @@
   let totalSlots = 0;
   let totalPrimarySlots = 0;
 
-  $: isPreviewOk = true;
-  // !!draftEventSeries.basics.image &&
-  // !!draftEventSeries.basics.name &&
-  // !!draftEventSeries.basics.description;
+  $: isPreviewOk =
+    !!draftEventSeries.basics.image &&
+    !!draftEventSeries.basics.name &&
+    !!draftEventSeries.basics.description;
 
   $: presetPrimaryAmt = draftEventSeries.presetEvents.filter(
     (one) => one.required
