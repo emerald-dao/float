@@ -153,6 +153,10 @@ h3 {
   gap: 1rem;
 }
 
+.flex-gap.narrow {
+  gap: 0.2rem;
+}
+
 .flex-none {
   flex: none;
 }

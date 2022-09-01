@@ -2,6 +2,7 @@
   import { t } from "svelte-i18n";
   import Badge from "../svgs/badge.svelte";
   import EventItem from "./EventItem.svelte";
+  import PrimaryTag from "./PrimaryTag.svelte";
 
   /** @type {import('../types').EventSeriesAchievementGoal} */
   export let goal;
@@ -96,7 +97,7 @@
   </div>
   <div class="panel-content">
     {#if isByAmount}
-      <div>
+      <div class="flex-wrap center flex-gap narrow">
         {$t("challenges.elements.goal.label-collect")}
         <span class="emphasis">
           {goal.params.eventsAmount}
@@ -109,7 +110,7 @@
           <span class="emphasis">
             {goal.params.requiredEventsAmount}
           </span>
-          <Badge required />
+          <PrimaryTag />
         {/if}
       </div>
     {:else if isByPercent}
