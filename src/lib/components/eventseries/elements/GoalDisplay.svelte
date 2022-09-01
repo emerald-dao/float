@@ -48,7 +48,7 @@
 </script>
 
 <article class="panel" class:ready={isGoalReady} class:done={isGoalDone}>
-  <div class="panel-start">
+  <div class="panel-start flex-none">
     {#if isGoalReady || isGoalDone}
       <Badge owned={true} huge={true} />
     {:else if isByAmount}
@@ -95,43 +95,48 @@
       </svg>
     {/if}
   </div>
-  <div class="panel-content">
-    {#if isByAmount}
-      <div class="flex-wrap center flex-gap narrow">
-        {$t("challenges.elements.goal.label-collect")}
-        <span class="emphasis">
-          {goal.params.eventsAmount}
-        </span>
-        {$t("common.main.floats", {
-          values: { n: goal.params.eventsAmount },
-        })}
-        {#if goal.params.requiredEventsAmount > 0}
-          {$t("challenges.elements.goal.by-amount-with")}
+  <div class="panel-content flex-auto">
+    <div class="panel-group">
+      {#if !!goal.title}
+        <em><small><code>{goal.title}</code></small></em>
+      {/if}
+      {#if isByAmount}
+        <div class="flex-wrap center flex-gap narrow">
+          {$t("challenges.elements.goal.label-collect")}
           <span class="emphasis">
-            {goal.params.requiredEventsAmount}
+            {goal.params.eventsAmount}
           </span>
-          <PrimaryTag />
-        {/if}
-      </div>
-    {:else if isByPercent}
-      <div>
-        {$t("challenges.elements.goal.label-collect")}
-        <span class="emphasis">{goal.params.percent}% </span>
-        {$t("challenges.elements.goal.label-target")}
-      </div>
-    {:else}
-      <div class="flex-wrap flex-gap">
-        {#each goal.params.events as one (`${one.host}#${one.id}`)}
-          <EventItem
-            item={{ event: one, required: true }}
-            {preview}
-            pending={preview}
-            ghost={preview}
-            owned={!preview && isOwned(one.id)}
-          />
-        {/each}
-      </div>
-    {/if}
+          {$t("common.main.floats", {
+            values: { n: goal.params.eventsAmount },
+          })}
+          {#if goal.params.requiredEventsAmount > 0}
+            {$t("challenges.elements.goal.by-amount-with")}
+            <span class="emphasis">
+              {goal.params.requiredEventsAmount}
+            </span>
+            <PrimaryTag />
+          {/if}
+        </div>
+      {:else if isByPercent}
+        <div>
+          {$t("challenges.elements.goal.label-collect")}
+          <span class="emphasis">{goal.params.percent}% </span>
+          {$t("challenges.elements.goal.label-target")}
+        </div>
+      {:else}
+        <div class="flex-wrap flex-gap">
+          {#each goal.params.events as one (`${one.host}#${one.id}`)}
+            <EventItem
+              item={{ event: one, required: true }}
+              {preview}
+              pending={preview}
+              ghost={preview}
+              owned={!preview && isOwned(one.id)}
+            />
+          {/each}
+        </div>
+      {/if}
+    </div>
     <b class:emphasis={isGoalReady}>
       {$t("challenges.elements.goal.label-points", {
         values: {
@@ -146,9 +151,20 @@
 </article>
 
 <style>
+  .panel {
+    padding: 0 0.4rem;
+    gap: 0.4rem;
+  }
+
+  .panel .panel-group {
+    display: flex;
+    flex-direction: column;
+    padding: 0.4rem 0;
+    gap: 0.4rem;
+  }
+
   .panel-content {
-    flex: 1 1 auto;
-    padding: 0.2rem 1rem 0.2rem 0;
+    padding: 0.2rem 0.8rem 0.2rem 0;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
