@@ -44,7 +44,7 @@
 <style>
   .cert-panel {
     padding: 0 1rem 0 0;
-    border-radius: var(--border-radius);
+    border-radius: 10px;
     box-shadow: var(--card-box-shadow);
   }
 
