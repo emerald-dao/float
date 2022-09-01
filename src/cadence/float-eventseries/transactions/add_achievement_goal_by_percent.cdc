@@ -5,7 +5,8 @@ import FLOATEventSeriesGoals from "../FLOATEventSeriesGoals.cdc"
 transaction(
   seriesId: UInt64,
   points: UInt64,
-  percent: UFix64
+  percent: UFix64,
+  title: String?
 ) {
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
@@ -34,6 +35,7 @@ transaction(
     let goal = FLOATEventSeriesGoals.CollectByPercentGoal(
       points: points,
       percentToCollect: percent,
+      title: title
     )
     self.eventSeries.addAchievementGoal(goal: goal)
 

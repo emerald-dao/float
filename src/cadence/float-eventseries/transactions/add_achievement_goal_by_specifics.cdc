@@ -7,6 +7,7 @@ transaction(
   points: UInt64,
   eventHosts: [Address],
   eventIds: [UInt64],
+  title: String?
 ) {
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
@@ -46,7 +47,8 @@ transaction(
 
     let goal = FLOATEventSeriesGoals.CollectSpecificFLOATsGoal(
       points: points,
-      floats: floats
+      floats: floats,
+      title: title
     )
     self.eventSeries.addAchievementGoal(goal: goal)
 

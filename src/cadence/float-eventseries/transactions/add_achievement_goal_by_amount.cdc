@@ -6,7 +6,8 @@ transaction(
   seriesId: UInt64,
   points: UInt64,
   eventsAmount: UInt64,
-  requiredEventsAmount: UInt64
+  requiredEventsAmount: UInt64,
+  title: String?
 ) {
   let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
 
@@ -47,7 +48,8 @@ transaction(
     let goal = FLOATEventSeriesGoals.CollectByAmountGoal(
       points: points,
       amount: eventsAmount,
-      requiredAmount: requiredEventsAmount
+      requiredAmount: requiredEventsAmount,
+      title: title
     )
     self.eventSeries.addAchievementGoal(goal: goal)
 

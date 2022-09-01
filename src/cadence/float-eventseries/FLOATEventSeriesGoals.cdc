@@ -19,7 +19,8 @@ pub contract FLOATEventSeriesGoals {
         init(
             points: UInt64,
             amount: UInt64,
-            requiredAmount: UInt64?
+            requiredAmount: UInt64?,
+            title: String?
         ) {
             pre {
                 (requiredAmount ?? 0) <= amount: "required amount should be less then amount."
@@ -28,7 +29,7 @@ pub contract FLOATEventSeriesGoals {
             self.amount = amount
             self.requiredAmount = requiredAmount ?? 0
 
-            self.title = "Collect ".concat(amount.toString()).concat(" FLOATs.")
+            self.title = title ?? ""
         }
 
         pub fun getPoints(): UInt64 { return self.points }
@@ -75,12 +76,13 @@ pub contract FLOATEventSeriesGoals {
 
         init(
             points: UInt64,
-            percentToCollect: UFix64
+            percentToCollect: UFix64,
+            title: String?
         ) {
             self.points = points
             self.percent = percentToCollect
 
-            self.title = "Collect ".concat(percentToCollect.toString()).concat("% of all FLOATs.")
+            self.title = title ?? ""
         }
 
         pub fun getPoints(): UInt64 { return self.points }
@@ -123,12 +125,13 @@ pub contract FLOATEventSeriesGoals {
 
         init(
             points: UInt64,
-            floats: [FLOATEventSeries.EventIdentifier]
+            floats: [FLOATEventSeries.EventIdentifier],
+            title: String?
         ) {
             self.points = points
             self.floats = floats
 
-            self.title = "Collect some specific FLOATs."
+            self.title = title ?? ""
         }
 
         pub fun getPoints(): UInt64 { return self.points }
