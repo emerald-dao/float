@@ -14,23 +14,23 @@ pub fun main(
     .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
     .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic}>()
     ?? panic("Missing FLOAT EventSeries Builder.")
-  let eventSeries = builderRef!.borrowEventSeries(seriesId: id)
+  let eventSeries = builderRef!.borrowEventSeriesPublic(seriesId: id)
     ?? panic("Missing FLOAT EventSeries Builder.")
-  let treasury = eventSeries.borrowTreasury()
+  let treasury = eventSeries.borrowTreasuryPublic()
 
-  var userRecord: &{FLOATEventSeries.AchievementPublic}? = nil
+  var userRecord: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}? = nil
   var totalScore: UInt64? = nil
   var consumableScore: UInt64? = nil
   if let currentUser = user {
     let achievementBoardRef = getAccount(currentUser)
       .getCapability<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>
         (FLOATEventSeries.FLOATAchievementBoardPublicPath)
-      .borrow()
+      .borrow() 
     if let record = achievementBoardRef?.borrowAchievementRecordRef(host: host, seriesId: id) {
       userRecord = record
       if record != nil {
-        totalScore = record!.getTotalScore()
-        consumableScore = record!.getConsumableScore()
+        totalScore = record!.score
+        consumableScore = record!.consumableScore
       }
     }
   }

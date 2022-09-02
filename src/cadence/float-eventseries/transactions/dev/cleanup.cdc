@@ -19,10 +19,6 @@ transaction {
       acct.unlink(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
     }
 
-    if acct.getCapability<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>(FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath) != nil {
-      acct.unlink(FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath)
-    }
-
     if acct.getCapability<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>(FLOATEventSeries.FLOATAchievementBoardPublicPath) != nil {
       acct.unlink(FLOATEventSeries.FLOATAchievementBoardPublicPath)
     }

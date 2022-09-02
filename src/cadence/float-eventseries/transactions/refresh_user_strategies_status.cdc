@@ -5,7 +5,7 @@ transaction(
   host: Address,
   seriesId: UInt64,
 ) {
-  let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
+  let achievementRecord: &FLOATEventSeries.Achievement
   let eventSeries: &{FLOATEventSeries.EventSeriesPublic}
 
   prepare(acct: AuthAccount) {
@@ -34,12 +34,12 @@ transaction(
       .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic}>()
       ?? panic("Could not borrow the public EventSeriesBuilderPublic.")
     
-    self.eventSeries = serieshelf.borrowEventSeries(seriesId: seriesId)
+    self.eventSeries = serieshelf.borrowEventSeriesPublic(seriesId: seriesId)
       ?? panic("Failed to get event series reference.")
   }
 
   execute {
-    let treasury = self.eventSeries.borrowTreasury()
+    let treasury = self.eventSeries.borrowTreasuryPublic()
     treasury.refreshUserStatus(user: self.achievementRecord)
 
     log("Refresh user status of the treasury.")

@@ -18,7 +18,7 @@ pub fun main(
     if builderRef == nil {
       continue
     }
-    if let eventSeries = builderRef!.borrowEventSeries(seriesId: seriesInfo.id) {
+    if let eventSeries = builderRef!.borrowEventSeriesPublic(seriesId: seriesInfo.id) {
       let resolver = builderRef!.borrowViewResolver(id: seriesInfo.id)
       returnVal[eventSeries.sequence] = FLOATEventSeriesViews.EventSeriesMetadata(eventSeries, resolver)
     }

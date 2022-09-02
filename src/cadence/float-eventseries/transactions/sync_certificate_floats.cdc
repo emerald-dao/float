@@ -6,7 +6,7 @@ transaction(
   certHosts: [Address],
   certEventIds: [UInt64],
 ) {
-  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
+  let eventSeries: &FLOATEventSeries.EventSeries
 
   prepare(acct: AuthAccount) {
     // SETUP Event Series builder resource, link public and private
@@ -14,14 +14,12 @@ transaction(
       acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
           (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
-      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
-          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
     let builder = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventSeries = builder.borrowEventSeriesPrivate(seriesId: seriesId)
+    self.eventSeries = builder.borrowEventSeries(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 

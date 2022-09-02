@@ -25,9 +25,9 @@ pub fun main(
     // build goal status by different ways
     if let record = achievementBoard.borrowAchievementRecordRef(host: host, seriesId: seriesId) {
       // when record is created
-      let finishedGoals = record.getFinishedGoals()
-      totalScore = record.getTotalScore()
-      consumableScore = record.getConsumableScore()
+      let finishedGoals = record.finishedGoals
+      totalScore = record.score
+      consumableScore = record.consumableScore
 
       verifyFunc = fun (goalIdx: Int): FLOATEventSeriesGoals.GoalStatus {
         var status = FLOATEventSeriesGoals.GoalStatus.todo

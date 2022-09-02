@@ -9,7 +9,7 @@ transaction(
   amount: UFix64
 ) {
   let serieshelf: &FLOATEventSeries.EventSeriesBuilder
-  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
+  let eventSeries: &FLOATEventSeries.EventSeries
   let fungibleTokenPublicPath: PublicPath
   let fungibleTokenReciever: &{FungibleToken.Receiver}
 
@@ -21,15 +21,13 @@ transaction(
       acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
           (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
-      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
-          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
     self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
     // event series
-    self.eventSeries = self.serieshelf.borrowEventSeriesPrivate(seriesId: seriesId)
+    self.eventSeries = self.serieshelf.borrowEventSeries(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
 
     // ensure fungible token capability
@@ -58,7 +56,7 @@ transaction(
       self.serieshelf.registerToken(path: self.fungibleTokenPublicPath, isNFT: false)
     }
 
-    let treasury = self.eventSeries.borrowTreasuryPrivate()
+    let treasury = self.eventSeries.borrowTreasury()
     treasury.depositFungibleToken(from: <- self.fungibleTokenToDeposit)
 
     log("Fungible Tokens have been deposited to a FLOAT EventSeries.")

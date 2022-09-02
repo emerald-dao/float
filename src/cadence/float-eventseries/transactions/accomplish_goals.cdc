@@ -5,7 +5,7 @@ transaction(
   seriesId: UInt64,
   goals: [Int]
 ) {
-  let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
+  let achievementRecord: &FLOATEventSeries.Achievement
 
   prepare(acct: AuthAccount) {
     // SETUP Achievement Board resource, link public

@@ -13,7 +13,7 @@ transaction(
   seriesId: UInt64,
   strategyIndex: Int,
 ) {
-  let achievementRecord: &{FLOATEventSeries.AchievementPublic, FLOATEventSeries.AchievementWritable}
+  let achievementRecord: &FLOATEventSeries.Achievement
   let eventSeries: &{FLOATEventSeries.EventSeriesPublic}
 
   prepare(acct: AuthAccount) {
@@ -42,10 +42,10 @@ transaction(
       .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic}>()
       ?? panic("Could not borrow the public EventSeriesBuilderPublic.")
     
-    self.eventSeries = builder.borrowEventSeries(seriesId: seriesId)
+    self.eventSeries = builder.borrowEventSeriesPublic(seriesId: seriesId)
       ?? panic("Failed to get event series reference.")
     
-    let treasury = self.eventSeries.borrowTreasury()
+    let treasury = self.eventSeries.borrowTreasuryPublic()
     // prepare of account resource
     let detail = treasury.getStrategyDetail(strategyIndex: strategyIndex)
     let deliveryTokenType = detail.status.delivery.deliveryTokenType
@@ -74,7 +74,7 @@ transaction(
   }
 
   execute {
-    let treasury = self.eventSeries.borrowTreasury()
+    let treasury = self.eventSeries.borrowTreasuryPublic()
     // claim reward
     treasury.claim(strategyIndex: strategyIndex, user: self.achievementRecord)
 

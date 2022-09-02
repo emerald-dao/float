@@ -40,7 +40,7 @@ pub fun main(
     if record == nil {
       continue
     }
-    ret.append(AchievementRecord(host, seriesId, record!.getTotalScore(), record!.getConsumableScore()))
+    ret.append(AchievementRecord(host, seriesId, record!.score, record!.consumableScore))
   }
 
   return ret

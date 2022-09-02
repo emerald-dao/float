@@ -129,7 +129,7 @@ pub contract FLOATTreasuryStrategies {
         }
 
         // update user's achievement
-        access(account) fun onGoalAccomplished(user: &{FLOATEventSeries.AchievementPublic}) {
+        access(account) fun onGoalAccomplished(user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}) {
             var isValid = false
             let now = getCurrentBlock().timestamp
             // user should accomplish goals before opening ending
@@ -139,9 +139,9 @@ pub contract FLOATTreasuryStrategies {
 
             let info = self.controller.getInfo()
             if info.consumable {
-                isValid = info.threshold <= user.getConsumableScore()
+                isValid = info.threshold <= user.consumableScore
             } else {
-                isValid = info.threshold <= user.getTotalScore()
+                isValid = info.threshold <= user.score
             }
             // add to valid
             let address = user.getOwner()
@@ -219,7 +219,7 @@ pub contract FLOATTreasuryStrategies {
         }
 
         // update user's achievement
-        access(account) fun onGoalAccomplished(user: &{FLOATEventSeries.AchievementPublic}) {
+        access(account) fun onGoalAccomplished(user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}) {
             // NOTHING
         }
         // ---------- claimable Stage ----------

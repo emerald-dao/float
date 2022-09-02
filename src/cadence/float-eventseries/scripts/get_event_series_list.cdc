@@ -19,7 +19,7 @@ pub fun main(
 
   let returnVal: {UInt64: FLOATEventSeriesViews.EventSeriesMetadata} = {}
   for oneId in eventSeriesIds {
-    let eventSeries = collection.borrowEventSeries(seriesId: oneId)
+    let eventSeries = collection.borrowEventSeriesPublic(seriesId: oneId)
       ?? panic("This event series does not exist in the account.")
     let resolver = collection.borrowViewResolver(id: oneId)
     returnVal[eventSeries.sequence] = FLOATEventSeriesViews.EventSeriesMetadata(eventSeries, resolver)

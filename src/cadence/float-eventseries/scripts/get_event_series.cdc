@@ -15,7 +15,7 @@ pub fun main(
     return nil
   }
 
-  let eventSeries = builderRef!.borrowEventSeries(seriesId: id)
+  let eventSeries = builderRef!.borrowEventSeriesPublic(seriesId: id)
   let resolver = builderRef!.borrowViewResolver(id: id)
   if eventSeries == nil || resolver == nil {
     return nil

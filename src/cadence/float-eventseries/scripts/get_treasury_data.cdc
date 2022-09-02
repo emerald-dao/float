@@ -13,10 +13,10 @@ pub fun main(
     .borrow<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic}>()
     ?? panic("Missing FLOAT EventSeries Builder.")
 
-  let eventSeries = builderRef!.borrowEventSeries(seriesId: id)
+  let eventSeries = builderRef!.borrowEventSeriesPublic(seriesId: id)
     ?? panic("Missing FLOAT EventSeries Builder.")
 
-  let treasury = eventSeries.borrowTreasury()
+  let treasury = eventSeries.borrowTreasuryPublic()
 
   // FTs
   let ftTypes = treasury.getTreasuryAssets(isNFT: false)

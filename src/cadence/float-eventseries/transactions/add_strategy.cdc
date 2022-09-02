@@ -22,7 +22,7 @@ transaction(
   deliveryParam1: UFix64?,
 ) {
   let seriesBuilder: &FLOATEventSeries.EventSeriesBuilder
-  let eventSeries: &FLOATEventSeries.EventSeries{FLOATEventSeries.EventSeriesPublic, FLOATEventSeries.EventSeriesPrivate}
+  let eventSeries: &FLOATEventSeries.EventSeries
 
   prepare(acct: AuthAccount) {
     // SETUP Event Series builder resource, link public and private
@@ -30,14 +30,12 @@ transaction(
       acct.save(<- FLOATEventSeries.createEventSeriesBuilder(), to: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPublic, MetadataViews.ResolverCollection}>
           (FLOATEventSeries.FLOATEventSeriesBuilderPublicPath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
-      acct.link<&FLOATEventSeries.EventSeriesBuilder{FLOATEventSeries.EventSeriesBuilderPrivate}>
-          (FLOATEventSeries.FLOATEventSeriesBuilderPrivatePath, target: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
     }
 
     self.seriesBuilder = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
     
-    self.eventSeries = self.seriesBuilder.borrowEventSeriesPrivate(seriesId: seriesId)
+    self.eventSeries = self.seriesBuilder.borrowEventSeries(seriesId: seriesId)
       ?? panic("Could not borrow the event series private.")
   }
 
@@ -48,7 +46,7 @@ transaction(
   }
 
   execute {
-    let treasury = self.eventSeries.borrowTreasuryPrivate()
+    let treasury = self.eventSeries.borrowTreasury()
 
     let tokenType = CompositeType(deliveryTokenIdentifier) ?? panic("Invalid type: ".concat(deliveryTokenIdentifier))
     assert(FLOATEventSeries.getTokenDefinition(tokenType) != nil, message: "Unregistered key: ".concat(deliveryTokenIdentifier))

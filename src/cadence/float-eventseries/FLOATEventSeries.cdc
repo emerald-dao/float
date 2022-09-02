@@ -18,7 +18,6 @@ pub contract FLOATEventSeries {
     pub let FLOATEventSeriesGlobalPublicPath: PublicPath
 
     pub let FLOATEventSeriesBuilderStoragePath: StoragePath
-    pub let FLOATEventSeriesBuilderPrivatePath: PrivatePath
     pub let FLOATEventSeriesBuilderPublicPath: PublicPath
 
     pub let FLOATAchievementBoardStoragePath: StoragePath
@@ -204,7 +203,7 @@ pub contract FLOATEventSeries {
                 .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
                 .borrow<&EventSeriesBuilder{EventSeriesBuilderPublic}>()
                 ?? panic("Could not borrow the public EventSeriesBuilderPublic.")
-            return ref.borrowEventSeries(seriesId: self.id)
+            return ref.borrowEventSeriesPublic(seriesId: self.id)
                 ?? panic("Failed to get event series reference.")
         }
 
@@ -712,9 +711,9 @@ pub contract FLOATEventSeries {
             let thresholdScore = self.info.threshold
             var valid = false
             if self.info.consumable {
-                valid = thresholdScore <= user.getConsumableScore()
+                valid = thresholdScore <= user.consumableScore
             } else {
-                valid = thresholdScore <= user.getTotalScore()
+                valid = thresholdScore <= user.score
             }
             return valid
         }
@@ -745,7 +744,7 @@ pub contract FLOATEventSeries {
         access(account) fun isEligible (user: &{AchievementPublic}): Bool
 
         // update user's achievement
-        access(account) fun onGoalAccomplished(user: &{AchievementPublic}) {
+        access(account) fun onGoalAccomplished(user: &Achievement{AchievementPublic}) {
             pre {
                 self.controller.getInfo().currentState == StrategyState.opening: "Ensure current stage is opening."
             }
@@ -812,9 +811,9 @@ pub contract FLOATEventSeries {
         // get nft collection public 
         pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResultWithUser]
+        pub fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser]
         // Refresh strategy status
-        pub fun refreshUserStatus(user: &{AchievementPublic})
+        pub fun refreshUserStatus(user: &Achievement{AchievementPublic})
         // For the public to get strategy information
         pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail
         // For the public to claim rewards
@@ -826,24 +825,8 @@ pub contract FLOATEventSeries {
         access(contract) fun borrowStrategiesRef(state: StrategyState?): [&{ITreasuryStrategy}]
     }
 
-    // Treasury private interface
-    pub resource interface TreasuryPrivate {
-        // update drop receiver
-        pub fun updateDropReceiver(receiver: Address)
-        // drop all treasury, if no strategy alive
-        pub fun dropTreasury()
-        // deposit ft to treasury
-        pub fun depositFungibleToken(from: @FungibleToken.Vault)
-        // deposit nft to treasury
-        pub fun depositNonFungibleTokens(nfts: @[NonFungibleToken.NFT])
-        // add new strategy to the treasury
-        pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool)
-        // update strategy status
-        pub fun nextStrategyStage(idx: Int, _ forceClose: Bool): StrategyState
-    }
-
     // Treasury resource of each EventSeries (Optional)
-    pub resource Treasury: TreasuryPublic, TreasuryPrivate {
+    pub resource Treasury: TreasuryPublic {
         // Treasury seriesID
         pub let seriesId: UInt64
         // generic tokens will be dropped to this address, when treasury destroy
@@ -895,10 +878,10 @@ pub contract FLOATEventSeries {
         }
 
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &{AchievementPublic}?): [StrategyQueryResultWithUser] {
+        pub fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser] {
             // ensure achievement record should be same
             if user != nil {
-                let achievementIdentifier = user!.getTarget().toString()
+                let achievementIdentifier = user!.target.toString()
                 let seriesIdentifier = self.getParentIdentifier().toString()
                 assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
             }
@@ -957,9 +940,9 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun refreshUserStatus(user: &{AchievementPublic}) {
+        pub fun refreshUserStatus(user: &Achievement{AchievementPublic}) {
             // ensure achievement record should be same
-            let achievementIdentifier = user.getTarget().toString()
+            let achievementIdentifier = user.target.toString()
             let seriesIdentifier = self.getParentIdentifier().toString()
             assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
 
@@ -976,7 +959,7 @@ pub contract FLOATEventSeries {
             user: &{AchievementPublic}
         ) {
             // ensure achievement record should be same
-            let achievementIdentifier = user.getTarget().toString()
+            let achievementIdentifier = user.target.toString()
             let seriesIdentifier = self.getParentIdentifier().toString()
             assert(achievementIdentifier == seriesIdentifier, message: "Achievement identifier should be same as event series identifier")
 
@@ -1295,25 +1278,11 @@ pub contract FLOATEventSeries {
         // check if goals of this user reached
         pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool]
         // borrow the treasury public reference
-        pub fun borrowTreasury(): &Treasury{TreasuryPublic}
-    }
-
-    // A private interface to write for EventSeries
-    pub resource interface EventSeriesPrivate {
-        // borrow the treasury private reference
-        pub fun borrowTreasuryPrivate(): &Treasury{TreasuryPublic, TreasuryPrivate}
-        // update basic information
-        pub fun updateBasics(name: String, description: String, image: String)
-        // update slot identifier information
-        pub fun updateSlotData(idx: Int, identifier: EventIdentifier)
-        // add a new achievement goal to the event series
-        pub fun addAchievementGoal(goal: {IAchievementGoal})
-        // sync eventseries related certificate FLOATs
-        pub fun syncCertificates(events: [EventIdentifier])
+        pub fun borrowTreasuryPublic(): &Treasury{TreasuryPublic}
     }
 
     // The event series defination
-    pub resource EventSeries: EventSeriesPublic, EventSeriesPrivate, MetadataViews.Resolver {
+    pub resource EventSeries: EventSeriesPublic, MetadataViews.Resolver {
         pub let sequence: UInt64
         pub let host: Address
         // --- basics ---
@@ -1430,7 +1399,7 @@ pub contract FLOATEventSeries {
             return self.extra
         }
 
-        pub fun borrowTreasury(): &Treasury{TreasuryPublic} {
+        pub fun borrowTreasuryPublic(): &Treasury{TreasuryPublic} {
             return &self.treasury as &Treasury{TreasuryPublic}
         }
 
@@ -1456,8 +1425,8 @@ pub contract FLOATEventSeries {
         // --- Setters - Private Interfaces ---
 
         // borrow the treasury private reference
-        pub fun borrowTreasuryPrivate(): &Treasury{TreasuryPublic, TreasuryPrivate} {
-            return &self.treasury as &Treasury{TreasuryPublic, TreasuryPrivate}
+        pub fun borrowTreasury(): &Treasury {
+            return &self.treasury as &Treasury
         }
 
         pub fun updateBasics(name: String, description: String, image: String) {
@@ -1559,43 +1528,13 @@ pub contract FLOATEventSeries {
         // check if some id is revoked
         pub fun isRevoked(seriesId: UInt64): Bool
         // borrow the public interface of EventSeries
-        pub fun borrowEventSeries(seriesId: UInt64): &EventSeries{EventSeriesPublic}?
+        pub fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}?
         // internal full reference borrowing
         access(account) fun borrowEventSeriesBuilderFullRef(): &EventSeriesBuilder
     }
 
-    // A private interface to write for EventSeriesBuilder
-    pub resource interface EventSeriesBuilderPrivate {
-        // create a new event series
-        pub fun createEventSeries(
-            name: String,
-            description: String,
-            image: String,
-            slots: [{EventSlot}],
-            goals: [{IAchievementGoal}],
-            extra: {String: AnyStruct}
-        ): UInt64
-        // revoke a event series.
-        pub fun revokeEventSeries(seriesId: UInt64)
-        // recover a event series.
-        pub fun recoverEventSeries(seriesId: UInt64)
-
-        // registor a token info for general usage
-        pub fun registerToken(path: PublicPath, isNFT: Bool)
-
-        // create strategy controller
-        pub fun createStrategyController(
-            consumable: Bool,
-            threshold: UInt64,
-            delivery: {StrategyDelivery}
-        ): @StrategyController
-
-        // borrow event series private ref
-        pub fun borrowEventSeriesPrivate(seriesId: UInt64): &EventSeries{EventSeriesPublic, EventSeriesPrivate}?
-    }
-
     // the event series resource collection
-    pub resource EventSeriesBuilder: EventSeriesBuilderPublic, EventSeriesBuilderPrivate, MetadataViews.ResolverCollection {
+    pub resource EventSeriesBuilder: EventSeriesBuilderPublic, MetadataViews.ResolverCollection {
         pub let sequence: UInt64
 
         access(account) var series: @{UInt64: EventSeries}
@@ -1627,7 +1566,7 @@ pub contract FLOATEventSeries {
             return (&self.series[id] as &{MetadataViews.Resolver}?) ?? panic("Faild to borrow ViewResolver.")
         }
 
-        pub fun borrowEventSeries(seriesId: UInt64): &EventSeries{EventSeriesPublic}? {
+        pub fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}? {
             return &self.series[seriesId] as &EventSeries{EventSeriesPublic}?
         }
 
@@ -1691,8 +1630,8 @@ pub contract FLOATEventSeries {
 
         pub fun revokeEventSeries(seriesId: UInt64) {
             // drop treasury first
-            let seriesRef = (&self.series[seriesId] as &EventSeries{EventSeriesPrivate}?) ?? panic("The event series does not exist")
-            let treasury = seriesRef.borrowTreasuryPrivate()
+            let seriesRef = (&self.series[seriesId] as &EventSeries?) ?? panic("The event series does not exist")
+            let treasury = seriesRef.borrowTreasury()
             treasury.dropTreasury()
 
             let one <- self.series.remove(key: seriesId) ?? panic("The event series does not exist")
@@ -1741,8 +1680,8 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun borrowEventSeriesPrivate(seriesId: UInt64): &EventSeries{EventSeriesPublic, EventSeriesPrivate}? {
-            return &self.series[seriesId] as &EventSeries{EventSeriesPublic, EventSeriesPrivate}?
+        pub fun borrowEventSeries(seriesId: UInt64): &EventSeries? {
+            return &self.series[seriesId] as &EventSeries?
         }
 
         // --- Setters - Contract Only ---
@@ -1853,7 +1792,7 @@ pub contract FLOATEventSeries {
 
             // ensure event series exists
             let eventSeries = id.getEventSeriesPublic()
-            let treasury = eventSeries.borrowTreasury()
+            let treasury = eventSeries.borrowTreasuryPublic()
             let availableStrategies = treasury.getStrategies(states: [
                 StrategyState.preparing,
                 StrategyState.opening,
@@ -1893,13 +1832,13 @@ pub contract FLOATEventSeries {
         // get achievement record owner
         pub fun getOwner(): Address
         // get achievement record target
-        pub fun getTarget(): EventSeriesIdentifier
+        pub let target: EventSeriesIdentifier
         // get total score
-        pub fun getTotalScore(): UInt64
+        pub var score: UInt64
         // get current comsumable score
-        pub fun getConsumableScore(): UInt64
+        pub var consumableScore: UInt64
         // get all finished goals
-        pub fun getFinishedGoals(): [Int]
+        pub var finishedGoals: [Int]
         // check if goal can be accomplished
         pub fun isGoalReady(goalIdx: Int): Bool
 
@@ -1907,22 +1846,16 @@ pub contract FLOATEventSeries {
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
     }
 
-    // Achievement private interface
-    pub resource interface AchievementWritable {
-        // execute verify and accomplish 
-        pub fun accomplishGoal(goalIdx: Int)
-    }
-
     // Users' Achevement of one EventSeries
-    pub resource Achievement: AchievementPublic, AchievementWritable {
+    pub resource Achievement: AchievementPublic {
         // target to event identifier
-        access(self) let target: EventSeriesIdentifier
+        pub let target: EventSeriesIdentifier
         // current achievement score
-        access(account) var score: UInt64
+        pub var score: UInt64
         // current consumable achievement score
-        access(account) var consumableScore: UInt64
+        pub var consumableScore: UInt64
         // all finished goals 
-        access(account) var finishedGoals: [Int]
+        pub var finishedGoals: [Int]
 
         init(
             host: Address,
@@ -1942,30 +1875,10 @@ pub contract FLOATEventSeries {
             return self.owner!.address
         }
 
-        // get achievement record target
-        pub fun getTarget(): EventSeriesIdentifier {
-            return self.target
-        }
-
-        // get total score
-        pub fun getTotalScore(): UInt64 {
-            return self.score
-        }
-
-        // get current comsumable score
-        pub fun getConsumableScore(): UInt64 {
-            return self.consumableScore
-        }
-
-        // get all finished goals
-        pub fun getFinishedGoals(): [Int] {
-            return self.finishedGoals
-        }
-
         // check if goal can be accomplished
         pub fun isGoalReady(goalIdx: Int): Bool {
             // fetch the event series reference
-            let eventSeriesRef = self.getTarget().getEventSeriesPublic()
+            let eventSeriesRef = self.target.getEventSeriesPublic()
             let goal = eventSeriesRef.getGoal(idx: goalIdx)
 
             return goal.verify(eventSeriesRef, user: self.owner!.address)
@@ -1980,7 +1893,7 @@ pub contract FLOATEventSeries {
             }
 
             // fetch the event series reference
-            let eventSeriesRef = self.getTarget().getEventSeriesPublic()
+            let eventSeriesRef = self.target.getEventSeriesPublic()
             let goal = eventSeriesRef.getGoal(idx: goalIdx)
 
             // verify first. if not allowed, the method will panic
@@ -1992,10 +1905,10 @@ pub contract FLOATEventSeries {
             self.consumableScore = self.consumableScore.saturatingAdd(point)
 
             // update achievement to all opening treasury strategies
-            let treasury = eventSeriesRef.borrowTreasury()
+            let treasury = eventSeriesRef.borrowTreasuryPublic()
             let openingStrategies = treasury.borrowStrategiesRef(state: StrategyState.opening)
             for strategy in openingStrategies {
-                strategy.onGoalAccomplished(user: &self as &{AchievementPublic})
+                strategy.onGoalAccomplished(user: &self as &Achievement{AchievementPublic})
             }
 
             // add to finished goal
@@ -2030,19 +1943,11 @@ pub contract FLOATEventSeries {
     // A public interface to read AchievementBoard
     pub resource interface AchievementBoardPublic {
         // get the achievement reference by event series identifier
-        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &{AchievementPublic}?
-    }
-
-    // A private interface to write AchievementBoard
-    pub resource interface AchievementBoardPrivate {
-        // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, seriesId: UInt64): EventSeriesIdentifier
-        // get the achievement record reference by event series identifier
-        pub fun borrowAchievementRecordWritable(host: Address, seriesId: UInt64): &{AchievementPublic, AchievementWritable}?
+        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}?
     }
 
     // Users' Achievement board
-    pub resource AchievementBoard: AchievementBoardPublic, AchievementBoardPrivate {
+    pub resource AchievementBoard: AchievementBoardPublic {
         pub let sequence: UInt64
         // all achievement resources
         access(account) var achievements: @{String: Achievement}
@@ -2064,10 +1969,10 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &{AchievementPublic}? {
+        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}? {
             let target = EventSeriesIdentifier(host, seriesId)
             let key = target.toString()
-            return &self.achievements[key] as &{AchievementPublic}?
+            return &self.achievements[key] as &Achievement{AchievementPublic}?
         }
 
         // --- Setters - Private Interfaces ---
@@ -2093,16 +1998,11 @@ pub contract FLOATEventSeries {
             return identifier
         }
 
-        pub fun borrowAchievementRecordWritable(host: Address, seriesId: UInt64): &{AchievementPublic, AchievementWritable}? {
+        pub fun borrowAchievementRecordWritable(host: Address, seriesId: UInt64): &Achievement? {
             let target = EventSeriesIdentifier(host, seriesId)
             let key = target.toString()
-            return &self.achievements[key] as &{AchievementPublic, AchievementWritable}?
+            return &self.achievements[key] as &Achievement?
         }
-
-        // --- Setters - Contract Only ---
-
-        // --- Self Only ---
-
     }
 
     // ---- contract methods ----
@@ -2128,7 +2028,6 @@ pub contract FLOATEventSeries {
         self.tokenDefinitions = {}
 
         self.FLOATEventSeriesBuilderStoragePath = /storage/FLOATEventSeriesBuilderPathV2
-        self.FLOATEventSeriesBuilderPrivatePath = /private/FLOATEventSeriesBuilderPathV2
         self.FLOATEventSeriesBuilderPublicPath = /public/FLOATEventSeriesBuilderPathV2
 
         self.FLOATAchievementBoardStoragePath = /storage/FLOATAchievementBoardPathV2
