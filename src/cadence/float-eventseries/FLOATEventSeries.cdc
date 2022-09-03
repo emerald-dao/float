@@ -668,7 +668,7 @@ pub contract FLOATEventSeries {
 
         // verify if the state is claimable and 
         // claim one share
-        access(contract) fun claimOneShareFromTreasury(treasury: &Treasury, user: &{AchievementPublic}) {
+        access(contract) fun claimOneShareFromTreasury(treasury: &Treasury, user: &Achievement{AchievementPublic}) {
             pre {
                 self.info.currentState == StrategyState.claimable: "Ensure current stage is claimable."
                 self.info.delivery.claimedShares < self.info.delivery.maxClaimableShares: "Reach max claimable."
@@ -707,7 +707,7 @@ pub contract FLOATEventSeries {
         }
 
         // verify if user can claim this
-        access(contract) fun verifyScore(user: &{AchievementPublic}): Bool {
+        access(contract) fun verifyScore(user: &Achievement{AchievementPublic}): Bool {
             let thresholdScore = self.info.threshold
             var valid = false
             if self.info.consumable {
@@ -741,7 +741,7 @@ pub contract FLOATEventSeries {
 
         // ---------- opening Stage ----------
 
-        access(account) fun isEligible (user: &{AchievementPublic}): Bool
+        access(account) fun isEligible (user: &Achievement{AchievementPublic}): Bool
 
         // update user's achievement
         access(account) fun onGoalAccomplished(user: &Achievement{AchievementPublic}) {
@@ -753,7 +753,7 @@ pub contract FLOATEventSeries {
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        access(account) fun verifyClaimable(user: &{AchievementPublic}): Bool {
+        access(account) fun verifyClaimable(user: &Achievement{AchievementPublic}): Bool {
             pre {
                 self.controller.getInfo().currentState == StrategyState.claimable: "Ensure current stage is claimable."
             }
@@ -817,7 +817,7 @@ pub contract FLOATEventSeries {
         // For the public to get strategy information
         pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail
         // For the public to claim rewards
-        pub fun claim(strategyIndex: Int, user: &{AchievementPublic})
+        pub fun claim(strategyIndex: Int, user: &Achievement{AchievementPublic})
 
         // borrow strategy reference
         access(contract) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy}
@@ -956,7 +956,7 @@ pub contract FLOATEventSeries {
         // execute claiming
         pub fun claim(
             strategyIndex: Int,
-            user: &{AchievementPublic}
+            user: &Achievement{AchievementPublic}
         ) {
             // ensure achievement record should be same
             let achievementIdentifier = user.target.toString()

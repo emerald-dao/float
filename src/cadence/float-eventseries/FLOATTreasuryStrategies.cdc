@@ -123,7 +123,7 @@ pub contract FLOATTreasuryStrategies {
 
         // ---------- opening Stage ----------
 
-        access(account) fun isEligible (user: &{FLOATEventSeries.AchievementPublic}): Bool {
+        access(account) fun isEligible (user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}): Bool {
             let address = user.getOwner()
             return self.valid.contains(address) || self.winners.contains(address)
         }
@@ -159,7 +159,7 @@ pub contract FLOATTreasuryStrategies {
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        access(account) fun verifyClaimable(user: &{FLOATEventSeries.AchievementPublic}): Bool {
+        access(account) fun verifyClaimable(user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}): Bool {
             let now = getCurrentBlock().timestamp
             assert(now <= (self.ending[FLOATEventSeries.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
 
@@ -214,7 +214,7 @@ pub contract FLOATTreasuryStrategies {
 
         // ---------- opening Stage ----------
 
-        access(account) fun isEligible (user: &{FLOATEventSeries.AchievementPublic}): Bool {
+        access(account) fun isEligible (user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}): Bool {
             return true
         }
 
@@ -225,7 +225,7 @@ pub contract FLOATTreasuryStrategies {
         // ---------- claimable Stage ----------
 
         // verify if the user match the strategy
-        access(account) fun verifyClaimable(user: &{FLOATEventSeries.AchievementPublic}): Bool {
+        access(account) fun verifyClaimable(user: &FLOATEventSeries.Achievement{FLOATEventSeries.AchievementPublic}): Bool {
             let now = getCurrentBlock().timestamp
             assert(now <= (self.ending[FLOATEventSeries.StrategyState.claimable] ?? now), message: "Sorry! The claimable ending time is ran out.")
 
