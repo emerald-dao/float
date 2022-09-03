@@ -198,7 +198,7 @@ pub contract FLOATVerifiers {
                     seriesId: self.challengeIdentifier.id
                 ) {
                     assert(
-                        record.getTotalScore() >= self.challengeThresholdPoints,
+                        record.score >= self.challengeThresholdPoints,
                         message: "You do not meet the minimum required Achievement Point for Challenge#".concat(self.challengeIdentifier.id.toString())
                     )
                 } else {
