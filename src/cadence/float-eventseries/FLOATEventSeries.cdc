@@ -1290,14 +1290,14 @@ pub contract FLOATEventSeries {
         pub var description: String
         pub var image: String
 
-        access(account) var extra: {String: AnyStruct}
+        access(self) var extra: {String: AnyStruct}
         // --- data ---
         // FLOAT slots
-        access(account) let slots: [{EventSlot}]
+        access(self) let slots: [{EventSlot}]
         // Achievement goals
-        access(account) let goals: [{IAchievementGoal}]
+        access(self) let goals: [{IAchievementGoal}]
         // nest resource for the EventSeries treasury
-        access(contract) var treasury: @Treasury
+        access(self) var treasury: @Treasury
 
         init(
             host: Address,
@@ -1410,7 +1410,7 @@ pub contract FLOATEventSeries {
             if let includeIndexes = idxs {
                 for idx in includeIndexes {
                     assert(idx >= 0 && idx < self.goals.length, message: "Goal does not exist.")
-                    checkingGoals.append(self.goals[idx]!)
+                    checkingGoals.append(self.goals[idx])
                 }
             } else {
                 checkingGoals = self.goals
@@ -1498,7 +1498,7 @@ pub contract FLOATEventSeries {
                 for key in verifiers.keys {
                     // Length of "A.XXXXX." is 19
                     let contractName = key.slice(from: 19, upTo: key.length)
-                    if contractName == "FLOATChallengeVerifiers.ChallengeAchievementPoint" {
+                    if contractName == "FLOATVerifiers.ChallengeAchievementPoint" {
                         isValid = true
                         break
                     }
@@ -1511,11 +1511,6 @@ pub contract FLOATEventSeries {
             self.extra["Certificates"] = certDic
             self.extra["CertificatesAmount"] = certDic.keys.length
         }
-
-        // --- Setters - Contract Only ---
-
-        // --- Self Only ---
-
     }
 
     // A public interface to read EventSeriesBuilder
@@ -1537,8 +1532,8 @@ pub contract FLOATEventSeries {
     pub resource EventSeriesBuilder: EventSeriesBuilderPublic, MetadataViews.ResolverCollection {
         pub let sequence: UInt64
 
-        access(account) var series: @{UInt64: EventSeries}
-        access(account) var revoked: @{UInt64: EventSeries}
+        access(self) var series: @{UInt64: EventSeries}
+        access(self) var revoked: @{UInt64: EventSeries}
 
         init() {
             self.series <- {}
@@ -1563,7 +1558,7 @@ pub contract FLOATEventSeries {
         }
 
         pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
-            return (&self.series[id] as &{MetadataViews.Resolver}?) ?? panic("Faild to borrow ViewResolver.")
+            return (&self.series[id] as &{MetadataViews.Resolver}?) ?? panic("Failed to borrow ViewResolver.")
         }
 
         pub fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}? {
@@ -1746,8 +1741,6 @@ pub contract FLOATEventSeries {
             let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
             return arr.length
         }
-
-        // --- Setters - Contract Only ---
         
         // event series revoked
         access(contract) fun seriesRevoked(_ host: Address, seriesId: UInt64) {
@@ -1756,11 +1749,11 @@ pub contract FLOATEventSeries {
             // Already exists
             if self.seriesMapping.containsKey(key) {
                 if let index = self.seriesWithTreasuryAvailableList.firstIndex(of: key) {
-                    self.seriesWithTreasuryAvailableList.remove(at: index!)
+                    self.seriesWithTreasuryAvailableList.remove(at: index)
                 }
 
                 if let index = self.seriesList.firstIndex(of: key) {
-                    self.seriesList.remove(at: index!)
+                    self.seriesList.remove(at: index)
                 }
             }
         }
@@ -1821,8 +1814,6 @@ pub contract FLOATEventSeries {
                 emit FLOATEventSeriesGlobalTreasuryStrategyUpdated(seriesId: seriesId, host: host)
             }
         }
-
-        // --- Self Only ---
     }
 
     // ---- data For Endusers ----
