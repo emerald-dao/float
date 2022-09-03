@@ -25,7 +25,6 @@ export const addressMap = {
   FLOATEventSeriesViews: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
   FLOATEventSeriesGoals: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
   FLOATTreasuryStrategies: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
-  FLOATChallengeVerifiers: import.meta.env.VITE_FLOAT_EVENTSERIES_ADDRESS,
   NFTCatalog: import.meta.env.VITE_FLOW_NETWORK === 'testnet' ? "0x324c34e1c517e4db" : "0x49a7cda3a1eecc29",
   NFTRetrieval: import.meta.env.VITE_FLOW_NETWORK === 'testnet' ? "0x324c34e1c517e4db" : "0x49a7cda3a1eecc29",
 }

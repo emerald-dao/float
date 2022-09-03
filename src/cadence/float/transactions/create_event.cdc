@@ -3,7 +3,6 @@ import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../../core-contracts/NonFungibleToken.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
 import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
-import FLOATChallengeVerifiers from "../../float-eventseries/FLOATChallengeVerifiers.cdc"
 
 transaction(
   forHost: Address, 
@@ -70,7 +69,7 @@ transaction(
     var SecretV2: FLOATVerifiers.SecretV2? = nil
     var Limited: FLOATVerifiers.Limited? = nil
     var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
-    var ChallengeAchievementPoint: FLOATChallengeVerifiers.ChallengeAchievementPoint? = nil
+    var ChallengeAchievementPoint: FLOATVerifiers.ChallengeAchievementPoint? = nil
 
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelock {
@@ -90,7 +89,7 @@ transaction(
       verifiers.append(MinimumBalance!)
     }
     if challengeCertificate && challengeHost != nil && challengeId != nil && challengeAchievementThreshold != nil {
-      ChallengeAchievementPoint = FLOATChallengeVerifiers.ChallengeAchievementPoint(
+      ChallengeAchievementPoint = FLOATVerifiers.ChallengeAchievementPoint(
         _challengeHost: challengeHost!, _challengeId: challengeId!, thresholdPoints: challengeAchievementThreshold!
       )
       verifiers.append(ChallengeAchievementPoint!)

@@ -11,7 +11,7 @@
     const challengeCertificateVerifier =
       data?.verifiers[
         Object.keys(data?.verifiers ?? {}).find((key) =>
-          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+          key.endsWith("FLOATVerifiers.ChallengeAchievementPoint")
         )
       ];
     return !challengeCertificateVerifier

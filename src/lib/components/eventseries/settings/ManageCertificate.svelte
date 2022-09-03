@@ -39,8 +39,7 @@
     const validEvents = [];
     for (const one of eventObjects) {
       const anyCertVerifier = Object.keys(one.event?.verifiers ?? {}).find(
-        (key) =>
-          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+        (key) => key.endsWith("FLOATVerifiers.ChallengeAchievementPoint")
       );
       if (anyCertVerifier) {
         const verifier = one.event?.verifiers[anyCertVerifier][0];
@@ -83,8 +82,7 @@
           mode = "generate";
           generatePoints = 0;
           generatedCodes = "";
-        }}
-      >
+        }}>
         {$t("challenges.detail.settings.cert.select-generate")}
         <span>
           {$t("challenges.detail.settings.cert.select-generate-desc")}
@@ -95,8 +93,7 @@
         class="outline"
         on:click={function () {
           mode = "sync";
-        }}
-      >
+        }}>
         {$t("challenges.detail.settings.cert.select-sync")}
         <span>
           {$t("challenges.detail.settings.cert.select-sync-desc")}
@@ -119,13 +116,11 @@
             min="1"
             step="100"
             required
-            bind:value={generatePoints}
-          />
+            bind:value={generatePoints} />
         </label>
         <button
           on:click|preventDefault={handleGenerate}
-          disabled={generatePoints === 0}
-        >
+          disabled={generatePoints === 0}>
           {$t("challenges.detail.settings.cert.select-generate")}
         </button>
       </div>
@@ -153,8 +148,7 @@
                 events={filteredEvents}
                 on:seriesUpdated={function () {
                   dispatch("seriesUpdated");
-                }}
-              />
+                }} />
             {:else}
               <p class="text-center">
                 {$t("errors.challenges.no-related-cert-float")}

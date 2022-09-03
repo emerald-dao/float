@@ -117,7 +117,7 @@
     challengeCertificateVerifier =
       data.verifiers[
         Object.keys(data.verifiers ?? {}).find((key) =>
-          key.endsWith("FLOATChallengeVerifiers.ChallengeAchievementPoint")
+          key.endsWith("FLOATVerifiers.ChallengeAchievementPoint")
         )
       ];
     let prices = data.extraMetadata["prices"];
@@ -204,8 +204,7 @@
               totalSupply: floatEvent.totalSupply,
               serial: floatEvent.hasClaimed.serial,
             }}
-            claimed={true}
-          />
+            claimed={true} />
         {:else}
           <Float
             float={{
@@ -213,12 +212,11 @@
               eventImage: floatEvent.image,
               eventName: floatEvent.name,
               totalSupply: floatEvent.totalSupply,
-            }}
-          />
+            }} />
         {/if}
         <blockquote>
-          <strong><small class="muted">DESCRIPTION</small></strong><br
-          />{floatEvent?.description}
+          <strong><small class="muted">DESCRIPTION</small></strong
+          ><br />{floatEvent?.description}
         </blockquote>
         {#if floatEvent?.groups.length > 0}
           <blockquote>
@@ -226,8 +224,7 @@
             <br />
             {#each floatEvent?.groups as group}
               <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"
-                ><div class="group-badge">{group}</div></a
-              >
+                ><div class="group-badge">{group}</div></a>
             {/each}
           </blockquote>
         {/if}
@@ -276,8 +273,7 @@
                 {$t("events.detail.section-info-cert-label")}
                 <a
                   href={`/${challengeCertificateVerifier[0].challengeIdentifier.host}/challenge/${challengeCertificateVerifier[0].challengeIdentifier.id}`}
-                  target="_blank"
-                >
+                  target="_blank">
                   {$t("events.detail.section-info-link")}
                 </a>
               </small>
@@ -306,8 +302,7 @@
             <ClaimButton
               {flowTokenCost}
               {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed}
-            />
+              hasClaimed={floatEvent?.hasClaimed} />
           {:else}
             <button id="connect" on:click={authenticate}>Connect Wallet</button>
           {/if}
@@ -326,8 +321,7 @@
                   toggleClaimable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}
-              >
+                  )}>
                 {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
               </button>
               <button
@@ -338,8 +332,7 @@
                   toggleTransferrable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}
-              >
+                  )}>
                 {floatEvent?.transferrable
                   ? "Stop transfers"
                   : "Allow transfers"}
@@ -359,8 +352,7 @@
                     deleteEvent(
                       resolvedNameObject.address,
                       floatEvent?.eventId
-                    )}
-                >
+                    )}>
                   Delete this event
                 </button>
               {/if}
@@ -373,8 +365,7 @@
                   id="address"
                   name="address"
                   placeholder="0x00000000000"
-                  bind:value={recipientAddr}
-                />
+                  bind:value={recipientAddr} />
                 {#if $floatDistributingInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
@@ -402,8 +393,7 @@
                   id="list"
                   name="list"
                   placeholder="0x00000000000"
-                  on:change={uploadList}
-                />
+                  on:change={uploadList} />
                 {#if $floatDistributingManyInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
@@ -464,8 +454,7 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}
-                    >
+                        )}>
                       Add
                     </button>
                   {/if}
@@ -497,8 +486,7 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Remove</button
-                    >
+                        )}>Remove</button>
                   {/if}
                 </div>
                 <small>Remove from a Group.</small>
@@ -521,8 +509,7 @@
               <ClaimsTable
                 address={floatEvent?.host}
                 eventId={floatEvent?.eventId}
-                totalClaimed={floatEvent?.totalSupply}
-              />
+                totalClaimed={floatEvent?.totalSupply} />
             {/if}
           </div>
         </IntersectionObserver>
