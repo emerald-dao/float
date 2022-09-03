@@ -19,8 +19,9 @@
   import { resolver, walletModal } from "$lib/stores.js";
   import WalletModal from "$lib/components/WalletModal.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
-  import banner from '../../static/banner.json';
-  import Banner from "$lib/components/Banner.svelte";
+  // fix launch issue
+  // import banner from '../../static/banner.json';
+  // import Banner from "$lib/components/Banner.svelte";
 
   onMount(() => {
     let savedTheme = localStorage.getItem("theme");
@@ -42,9 +43,9 @@
   console.log($page.url.pathname);
 </script>
 
-{#if banner.enabled}
-    <Banner time={banner.time} isScheduled={banner.isScheduled} />
-{/if}
+<!-- {#if banner.enabled}
+  <Banner time={banner.time} isScheduled={banner.isScheduled} />
+{/if} -->
 
 <Meta
   title={$page.stuff.title}
