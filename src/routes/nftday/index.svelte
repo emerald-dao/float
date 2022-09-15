@@ -45,6 +45,7 @@
   import ClaimButton from "$lib/components/ClaimButton.svelte";
   import { getResolvedName } from "$lib/flow/utils";
   import { authenticate } from "$lib/flow/actions";
+  import Socials from '$lib/components/common/Socials.svelte';
 
   let limitedVerifier;
   let flowTokenCost;
@@ -120,6 +121,9 @@
                   >{resolvedHostName}</a>
               </small>
             </p>
+          
+            <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+
           </div>
           <div>
             {#if floatEvent?.groups.length > 0}
@@ -172,30 +176,35 @@
 
   <article>
     <header>
+      <h1>About NFT Day</h1>
+    </header>
+
+   <p style="text-align:left">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mattis ipsum et sapien tincidunt, in auctor enim vehicula. Vivamus eget risus vel lacus accumsan tincidunt in a sapien. Donec sed consequat turpis. Donec cursus, eros sed elementum vehicula, sem nisi sagittis lorem, ac mollis urna libero et lacus. In convallis sapien eu purus facilisis, at placerat lectus consectetur. Fusce condimentum justo in nunc ornare, at placerat diam faucibus. 
+   </p>
+   <hr>
+
+    <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+  </article>
+
+  <article>
+    <header>
       <h1>How to choose your wallet</h1>
     </header>
-    <div class="wallet-container" style="text-align:left">
+    <div class="wallet-container grid" style="text-align:left">
       <div>
-        <h2><img src="dapper-logo.png" class="logo"/> Dapper</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+        <h3><img src="dapper-logo.png" class="logo"/> Dapper</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
-
-      <hr>
-
       <div>
-        <h2><img src="blocto-logo.jpg" class="logo"/> Blocto</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+        <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
-
-      <hr>
       <div>
-        <h2><img src="lilico-logo.jpg" class="logo"/> Lilico</h2>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</p>
+        <h3><img src="lilico-logo.jpg" class="logo"/> Lilico</h3>
+        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
       </div>
     </div>
-<footer>
-  <ConnectWallet />
-</footer>
   </article>
 </div>
 
@@ -203,7 +212,7 @@
 
   .logo {
     border-radius:50%;
-    width: 80px;
+    width: 40px;
     margin-right: 0.8rem;
   }
   .wallet-container h2 {
