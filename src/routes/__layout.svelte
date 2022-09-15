@@ -9,7 +9,7 @@
   import { resolver, walletModal } from "$lib/stores.js";
   import WalletModal from "$lib/components/WalletModal.svelte";
   import Meta from "$lib/components/common/Meta.svelte";
-  import banner from '../../static/banner.json';
+  import banner from '$lib/banner.js';
   import Banner from "$lib/components/Banner.svelte";
 
   onMount(() => {
