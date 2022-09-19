@@ -122,7 +122,7 @@
               </small>
             </p>
           
-            <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+            <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
 
           </div>
           <div>
@@ -186,7 +186,7 @@
    </p>
    <hr>
 
-    <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+    <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
   </article>
 
   <article>
@@ -196,7 +196,7 @@
     <div class="wallet-container grid" style="text-align:left">
       <div>
         <h3><img src="dapper-logo.png" class="logo"/> Dapper</h3>
-        <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> <p><strong>Tip 👉 </strong>Collect your NFT Day FLOAT with Dapper and automatically be entered into a drawing to win NFT Day merchandise.</p>
+        <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> 
       </div>
       <div>
         <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
@@ -205,9 +205,12 @@
       <div>
         <h3><img src="lilico-logo.jpg" class="logo"/> Lilico</h3>
         <p>Lilico is the next-generation and non-custodial browser extension wallet built for NFTs on Flow. Lilico is simple and offers intuitive controls to secure your crypto assets.</p>
-        <p>Lilico brings more fun to the web3 experience while letting you have full ownership of all your assets at all times.</p>
+        <!-- <p>Lilico brings more fun to the web3 experience while letting you have full ownership of all your assets at all times.</p> -->
       </div>
     </div>
+    <footer>
+      <p><strong>Tip 👉 </strong>Collect your NFT Day FLOAT with <strong>Dapper</strong> and automatically be entered into a drawing to win NFT Day merchandise.</p>
+    </footer>
   </article>
 </div>
 
