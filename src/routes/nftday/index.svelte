@@ -237,6 +237,7 @@
     max-width: 350px;
     width: 100%;
     margin-bottom: 20px;
+    margin-top: 40px;
     border-radius:20px;
   }
 
