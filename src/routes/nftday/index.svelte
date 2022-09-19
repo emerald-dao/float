@@ -65,7 +65,7 @@
     }
     let hasClaimed = await hasClaimedEvent(
       resolvedNameObject.address,
-      $page.params.eventId,
+      eventData.eventId,
       $user.addr
     );
 
@@ -78,6 +78,8 @@
       );
     }
     let data = { ...eventData, hasClaimed, currentOwner };
+
+    console.log(data, "DEBUGG")
 
     groups = await getGroups(resolvedNameObject.address);
 
@@ -161,11 +163,13 @@
           </div>
         </div>
         <footer>
-          {#if $user?.loggedIn}
-            <ClaimButton
-              {flowTokenCost}
-              {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed} />
+          {#if floatEvent?.hasClaimed}
+          <button class="secondary  outline" disabled>🎉 You already claimed this FLOAT! 🎉 <br/><small>Share your love of NFTs using #NFTDay!</small></button>
+          {:else if $user?.loggedIn}
+          <ClaimButton
+            {flowTokenCost}
+            {floatEvent}
+            hasClaimed={floatEvent?.hasClaimed} />
           {:else}
             <button id="connect" on:click={authenticate}>Claim your NFT</button>
           {/if}
