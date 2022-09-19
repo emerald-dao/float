@@ -5,10 +5,10 @@
 
   export async function load({ url, params, stuff }) {
 
-    let resolvedNameObject = await resolveAddressObject("0x11ca36743554b4b0");
+    let resolvedNameObject = await resolveAddressObject("0x07ccd4bb872a7790");
 
     // TODO: change with actual FLOAT account and eventID
-    const response = await getEvent(resolvedNameObject.address, 482472737);
+    const response = await getEvent(resolvedNameObject.address, 583967214);
 
     return {
       status: 200,
@@ -180,7 +180,9 @@
     </header>
 
    <p style="text-align:left">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mattis ipsum et sapien tincidunt, in auctor enim vehicula. Vivamus eget risus vel lacus accumsan tincidunt in a sapien. Donec sed consequat turpis. Donec cursus, eros sed elementum vehicula, sem nisi sagittis lorem, ac mollis urna libero et lacus. In convallis sapien eu purus facilisis, at placerat lectus consectetur. Fusce condimentum justo in nunc ornare, at placerat diam faucibus. 
+    NFT Day is meant for everyone, an all-inclusive moment the entire Web3 world can rally around. From creators and collectors, to developers and founders, NFT Day is a celebration of the entire ecosystem across every blockchain.</p>
+    <p style="text-align:left">
+    This September 20 marks the five-year anniversary of Dapper Labs CTO Dete Shirley publishing <a href="https://github.com/ethereum/eips/issues/721">ERC-721</a>, which would go on to become the NFT standard. Since then, NFTs have become the lifeblood of communities, innovation, and blockchain adoption. NFT Day is a new officially recognized holiday.
    </p>
    <hr>
 
@@ -231,6 +233,8 @@
   .float-image {
     max-width: 350px;
     width: 100%;
+    margin-bottom: 20px;
+    border-radius:20px;
   }
 
   #download {
