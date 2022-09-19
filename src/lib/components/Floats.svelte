@@ -25,10 +25,6 @@
   <header>
     <h3 class="text-center">Claimed FLOATs</h3>
   </header>
-  {#if $user?.addr == addressObject.address}
-    <a href="/incinerator" role="button" class="incinerate"
-      >Incinerate some FLOATs</a>
-  {/if}
   {#await floats()}
     <Loading />
   {:then floats}
@@ -42,6 +38,11 @@
       {/if}
     {/if}
   {/await}
+
+  {#if $user?.addr == addressObject.address}
+  <a href="/incinerator" role="button" class="incinerate"
+    >Incinerate some FLOATs</a>
+  {/if}
 </article>
 
 <style>
@@ -52,6 +53,7 @@
   }
 
   .incinerate {
+    margin-top:40px;
     background-color: #f26b52;
     border: 0;
   }
