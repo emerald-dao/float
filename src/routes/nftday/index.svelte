@@ -5,10 +5,10 @@
 
   export async function load({ url, params, stuff }) {
 
-    let resolvedNameObject = await resolveAddressObject("0x11ca36743554b4b0");
+    let resolvedNameObject = await resolveAddressObject("0x07ccd4bb872a7790");
 
     // TODO: change with actual FLOAT account and eventID
-    const response = await getEvent(resolvedNameObject.address, 482472737);
+    const response = await getEvent(resolvedNameObject.address, 583967214);
 
     return {
       status: 200,
@@ -65,7 +65,7 @@
     }
     let hasClaimed = await hasClaimedEvent(
       resolvedNameObject.address,
-      $page.params.eventId,
+      eventData.eventId,
       $user.addr
     );
 
@@ -78,6 +78,8 @@
       );
     }
     let data = { ...eventData, hasClaimed, currentOwner };
+
+    console.log(data, "DEBUGG")
 
     groups = await getGroups(resolvedNameObject.address);
 
@@ -122,7 +124,7 @@
               </small>
             </p>
           
-            <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+            <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
 
           </div>
           <div>
@@ -161,11 +163,13 @@
           </div>
         </div>
         <footer>
-          {#if $user?.loggedIn}
-            <ClaimButton
-              {flowTokenCost}
-              {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed} />
+          {#if floatEvent?.hasClaimed}
+          <button class="secondary  outline" disabled>🎉 You already claimed this FLOAT! 🎉 <br/><small>Share your love of NFTs using #NFTDay!</small></button>
+          {:else if $user?.loggedIn}
+          <ClaimButton
+            {flowTokenCost}
+            {floatEvent}
+            hasClaimed={floatEvent?.hasClaimed} />
           {:else}
             <button id="connect" on:click={authenticate}>Claim your NFT</button>
           {/if}
@@ -180,11 +184,13 @@
     </header>
 
    <p style="text-align:left">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean mattis ipsum et sapien tincidunt, in auctor enim vehicula. Vivamus eget risus vel lacus accumsan tincidunt in a sapien. Donec sed consequat turpis. Donec cursus, eros sed elementum vehicula, sem nisi sagittis lorem, ac mollis urna libero et lacus. In convallis sapien eu purus facilisis, at placerat lectus consectetur. Fusce condimentum justo in nunc ornare, at placerat diam faucibus. 
+    NFT Day is meant for everyone, an all-inclusive moment the entire Web3 world can rally around. From creators and collectors, to developers and founders, NFT Day is a celebration of the entire ecosystem across every blockchain.</p>
+    <p style="text-align:left">
+    This September 20 marks the five-year anniversary of Dapper Labs CTO Dete Shirley publishing <a href="https://github.com/ethereum/eips/issues/721">ERC-721</a>, which would go on to become the NFT standard. Since then, NFTs have become the lifeblood of communities, innovation, and blockchain adoption. NFT Day is a new officially recognized holiday.
    </p>
    <hr>
 
-    <Socials web="https://internationalnftday.org" discord="https://discord.gg/flow" insta="flow_blockchain" twitter="flow_blockchain" />
+    <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
   </article>
 
   <article>
@@ -194,17 +200,21 @@
     <div class="wallet-container grid" style="text-align:left">
       <div>
         <h3><img src="dapper-logo.png" class="logo"/> Dapper</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> 
       </div>
       <div>
         <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Blocto, is an all-in-one cross-chain crypto wallet to manage your tokens, dApps, crypto assets, and NFTs. Blocto also has built-in token swapping functionality.</p>
       </div>
       <div>
         <h3><img src="lilico-logo.jpg" class="logo"/> Lilico</h3>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+        <p>Lilico is the next-generation and non-custodial browser extension wallet built for NFTs on Flow. Lilico is simple and offers intuitive controls to secure your crypto assets.</p>
+        <!-- <p>Lilico brings more fun to the web3 experience while letting you have full ownership of all your assets at all times.</p> -->
       </div>
     </div>
+    <footer>
+      <p><strong>Tip 👉 </strong>Collect your NFT Day FLOAT with <strong>Dapper</strong> and automatically be entered into a drawing to win NFT Day merchandise.</p>
+    </footer>
   </article>
 </div>
 
@@ -229,6 +239,10 @@
   
   .float-image {
     max-width: 350px;
+    width: 100%;
+    margin-bottom: 20px;
+    margin-top: 40px;
+    border-radius:20px;
   }
 
   #download {
@@ -248,6 +262,7 @@
   }
   .container {
     text-align: center;
+    padding: 0px;
   }
   blockquote {
     text-align: left;
