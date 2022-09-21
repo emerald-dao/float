@@ -99,8 +99,8 @@
       <article>
         <header>
           <div class="hero">
-            <h1>Let's celebrate #NFTDay!</h1>
-            <p>Claim your unique NFT and get special perks.</p>
+            <h1>Thank you for celebrating #NFTDay!</h1>
+            <p>20/9/2022</p>
           </div>
         </header>
         <div class="grid">
@@ -136,20 +136,17 @@
                 {/each}
               </blockquote>
             {/if}
-            <blockquote>
-              <strong><small class="muted">COST</small></strong>
-              Free
-            </blockquote>
 
             <blockquote>
               <strong><small class="muted">DESCRIPTION</small></strong
-              ><br />{floatEvent?.description}
+              ><br />This unique NFT was claimable on Sept 20th 2022 to commemorate International NFT Day. 
+              <br/>Join us next year on the same day, for #NFTDay 2023!
             </blockquote>
 
             <blockquote>
               <strong><small class="muted">STATS</small></strong><br/>
               <p><span class="emphasis"
-                >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been minted so far.</p>
+                >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> were minted.</p>
             </blockquote>
 
             {#if limitedVerifier && limitedVerifier[0]}
@@ -163,13 +160,10 @@
         <footer>
           {#if floatEvent?.hasClaimed}
           <button class="secondary  outline" disabled>🎉 You already claimed this FLOAT! 🎉 <br/><small>Share your love of NFTs using #NFTDay!</small></button>
-          {:else if $user?.loggedIn}
-          <ClaimButton
-            {flowTokenCost}
-            {floatEvent}
-            hasClaimed={floatEvent?.hasClaimed} />
           {:else}
-            <button id="connect" on:click={authenticate}>Claim your NFT</button>
+            <button class="secondary  outline" disabled>International NFT Day was on Sept. 20th, 2022<br/><small>This NFT is no longer claimable.</small></button>
+            <br/>
+            <a href="https://floats.city/0x11ca36743554b4b0/event/590020743">If you're here to mint your first NFT, claim this one instead!</a>
           {/if}
         </footer>
       </article>
@@ -201,7 +195,6 @@
       <div>
         <h3><img src="dapper-logo.png" class="logo"/> Dapper </h3>
         <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> 
-        <div class="claimed-badge">✅ Eligible for NFT Day SWAG!</div>
       </div>
       <div>
         <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
@@ -333,3 +326,4 @@
     text-align: left;
   } */
 </style>
+ 
