@@ -20,15 +20,15 @@
     <h1>Choose your wallet</h1>
   </header>
   <div class="wallet">
-    <button id="blocto" on:click={() => configureFCLAndLogin("blocto")}>
-      <img src="/blocto-logo.jpg" alt="blocto logo" />
-      <span>Connect Blocto</span>
-    </button>
-  </div>
-  <div class="wallet">
     <button id="dapper" on:click={() => configureFCLAndLogin("dapper")}>
       <img src="/dapper-logo.png" alt="dapper logo" />
       <span>Connect Dapper</span>
+    </button>
+  </div>
+  <div class="wallet">
+    <button id="blocto" on:click={() => configureFCLAndLogin("blocto")}>
+      <img src="/blocto-logo.jpg" alt="blocto logo" />
+      <span>Connect Blocto</span>
     </button>
   </div>
   <div class="wallet">
