@@ -79,8 +79,6 @@
     }
     let data = { ...eventData, hasClaimed, currentOwner };
 
-    console.log(data, "DEBUGG")
-
     groups = await getGroups(resolvedNameObject.address);
 
     return data;
@@ -190,7 +188,9 @@
    </p>
    <hr>
 
-    <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
+   
+   <Socials web="https://internationalnftday.org" insta="officialnftday" twitter="OfficialNFTDay" />
+   <footer><strong>Pro Tip 👉 </strong> Collect your NFT Day FLOAT with <strong>Dapper</strong> and automatically be entered into a drawing to win NFT Day merchandise.</footer>
   </article>
 
   <article>
@@ -199,8 +199,9 @@
     </header>
     <div class="wallet-container grid" style="text-align:left">
       <div>
-        <h3><img src="dapper-logo.png" class="logo"/> Dapper</h3>
+        <h3><img src="dapper-logo.png" class="logo"/> Dapper </h3>
         <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> 
+        <div class="claimed-badge">✅ Eligible for NFT Day SWAG!</div>
       </div>
       <div>
         <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
@@ -212,9 +213,6 @@
         <!-- <p>Lilico brings more fun to the web3 experience while letting you have full ownership of all your assets at all times.</p> -->
       </div>
     </div>
-    <footer>
-      <p><strong>Tip 👉 </strong>Collect your NFT Day FLOAT with <strong>Dapper</strong> and automatically be entered into a drawing to win NFT Day merchandise.</p>
-    </footer>
   </article>
 </div>
 
