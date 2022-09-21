@@ -3338,3 +3338,16 @@ export const ownsSpecificFloatsAll = async (acct, eventIds) => {
     (eventIds ?? []).map(one => false)
   )
 }
+
+/**
+ * @param {string} acct
+ */
+export const isEmeraldPassActive = async (acct) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scIsPassActive, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+    ],
+    false
+  )
+}
