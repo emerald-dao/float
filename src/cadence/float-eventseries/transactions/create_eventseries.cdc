@@ -1,5 +1,6 @@
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
+import EmeraldPass from "../../core-contracts/EmeraldPass.cdc"
 
 transaction(
   name: String,
@@ -11,7 +12,9 @@ transaction(
   presetEventIds: [UInt64],
   presetRequired: [Bool]
 ) {
-  let serieshelf: &FLOATEventSeries.EventSeriesBuilder
+  let builder: &FLOATEventSeries.EventSeriesBuilder
+  let isUserPassActive: Bool
+  let existingAmount: UInt64
 
   prepare(acct: AuthAccount) {
     // SETUP Event Series builder resource, link public and private
@@ -28,11 +31,16 @@ transaction(
           (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
-    self.serieshelf = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
+    self.isUserPassActive = EmeraldPass.isActive(user: acct.address)
+
+    self.builder = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
+    
+    self.existingAmount = UInt64(self.builder.getIDs().length)
   }
 
   pre {
+    self.isUserPassActive || self.existingAmount == 0: "You need to enable Emerald Pass to create more challenges"
     emptySlots >= emptySlotsRequired: "empty slots(required) should not be greator then empty slots"
     Int(emptySlots) + presetHosts.length > 0: "event slots should be greator then zero."
     presetHosts.length == presetEventIds.length: "preset slots should be same length"
@@ -64,7 +72,7 @@ transaction(
     let goals: [{FLOATEventSeries.IAchievementGoal}] = []
     let extra: {String: AnyStruct} = {}
 
-    self.serieshelf.createEventSeries(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
+    self.builder.createEventSeries(name: name, description: description, image: image, slots: slots, goals: goals, extra: extra)
 
     log("Created a FLOAT EventSeries.")
   }
