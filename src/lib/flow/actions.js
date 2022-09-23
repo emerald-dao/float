@@ -3351,3 +3351,16 @@ export const isEmeraldPassActive = async (acct) => {
     false
   )
 }
+
+/**
+ * @param {string} acct
+ */
+ export const canCreateNewChallenge = async (acct) => {
+  return await generalQuery(
+    cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
+    (arg, t) => [
+      arg(acct, t.Address),
+    ],
+    false
+  )
+}
