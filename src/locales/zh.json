@@ -26,7 +26,9 @@
       "head": "创建一个新的 FLOAT 挑战 {extension}",
       "image": "挑战图像",
       "name": "挑战名称",
-      "preset-title": "请配置希望加入挑战的FLOAT"
+      "preset-title": "请配置希望加入挑战的FLOAT",
+      "hint-ecpass-1": "您只能免费创建一个挑战。",
+      "hint-ecpass-2": "如果您需要创建更多新挑战，您需要订阅"
     },
     "detail": {
       "head": "{name} | 由 {host} 创建的 FLOAT 挑战",

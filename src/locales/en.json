@@ -14,7 +14,9 @@
       "conifg-title": "Configure your Challenge",
       "preset-title": "Select the FLOATs you want to be a part of your challenge",
       "empty-slots-title": "Please set how many FLOATs can be included in the challenge?",
-      "button": "Create FLOAT Challenge"
+      "button": "Create FLOAT Challenge",
+      "hint-ecpass-1": "You can only create one Challenge for free.",
+      "hint-ecpass-2": "If you need to create more new Challenges, you need to subscribe"
     },
     "detail": {
       "head": "{name} | FLOAT Challenges by {host}",

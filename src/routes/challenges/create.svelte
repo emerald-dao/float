@@ -1,9 +1,10 @@
 <script>
   import { t } from "svelte-i18n";
-  import { authenticate, createEventSeries } from "$lib/flow/actions";
+  import { authenticate, createEventSeries, canCreateNewChallenge } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import { notifications } from "$lib/notifications";
+  import Loading from "$lib/components/common/Loading.svelte";
   import ImageUploader from "$lib/components/ImageUploader.svelte";
   import SeriesCard from "$lib/components/eventseries/SeriesCard.svelte";
   import EventItem from "$lib/components/eventseries/elements/EventItem.svelte";
@@ -54,6 +55,10 @@
       slots.push({ event: null, required: i < initIndex + emptyRequired });
     }
     draftEventSeries.emptySlots = slots;
+  }
+
+  async function canCreateNew(address) {
+    return await canCreateNewChallenge(address)
   }
 
   async function initCreateEventSeries() {
@@ -156,6 +161,27 @@
     <h1 class="mb-1 text-center">
       {$t("challenges.common.create")}
     </h1>
+  {#if !$user?.loggedIn}
+  <div class="mt-2 mb-2">
+    <button class="contrast small-button" on:click={authenticate}>
+      {$t("common.btn.connectWallet")}
+    </button>
+  </div>
+  {:else}
+    {#await canCreateNew($user?.addr)}
+      <Loading />
+    {:then canCreate}
+    {#if canCreate}
+      <div class="text-center">
+        <p>
+          { $t('challenges.create.hint-ecpass-1') }
+        </p>
+        <p>
+          { $t('challenges.create.hint-ecpass-2') }
+          <a href="https://pass.ecdao.org/" target="_blank">Emerald Pass</a>
+        </p>
+      </div>
+    {:else}
     <label for="seriesName">
       {$t("challenges.create.name")}
       <input
@@ -276,13 +302,7 @@
     {/if}
 
     <footer>
-      {#if !$user?.loggedIn}
-        <div class="mt-2 mb-2">
-          <button class="contrast small-button" on:click={authenticate}>
-            {$t("common.btn.connectWallet")}
-          </button>
-        </div>
-      {:else if $creationInProgress}
+      {#if $creationInProgress}
         <button aria-busy="true" disabled>
           {$t("common.hint.please-wait-for-tx")}
         </button>
@@ -317,6 +337,9 @@
         </button>
       {/if}
     </footer>
+    {/if}
+    {/await}
+  {/if}
   </article>
 </div>
 
