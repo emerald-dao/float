@@ -43,7 +43,7 @@
     </div>
     <div class="works-list-element share">
       <div>
-        <h3><a href="https://touchstone.city/">Touchstone (coming soon)</a></h3>
+        <h3><a href="https://touchstone.city/">Touchstone</a></h3>
         <p>
           Touchstone allows you to create your own NFT Collection without
           knowing any code whatsoever. It automatically creates and deploy your
