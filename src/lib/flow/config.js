@@ -12,7 +12,8 @@ config({
   "0xFIND": "0x097bafa4e0b48eef",
   "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df",
   "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/testnet/authn"
+  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/testnet/authn",
+  "discovery.authn.include": ["0x82ec283f88a62e65"]
 })
 
 export const verifiersIdentifier = 'A.2d4c3caffbeab845';
