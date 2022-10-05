@@ -1,5 +1,5 @@
 <script>
-  import { configureFCLAndLogin } from "$lib/flow/actions";
+  import { authenticateFCLService } from "$lib/flow/actions";
   import { discoveryAuthnServices } from "$lib/flow/stores";
   import { walletModal } from "$lib/stores";
 
@@ -26,7 +26,7 @@
   </header>
   {#each services as service}
     <div class="wallet">
-      <button id={service.provider.name} on:click={() => configureFCLAndLogin(service)}>
+      <button id={service.provider.name} on:click={() => authenticateFCLService(service)}>
         <img src={service.provider.icon} alt={`${service.provider.name} logo`} />
         <span>Connect {service.provider.name}</span>
       </button>

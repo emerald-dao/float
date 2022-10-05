@@ -63,7 +63,7 @@ export const authenticate = () => {
   walletModal.set(true);
 };
 
-export const configureFCLAndLogin = async (service) => {
+export const authenticateFCLService = async (service) => {
   await fcl.authenticate({service});
   walletModal.set(false);
 }
