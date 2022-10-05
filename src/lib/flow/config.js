@@ -11,9 +11,9 @@ config({
   "0xFN": "0x233eb012d34b0070",
   "0xFIND": "0x097bafa4e0b48eef",
   "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df",
-  "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
-  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/testnet/authn",
-  "discovery.authn.include": ["0x82ec283f88a62e65"]
+  "discovery.wallet": import.meta.env.VITE_FCL_DISCOVERY,
+  "discovery.authn.endpoint": import.meta.env.VITE_DISCOVERY_API,
+  "discovery.authn.include": [import.meta.env.VITE_DAPPER_WALLET_ADDRESS]
 })
 
 export const verifiersIdentifier = 'A.2d4c3caffbeab845';
