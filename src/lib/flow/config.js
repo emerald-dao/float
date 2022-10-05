@@ -10,7 +10,9 @@ config({
   "0xFUNGIBLETOKEN": import.meta.env.VITE_FUNGIBLETOKEN_ADDRESS,
   "0xFN": "0x233eb012d34b0070",
   "0xFIND": "0x097bafa4e0b48eef",
-  "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df"
+  "0xFLOWSTORAGEFEES": "0xe467b9dd11fa00df",
+  "discovery.wallet": "https://fcl-discovery.onflow.org/testnet/authn",
+  "discovery.authn.endpoint": "https://fcl-discovery.onflow.org/api/testnet/authn"
 })
 
 export const verifiersIdentifier = 'A.2d4c3caffbeab845';

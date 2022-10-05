@@ -1,6 +1,14 @@
 <script>
   import { configureFCLAndLogin } from "$lib/flow/actions";
+  import { discoveryAuthnServices } from "$lib/flow/stores";
   import { walletModal } from "$lib/stores";
+
+  let services;
+
+  discoveryAuthnServices.subscribe(s => {
+    console.log('servicessss', s)
+    services = s
+  })
 </script>
 
 <article>
@@ -18,6 +26,7 @@
   </button>
   <header>
     <h1>Choose your wallet</h1>
+    {JSON.stringify(services)}
   </header>
   <div class="wallet">
     <button id="dapper" on:click={() => configureFCLAndLogin("dapper")}>

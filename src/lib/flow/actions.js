@@ -6,6 +6,7 @@ import "./config.js";
 import { flowTokenIdentifier } from './config.js';
 import {
   user,
+  discoveryAuthnServices,
   txId,
   transactionStatus,
   transactionInProgress,
@@ -53,6 +54,7 @@ if (browser) {
   // set Svelte $user store to currentUser, 
   // so other components can access it
   fcl.currentUser.subscribe(user.set, [])
+  fcl.discovery.authn.subscribe(discoveryAuthnServices.set)
 }
 
 // Lifecycle FCL Auth functions
