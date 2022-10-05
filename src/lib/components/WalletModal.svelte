@@ -26,9 +26,9 @@
   </header>
   {#each services as service}
     <div class="wallet">
-      <button id={service.provider.name} on:click={() => authenticateFCLService(service)}>
-        <img src={service.provider.icon} alt={`${service.provider.name} logo`} />
-        <span>Connect {service.provider.name}</span>
+      <button id={service?.provider?.name} on:click={() => authenticateFCLService(service)}>
+        <img src={service?.provider?.icon} alt={`${service?.provider?.name} logo`} />
+        <span>Connect {service?.provider?.name}</span>
       </button>
     </div>
   {/each}
