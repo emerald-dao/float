@@ -7,7 +7,7 @@
 
   discoveryAuthnServices.subscribe(s => {
     console.log('servicessss', s)
-    services = s
+    services = s.results
   })
 </script>
 
@@ -26,26 +26,15 @@
   </button>
   <header>
     <h1>Choose your wallet</h1>
-    {JSON.stringify(services)}
   </header>
-  <div class="wallet">
-    <button id="dapper" on:click={() => configureFCLAndLogin("dapper")}>
-      <img src="/dapper-logo.png" alt="dapper logo" />
-      <span>Connect Dapper</span>
-    </button>
-  </div>
-  <div class="wallet">
-    <button id="blocto" on:click={() => configureFCLAndLogin("blocto")}>
-      <img src="/blocto-logo.jpg" alt="blocto logo" />
-      <span>Connect Blocto</span>
-    </button>
-  </div>
-  <div class="wallet">
-    <button id="lilico" on:click={() => configureFCLAndLogin("lilico")}>
-      <img src="/lilico-logo.jpg" alt="lilico logo" />
-      <span>Connect Lilico</span>
-    </button>
-  </div>
+  {#each services as service}
+    <div class="wallet">
+      <button id={service.provider.name} on:click={() => configureFCLAndLogin(service)}>
+        <img src={service.provider.icon} alt={`${service.provider.name} logo`} />
+        <span>Connect {service.provider.name}</span>
+      </button>
+    </div>
+  {/each}
 </article>
 
 <style>
