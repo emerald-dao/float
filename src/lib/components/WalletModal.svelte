@@ -5,10 +5,7 @@
 
   let services;
 
-  discoveryAuthnServices.subscribe(s => {
-    console.log('servicessss', s)
-    services = s.results
-  })
+  discoveryAuthnServices.subscribe(s => services = s.results)
 </script>
 
 <article>

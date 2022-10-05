@@ -44,7 +44,7 @@ import {
 } from './stores.js';
 import { get } from 'svelte/store'
 
-import { draftFloat, walletModal, currentWallet } from '$lib/stores';
+import { draftFloat, walletModal } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
 import { notifications } from "$lib/notifications";
@@ -63,27 +63,8 @@ export const authenticate = () => {
   walletModal.set(true);
 };
 
-const configureFCL = (wallet) => {
-  if (wallet === 'blocto') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
-      .put("discovery.wallet.method", "IFRAME/RPC")
-  } else if (wallet === 'dapper') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
-      .put("discovery.wallet.method", "POP/RPC")
-  }
-  else if (wallet === 'lilico') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_LILICO_DISCOVERY)
-      .put("discovery.wallet.method", "EXT/RPC")
-  }
-}
-
-export const configureFCLAndLogin = async (wallet) => {
-  currentWallet.set(wallet);
-  configureFCL(wallet);
-  await fcl.authenticate();
+export const configureFCLAndLogin = async (service) => {
+  await fcl.authenticate({service});
   walletModal.set(false);
 }
 
@@ -2515,8 +2496,6 @@ export const resolveAddressObject = async (lookup) => {
   }
 }
 function initTransactionState() {
-  configureFCL(get(currentWallet));
-  console.log(get(currentWallet));
   transactionInProgress.set(true);
   transactionStatus.set(-1);
   floatClaimedStatus.set(false);

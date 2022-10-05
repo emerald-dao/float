@@ -31,8 +31,6 @@ export const theme = persistentWritable('theme', 'dark');
 
 export const resolver = persistentWritable('preferredNameResolver', 'find');
 
-export const currentWallet = persistentWritable('currentWallet', 'blocto');
-
 // Make any writable store persistent.
 export function persistentWritable(key, defaultValue) {
   // Create a writable store.
