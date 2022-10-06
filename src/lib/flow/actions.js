@@ -2381,24 +2381,28 @@ export const resolveAddressObject = async (lookup) => {
           arg(rootLookup, t.String)
         ]
       })
-    } else if (lookup.includes('.fn')) {
-      answer.resolvedNames.fn = lookup;
+    } else if (lookup.includes('.fn') || lookup.includes('.meow')) {
+      let nameArr = lookup.split('.')
+      const label = nameArr[0]
+      const parent = nameArr[1]
+      answer.resolvedNames.fn = lookup
       answer.address = await fcl.query({
         cadence: `
         import Flowns from 0xFN
         import Domains from 0xFN
-        pub fun main(name: String): Address? {
+        pub fun main(label: String, parent: String): Address? {
           
           let prefix = "0x"
-          let rootHash = Flowns.hash(node: "", lable: "fn")
-          let nameHash = prefix.concat(Flowns.hash(node: rootHash, lable: name))
+          let rootHash = Flowns.hash(node: "", lable: parent)
+          let nameHash = prefix.concat(Flowns.hash(node: rootHash, lable: label))
           let address = Domains.getRecords(nameHash)
         
           return address
         }
         `,
         args: (arg, t) => [
-          arg(rootLookup, t.String)
+          arg(label, t.String),
+          arg(parent, t.String)
         ]
       })
     }
@@ -2409,7 +2413,6 @@ export const resolveAddressObject = async (lookup) => {
     return answer;
   }
 }
-
 function initTransactionState() {
   configureFCL(get(currentWallet));
   console.log(get(currentWallet));
