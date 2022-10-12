@@ -171,7 +171,7 @@
     {#await canCreateNew($user?.addr)}
       <Loading />
     {:then canCreate}
-    {#if canCreate}
+    {#if !canCreate}
       <div class="text-center">
         <p>
           { $t('challenges.create.hint-ecpass-1') }
