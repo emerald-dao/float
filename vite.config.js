@@ -4,6 +4,9 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 /** @type {import('vite').UserConfig} */
 const config = {
+	define: {
+		global: 'globalThis'
+	},
 	plugins: [
 		nodePolyfills({
       // Whether to polyfill `node:` protocol imports.
@@ -12,4 +15,4 @@ const config = {
 		sveltekit()
 	]
 };
-export default config;
+export default config;	
