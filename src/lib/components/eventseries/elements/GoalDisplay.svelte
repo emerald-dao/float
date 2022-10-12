@@ -124,7 +124,7 @@
           {$t("challenges.elements.goal.label-target")}
         </div>
       {:else}
-        <div class="flex-wrap flex-gap">
+        <div class="flex-wrap flex-gap width-limited">
           {#each goal.params.events as one (`${one.host}#${one.id}`)}
             <EventItem
               item={{ event: one, required: true }}
@@ -169,5 +169,8 @@
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
+  }
+  .panel-content .width-limited {
+    max-width: 480px;
   }
 </style>
