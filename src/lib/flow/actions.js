@@ -69,8 +69,8 @@ const configureFCL = (wallet) => {
   if (wallet === 'blocto') {
     config()
       .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
-      // iframe is deprecated for blocto
-      .put("discovery.wallet.method", "HTTP/POST")
+      // iframe is deprecated for blocto in testnet
+      .put("discovery.wallet.method", import.meta.env.VITE_FLOW_NETWORK === 'testnet' ? "HTTP/POST" : "IFRAME/RPC")
   } else if (wallet === 'dapper') {
     config()
       .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
