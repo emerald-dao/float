@@ -9,11 +9,11 @@ const config = {
 		global: 'globalThis'
 	},
 	plugins: [
+		resolve({ preferBuiltins: false }),
 		nodePolyfills({
       // Whether to polyfill `node:` protocol imports.
       protocolImports: true,
     }),
-		resolve({ preferBuiltins: false }),
 		sveltekit()
 	],
 	build: {
