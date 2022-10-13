@@ -13,13 +13,6 @@ const config = {
       protocolImports: true,
     }),
 		sveltekit()
-	],
-	build: {
-    rollupOptions: {
-      external: [
-        "Buffer",
-      ],
-    },
-  },
+	]
 };
 export default config;	
