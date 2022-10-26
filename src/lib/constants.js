@@ -6,5 +6,5 @@ export const denylist = [
   "0xe3b8f1469c159da0",
   // "0x5cd62ecc83793917"
   "0x9775f809d4927419",
-  "0x589eaafa19f8ed94"
+  // "0x589eaafa19f8ed94"
 ] 
