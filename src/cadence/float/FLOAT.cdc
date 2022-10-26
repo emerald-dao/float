@@ -160,7 +160,7 @@ pub contract FLOAT: NonFungibleToken {
                     return MetadataViews.Display(
                         name: self.eventName, 
                         description: self.eventDescription, 
-                        thumbnail: MetadataViews.IPFSFile(cid: self.eventImage, path: nil)
+                        thumbnail: MetadataViews.HTTPFile(url: "https://nftstorage.link/ipfs/".concat(self.eventImage))
                     )
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
@@ -1075,3 +1075,4 @@ pub contract FLOAT: NonFungibleToken {
         self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath
     }
 }
+ 
