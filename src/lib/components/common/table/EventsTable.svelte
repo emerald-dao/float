@@ -10,8 +10,8 @@
   export let floatEvents;
   let rows = floatEvents;
 
-  if(rows?.length > 0) {
-    rows = rows.sort((a,b) => b.dateCreated-a.dateCreated )
+  if (rows?.length > 0) {
+    rows = rows.sort((a, b) => b.dateCreated - a.dateCreated);
   }
 
   let pageCount = 0; //first page
@@ -53,8 +53,8 @@
         Event
         <Sort key="name" on:sort={onSortString} />
       </th>
-      <th> 
-        Created 
+      <th>
+        Created
         <Sort key="dateCreated" dir="desc" on:sort={onSortNumber} />
       </th>
       <th> Groups </th>
@@ -113,6 +113,9 @@
     opacity: 0.6;
     font-size: 0.6rem;
     color: var(--color);
+    max-width: 200px;
+    max-height: 50px;
+    overflow-y: hidden;
   }
 
   td:hover {
