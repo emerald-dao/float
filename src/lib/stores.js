@@ -17,6 +17,7 @@ export const draftFloat = writable({
   initialGroup: "",
   flowTokenPurchase: false,
   minimumBalance: false,
+  challengeCertificate: false
 });
 
 export const draftGroup = writable({
@@ -26,6 +27,8 @@ export const draftGroup = writable({
 });
 
 export const walletModal = writable(false);
+
+export const seriesTab = writable('info');
 
 export const theme = persistentWritable('theme', 'dark');
 
