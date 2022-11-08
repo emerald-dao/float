@@ -69,9 +69,9 @@
       </a>
     </li>
 
-    <!-- <li>
-      <a href="/about">About</a>
-    </li> -->
+    <li>
+      <a href="/challenges">Challenges</a>
+    </li>
   </ul>
   <ul class="text-center">
     <!-- <li><a href="/create" role="button" class="small-button" sveltekit:prefetch>+</a></li> -->
