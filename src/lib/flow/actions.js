@@ -605,7 +605,6 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
       import GrantedAccountAccess from 0xFLOAT
-      import FlowStorageFees from 0xFLOWSTORAGEFEES
 
       transaction(forHost: Address, eventId: UInt64, recipients: [Address]) {
 
@@ -647,10 +646,8 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
           self.FLOATEvent = self.FLOATEvents.borrowEventRef(eventId: eventId) ?? panic("This event does not exist.")
           self.RecipientCollections = []
           for recipient in recipients {
-            if FlowStorageFees.defaultTokenAvailableBalance(recipient) >= 0.001 {
-              if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
-                self.RecipientCollections.append(recipientCollection)
-              }
+            if let recipientCollection = getAccount(recipient).getCapability(FLOAT.FLOATCollectionPublicPath).borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>() {
+              self.RecipientCollections.append(recipientCollection)
             }
           }
         }
