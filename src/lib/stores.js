@@ -26,8 +26,6 @@ export const draftGroup = writable({
   ipfsHash: ''
 });
 
-export const walletModal = writable(false);
-
 export const seriesTab = writable('info');
 
 export const theme = persistentWritable('theme', 'dark');

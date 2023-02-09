@@ -47,7 +47,7 @@ import { get } from 'svelte/store'
 
 import * as cadence from './cadence';
 
-import { draftFloat, walletModal, currentWallet } from '$lib/stores';
+import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
 import { notifications } from "$lib/notifications";
@@ -61,34 +61,9 @@ if (browser) {
 
 // Lifecycle FCL Auth functions
 export const unauthenticate = () => fcl.unauthenticate();
-export const authenticate = () => {
-  walletModal.set(true);
-};
-
-const configureFCL = (wallet) => {
-  if (wallet === 'blocto') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_BLOCTO_DISCOVERY)
-      // iframe is deprecated for blocto in testnet
-      .put("discovery.wallet.method", import.meta.env.VITE_FLOW_NETWORK === 'testnet' ? "HTTP/POST" : "IFRAME/RPC")
-  } else if (wallet === 'dapper') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_DAPPER_DISCOVERY)
-      .put("discovery.wallet.method", "POP/RPC")
-  }
-  else if (wallet === 'lilico') {
-    config()
-      .put("discovery.wallet", import.meta.env.VITE_LILICO_DISCOVERY)
-      .put("discovery.wallet.method", "EXT/RPC")
-  }
-}
-
-export const configureFCLAndLogin = async (wallet) => {
-  currentWallet.set(wallet);
-  configureFCL(wallet);
+export const authenticate = async () => {
   await fcl.authenticate();
-  walletModal.set(false);
-}
+};
 
 const convertDraftFloat = (draftFloat) => {
   const challengeVerifierData = {
@@ -2411,8 +2386,8 @@ export const resolveAddressObject = async (lookup) => {
   }
 }
 function initTransactionState() {
-  configureFCL(get(currentWallet));
-  console.log(get(currentWallet));
+  // configureFCL(get(currentWallet));
+  // console.log(get(currentWallet));
   transactionInProgress.set(true);
   transactionStatus.set(-1);
   floatClaimedStatus.set(false);
@@ -2460,12 +2435,12 @@ const generalSendTransaction = async (code, args, actionInProgress = undefined, 
             actionStatus && actionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode))
           }
           actionInProgress && actionInProgress.set(false);
-  
+
           // on sealed callback
           if (typeof onSealed === 'function') {
             onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage)
           }
-  
+
           setTimeout(() => transactionInProgress.set(false), 2000)
 
           resolve();
@@ -2503,7 +2478,7 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
 |___ |  | |___ |\ |  |     [__  |___ |__/ | |___ [__  
 |___  \/  |___ | \|  |     ___] |___ |  \ | |___ ___] 
  */
- 
+
 // -------------- Setter - Transactions --------------
 
 // **************************
@@ -2528,14 +2503,14 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
 export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsAmtRequired = 0) => {
   const reduced = presetEvents.reduce((all, curr) => {
     if (typeof curr.event?.host === 'string' &&
-      typeof curr.event?.id === 'string' && 
+      typeof curr.event?.id === 'string' &&
       (typeof curr.required === 'boolean' || curr.required === undefined)) {
       all.hosts.push(curr.event.host)
       all.eventIds.push(curr.event.id ?? curr.event.eventId)
       all.required.push(curr.required ?? true)
     }
     return all
-  }, { hosts:[], eventIds: [], required: []})
+  }, { hosts: [], eventIds: [], required: [] })
 
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap),
@@ -2559,7 +2534,7 @@ export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0,
  * 
  * @param {import('../components/eventseries/types').AddAchievementGoalRequest}
  */
-export const addAchievementGoalToEventSeries = async ({type, seriesId, points, params, title}) => {
+export const addAchievementGoalToEventSeries = async ({ type, seriesId, points, params, title }) => {
   let code
   /** @type {fcl.ArgsFn} */
   let args
@@ -2608,7 +2583,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
           all.eventIds.push(curr.id)
         }
         return all
-      }, { hosts:[], eventIds: [] })
+      }, { hosts: [], eventIds: [] })
 
       args = (arg, t) => [
         arg(seriesId, t.UInt64),
@@ -2621,7 +2596,7 @@ export const addAchievementGoalToEventSeries = async ({type, seriesId, points, p
     default:
       throw new Error("Unknown type")
   }
-  return await generalSendTransaction(code, args, 
+  return await generalSendTransaction(code, args,
     eventSeries.AddAchievementGoal.InProgress,
     eventSeries.AddAchievementGoal.Status
   )
@@ -2669,7 +2644,7 @@ export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
       all.eventIds.push(curr.eventId)
     }
     return all
-  }, { indexes: [], hosts:[], eventIds: []})
+  }, { indexes: [], hosts: [], eventIds: [] })
 
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
@@ -2700,7 +2675,7 @@ export const revokeEventSeries = async (seriesId) => {
  * 
  * @param {import('../components/eventseries/types').AddStrategyRequest}
  */
-export const addTreasuryStrategy = async ({seriesId, strategyMode, deliveryMode, options}) => {
+export const addTreasuryStrategy = async ({ seriesId, strategyMode, deliveryMode, options }) => {
   const strategyModeCode = {
     [cadence.STRATEGY_RAFFLE]: '0',
     [cadence.STRATEGY_QUEUE]: '1'
@@ -2766,7 +2741,7 @@ export const nextTreasuryStrategyStage = async (seriesId, strategyIndex, forceCl
  * 
  * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
  */
-export const depositFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, amount}) => {
+export const depositFungibleTokenToTreasury = async ({ seriesId, storagePath, publicPath, amount }) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
     (arg, t) => [
@@ -2785,7 +2760,7 @@ export const depositFungibleTokenToTreasury = async ({seriesId, storagePath, pub
  * 
  * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
  */
-export const depositNonFungibleTokenToTreasury = async ({seriesId, storagePath, publicPath, amount}) => {
+export const depositNonFungibleTokenToTreasury = async ({ seriesId, storagePath, publicPath, amount }) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
     (arg, t) => [
@@ -2804,7 +2779,7 @@ export const depositNonFungibleTokenToTreasury = async ({seriesId, storagePath, 
  * 
  * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
  */
-export const dropTreasury = async ({seriesId}) => {
+export const dropTreasury = async ({ seriesId }) => {
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
     (arg, t) => [
@@ -2815,7 +2790,7 @@ export const dropTreasury = async ({seriesId}) => {
   )
 }
 
-export const syncCertificateFloats = async({seriesId, events}) => {
+export const syncCertificateFloats = async ({ seriesId, events }) => {
   const reduced = events.reduce((all, curr) => {
     if (typeof curr.host === 'string' &&
       (typeof curr.id === 'string' || typeof curr.eventId === 'string')) {
@@ -2823,7 +2798,7 @@ export const syncCertificateFloats = async({seriesId, events}) => {
       all.eventIds.push(curr.id ?? curr.eventId)
     }
     return all
-  }, { hosts:[], eventIds: []})
+  }, { hosts: [], eventIds: [] })
 
   return await generalSendTransaction(
     cadence.replaceImportAddresses(cadence.txSyncCertificates, addressMap),
@@ -2881,7 +2856,7 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex, isNFT,
         acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS, MetadataViews.ResolverCollection, NonFungibleToken.Provider}>
           (catalogMetadata.collectionData.privatePath, target: catalogMetadata.collectionData.storagePath)
       `)
-    } else {
+  } else {
     // setup FT initialize
     code = code
       .replaceAll('PLACEHOLDER_NFT_SETUP', "")
@@ -2953,7 +2928,7 @@ export const runCleanUp = async () => {
 const parseEventIdentifier = event => (event ? {
   host: event.host,
   id: event.eventId ?? event.id,
-}: undefined)
+} : undefined)
 
 /**
  * @param {object} item 
@@ -3108,7 +3083,7 @@ export const getTreasuryData = async (acct, seriesId) => {
 /**
  * @return {import('../components/eventseries/types').TreasuryData}
  */
-function parseRawTreasuryData (rawdata) {
+function parseRawTreasuryData(rawdata) {
   /** @type {{identifier: string , balance: string}[]} */
   const balances = []
   /** @type {{identifier: string , ids: [string]}[]} */
@@ -3129,7 +3104,7 @@ function parseRawTreasuryData (rawdata) {
 /**
  * @return {import('../components/eventseries/types').StrategyDetail}
  */
-function parseStrategyDetail (rawdata) {
+function parseStrategyDetail(rawdata) {
   const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'raffleStrategy'
   const strategyStatusMap = {
     '0': 'preparing',
@@ -3171,7 +3146,7 @@ function parseStrategyDetail (rawdata) {
       eligible: rawdata.userInfo.eligible,
       claimable: rawdata.userInfo.claimable,
       claimed: rawdata.userInfo.claimed
-    }: null
+    } : null
   }
 }
 
@@ -3355,7 +3330,7 @@ export const isEmeraldPassActive = async (acct) => {
 /**
  * @param {string} acct
  */
- export const canCreateNewChallenge = async (acct) => {
+export const canCreateNewChallenge = async (acct) => {
   return await generalQuery(
     cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
     (arg, t) => [
