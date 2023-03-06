@@ -114,6 +114,13 @@
         ? "Purchase this FLOAT"
         : "Claim this FLOAT"}
     </button>
+    {#if timelockModule && timelockModule[0]?.dateEnding && parseInt(timelockModule[0]?.dateEnding) > currentUnixTime}
+    <div class="countdown">
+      <span class="until">Claimable until {new Date(timelockModule[0].dateEnding * 1000).toLocaleString()}</span>
+      <br/>
+      <span class="remaining"><Countdown unix={parseInt(timelockModule[0].dateEnding)} /> remaining.</span>
+    </div>
+    {/if}
   {/if}
 {:else}
   <button class="secondary outline" disabled>
