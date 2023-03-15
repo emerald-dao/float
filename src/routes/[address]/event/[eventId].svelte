@@ -154,7 +154,10 @@
       };
       reader.readAsBinaryString(file);
     }).then(() => {
-      listOfAddresses = parsedCSV.map((address) => address[0].trim());
+      listOfAddresses = parsedCSV
+        .map((address) => address[0].trim())
+        .filter((address) => address != "");
+      console.log(listOfAddresses);
       if (listOfAddresses.length > 200) {
         listOfAddresses = {
           error: true,
