@@ -75,6 +75,8 @@
   import QrCode from "$lib/components/common/QRCode.svelte";
   import { authenticate } from "$lib/flow/actions";
   import { flowTokenIdentifier, verifiersIdentifier } from "$lib/flow/config";
+  import Papa from "papaparse";
+
   let claimsTableInView;
   let limitedVerifier;
   let flowTokenCost;
@@ -134,19 +136,32 @@
   let floatEvent = floatEventCallback();
   let recipientAddr = "";
   let groupName = "";
-  let listOfAddresses;
-  const uploadList = (e) => {
+  let listOfAddresses = { error: false };
+
+  const uploadList = async (e) => {
     const file = e.target.files[0];
-    if (file.type === "text/csv") {
-      var fr = new FileReader();
-      fr.onload = (e) => {
-        let stuff = e.target.result;
-        listOfAddresses = stuff.split(",");
-      };
-      fr.readAsText(file);
-    } else {
-      listOfAddresses = "error";
+    if (file.type !== "text/csv") {
+      listOfAddresses = { error: true, message: "File must be a CSV." };
+      return;
     }
+    let parsedCSV;
+    return new Promise((resolve, reject) => {
+      let reader = new FileReader();
+      reader.onload = function () {
+        const pt = Papa.parse(reader.result);
+        parsedCSV = pt.data;
+        resolve();
+      };
+      reader.readAsBinaryString(file);
+    }).then(() => {
+      listOfAddresses = parsedCSV.map((address) => address[0].trim());
+      if (listOfAddresses.length > 200) {
+        listOfAddresses = {
+          error: true,
+          message: "Can only airdrop to <= 200 wallets at a time.",
+        };
+      }
+    });
   };
 
   const downloadList = async () => {
@@ -204,7 +219,8 @@
               totalSupply: floatEvent.totalSupply,
               serial: floatEvent.hasClaimed.serial,
             }}
-            claimed={true} />
+            claimed={true}
+          />
         {:else}
           <Float
             float={{
@@ -212,11 +228,12 @@
               eventImage: floatEvent.image,
               eventName: floatEvent.name,
               totalSupply: floatEvent.totalSupply,
-            }} />
+            }}
+          />
         {/if}
         <blockquote>
-          <strong><small class="muted">DESCRIPTION</small></strong
-          ><br />{floatEvent?.description}
+          <strong><small class="muted">DESCRIPTION</small></strong><br
+          />{floatEvent?.description}
         </blockquote>
         {#if floatEvent?.groups.length > 0}
           <blockquote>
@@ -224,7 +241,8 @@
             <br />
             {#each floatEvent?.groups as group}
               <a href="/{getResolvedName(resolvedNameObject)}/group/{group}"
-                ><div class="group-badge">{group}</div></a>
+                ><div class="group-badge">{group}</div></a
+              >
             {/each}
           </blockquote>
         {/if}
@@ -273,7 +291,8 @@
                 {$t("events.detail.section-info-cert-label")}
                 <a
                   href={`/${challengeCertificateVerifier[0].challengeIdentifier.host}/challenge/${challengeCertificateVerifier[0].challengeIdentifier.id}`}
-                  target="_blank">
+                  target="_blank"
+                >
                   {$t("events.detail.section-info-link")}
                 </a>
               </small>
@@ -302,7 +321,8 @@
             <ClaimButton
               {flowTokenCost}
               {floatEvent}
-              hasClaimed={floatEvent?.hasClaimed} />
+              hasClaimed={floatEvent?.hasClaimed}
+            />
           {:else}
             <button id="connect" on:click={authenticate}>Connect Wallet</button>
           {/if}
@@ -321,7 +341,8 @@
                   toggleClaimable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}>
+                  )}
+              >
                 {floatEvent?.claimable ? "Pause claiming" : "Resume claiming"}
               </button>
               <button
@@ -332,7 +353,8 @@
                   toggleTransferrable(
                     resolvedNameObject.address,
                     floatEvent?.eventId
-                  )}>
+                  )}
+              >
                 {floatEvent?.transferrable
                   ? "Stop transfers"
                   : "Allow transfers"}
@@ -352,7 +374,8 @@
                     deleteEvent(
                       resolvedNameObject.address,
                       floatEvent?.eventId
-                    )}>
+                    )}
+                >
                   Delete this event
                 </button>
               {/if}
@@ -365,7 +388,8 @@
                   id="address"
                   name="address"
                   placeholder="0x00000000000"
-                  bind:value={recipientAddr} />
+                  bind:value={recipientAddr}
+                />
                 {#if $floatDistributingInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingStatus.success && $floatDistributingStatus.error}
@@ -393,7 +417,8 @@
                   id="list"
                   name="list"
                   placeholder="0x00000000000"
-                  on:change={uploadList} />
+                  on:change={uploadList}
+                />
                 {#if $floatDistributingManyInProgress}
                   <button aria-busy="true" disabled> Award </button>
                 {:else if !$floatDistributingManyStatus.success && $floatDistributingManyStatus.error}
@@ -401,7 +426,7 @@
                 {:else}
                   <button
                     disabled={$floatDistributingManyInProgress ||
-                      listOfAddresses === "error"}
+                      listOfAddresses.error}
                     on:click={() =>
                       distributeDirectlyMany(
                         resolvedNameObject.address,
@@ -412,11 +437,11 @@
                   </button>
                 {/if}
               </div>
-              {#if listOfAddresses && listOfAddresses !== "error"}
+              {#if listOfAddresses && listOfAddresses.length > 0}
                 <small>Minting to: {listOfAddresses.toString()}</small>
-              {:else if listOfAddresses === "error"}
+              {:else if listOfAddresses.error}
                 <small class="red">
-                  This file is not supported. Please upload a .csv file.
+                  {listOfAddresses.message}
                 </small>
               {:else}
                 <small>
@@ -454,7 +479,8 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>
+                        )}
+                    >
                       Add
                     </button>
                   {/if}
@@ -486,7 +512,8 @@
                           resolvedNameObject.address,
                           groupName,
                           floatEvent?.eventId
-                        )}>Remove</button>
+                        )}>Remove</button
+                    >
                   {/if}
                 </div>
                 <small>Remove from a Group.</small>
@@ -509,7 +536,8 @@
               <ClaimsTable
                 address={floatEvent?.host}
                 eventId={floatEvent?.eventId}
-                totalClaimed={floatEvent?.totalSupply} />
+                totalClaimed={floatEvent?.totalSupply}
+              />
             {/if}
           </div>
         </IntersectionObserver>
