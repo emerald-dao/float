@@ -1,7 +1,11 @@
 <script context="module">
   export const prerender = true;
 
-  import { getEvent, resolveAddressObject } from "$lib/flow/actions.js";
+  import {
+    claimFLOATv2,
+    getEvent,
+    resolveAddressObject,
+  } from "$lib/flow/actions.js";
 
   export async function load({ url, params, stuff }) {
     let resolvedNameObject = await resolveAddressObject("0x99bd48c8036e2876");
@@ -157,10 +161,11 @@
                 >Share your love of NFTs using #a16zCSS!</small
               ></button>
           {:else}
-            <button class="secondary outline" disabled
-              >The a16z CSS infrastructure expo was on April 12th 2023.<br /><small
-                >This NFT is no longer claimable.</small
-              ></button>
+            <button
+              class="primary"
+              on:click={() =>
+                claimFLOATv2(floatEvent.eventId, floatEvent.host, null)}
+              >Claim this FLOAT</button>
           {/if}
         </footer>
       </article>
