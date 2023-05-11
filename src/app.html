@@ -1,25 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8" />
-  
-  <link rel="icon" href="/favicon.png" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- <script src="https://app.embed.im/snow.js" defer></script> -->
-  
-  %sveltekit.head%
-</head>
-<body>
-  
-  <div id="svelte">%sveltekit.body%</div>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-05CJFPRW7W"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-
-    gtag('config', 'G-05CJFPRW7W');
-  </script>
-</body>
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<meta name="viewport" content="width=device-width" />
+		%sveltekit.head%
+	</head>
+	<body>
+		<div>%sveltekit.body%</div>
+	</body>
 </html>

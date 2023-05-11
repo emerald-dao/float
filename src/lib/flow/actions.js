@@ -1,119 +1,127 @@
-import { browser } from '$app/env';
+import { browser } from '$app/environment';
 
-import * as fcl from "@onflow/fcl";
+import * as fcl from '@onflow/fcl';
 
-import "./config.js";
+import './config.js';
 import { addressMap, flowTokenIdentifier } from './config.js';
 import {
-  user,
-  txId,
-  transactionStatus,
-  transactionInProgress,
-  eventCreationInProgress,
-  eventCreatedStatus,
-  floatClaimingInProgress,
-  floatClaimedStatus,
-  addSharedMinterInProgress,
-  removeSharedMinterInProgress,
-  floatDistributingInProgress,
-  floatDistributingStatus,
-  addSharedMinterStatus,
-  toggleTransferringInProgress,
-  toggleClaimingInProgress,
-  addGroupInProgress,
-  addGroupStatus,
-  floatDeletionInProgress,
-  floatDeletionStatus,
-  floatTransferInProgress,
-  floatTransferStatus,
-  addEventToGroupInProgress,
-  addEventToGroupStatus,
-  removeEventFromGroupStatus,
-  removeEventFromGroupInProgress,
-  deleteGroupInProgress,
-  deleteGroupStatus,
-  deleteEventInProgress,
-  deleteEventStatus,
-  floatDistributingManyStatus,
-  floatDistributingManyInProgress,
-  setupAccountInProgress,
-  setupAccountStatus,
-  incinerateInProgress,
-  incinerateStatus,
-  eventSeries,
-  cachedCollections,
+	user,
+	txId,
+	transactionStatus,
+	transactionInProgress,
+	eventCreationInProgress,
+	eventCreatedStatus,
+	floatClaimingInProgress,
+	floatClaimedStatus,
+	addSharedMinterInProgress,
+	removeSharedMinterInProgress,
+	floatDistributingInProgress,
+	floatDistributingStatus,
+	addSharedMinterStatus,
+	toggleTransferringInProgress,
+	toggleClaimingInProgress,
+	addGroupInProgress,
+	addGroupStatus,
+	floatDeletionInProgress,
+	floatDeletionStatus,
+	floatTransferInProgress,
+	floatTransferStatus,
+	addEventToGroupInProgress,
+	addEventToGroupStatus,
+	removeEventFromGroupStatus,
+	removeEventFromGroupInProgress,
+	deleteGroupInProgress,
+	deleteGroupStatus,
+	deleteEventInProgress,
+	deleteEventStatus,
+	floatDistributingManyStatus,
+	floatDistributingManyInProgress,
+	setupAccountInProgress,
+	setupAccountStatus,
+	incinerateInProgress,
+	incinerateStatus,
+	eventSeries,
+	cachedCollections
 } from './stores.js';
-import { get } from 'svelte/store'
+import { get } from 'svelte/store';
 
-import * as cadence from './cadence';
+import * as cadence from './cadence.js';
 
 import { draftFloat } from '$lib/stores';
 import { respondWithError, respondWithSuccess } from '$lib/response';
 import { parseErrorMessageFromFCL } from './utils.js';
-import { notifications } from "$lib/notifications";
-import { config } from "@onflow/fcl";
+import { notifications } from '$lib/notifications';
+import { config } from '@onflow/fcl';
 
 if (browser) {
-  // set Svelte $user store to currentUser, 
-  // so other components can access it
-  fcl.currentUser.subscribe(user.set, [])
+	// set Svelte $user store to currentUser,
+	// so other components can access it
+	fcl.currentUser.subscribe(user.set, []);
 }
 
 // Lifecycle FCL Auth functions
 export const unauthenticate = () => fcl.unauthenticate();
-export const authenticate = async () => {
-  await fcl.authenticate();
-};
+export const logIn = async () => await fcl.logIn();
+export const signUp = () => fcl.signUp();
 
 const convertDraftFloat = (draftFloat) => {
-  const challengeVerifierData = {
-    challengeCertificate: false,
-    challengeHost: null,
-    challengeId: null,
-    challengeAchievementThreshold: null
-  }
-  if (draftFloat.challengeCertificate) {
-    const parts = String(draftFloat.challengeCertificate).split(':')
-    challengeVerifierData.challengeCertificate = true
-    challengeVerifierData.challengeHost = parts[0]
-    challengeVerifierData.challengeId = parts[1]
-    challengeVerifierData.challengeAchievementThreshold = parts[2]
-  }
+	const challengeVerifierData = {
+		challengeCertificate: false,
+		challengeHost: null,
+		challengeId: null,
+		challengeAchievementThreshold: null
+	};
+	if (draftFloat.challengeCertificate) {
+		const parts = String(draftFloat.challengeCertificate).split(':');
+		challengeVerifierData.challengeCertificate = true;
+		challengeVerifierData.challengeHost = parts[0];
+		challengeVerifierData.challengeId = parts[1];
+		challengeVerifierData.challengeAchievementThreshold = parts[2];
+	}
 
-  return Object.assign({
-    claimable: draftFloat.claimable,
-    name: draftFloat.name,
-    description: draftFloat.description,
-    image: draftFloat.ipfsHash,
-    url: draftFloat.url,
-    transferrable: draftFloat.transferrable,
-    timelock: draftFloat.timelock ? true : false,
-    dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
-    timePeriod: draftFloat.startTime && draftFloat.endTime ? (+new Date(draftFloat.endTime) / 1000) - (+new Date(draftFloat.startTime) / 1000) : 0,
-    secret: draftFloat.claimCodeEnabled && draftFloat.secretPK ? true : false,
-    secretPK: draftFloat.claimCodeEnabled && draftFloat.secretPK ? draftFloat.secretPK : '',
-    limited: draftFloat.quantity ? true : false,
-    capacity: draftFloat.quantity ? draftFloat.quantity.toString() : '0',
-    initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
-    flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
-    flowTokenCost: draftFloat.flowTokenPurchase ? String(draftFloat.flowTokenPurchase.toFixed(2)) : "0.0",
-    minimumBalanceToggle: draftFloat.minimumBalance ? true : false,
-    minimumBalance: draftFloat.minimumBalance ? String(draftFloat.minimumBalance.toFixed(2)) : "0.0"
-  }, challengeVerifierData);
-}
+	return Object.assign(
+		{
+			claimable: draftFloat.claimable,
+			name: draftFloat.name,
+			description: draftFloat.description,
+			image: draftFloat.ipfsHash,
+			url: draftFloat.url,
+			transferrable: draftFloat.transferrable,
+			timelock: draftFloat.timelock ? true : false,
+			dateStart: draftFloat.startTime ? +new Date(draftFloat.startTime) / 1000 : 0,
+			timePeriod:
+				draftFloat.startTime && draftFloat.endTime
+					? +new Date(draftFloat.endTime) / 1000 - +new Date(draftFloat.startTime) / 1000
+					: 0,
+			secret: draftFloat.claimCodeEnabled && draftFloat.secretPK ? true : false,
+			secretPK: draftFloat.claimCodeEnabled && draftFloat.secretPK ? draftFloat.secretPK : '',
+			limited: draftFloat.quantity ? true : false,
+			capacity: draftFloat.quantity ? draftFloat.quantity.toString() : '0',
+			initialGroups: draftFloat.initialGroup ? [draftFloat.initialGroup] : [],
+			flowTokenPurchase: draftFloat.flowTokenPurchase ? true : false,
+			flowTokenCost: draftFloat.flowTokenPurchase
+				? String(draftFloat.flowTokenPurchase.toFixed(2))
+				: '0.0',
+			minimumBalanceToggle: draftFloat.minimumBalance ? true : false,
+			minimumBalance: draftFloat.minimumBalance
+				? String(draftFloat.minimumBalance.toFixed(2))
+				: '0.0'
+		},
+		challengeVerifierData
+	);
+};
 
 /****************************** SETTERS ******************************/
 
 export const setupAccount = async () => {
+	setupAccountInProgress.set(true);
 
-  setupAccountInProgress.set(true);
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -149,90 +157,89 @@ export const setupAccount = async () => {
         }
       }
       `,
-      args: (arg, t) => [
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          setupAccountStatus.set(respondWithSuccess());
-        } else {
-          setupAccountStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        setupAccountInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					setupAccountStatus.set(respondWithSuccess());
+				} else {
+					setupAccountStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				setupAccountInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		setupAccountStatus.set(false);
+		transactionStatus.set(99);
+		console.log(e);
 
-  } catch (e) {
-    setupAccountStatus.set(false);
-    transactionStatus.set(99)
-    console.log(e)
-
-    setTimeout(() => transactionInProgress.set(false), 10000)
-  }
-}
+		setTimeout(() => transactionInProgress.set(false), 10000);
+	}
+};
 
 export const createEvent = async (forHost, draftFloat) => {
-  let floatObject = convertDraftFloat(draftFloat);
-  console.log(floatObject);
+	let floatObject = convertDraftFloat(draftFloat);
+	console.log(floatObject);
 
-  let code = cadence.replaceImportAddresses(cadence.txCreateEvent, addressMap)
-  code = code.replaceAll("${flowTokenIdentifier}", flowTokenIdentifier)
+	let code = cadence.replaceImportAddresses(cadence.txCreateEvent, addressMap);
+	code = code.replaceAll('${flowTokenIdentifier}', flowTokenIdentifier);
 
-  return generalSendTransaction(
-    code,
-    (arg, t) => [
-      arg(forHost, t.Address),
-      arg(floatObject.claimable, t.Bool),
-      arg(floatObject.name, t.String),
-      arg(floatObject.description, t.String),
-      arg(floatObject.image, t.String),
-      arg(floatObject.url, t.String),
-      arg(floatObject.transferrable, t.Bool),
-      arg(floatObject.timelock, t.Bool),
-      arg(floatObject.dateStart.toFixed(1), t.UFix64),
-      arg(floatObject.timePeriod.toFixed(1), t.UFix64),
-      arg(floatObject.secret, t.Bool),
-      arg(floatObject.secretPK, t.String),
-      arg(floatObject.limited, t.Bool),
-      arg(floatObject.capacity, t.UInt64),
-      arg(floatObject.initialGroups, t.Array(t.String)),
-      arg(floatObject.flowTokenPurchase, t.Bool),
-      arg(floatObject.flowTokenCost, t.UFix64),
-      arg(floatObject.minimumBalanceToggle, t.Bool),
-      arg(floatObject.minimumBalance, t.UFix64),
-      arg(floatObject.challengeCertificate, t.Bool),
-      arg(floatObject.challengeHost, t.Optional(t.Address)),
-      arg(floatObject.challengeId, t.Optional(t.UInt64)),
-      arg(floatObject.challengeAchievementThreshold, t.Optional(t.UInt64))
-    ],
-    eventCreationInProgress,
-    eventCreatedStatus
-  )
-}
+	return generalSendTransaction(
+		code,
+		(arg, t) => [
+			arg(forHost, t.Address),
+			arg(floatObject.claimable, t.Bool),
+			arg(floatObject.name, t.String),
+			arg(floatObject.description, t.String),
+			arg(floatObject.image, t.String),
+			arg(floatObject.url, t.String),
+			arg(floatObject.transferrable, t.Bool),
+			arg(floatObject.timelock, t.Bool),
+			arg(floatObject.dateStart.toFixed(1), t.UFix64),
+			arg(floatObject.timePeriod.toFixed(1), t.UFix64),
+			arg(floatObject.secret, t.Bool),
+			arg(floatObject.secretPK, t.String),
+			arg(floatObject.limited, t.Bool),
+			arg(floatObject.capacity, t.UInt64),
+			arg(floatObject.initialGroups, t.Array(t.String)),
+			arg(floatObject.flowTokenPurchase, t.Bool),
+			arg(floatObject.flowTokenCost, t.UFix64),
+			arg(floatObject.minimumBalanceToggle, t.Bool),
+			arg(floatObject.minimumBalance, t.UFix64),
+			arg(floatObject.challengeCertificate, t.Bool),
+			arg(floatObject.challengeHost, t.Optional(t.Address)),
+			arg(floatObject.challengeId, t.Optional(t.UInt64)),
+			arg(floatObject.challengeAchievementThreshold, t.Optional(t.UInt64))
+		],
+		eventCreationInProgress,
+		eventCreatedStatus
+	);
+};
 
 export const claimFLOAT = async (eventId, host, secret) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
+	floatClaimingInProgress.set(true);
 
-  floatClaimingInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import FLOATVerifiers from 0xFLOAT
       import NonFungibleToken from 0xCORE
@@ -303,56 +310,56 @@ export const claimFLOAT = async (eventId, host, secret) => {
         }
       }      
       `,
-      args: (arg, t) => [
-        arg(eventId, t.UInt64),
-        arg(host, t.Address),
-        arg(secret, t.Optional(t.String)),
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(host, t.Address),
+				arg(secret, t.Optional(t.String))
+			],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatClaimedStatus.set(respondWithSuccess());
-        } else {
-          floatClaimedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatClaimingInProgress.set(false);
-        draftFloat.set({
-          claimable: true,
-          transferrable: true,
-        })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatClaimedStatus.set(respondWithSuccess());
+				} else {
+					floatClaimedStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatClaimingInProgress.set(false);
+				draftFloat.set({
+					claimable: true,
+					transferrable: true
+				});
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatClaimedStatus.set(respondWithError(e));
+		floatClaimingInProgress.set(false);
 
-  } catch (e) {
-    transactionStatus.set(99)
-    floatClaimedStatus.set(respondWithError(e));
-    floatClaimingInProgress.set(false);
-
-    console.log(e)
-  }
-}
+		console.log(e);
+	}
+};
 
 export const claimFLOATv2 = async (eventId, host, secretSig) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
+	floatClaimingInProgress.set(true);
 
-  floatClaimingInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import FLOATVerifiers from 0xFLOAT
       import NonFungibleToken from 0xCORE
@@ -423,56 +430,56 @@ export const claimFLOATv2 = async (eventId, host, secretSig) => {
         }
       }      
       `,
-      args: (arg, t) => [
-        arg(eventId, t.UInt64),
-        arg(host, t.Address),
-        arg(secretSig, t.Optional(t.String)),
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(host, t.Address),
+				arg(secretSig, t.Optional(t.String))
+			],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatClaimedStatus.set(respondWithSuccess());
-        } else {
-          floatClaimedStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatClaimingInProgress.set(false);
-        draftFloat.set({
-          claimable: true,
-          transferrable: true,
-        })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatClaimedStatus.set(respondWithSuccess());
+				} else {
+					floatClaimedStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatClaimingInProgress.set(false);
+				draftFloat.set({
+					claimable: true,
+					transferrable: true
+				});
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatClaimedStatus.set(respondWithError(e));
+		floatClaimingInProgress.set(false);
 
-  } catch (e) {
-    transactionStatus.set(99)
-    floatClaimedStatus.set(respondWithError(e));
-    floatClaimingInProgress.set(false);
-
-    console.log(e)
-  }
-}
+		console.log(e);
+	}
+};
 
 export const distributeDirectly = async (forHost, eventId, recipient) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
+	floatDistributingInProgress.set(true);
 
-  floatDistributingInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -527,55 +534,55 @@ export const distributeDirectly = async (forHost, eventId, recipient) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(eventId, t.UInt64),
-        arg(recipient, t.Address)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [
+				arg(forHost, t.Address),
+				arg(eventId, t.UInt64),
+				arg(recipient, t.Address)
+			],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatDistributingStatus.set(respondWithSuccess());
-          notifications.info(`You successfully distributed a FLOAT!`);
-        } else {
-          floatDistributingStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-          notifications.info(parseErrorMessageFromFCL(res.errorMessage));
-        }
-        floatDistributingInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatDistributingStatus.set(respondWithSuccess());
+					notifications.info(`You successfully distributed a FLOAT!`);
+				} else {
+					floatDistributingStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+					notifications.info(parseErrorMessageFromFCL(res.errorMessage));
+				}
+				floatDistributingInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatDistributingStatus.set(respondWithError(e));
+		floatDistributingInProgress.set(false);
+		notifications.info(parseErrorMessageFromFCL(e));
 
-  } catch (e) {
-    transactionStatus.set(99)
-    floatDistributingStatus.set(respondWithError(e));
-    floatDistributingInProgress.set(false);
-    notifications.info(parseErrorMessageFromFCL(e));
-
-    console.log(e)
-  }
-}
+		console.log(e);
+	}
+};
 
 export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
+	floatDistributingManyInProgress.set(true);
 
-  floatDistributingManyInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -637,53 +644,53 @@ export const distributeDirectlyMany = async (forHost, eventId, recipients) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(eventId, t.UInt64),
-        arg(recipients, t.Array(t.Address))
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 9999
-    })
+			args: (arg, t) => [
+				arg(forHost, t.Address),
+				arg(eventId, t.UInt64),
+				arg(recipients, t.Array(t.Address))
+			],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 9999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatDistributingManyStatus.set(respondWithSuccess());
-          notifications.info(`You successfully distributed FLOATs!`);
-        } else {
-          floatDistributingManyStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatDistributingManyInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatDistributingManyStatus.set(respondWithSuccess());
+					notifications.info(`You successfully distributed FLOATs!`);
+				} else {
+					floatDistributingManyStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatDistributingManyInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatDistributingManyStatus.set(respondWithError(e));
+		floatDistributingManyInProgress.set(false);
 
-  } catch (e) {
-    transactionStatus.set(99)
-    floatDistributingManyStatus.set(respondWithError(e));
-    floatDistributingManyInProgress.set(false);
-
-    console.log(e)
-  }
-}
+		console.log(e);
+	}
+};
 
 export const deleteFLOAT = async (id) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState();
+	floatDeletionInProgress.set(true);
 
-  floatDeletionInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `import FLOAT from 0xFLOAT
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `import FLOAT from 0xFLOAT
 
       transaction(id: UInt64) {
       
@@ -699,49 +706,47 @@ export const deleteFLOAT = async (id) => {
           log("Destroyed the FLOAT.")
         }
       }`,
-      args: (arg, t) => [
-        arg(id, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(id, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatDeletionStatus.set(respondWithSuccess());
-        } else {
-          floatDeletionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatDeletionInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatDeletionStatus.set(respondWithSuccess());
+				} else {
+					floatDeletionStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatDeletionInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
-
-  } catch (e) {
-    transactionStatus.set(99);
-    floatDeletionInProgress.set(false);
-    floatDeletionStatus.set(respondWithError(e))
-    console.log(e)
-  }
-}
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatDeletionInProgress.set(false);
+		floatDeletionStatus.set(respondWithError(e));
+		console.log(e);
+	}
+};
 
 export const deleteFLOATs = async (ids) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState();
+	floatDeletionInProgress.set(true);
 
-  floatDeletionInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `import FLOAT from 0xFLOAT
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `import FLOAT from 0xFLOAT
 
       transaction(ids: [UInt64]) {
       
@@ -759,49 +764,47 @@ export const deleteFLOATs = async (ids) => {
           log("Destroyed the FLOAT.")
         }
       }`,
-      args: (arg, t) => [
-        arg(ids, t.Array(t.UInt64))
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 9999
-    })
+			args: (arg, t) => [arg(ids, t.Array(t.UInt64))],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 9999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatDeletionStatus.set(respondWithSuccess());
-        } else {
-          floatDeletionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatDeletionInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatDeletionStatus.set(respondWithSuccess());
+				} else {
+					floatDeletionStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatDeletionInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
-
-  } catch (e) {
-    transactionStatus.set(99);
-    floatDeletionInProgress.set(false);
-    floatDeletionStatus.set(respondWithError(e))
-    console.log(e)
-  }
-}
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatDeletionInProgress.set(false);
+		floatDeletionStatus.set(respondWithError(e));
+		console.log(e);
+	}
+};
 
 export const incinerate = async (ids) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState();
+	incinerateInProgress.set(true);
 
-  incinerateInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `import FLOATIncinerator from 0xFLOAT
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `import FLOATIncinerator from 0xFLOAT
       import FLOAT from 0xFLOAT
       
       transaction(ids: [UInt64]) {
@@ -822,50 +825,48 @@ export const incinerate = async (ids) => {
           self.Incinerator.burn(collection: self.Collection, ids: ids)
         }
       }`,
-      args: (arg, t) => [
-        arg(ids, t.Array(t.UInt64))
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 9999
-    })
+			args: (arg, t) => [arg(ids, t.Array(t.UInt64))],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 9999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          incinerateStatus.set(respondWithSuccess());
-          setTimeout(() => incinerateStatus.set(null), 2000);
-        } else {
-          incinerateStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        incinerateInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					incinerateStatus.set(respondWithSuccess());
+					setTimeout(() => incinerateStatus.set(null), 2000);
+				} else {
+					incinerateStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				incinerateInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
-
-  } catch (e) {
-    transactionStatus.set(99);
-    incinerateInProgress.set(false);
-    incinerateStatus.set(respondWithError(e))
-    console.log(e)
-  }
-}
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		incinerateInProgress.set(false);
+		incinerateStatus.set(respondWithError(e));
+		console.log(e);
+	}
+};
 
 export const transferFLOAT = async (id, recipient) => {
+	let transactionId = false;
+	initTransactionState();
 
-  let transactionId = false;
-  initTransactionState()
+	floatTransferInProgress.set(true);
 
-  floatTransferInProgress.set(true);
-
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
 
@@ -897,48 +898,46 @@ export const transferFLOAT = async (id, recipient) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(id, t.UInt64),
-        arg(recipient, t.Address)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(id, t.UInt64), arg(recipient, t.Address)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          floatTransferStatus.set(respondWithSuccess());
-        } else {
-          floatTransferStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        floatTransferInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					floatTransferStatus.set(respondWithSuccess());
+				} else {
+					floatTransferStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				floatTransferInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
+	} catch (e) {
+		transactionStatus.set(99);
+		floatTransferInProgress.set(false);
+		floatTransferStatus.set(respondWithError(e));
 
-  } catch (e) {
-    transactionStatus.set(99);
-    floatTransferInProgress.set(false);
-    floatTransferStatus.set(respondWithError(e));
-
-    console.log(e)
-  }
-}
+		console.log(e);
+	}
+};
 
 export const toggleClaimable = async (forHost, eventId) => {
-  let transactionId = false;
-  initTransactionState();
-  toggleClaimingInProgress.set(true);
+	let transactionId = false;
+	initTransactionState();
+	toggleClaimingInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64) {
@@ -965,44 +964,40 @@ export const toggleClaimable = async (forHost, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(eventId, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(forHost, t.Address), arg(eventId, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        setTimeout(() => transactionInProgress.set(false), 2000)
-        toggleClaimingInProgress.set(false);
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				setTimeout(() => transactionInProgress.set(false), 2000);
+				toggleClaimingInProgress.set(false);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99)
-    toggleClaimingInProgress.set(false);
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		toggleClaimingInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const toggleTransferrable = async (forHost, eventId) => {
-  let transactionId = false;
-  initTransactionState();
-  toggleTransferringInProgress.set(true);
+	let transactionId = false;
+	initTransactionState();
+	toggleTransferringInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       transaction(forHost: Address, eventId: UInt64) {
@@ -1029,45 +1024,41 @@ export const toggleTransferrable = async (forHost, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(eventId, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(forHost, t.Address), arg(eventId, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        setTimeout(() => transactionInProgress.set(false), 2000)
-        toggleTransferringInProgress.set(false);
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				setTimeout(() => transactionInProgress.set(false), 2000);
+				toggleTransferringInProgress.set(false);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99)
-    toggleTransferringInProgress.set(false);
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		toggleTransferringInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const deleteEvent = async (forHost, eventId) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  deleteEventInProgress.set(true);
+	deleteEventInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -1115,51 +1106,49 @@ export const deleteEvent = async (forHost, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(eventId, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 9999
-    })
+			args: (arg, t) => [arg(forHost, t.Address), arg(eventId, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 9999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          deleteEventStatus.set(respondWithSuccess());
-        } else {
-          deleteEventStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        deleteEventInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					deleteEventStatus.set(respondWithSuccess());
+				} else {
+					deleteEventStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				deleteEventInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99);
-    deleteEventStatus.set(respondWithError(e));
-    deleteEventInProgress.set(false);
-    console.log(e);
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		deleteEventStatus.set(respondWithError(e));
+		deleteEventInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const addSharedMinter = async (receiver) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  addSharedMinterInProgress.set(true);
+	addSharedMinterInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import GrantedAccountAccess from 0xFLOAT
 
       transaction (receiver: Address) {
@@ -1182,48 +1171,45 @@ export const addSharedMinter = async (receiver) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(receiver, t.Address),
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(receiver, t.Address)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          addSharedMinterStatus.set(respondWithSuccess());
-        }
-        setTimeout(() => transactionInProgress.set(false), 2000)
-        addSharedMinterInProgress.set(false);
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					addSharedMinterStatus.set(respondWithSuccess());
+				}
+				setTimeout(() => transactionInProgress.set(false), 2000);
+				addSharedMinterInProgress.set(false);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99)
-    addSharedMinterStatus.set(respondWithError(parseErrorMessageFromFCL(e)));
-    addSharedMinterInProgress.set(false);
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		addSharedMinterStatus.set(respondWithError(parseErrorMessageFromFCL(e)));
+		addSharedMinterInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const removeSharedMinter = async (user) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  removeSharedMinterInProgress.set(true);
+	removeSharedMinterInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import GrantedAccountAccess from 0xFLOAT
 
       transaction(user: Address) {
@@ -1241,44 +1227,41 @@ export const removeSharedMinter = async (user) => {
       }
       
       `,
-      args: (arg, t) => [
-        arg(user, t.Address),
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(user, t.Address)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        setTimeout(() => transactionInProgress.set(false), 2000)
-        removeSharedMinterInProgress.set(false);
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				setTimeout(() => transactionInProgress.set(false), 2000);
+				removeSharedMinterInProgress.set(false);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99)
-    removeSharedMinterInProgress.set(false);
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		removeSharedMinterInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const createGroup = async (draftGroup) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  addGroupInProgress.set(true);
+	addGroupInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -1321,53 +1304,54 @@ export const createGroup = async (draftGroup) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(draftGroup.name, t.String),
-        arg(draftGroup.ipfsHash, t.String),
-        arg(draftGroup.description, t.String)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [
+				arg(draftGroup.name, t.String),
+				arg(draftGroup.ipfsHash, t.String),
+				arg(draftGroup.description, t.String)
+			],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          addGroupStatus.set(respondWithSuccess());
-        } else {
-          addGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        addGroupInProgress.set(false);
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					addGroupStatus.set(respondWithSuccess());
+				} else {
+					addGroupStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				addGroupInProgress.set(false);
 
-        setTimeout(() => transactionInProgress.set(false), 2000);
-      }
-    })
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99);
-    addGroupInProgress.set(false);
-    addGroupStatus.set(respondWithError(e));
-    console.log(e);
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		addGroupInProgress.set(false);
+		addGroupStatus.set(respondWithError(e));
+		console.log(e);
+	}
+};
 
 export const deleteGroup = async (groupName) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  deleteGroupInProgress.set(true);
+	deleteGroupInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       transaction(groupName: String) {
@@ -1385,50 +1369,49 @@ export const deleteGroup = async (groupName) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(groupName, t.String)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(groupName, t.String)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          deleteGroupStatus.set(respondWithSuccess());
-        } else {
-          deleteGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        deleteGroupInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					deleteGroupStatus.set(respondWithSuccess());
+				} else {
+					deleteGroupStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				deleteGroupInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99);
-    deleteGroupInProgress.set(false);
-    deleteGroupStatus.set(respondWithError(e));
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		deleteGroupInProgress.set(false);
+		deleteGroupStatus.set(respondWithError(e));
+		console.log(e);
+	}
+};
 
 export const addEventToGroup = async (forHost, groupName, eventId) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  addEventToGroupInProgress.set(true);
+	addEventToGroupInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       transaction(forHost: Address, groupName: String, eventId: UInt64) {
@@ -1452,53 +1435,50 @@ export const addEventToGroup = async (forHost, groupName, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(groupName, t.String),
-        arg(eventId, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(forHost, t.Address), arg(groupName, t.String), arg(eventId, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          notifications.info(`You successfully added this event to a Group!`);
-          addEventToGroupStatus.set(respondWithSuccess());
-        } else {
-          addEventToGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        addEventToGroupInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					notifications.info(`You successfully added this event to a Group!`);
+					addEventToGroupStatus.set(respondWithSuccess());
+				} else {
+					addEventToGroupStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				addEventToGroupInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99);
-    addEventToGroupStatus.set(respondWithError(e));
-    addEventToGroupInProgress.set(false);
-    console.log(e)
-  }
-}
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		addEventToGroupStatus.set(respondWithError(e));
+		addEventToGroupInProgress.set(false);
+		console.log(e);
+	}
+};
 
 export const removeEventFromGroup = async (forHost, groupName, eventId) => {
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  removeEventFromGroupInProgress.set(true);
+	removeEventFromGroupInProgress.set(true);
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: `
+	try {
+		transactionId = await fcl.mutate({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       transaction(forHost: Address, groupName: String, eventId: UInt64) {
@@ -1522,50 +1502,46 @@ export const removeEventFromGroup = async (forHost, groupName, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(forHost, t.Address),
-        arg(groupName, t.String),
-        arg(eventId, t.UInt64)
-      ],
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: 999
-    })
+			args: (arg, t) => [arg(forHost, t.Address), arg(groupName, t.String), arg(eventId, t.UInt64)],
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: 999
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    fcl.tx(transactionId).subscribe(res => {
-      transactionStatus.set(res.status)
-      if (res.status === 4) {
-        if (res.statusCode === 0) {
-          removeEventFromGroupStatus.set(respondWithSuccess());
-        } else {
-          removeEventFromGroupStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode));
-        }
-        removeEventFromGroupInProgress.set(false);
-        setTimeout(() => transactionInProgress.set(false), 2000)
-      }
-    })
+		fcl.tx(transactionId).subscribe((res) => {
+			transactionStatus.set(res.status);
+			if (res.status === 4) {
+				if (res.statusCode === 0) {
+					removeEventFromGroupStatus.set(respondWithSuccess());
+				} else {
+					removeEventFromGroupStatus.set(
+						respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+					);
+				}
+				removeEventFromGroupInProgress.set(false);
+				setTimeout(() => transactionInProgress.set(false), 2000);
+			}
+		});
 
-    let res = await fcl.tx(transactionId).onceSealed()
-    return res;
-
-  } catch (e) {
-    transactionStatus.set(99);
-    removeEventFromGroupStatus.set(respondWithError(e));
-    removeEventFromGroupInProgress.set(false);
-    console.log(e)
-  }
-}
-
+		let res = await fcl.tx(transactionId).onceSealed();
+		return res;
+	} catch (e) {
+		transactionStatus.set(99);
+		removeEventFromGroupStatus.set(respondWithError(e));
+		removeEventFromGroupInProgress.set(false);
+		console.log(e);
+	}
+};
 
 /****************************** GETTERS ******************************/
 
 export const isSetup = async (addr) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
       import NonFungibleToken from 0xCORE
       import MetadataViews from 0xCORE
@@ -1589,20 +1565,18 @@ export const isSetup = async (addr) => {
         return true
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address)
-      ]
-    })
-    return queryResult;
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address)]
+		});
+		return queryResult;
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getEvent = async (addr, eventId) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, eventId: UInt64): FLOATEventMetadata {
@@ -1673,21 +1647,18 @@ export const getEvent = async (addr, eventId) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address),
-        arg(eventId, t.UInt64)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address), arg(eventId, t.UInt64)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getEvents = async (addr) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address): {UFix64: FLOATEventMetadata} {
@@ -1765,19 +1736,16 @@ export const getEvents = async (addr) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address)]
+		});
+		return queryResult || {};
+	} catch (e) {}
+};
 
 export const getFLOATs = async (addr) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
       
       pub fun main(account: Address): {UFix64: CombinedMetadata} {
@@ -1814,20 +1782,18 @@ export const getFLOATs = async (addr) => {
           }
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address)
-      ]
-    })
-    return Object.values(queryResult) || {};
-  } catch (e) {
-    console.log(e)
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address)]
+		});
+		return Object.values(queryResult) || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getFLOAT = async (addr, id) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, id: UInt64): CombinedMetadata? {
@@ -1860,21 +1826,18 @@ export const getFLOAT = async (addr, id) => {
           }
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address),
-        arg(id, t.UInt64)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address), arg(id, t.UInt64)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getHoldersInEvent = async (addr, eventId) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, eventId: UInt64): {UInt64: FLOAT.TokenIdentifier} {
@@ -1884,21 +1847,18 @@ export const getHoldersInEvent = async (addr, eventId) => {
         return floatEventCollection.borrowPublicEventRef(eventId: eventId)!.getCurrentHolders()
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address),
-        arg(eventId, t.UInt64)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address), arg(eventId, t.UInt64)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getClaimedInEvent = async (addr, eventId) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, eventId: UInt64): {Address: FLOAT.TokenIdentifier} {
@@ -1908,21 +1868,18 @@ export const getClaimedInEvent = async (addr, eventId) => {
         return floatEventCollection.borrowPublicEventRef(eventId: eventId)!.getClaimed()
       }
       `,
-      args: (arg, t) => [
-        arg(addr, t.Address),
-        arg(eventId, t.UInt64)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(addr, t.Address), arg(eventId, t.UInt64)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(hostAddress: Address, eventId: UInt64, accountAddress: Address): FLOAT.TokenIdentifier? {
@@ -1934,23 +1891,23 @@ export const hasClaimedEvent = async (hostAddress, eventId, accountAddress) => {
         return floatEventPublic!.hasClaimed(account: accountAddress)
       }
       `,
-      args: (arg, t) => [
-        arg(hostAddress, t.Address),
-        arg(eventId, t.UInt64),
-        arg(accountAddress, t.Address)
-      ]
-    })
+			args: (arg, t) => [
+				arg(hostAddress, t.Address),
+				arg(eventId, t.UInt64),
+				arg(accountAddress, t.Address)
+			]
+		});
 
-    return queryResult || queryResult === false;
-  } catch (e) {
-    console.log(e);
-  }
-}
+		return queryResult || queryResult === false;
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getCurrentHolder = async (hostAddress, eventId, serial) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(hostAddress: Address, eventId: UInt64, serial: UInt64): FLOAT.TokenIdentifier? {
@@ -1962,22 +1919,18 @@ export const getCurrentHolder = async (hostAddress, eventId, serial) => {
         return floatEventPublic.getCurrentHolder(serial: serial)
       }
       `,
-      args: (arg, t) => [
-        arg(hostAddress, t.Address),
-        arg(eventId, t.UInt64),
-        arg(serial, t.UInt64)
-      ]
-    })
-    return queryResult;
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(hostAddress, t.Address), arg(eventId, t.UInt64), arg(serial, t.UInt64)]
+		});
+		return queryResult;
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getAllowed = async (address) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import GrantedAccountAccess from 0xFLOAT
 
       pub fun main(address: Address): [Address] {
@@ -1987,20 +1940,18 @@ export const getAllowed = async (address) => {
         return infoPublic.getAllowed()
       }
       `,
-      args: (arg, t) => [
-        arg(address, t.Address)
-      ]
-    })
-    return queryResult || [];
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(address, t.Address)]
+		});
+		return queryResult || [];
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const resolveVerifier = async (address, eventId) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
       import MetadataViews from 0xCORE
 
@@ -2019,21 +1970,18 @@ export const resolveVerifier = async (address, eventId) => {
         return []
       }
       `,
-      args: (arg, t) => [
-        arg(address, t.Address),
-        arg(eventId, t.UInt64)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(address, t.Address), arg(eventId, t.UInt64)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const isSharedWithUser = async (account, user) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import GrantedAccountAccess from 0xFLOAT
 
       pub fun main(account: Address, user: Address): Bool {
@@ -2043,22 +1991,19 @@ export const isSharedWithUser = async (account, user) => {
         return infoPublic.isAllowed(account: user) || account == user
       }
       `,
-      args: (arg, t) => [
-        arg(account, t.Address),
-        arg(user, t.Address)
-      ]
-    })
-    return queryResult;
-  } catch (e) {
-    console.log(e);
-    return false;
-  }
-}
+			args: (arg, t) => [arg(account, t.Address), arg(user, t.Address)]
+		});
+		return queryResult;
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
 
 export const getGroups = async (account) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address): {String: &FLOAT.Group} {
@@ -2075,21 +2020,19 @@ export const getGroups = async (account) => {
         return answer
       }
       `,
-      args: (arg, t) => [
-        arg(account, t.Address)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-    return {};
-  }
-}
+			args: (arg, t) => [arg(account, t.Address)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+		return {};
+	}
+};
 
 export const getEventsInGroup = async (account, groupName) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, groupName: String): [FLOATEventMetadata] {
@@ -2169,21 +2112,18 @@ export const getEventsInGroup = async (account, groupName) => {
         }
       }
       `,
-      args: (arg, t) => [
-        arg(account, t.Address),
-        arg(groupName, t.String)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(account, t.Address), arg(groupName, t.String)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getGroup = async (account, groupName) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(account: Address, groupName: String): &FLOAT.Group? {
@@ -2193,21 +2133,18 @@ export const getGroup = async (account, groupName) => {
         return floatEventCollection.getGroup(groupName: groupName)
       }
       `,
-      args: (arg, t) => [
-        arg(account, t.Address),
-        arg(groupName, t.String)
-      ]
-    })
-    return queryResult || {};
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [arg(account, t.Address), arg(groupName, t.String)]
+		});
+		return queryResult || {};
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getStats = async () => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOAT from 0xFLOAT
 
       pub fun main(): [UInt64] {
@@ -2217,19 +2154,18 @@ export const getStats = async () => {
         return info
       }
       `,
-      args: (arg, t) => [
-      ]
-    })
-    return queryResult || [];
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => []
+		});
+		return queryResult || [];
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getIncineratedStats = async () => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FLOATIncinerator from 0xFLOAT
 
       pub fun main(): [UInt64] {
@@ -2239,19 +2175,18 @@ export const getIncineratedStats = async () => {
         return info
       }
       `,
-      args: (arg, t) => [
-      ]
-    })
-    return queryResult || [];
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => []
+		});
+		return queryResult || [];
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const getFlowTokenBalance = async (account) => {
-  try {
-    let queryResult = await fcl.query({
-      cadence: `
+	try {
+		let queryResult = await fcl.query({
+			cadence: `
       import FlowToken from 0xFLOWTOKEN
       import FungibleToken from 0xFUNGIBLETOKEN
 
@@ -2262,38 +2197,36 @@ export const getFlowTokenBalance = async (account) => {
         return vault.balance
       }
       `,
-      args: (arg, t) => [
-        fcl.arg(account, t.Address)
-      ]
-    })
-    return queryResult || [];
-  } catch (e) {
-    console.log(e);
-  }
-}
+			args: (arg, t) => [fcl.arg(account, t.Address)]
+		});
+		return queryResult || [];
+	} catch (e) {
+		console.log(e);
+	}
+};
 
 export const resolveAddressObject = async (lookup) => {
-  let answer = {
-    resolvedNames: {
-      find: "",
-      fn: ""
-    },
-    address: ""
-  };
-  let rootLookup = lookup.split('.')[0];
-  // const findCache = JSON.parse(localStorage.getItem('findCache')) || {};
-  // if (findCache && findCache[lookup]) {
-  //   return Promise.resolve(findCache[lookup]);
-  // }
-  try {
-    if (rootLookup.length === 18 && rootLookup.substring(0, 2) === '0x') {
-      answer.address = lookup;
-      // FIXME: no need resolve names in dev
-      if (import.meta.env.DEV && import.meta.env.VITE_FLOW_NETWORK === 'testnet') {
-        return answer
-      }
-      answer.resolvedNames.find = await fcl.query({
-        cadence: `
+	let answer = {
+		resolvedNames: {
+			find: '',
+			fn: ''
+		},
+		address: ''
+	};
+	let rootLookup = lookup.split('.')[0];
+	// const findCache = JSON.parse(localStorage.getItem('findCache')) || {};
+	// if (findCache && findCache[lookup]) {
+	//   return Promise.resolve(findCache[lookup]);
+	// }
+	try {
+		if (rootLookup.length === 18 && rootLookup.substring(0, 2) === '0x') {
+			answer.address = lookup;
+			// FIXME: no need resolve names in dev
+			if (import.meta.env.DEV && import.meta.env.VITE_FLOW_NETWORK === 'testnet') {
+				return answer;
+			}
+			answer.resolvedNames.find = await fcl.query({
+				cadence: `
         import FIND from 0xFIND
 
         pub fun main(address: Address): String? {
@@ -2301,13 +2234,11 @@ export const resolveAddressObject = async (lookup) => {
             return name?.concat(".find")
         }
         `,
-        args: (arg, t) => [
-          arg(lookup, t.Address)
-        ]
-      });
+				args: (arg, t) => [arg(lookup, t.Address)]
+			});
 
-      answer.resolvedNames.fn = await fcl.query({
-        cadence: `
+			answer.resolvedNames.fn = await fcl.query({
+				cadence: `
         import Domains from 0xFN
       
         pub fun main(address: Address): String? {
@@ -2335,31 +2266,27 @@ export const resolveAddressObject = async (lookup) => {
           return flownsName
         }
         `,
-        args: (arg, t) => [
-          arg(lookup, t.Address)
-        ]
-      });
-    } else if (lookup.includes('.find')) {
-      answer.resolvedNames.find = lookup;
-      answer.address = await fcl.query({
-        cadence: `
+				args: (arg, t) => [arg(lookup, t.Address)]
+			});
+		} else if (lookup.includes('.find')) {
+			answer.resolvedNames.find = lookup;
+			answer.address = await fcl.query({
+				cadence: `
         import FIND from 0xFIND
   
         pub fun main(name: String) : Address?  {
           return FIND.lookupAddress(name)
         }
         `,
-        args: (arg, t) => [
-          arg(rootLookup, t.String)
-        ]
-      })
-    } else if (lookup.includes('.fn') || lookup.includes('.meow')) {
-      let nameArr = lookup.split('.')
-      const label = nameArr[0]
-      const parent = nameArr[1]
-      answer.resolvedNames.fn = lookup
-      answer.address = await fcl.query({
-        cadence: `
+				args: (arg, t) => [arg(rootLookup, t.String)]
+			});
+		} else if (lookup.includes('.fn') || lookup.includes('.meow')) {
+			let nameArr = lookup.split('.');
+			const label = nameArr[0];
+			const parent = nameArr[1];
+			answer.resolvedNames.fn = lookup;
+			answer.address = await fcl.query({
+				cadence: `
         import Flowns from 0xFN
         import Domains from 0xFN
         pub fun main(label: String, parent: String): Address? {
@@ -2372,106 +2299,113 @@ export const resolveAddressObject = async (lookup) => {
           return address
         }
         `,
-        args: (arg, t) => [
-          arg(label, t.String),
-          arg(parent, t.String)
-        ]
-      })
-    }
-    // findCache[lookup] = queryResult;
-    // localStorage.setItem('findCache', JSON.stringify(findCache));
-    return answer;
-  } catch (e) {
-    return answer;
-  }
-}
+				args: (arg, t) => [arg(label, t.String), arg(parent, t.String)]
+			});
+		}
+		// findCache[lookup] = queryResult;
+		// localStorage.setItem('findCache', JSON.stringify(findCache));
+		return answer;
+	} catch (e) {
+		return answer;
+	}
+};
 function initTransactionState() {
-  // configureFCL(get(currentWallet));
-  // console.log(get(currentWallet));
-  transactionInProgress.set(true);
-  transactionStatus.set(-1);
-  floatClaimedStatus.set(false);
-  eventCreatedStatus.set(false);
+	// configureFCL(get(currentWallet));
+	// console.log(get(currentWallet));
+	transactionInProgress.set(true);
+	transactionStatus.set(-1);
+	floatClaimedStatus.set(false);
+	eventCreatedStatus.set(false);
 }
 
 /**
  * genrenal method of sending transaction
- * 
+ *
  * @param {string} code
  * @param {fcl.ArgsFn} args
- * @param {import('svelte/store').Writable<boolean>} inProgress 
- * @param {import('svelte/store').Writable<boolean>} actionStatus 
+ * @param {import('svelte/store').Writable<boolean>} inProgress
+ * @param {import('svelte/store').Writable<boolean>} actionStatus
  * @param {(string, string)=>void} [onSealed=undefined]
  * @param {number} [gasLimit=9999]
  */
-const generalSendTransaction = async (code, args, actionInProgress = undefined, actionStatus = undefined, gasLimit = 9999, onSealed = undefined) => {
-  gasLimit = gasLimit || 9999
+const generalSendTransaction = async (
+	code,
+	args,
+	actionInProgress = undefined,
+	actionStatus = undefined,
+	gasLimit = 9999,
+	onSealed = undefined
+) => {
+	gasLimit = gasLimit || 9999;
 
-  actionInProgress && actionInProgress.set(true);
+	actionInProgress && actionInProgress.set(true);
 
-  let transactionId = false;
-  initTransactionState();
+	let transactionId = false;
+	initTransactionState();
 
-  try {
-    transactionId = await fcl.mutate({
-      cadence: code,
-      args: args,
-      payer: fcl.authz,
-      proposer: fcl.authz,
-      authorizations: [fcl.authz],
-      limit: gasLimit
-    })
+	try {
+		transactionId = await fcl.mutate({
+			cadence: code,
+			args: args,
+			payer: fcl.authz,
+			proposer: fcl.authz,
+			authorizations: [fcl.authz],
+			limit: gasLimit
+		});
 
-    txId.set(transactionId);
+		txId.set(transactionId);
 
-    return new Promise((resolve, reject) => {
-      fcl.tx(transactionId).subscribe(res => {
-        transactionStatus.set(res.status)
+		return new Promise((resolve, reject) => {
+			fcl.tx(transactionId).subscribe((res) => {
+				transactionStatus.set(res.status);
 
-        if (res.status === 4) {
-          if (res.statusCode === 0) {
-            actionStatus && actionStatus.set(respondWithSuccess());
-          } else {
-            actionStatus && actionStatus.set(respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode))
-          }
-          actionInProgress && actionInProgress.set(false);
+				if (res.status === 4) {
+					if (res.statusCode === 0) {
+						actionStatus && actionStatus.set(respondWithSuccess());
+					} else {
+						actionStatus &&
+							actionStatus.set(
+								respondWithError(parseErrorMessageFromFCL(res.errorMessage), res.statusCode)
+							);
+					}
+					actionInProgress && actionInProgress.set(false);
 
-          // on sealed callback
-          if (typeof onSealed === 'function') {
-            onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage)
-          }
+					// on sealed callback
+					if (typeof onSealed === 'function') {
+						onSealed(transactionId, res.statusCode === 0 ? undefined : res.errorMessage);
+					}
 
-          setTimeout(() => transactionInProgress.set(false), 2000)
+					setTimeout(() => transactionInProgress.set(false), 2000);
 
-          resolve();
-        }
-      })
-    })
-  } catch (e) {
-    actionInProgress && actionInProgress.set(false);
-    actionStatus && actionStatus.set(respondWithError(e));
-    transactionStatus.set(99)
-    console.log(e)
+					resolve();
+				}
+			});
+		});
+	} catch (e) {
+		actionInProgress && actionInProgress.set(false);
+		actionStatus && actionStatus.set(respondWithError(e));
+		transactionStatus.set(99);
+		console.log(e);
 
-    setTimeout(() => transactionInProgress.set(false), 10000)
-  }
-}
+		setTimeout(() => transactionInProgress.set(false), 10000);
+	}
+};
 
 /**
  * genrenal method of query transaction
- * 
+ *
  * @param {string} code
  * @param {fcl.ArgsFn} args
  * @param {any} defaultValue
  */
 const generalQuery = async (code, args, defaultValue = {}) => {
-  try {
-    const queryResult = await fcl.query({ cadence: code, args })
-    return queryResult ?? defaultValue
-  } catch (e) {
-    console.error(e)
-  }
-}
+	try {
+		const queryResult = await fcl.query({ cadence: code, args });
+		return queryResult ?? defaultValue;
+	} catch (e) {
+		console.error(e);
+	}
+};
 
 /**
 ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____ 
@@ -2487,7 +2421,7 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
 
 /**
  * create a new event series
- * 
+ *
  * @param {object} basics basic information
  * @param {string} basics.name
  * @param {string} basics.description
@@ -2500,111 +2434,132 @@ ____ _  _ ____ _  _ ___    ____ ____ ____ _ ____ ____
  * @param {number} emptySlotsAmt how many empty slots totally
  * @param {number} emptySlotsAmtRequired how many empty slots is required
  */
-export const createEventSeries = async (basics, presetEvents, emptySlotsAmt = 0, emptySlotsAmtRequired = 0) => {
-  const reduced = presetEvents.reduce((all, curr) => {
-    if (typeof curr.event?.host === 'string' &&
-      typeof curr.event?.id === 'string' &&
-      (typeof curr.required === 'boolean' || curr.required === undefined)) {
-      all.hosts.push(curr.event.host)
-      all.eventIds.push(curr.event.id ?? curr.event.eventId)
-      all.required.push(curr.required ?? true)
-    }
-    return all
-  }, { hosts: [], eventIds: [], required: [] })
+export const createEventSeries = async (
+	basics,
+	presetEvents,
+	emptySlotsAmt = 0,
+	emptySlotsAmtRequired = 0
+) => {
+	const reduced = presetEvents.reduce(
+		(all, curr) => {
+			if (
+				typeof curr.event?.host === 'string' &&
+				typeof curr.event?.id === 'string' &&
+				(typeof curr.required === 'boolean' || curr.required === undefined)
+			) {
+				all.hosts.push(curr.event.host);
+				all.eventIds.push(curr.event.id ?? curr.event.eventId);
+				all.required.push(curr.required ?? true);
+			}
+			return all;
+		},
+		{ hosts: [], eventIds: [], required: [] }
+	);
 
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap),
-    (arg, t) => [
-      arg(basics.name, t.String),
-      arg(basics.description, t.String),
-      arg(basics.image, t.String),
-      arg(String(emptySlotsAmt), t.UInt64),
-      arg(emptySlotsAmtRequired ? String(emptySlotsAmtRequired) : '0', t.UInt64),
-      arg(reduced.hosts, t.Array(t.Address)),
-      arg(reduced.eventIds, t.Array(t.UInt64)),
-      arg(reduced.required, t.Array(t.Bool))
-    ],
-    eventSeries.Creation.InProgress,
-    eventSeries.Creation.Status
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txCreateEventSeries, addressMap),
+		(arg, t) => [
+			arg(basics.name, t.String),
+			arg(basics.description, t.String),
+			arg(basics.image, t.String),
+			arg(String(emptySlotsAmt), t.UInt64),
+			arg(emptySlotsAmtRequired ? String(emptySlotsAmtRequired) : '0', t.UInt64),
+			arg(reduced.hosts, t.Array(t.Address)),
+			arg(reduced.eventIds, t.Array(t.UInt64)),
+			arg(reduced.required, t.Array(t.Bool))
+		],
+		eventSeries.Creation.InProgress,
+		eventSeries.Creation.Status
+	);
+};
 
 /**
  * add a goal to EventSeries
- * 
- * @param {import('../components/eventseries/types').AddAchievementGoalRequest}
+ *
+ * @param {import('../components/eventseries/types.js').AddAchievementGoalRequest}
  */
-export const addAchievementGoalToEventSeries = async ({ type, seriesId, points, params, title }) => {
-  let code
-  /** @type {fcl.ArgsFn} */
-  let args
-  switch (type) {
-    case 'byAmount':
-      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap)
+export const addAchievementGoalToEventSeries = async ({
+	type,
+	seriesId,
+	points,
+	params,
+	title
+}) => {
+	let code;
+	/** @type {fcl.ArgsFn} */
+	let args;
+	switch (type) {
+		case 'byAmount':
+			code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByAmount, addressMap);
 
-      const { eventsAmount, requiredEventsAmount } = params || {}
-      if (eventsAmount === undefined) {
-        throw new Error('eventsAmount is missing')
-      }
-      args = (arg, t) => [
-        arg(seriesId, t.UInt64),
-        arg(String(points), t.UInt64),
-        arg(String(eventsAmount), t.UInt64),
-        arg(String(requiredEventsAmount), t.UInt64),
-        arg(title || null, t.Optional(t.String)),
-      ]
-      break;
+			const { eventsAmount, requiredEventsAmount } = params || {};
+			if (eventsAmount === undefined) {
+				throw new Error('eventsAmount is missing');
+			}
+			args = (arg, t) => [
+				arg(seriesId, t.UInt64),
+				arg(String(points), t.UInt64),
+				arg(String(eventsAmount), t.UInt64),
+				arg(String(requiredEventsAmount), t.UInt64),
+				arg(title || null, t.Optional(t.String))
+			];
+			break;
 
-    case 'byPercent':
-      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap)
+		case 'byPercent':
+			code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalByPercent, addressMap);
 
-      const { percent } = params || {}
-      if (percent === undefined) {
-        throw new Error('percent is missing')
-      }
-      args = (arg, t) => [
-        arg(seriesId, t.UInt64),
-        arg(String(points), t.UInt64),
-        arg((percent / 100.0).toFixed(1), t.UFix64),
-        arg(title || null, t.Optional(t.String)),
-      ]
-      break;
+			const { percent } = params || {};
+			if (percent === undefined) {
+				throw new Error('percent is missing');
+			}
+			args = (arg, t) => [
+				arg(seriesId, t.UInt64),
+				arg(String(points), t.UInt64),
+				arg((percent / 100.0).toFixed(1), t.UFix64),
+				arg(title || null, t.Optional(t.String))
+			];
+			break;
 
-    case 'bySpecifics':
-      code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap)
+		case 'bySpecifics':
+			code = cadence.replaceImportAddresses(cadence.txAddEventSeriesGoalBySpecifics, addressMap);
 
-      const { events } = params || {}
-      if (events === undefined && !Array.isArray(events)) {
-        throw new Error('events is missing')
-      }
-      const reduced = events.reduce((all, curr) => {
-        if (typeof curr.host === 'string' && typeof curr.id === 'string') {
-          all.hosts.push(curr.host)
-          all.eventIds.push(curr.id)
-        }
-        return all
-      }, { hosts: [], eventIds: [] })
+			const { events } = params || {};
+			if (events === undefined && !Array.isArray(events)) {
+				throw new Error('events is missing');
+			}
+			const reduced = events.reduce(
+				(all, curr) => {
+					if (typeof curr.host === 'string' && typeof curr.id === 'string') {
+						all.hosts.push(curr.host);
+						all.eventIds.push(curr.id);
+					}
+					return all;
+				},
+				{ hosts: [], eventIds: [] }
+			);
 
-      args = (arg, t) => [
-        arg(seriesId, t.UInt64),
-        arg(String(points), t.UInt64),
-        arg(reduced.hosts, t.Array(t.Address)),
-        arg(reduced.eventIds, t.Array(t.UInt64)),
-        arg(title || null, t.Optional(t.String)),
-      ]
-      break;
-    default:
-      throw new Error("Unknown type")
-  }
-  return await generalSendTransaction(code, args,
-    eventSeries.AddAchievementGoal.InProgress,
-    eventSeries.AddAchievementGoal.Status
-  )
-}
+			args = (arg, t) => [
+				arg(seriesId, t.UInt64),
+				arg(String(points), t.UInt64),
+				arg(reduced.hosts, t.Array(t.Address)),
+				arg(reduced.eventIds, t.Array(t.UInt64)),
+				arg(title || null, t.Optional(t.String))
+			];
+			break;
+		default:
+			throw new Error('Unknown type');
+	}
+	return await generalSendTransaction(
+		code,
+		args,
+		eventSeries.AddAchievementGoal.InProgress,
+		eventSeries.AddAchievementGoal.Status
+	);
+};
 
 /**
  * update EventSeries basics
- * 
+ *
  * @param {number} seriesId
  * @param {object} basics basic information
  * @param {string} basics.name
@@ -2612,22 +2567,22 @@ export const addAchievementGoalToEventSeries = async ({ type, seriesId, points, 
  * @param {string} basics.image
  */
 export const updateEventseriesBasics = async (seriesId, basics) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(basics.name, t.String),
-      arg(basics.description, t.String),
-      arg(basics.image, t.String),
-    ],
-    eventSeries.UpdateBasics.InProgress,
-    eventSeries.UpdateBasics.Status
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txUpdateEventSeriesBasics, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(basics.name, t.String),
+			arg(basics.description, t.String),
+			arg(basics.image, t.String)
+		],
+		eventSeries.UpdateBasics.InProgress,
+		eventSeries.UpdateBasics.Status
+	);
+};
 
 /**
  * update EventSeries slots
- * 
+ *
  * @param {number} seriesId
  * @param {object[]} slotsEvents
  * @param {number} slotsEvents.index
@@ -2635,182 +2590,198 @@ export const updateEventseriesBasics = async (seriesId, basics) => {
  * @param {number} slotsEvents.eventId
  */
 export const updateEventseriesSlots = async (seriesId, slotsEvents) => {
-  const reduced = slotsEvents.reduce((all, curr) => {
-    if (typeof curr.index === 'string' &&
-      typeof curr.host === 'string' &&
-      typeof curr.eventId === 'string') {
-      all.indexes.push(curr.index)
-      all.hosts.push(curr.host)
-      all.eventIds.push(curr.eventId)
-    }
-    return all
-  }, { indexes: [], hosts: [], eventIds: [] })
+	const reduced = slotsEvents.reduce(
+		(all, curr) => {
+			if (
+				typeof curr.index === 'string' &&
+				typeof curr.host === 'string' &&
+				typeof curr.eventId === 'string'
+			) {
+				all.indexes.push(curr.index);
+				all.hosts.push(curr.host);
+				all.eventIds.push(curr.eventId);
+			}
+			return all;
+		},
+		{ indexes: [], hosts: [], eventIds: [] }
+	);
 
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(reduced.indexes, t.Array(t.Int)),
-      arg(reduced.hosts, t.Array(t.Address)),
-      arg(reduced.eventIds, t.Array(t.UInt64)),
-    ],
-    eventSeries.UpdateSlots.InProgress,
-    eventSeries.UpdateSlots.Status
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txUpdateEventSeriesSlots, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(reduced.indexes, t.Array(t.Int)),
+			arg(reduced.hosts, t.Array(t.Address)),
+			arg(reduced.eventIds, t.Array(t.UInt64))
+		],
+		eventSeries.UpdateSlots.InProgress,
+		eventSeries.UpdateSlots.Status
+	);
+};
 
 export const revokeEventSeries = async (seriesId) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txRevokeEventSeries, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-    ],
-    eventSeries.Revoke.InProgress,
-    eventSeries.Revoke.Status
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txRevokeEventSeries, addressMap),
+		(arg, t) => [arg(seriesId, t.UInt64)],
+		eventSeries.Revoke.InProgress,
+		eventSeries.Revoke.Status
+	);
+};
 
 /**
  * add treasury strategy
- * 
- * @param {import('../components/eventseries/types').AddStrategyRequest}
+ *
+ * @param {import('../components/eventseries/types.js').AddStrategyRequest}
  */
 export const addTreasuryStrategy = async ({ seriesId, strategyMode, deliveryMode, options }) => {
-  const strategyModeCode = {
-    [cadence.STRATEGY_RAFFLE]: '0',
-    [cadence.STRATEGY_QUEUE]: '1'
-  }[strategyMode]
+	const strategyModeCode = {
+		[cadence.STRATEGY_RAFFLE]: '0',
+		[cadence.STRATEGY_QUEUE]: '1'
+	}[strategyMode];
 
-  const deliveryModeCode = {
-    [cadence.DELIVERY_FT_IDENTICAL]: '0',
-    [cadence.DELIVERY_FT_RANDOM]: '1',
-    [cadence.DELIVERY_NFT]: '2',
-  }[deliveryMode]
+	const deliveryModeCode = {
+		[cadence.DELIVERY_FT_IDENTICAL]: '0',
+		[cadence.DELIVERY_FT_RANDOM]: '1',
+		[cadence.DELIVERY_NFT]: '2'
+	}[deliveryMode];
 
-  if (strategyModeCode === undefined || deliveryModeCode === undefined) {
-    throw new Error('Wrong mode')
-  }
+	if (strategyModeCode === undefined || deliveryModeCode === undefined) {
+		throw new Error('Wrong mode');
+	}
 
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txAddTreasuryStrategy, addressMap),
-    (arg, t) => [
-      arg(String(seriesId), t.UInt64),
-      arg(String(options?.consumable) === 'true', t.Bool),
-      arg(String(options?.threshold), t.UInt64),
-      arg(options?.autoStart, t.Bool),
-      // State Parameters
-      arg(typeof options?.pendingEnding !== 'undefined' ?? false, t.Bool),
-      arg(options?.pendingEnding?.toFixed(1) ?? '0.0', t.UFix64),
-      arg(typeof options?.claimableEnding !== 'undefined' ?? false, t.Bool),
-      arg(options?.claimableEnding?.toFixed(1) ?? '0.0', t.UFix64),
-      arg(typeof options?.minimumValidAmount !== 'undefined' ?? false, t.Bool),
-      arg(options?.minimumValidAmount?.toFixed(0) ?? null, t.Optional(t.UInt64)),
-      // Delivery Parameters
-      arg(String(strategyModeCode), t.UInt8),
-      arg(String(options?.maxClaimableShares ?? 1), t.UInt64),
-      arg(String(deliveryModeCode), t.UInt8),
-      arg(options?.deliveryTokenIdentifier, t.String),
-      arg(options?.deliveryParam1?.toFixed(1) ?? null, t.Optional(t.UFix64)),
-    ],
-    eventSeries.AddTreasuryStrategy.InProgress,
-    eventSeries.AddTreasuryStrategy.Status
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txAddTreasuryStrategy, addressMap),
+		(arg, t) => [
+			arg(String(seriesId), t.UInt64),
+			arg(String(options?.consumable) === 'true', t.Bool),
+			arg(String(options?.threshold), t.UInt64),
+			arg(options?.autoStart, t.Bool),
+			// State Parameters
+			arg(typeof options?.pendingEnding !== 'undefined' ?? false, t.Bool),
+			arg(options?.pendingEnding?.toFixed(1) ?? '0.0', t.UFix64),
+			arg(typeof options?.claimableEnding !== 'undefined' ?? false, t.Bool),
+			arg(options?.claimableEnding?.toFixed(1) ?? '0.0', t.UFix64),
+			arg(typeof options?.minimumValidAmount !== 'undefined' ?? false, t.Bool),
+			arg(options?.minimumValidAmount?.toFixed(0) ?? null, t.Optional(t.UInt64)),
+			// Delivery Parameters
+			arg(String(strategyModeCode), t.UInt8),
+			arg(String(options?.maxClaimableShares ?? 1), t.UInt64),
+			arg(String(deliveryModeCode), t.UInt8),
+			arg(options?.deliveryTokenIdentifier, t.String),
+			arg(options?.deliveryParam1?.toFixed(1) ?? null, t.Optional(t.UFix64))
+		],
+		eventSeries.AddTreasuryStrategy.InProgress,
+		eventSeries.AddTreasuryStrategy.Status
+	);
+};
 
 /**
  * let strategy go to next stage
- * 
+ *
  * @param {string} seriesId
  * @param {number} strategyIndex
  */
 export const nextTreasuryStrategyStage = async (seriesId, strategyIndex, forceClose = false) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(String(strategyIndex), t.Int),
-      arg(!!forceClose, t.Bool)
-    ],
-    eventSeries.NextTreasuryStrategyStage.InProgress,
-    eventSeries.NextTreasuryStrategyStage.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txNextTreasuryStrategyStage, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(String(strategyIndex), t.Int),
+			arg(!!forceClose, t.Bool)
+		],
+		eventSeries.NextTreasuryStrategyStage.InProgress,
+		eventSeries.NextTreasuryStrategyStage.Status
+	);
+};
 
 /**
  * deposit fungible token to treasury
- * 
- * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
+ *
+ * @param {import('../components/eventseries/types.js').TreasuryManagementRequeset}
  */
-export const depositFungibleTokenToTreasury = async ({ seriesId, storagePath, publicPath, amount }) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(storagePath, t.String),
-      arg(publicPath, t.String),
-      arg(amount.toFixed(8), t.UFix64),
-    ],
-    eventSeries.TreasuryManegement.InProgress,
-    eventSeries.TreasuryManegement.Status
-  )
-}
+export const depositFungibleTokenToTreasury = async ({
+	seriesId,
+	storagePath,
+	publicPath,
+	amount
+}) => {
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txDepositFungibleTokenToTreasury, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(storagePath, t.String),
+			arg(publicPath, t.String),
+			arg(amount.toFixed(8), t.UFix64)
+		],
+		eventSeries.TreasuryManegement.InProgress,
+		eventSeries.TreasuryManegement.Status
+	);
+};
 
 /**
  * deposit non-fungible token to treasury
- * 
- * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
+ *
+ * @param {import('../components/eventseries/types.js').TreasuryManagementRequeset}
  */
-export const depositNonFungibleTokenToTreasury = async ({ seriesId, storagePath, publicPath, amount }) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(storagePath, t.String),
-      arg(publicPath, t.String),
-      arg(amount.toFixed(0), t.UInt64),
-    ],
-    eventSeries.TreasuryManegement.InProgress,
-    eventSeries.TreasuryManegement.Status,
-  )
-}
+export const depositNonFungibleTokenToTreasury = async ({
+	seriesId,
+	storagePath,
+	publicPath,
+	amount
+}) => {
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txDepositNonFungibleTokenToTreasury, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(storagePath, t.String),
+			arg(publicPath, t.String),
+			arg(amount.toFixed(0), t.UInt64)
+		],
+		eventSeries.TreasuryManegement.InProgress,
+		eventSeries.TreasuryManegement.Status
+	);
+};
 
 /**
  * Drop treasury's FTs and NFTs
- * 
- * @param {import('../components/eventseries/types').TreasuryManagementRequeset}
+ *
+ * @param {import('../components/eventseries/types.js').TreasuryManagementRequeset}
  */
 export const dropTreasury = async ({ seriesId }) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-    ],
-    eventSeries.TreasuryManegement.InProgress,
-    eventSeries.TreasuryManegement.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txDropTreasury, addressMap),
+		(arg, t) => [arg(seriesId, t.UInt64)],
+		eventSeries.TreasuryManegement.InProgress,
+		eventSeries.TreasuryManegement.Status
+	);
+};
 
 export const syncCertificateFloats = async ({ seriesId, events }) => {
-  const reduced = events.reduce((all, curr) => {
-    if (typeof curr.host === 'string' &&
-      (typeof curr.id === 'string' || typeof curr.eventId === 'string')) {
-      all.hosts.push(curr.host)
-      all.eventIds.push(curr.id ?? curr.eventId)
-    }
-    return all
-  }, { hosts: [], eventIds: [] })
+	const reduced = events.reduce(
+		(all, curr) => {
+			if (
+				typeof curr.host === 'string' &&
+				(typeof curr.id === 'string' || typeof curr.eventId === 'string')
+			) {
+				all.hosts.push(curr.host);
+				all.eventIds.push(curr.id ?? curr.eventId);
+			}
+			return all;
+		},
+		{ hosts: [], eventIds: [] }
+	);
 
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txSyncCertificates, addressMap),
-    (arg, t) => [
-      arg(seriesId, t.UInt64),
-      arg(reduced.hosts, t.Array(t.Address)),
-      arg(reduced.eventIds, t.Array(t.UInt64)),
-    ],
-    eventSeries.SyncCertificates.InProgress,
-    eventSeries.SyncCertificates.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txSyncCertificates, addressMap),
+		(arg, t) => [
+			arg(seriesId, t.UInt64),
+			arg(reduced.hosts, t.Array(t.Address)),
+			arg(reduced.eventIds, t.Array(t.UInt64))
+		],
+		eventSeries.SyncCertificates.InProgress,
+		eventSeries.SyncCertificates.Status
+	);
+};
 
 // **********************
 // ** Events Collector **
@@ -2818,49 +2789,59 @@ export const syncCertificateFloats = async ({ seriesId, events }) => {
 
 /**
  * accompllish event series goals
- * 
+ *
  * @param {string} host
  * @param {string} seriesId
  * @param {number[]} goals
  */
 export const accomplishGoals = async (host, seriesId, goals) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txAccomplishGoal, addressMap),
-    (arg, t) => [
-      arg(host, t.Address),
-      arg(seriesId, t.UInt64),
-      arg(goals.map(one => one.toFixed(0)), t.Array(t.Int)),
-    ],
-    eventSeries.AccompllishGoals.InProgress,
-    eventSeries.AccompllishGoals.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txAccomplishGoal, addressMap),
+		(arg, t) => [
+			arg(host, t.Address),
+			arg(seriesId, t.UInt64),
+			arg(
+				goals.map((one) => one.toFixed(0)),
+				t.Array(t.Int)
+			)
+		],
+		eventSeries.AccompllishGoals.InProgress,
+		eventSeries.AccompllishGoals.Status
+	);
+};
 
 /**
  * claim the rewards from event series treasury
- * 
- * @param {string} host 
- * @param {number} seriesId 
- * @param {number} strategyIndex 
+ *
+ * @param {string} host
+ * @param {number} seriesId
+ * @param {number} strategyIndex
  */
-export const claimTreasuryRewards = async (host, seriesId, strategyIndex, isNFT, additionalMap = {}) => {
-  let code = cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap);
-  if (isNFT) {
-    // setup NFT initialize
-    code = code
-      .replaceAll('PLACEHOLDER_FT_SETUP', "")
-      .replaceAll('PLACEHOLDER_NFT_SETUP', `
+export const claimTreasuryRewards = async (
+	host,
+	seriesId,
+	strategyIndex,
+	isNFT,
+	additionalMap = {}
+) => {
+	let code = cadence.replaceImportAddresses(cadence.txClaimTreasuryRewards, addressMap);
+	if (isNFT) {
+		// setup NFT initialize
+		code = code.replaceAll('PLACEHOLDER_FT_SETUP', '').replaceAll(
+			'PLACEHOLDER_NFT_SETUP',
+			`
         acct.save(<- PLACEHOLDER_CONTRACT.createEmptyCollection(), to: catalogMetadata.collectionData.storagePath)
         acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS, MetadataViews.ResolverCollection, NonFungibleToken.Receiver}>
           (catalogMetadata.collectionData.publicPath, target: catalogMetadata.collectionData.storagePath)
         acct.link<&PLACEHOLDER_CONTRACT.Collection{PLACEHOLDER_NFT_PUBLIC_RESTRICTIONS, MetadataViews.ResolverCollection, NonFungibleToken.Provider}>
           (catalogMetadata.collectionData.privatePath, target: catalogMetadata.collectionData.storagePath)
-      `)
-  } else {
-    // setup FT initialize
-    code = code
-      .replaceAll('PLACEHOLDER_NFT_SETUP', "")
-      .replaceAll('PLACEHOLDER_FT_SETUP', `
+      `
+		);
+	} else {
+		// setup FT initialize
+		code = code.replaceAll('PLACEHOLDER_NFT_SETUP', '').replaceAll(
+			'PLACEHOLDER_FT_SETUP',
+			`
         acct.save(<- PLACEHOLDER_CONTRACT.createEmptyVault(), to: PLACEHOLDER_STORAGE_PATH)
         acct.link<&PLACEHOLDER_CONTRACT.Vault{FungibleToken.Receiver}>(
           PLACEHOLDER_FT_RECEIVER_PATH,
@@ -2870,51 +2851,45 @@ export const claimTreasuryRewards = async (host, seriesId, strategyIndex, isNFT,
           PLACEHOLDER_FT_BALANCE_PATH,
           target: PLACEHOLDER_STORAGE_PATH
         )
-      `)
-  }
-  // update placeholders
-  for (const key in additionalMap) {
-    code = code.replaceAll(key, additionalMap[key])
-  }
-  return await generalSendTransaction(
-    code,
-    (arg, t) => [
-      arg(host, t.Address),
-      arg(seriesId, t.UInt64),
-      arg(String(strategyIndex), t.Int),
-    ],
-    eventSeries.ClaimTreasuryRewards.InProgress,
-    eventSeries.ClaimTreasuryRewards.Status,
-  )
-}
+      `
+		);
+	}
+	// update placeholders
+	for (const key in additionalMap) {
+		code = code.replaceAll(key, additionalMap[key]);
+	}
+	return await generalSendTransaction(
+		code,
+		(arg, t) => [arg(host, t.Address), arg(seriesId, t.UInt64), arg(String(strategyIndex), t.Int)],
+		eventSeries.ClaimTreasuryRewards.InProgress,
+		eventSeries.ClaimTreasuryRewards.Status
+	);
+};
 
 /**
  * refresh user strategies status
- * 
- * @param {string} host 
- * @param {number} seriesId 
+ *
+ * @param {string} host
+ * @param {number} seriesId
  */
 export const refreshUserStrategiesStatus = async (host, seriesId) => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txRefreshUserStrategiesStatus, addressMap),
-    (arg, t) => [
-      arg(host, t.Address),
-      arg(seriesId, t.UInt64),
-    ],
-    eventSeries.RefreshUserStatus.InProgress,
-    eventSeries.RefreshUserStatus.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txRefreshUserStrategiesStatus, addressMap),
+		(arg, t) => [arg(host, t.Address), arg(seriesId, t.UInt64)],
+		eventSeries.RefreshUserStatus.InProgress,
+		eventSeries.RefreshUserStatus.Status
+	);
+};
 
 // For Dev
 export const runCleanUp = async () => {
-  return await generalSendTransaction(
-    cadence.replaceImportAddresses(cadence.txCleanup, addressMap),
-    (arg, t) => [],
-    eventSeries.Creation.InProgress,
-    eventSeries.Creation.Status,
-  )
-}
+	return await generalSendTransaction(
+		cadence.replaceImportAddresses(cadence.txCleanup, addressMap),
+		(arg, t) => [],
+		eventSeries.Creation.InProgress,
+		eventSeries.Creation.Status
+	);
+};
 
 // -------------- Getter - Scripts --------------
 
@@ -2923,255 +2898,253 @@ export const runCleanUp = async () => {
 // ************************
 
 /**
- * @returns {import('../components/eventseries/types').Identifier}
+ * @returns {import('../components/eventseries/types.js').Identifier}
  */
-const parseEventIdentifier = event => (event ? {
-  host: event.host,
-  id: event.eventId ?? event.id,
-} : undefined)
+const parseEventIdentifier = (event) =>
+	event
+		? {
+				host: event.host,
+				id: event.eventId ?? event.id
+		  }
+		: undefined;
 
 /**
- * @param {object} item 
- * @returns {import('../components/eventseries/types').EventSeriesData}
+ * @param {object} item
+ * @returns {import('../components/eventseries/types.js').EventSeriesData}
  */
 const parseEventSeries = (item) => ({
-  sequence: item.sequence ? parseInt(item.sequence) : -1,
-  identifier: {
-    host: item.host,
-    id: item.id,
-  },
-  basics: {
-    name: item.display?.name,
-    description: item.display?.description,
-    image: item.display?.thumbnail?.cid ?? "",
-  },
-  slots: (item.slots || []).map(one => ({
-    required: one.required,
-    event: parseEventIdentifier(one.event)
-  })),
-  extra: item.extra
-})
+	sequence: item.sequence ? parseInt(item.sequence) : -1,
+	identifier: {
+		host: item.host,
+		id: item.id
+	},
+	basics: {
+		name: item.display?.name,
+		description: item.display?.description,
+		image: item.display?.thumbnail?.cid ?? ''
+	},
+	slots: (item.slots || []).map((one) => ({
+		required: one.required,
+		event: parseEventIdentifier(one.event)
+	})),
+	extra: item.extra
+});
 
 /**
  * Get all event series list
  */
 export const getGlobalEventSeriesList = async (page = 0, limit = 20, notClosed = true) => {
-  /** @type {import('../components/eventseries/types').EventSeriesData[]} */
-  let ret = []
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetGlobalEventSeriesList, addressMap),
-    (arg, t) => [
-      arg(String(page), t.UInt64),
-      arg(String(limit), t.UInt64),
-      arg(!!notClosed, t.Bool),
-    ],
-    []
-  )
-  if (raw && Object.keys(raw.result ?? {})?.length > 0) {
-    ret = Object.values(raw.result).map(parseEventSeries);
-  }
-  return {
-    total: parseInt(raw?.total ?? "0") - 1,
-    list: ret
-  }
-}
+	/** @type {import('../components/eventseries/types.js').EventSeriesData[]} */
+	let ret = [];
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetGlobalEventSeriesList, addressMap),
+		(arg, t) => [
+			arg(String(page), t.UInt64),
+			arg(String(limit), t.UInt64),
+			arg(!!notClosed, t.Bool)
+		],
+		[]
+	);
+	if (raw && Object.keys(raw.result ?? {})?.length > 0) {
+		ret = Object.values(raw.result).map(parseEventSeries);
+	}
+	return {
+		total: parseInt(raw?.total ?? '0') - 1,
+		list: ret
+	};
+};
 
 /**
- * @param {string} 
+ * @param {string}
  */
 export const getEventSeriesList = async (acct) => {
-  /** @type {import('../components/eventseries/types').EventSeriesData[]} */
-  let ret = []
-  const rawDic = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetEventSeriesList, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address)
-    ],
-    []
-  )
-  if (rawDic && Object.keys(rawDic)?.length > 0) {
-    ret = Object.values(rawDic).map(parseEventSeries);
-  }
-  return ret
-}
+	/** @type {import('../components/eventseries/types.js').EventSeriesData[]} */
+	let ret = [];
+	const rawDic = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetEventSeriesList, addressMap),
+		(arg, t) => [arg(acct, t.Address)],
+		[]
+	);
+	if (rawDic && Object.keys(rawDic)?.length > 0) {
+		ret = Object.values(rawDic).map(parseEventSeries);
+	}
+	return ret;
+};
 
 export const getEventSeries = async (acct, id) => {
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetEventSeries, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(id, t.UInt64)
-    ],
-    {}
-  )
-  if (!raw) return null
-  return parseEventSeries(raw)
-}
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetEventSeries, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(id, t.UInt64)],
+		{}
+	);
+	if (!raw) return null;
+	return parseEventSeries(raw);
+};
 
 export const getEventSeriesGoals = async (host, id) => {
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetEventSeriesGoals, addressMap),
-    (arg, t) => [
-      arg(host, t.Address),
-      arg(id, t.UInt64),
-    ],
-    []
-  )
-  if (!raw) return null
-  return raw.map(one => parseRawGoalData(one)).filter(one => !!one)
-}
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetEventSeriesGoals, addressMap),
+		(arg, t) => [arg(host, t.Address), arg(id, t.UInt64)],
+		[]
+	);
+	if (!raw) return null;
+	return raw.map((one) => parseRawGoalData(one)).filter((one) => !!one);
+};
 
 /**
  * @param rawGoal
- * @return {import('../components/eventseries/types').EventSeriesAchievementGoal}
+ * @return {import('../components/eventseries/types.js').EventSeriesAchievementGoal}
  */
 function parseRawGoalData(rawGoal) {
-  /** @type {import('../components/eventseries/types').GoalType} */
-  let type;
-  /** @type {import('../components/eventseries/types').GoalParamsType} */
-  let params;
-  const typeIdentifer = String(rawGoal.identifer);
-  if (typeIdentifer.indexOf("ByAmount") > -1) {
-    type = "byAmount";
-    if (!rawGoal.detail?.amount || !rawGoal.detail?.requiredAmount)
-      return null;
-    params = {
-      eventsAmount: parseInt(rawGoal.detail?.amount),
-      requiredEventsAmount: parseInt(rawGoal.detail?.requiredAmount),
-    };
-  } else if (typeIdentifer.indexOf("ByPercent") > -1) {
-    type = "byPercent";
-    if (!rawGoal.detail?.percent) return null;
-    params = {
-      percent: parseFloat(
-        (parseFloat(rawGoal.detail?.percent) * 100).toFixed(2)
-      ),
-    };
-  } else if (typeIdentifer.indexOf("SpecificFLOATs") > -1) {
-    type = "bySpecifics";
-    if (!rawGoal.detail?.floats || !rawGoal.detail?.floats.length)
-      return null;
-    params = {
-      events: (rawGoal.detail?.floats ?? []).map(parseEventIdentifier),
-    };
-  } else {
-    return null;
-  }
+	/** @type {import('../components/eventseries/types.js').GoalType} */
+	let type;
+	/** @type {import('../components/eventseries/types.js').GoalParamsType} */
+	let params;
+	const typeIdentifer = String(rawGoal.identifer);
+	if (typeIdentifer.indexOf('ByAmount') > -1) {
+		type = 'byAmount';
+		if (!rawGoal.detail?.amount || !rawGoal.detail?.requiredAmount) return null;
+		params = {
+			eventsAmount: parseInt(rawGoal.detail?.amount),
+			requiredEventsAmount: parseInt(rawGoal.detail?.requiredAmount)
+		};
+	} else if (typeIdentifer.indexOf('ByPercent') > -1) {
+		type = 'byPercent';
+		if (!rawGoal.detail?.percent) return null;
+		params = {
+			percent: parseFloat((parseFloat(rawGoal.detail?.percent) * 100).toFixed(2))
+		};
+	} else if (typeIdentifer.indexOf('SpecificFLOATs') > -1) {
+		type = 'bySpecifics';
+		if (!rawGoal.detail?.floats || !rawGoal.detail?.floats.length) return null;
+		params = {
+			events: (rawGoal.detail?.floats ?? []).map(parseEventIdentifier)
+		};
+	} else {
+		return null;
+	}
 
-  return {
-    type,
-    title: rawGoal.title ?? "",
-    points: parseInt(rawGoal.points),
-    status: rawGoal.status.rawValue,
-    params,
-  };
+	return {
+		type,
+		title: rawGoal.title ?? '',
+		points: parseInt(rawGoal.points),
+		status: rawGoal.status.rawValue,
+		params
+	};
 }
 
 export const getTreasuryData = async (acct, seriesId) => {
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetTreasuryData, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(seriesId, t.UInt64)
-    ],
-    null
-  )
-  if (!raw) return null
-  return parseRawTreasuryData(raw)
-}
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetTreasuryData, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(seriesId, t.UInt64)],
+		null
+	);
+	if (!raw) return null;
+	return parseRawTreasuryData(raw);
+};
 
 /**
- * @return {import('../components/eventseries/types').TreasuryData}
+ * @return {import('../components/eventseries/types.js').TreasuryData}
  */
 function parseRawTreasuryData(rawdata) {
-  /** @type {{identifier: string , balance: string}[]} */
-  const balances = []
-  /** @type {{identifier: string , ids: [string]}[]} */
-  const ids = []
-  for (const key in rawdata.tokenBalances) {
-    balances.push({ identifier: key, balance: rawdata.tokenBalances[key] })
-  }
-  for (const key in rawdata.collectionIDs) {
-    ids.push({ identifier: key, ids: rawdata.collectionIDs[key] })
-  }
-  return {
-    tokenBalances: balances,
-    collectionIDs: ids
-  }
+	/** @type {{identifier: string , balance: string}[]} */
+	const balances = [];
+	/** @type {{identifier: string , ids: [string]}[]} */
+	const ids = [];
+	for (const key in rawdata.tokenBalances) {
+		balances.push({ identifier: key, balance: rawdata.tokenBalances[key] });
+	}
+	for (const key in rawdata.collectionIDs) {
+		ids.push({ identifier: key, ids: rawdata.collectionIDs[key] });
+	}
+	return {
+		tokenBalances: balances,
+		collectionIDs: ids
+	};
 }
 
-
 /**
- * @return {import('../components/eventseries/types').StrategyDetail}
+ * @return {import('../components/eventseries/types.js').StrategyDetail}
  */
 function parseStrategyDetail(rawdata) {
-  const strategyMode = String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1 ? 'queueStrategy' : 'raffleStrategy'
-  const strategyStatusMap = {
-    '0': 'preparing',
-    '1': 'pending',
-    '2': 'claimable',
-    '3': 'closed'
-  }
-  const status = rawdata.detail.status || {}
-  const deliveryTypeMap = {
-    '0': 'ftIdenticalAmount',
-    '1': 'ftRandomAmount',
-    '2': 'nft'
-  }
-  const deliveryMode = deliveryTypeMap[status.delivery.type?.rawValue]
-  return {
-    index: parseInt(rawdata.index),
-    strategyMode,
-    strategyData: {
-      consumable: status.consumable,
-      threshold: parseInt(status.threshold),
-      pendingEnding: rawdata.detail.strategyData.ending['1'],
-      claimableEnding: rawdata.detail.strategyData.ending['2'],
-      minValid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
-      valid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.valid : undefined,
-      winners: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.winners : undefined,
-    },
-    currentState: strategyStatusMap[status?.currentState?.rawValue],
-    deliveryMode,
-    deliveryStatus: {
-      deliveryTokenIdentifier: status.delivery.deliveryTokenType.typeID,
-      // status
-      maxClaimableShares: parseInt(status.delivery.maxClaimableShares),
-      claimedShares: parseInt(status.delivery.claimedShares),
-      restAmount: status.delivery.restAmount,
-      oneShareAmount: status.delivery.oneShareAmount,
-      totalAmount: status.delivery.totalAmount,
-    },
-    userStatus: rawdata.userAddress ? {
-      eligible: rawdata.userInfo.eligible,
-      claimable: rawdata.userInfo.claimable,
-      claimed: rawdata.userInfo.claimed
-    } : null
-  }
+	const strategyMode =
+		String(rawdata.detail.strategyIdentifier).indexOf('ClaimingQueue') > -1
+			? 'queueStrategy'
+			: 'raffleStrategy';
+	const strategyStatusMap = {
+		0: 'preparing',
+		1: 'pending',
+		2: 'claimable',
+		3: 'closed'
+	};
+	const status = rawdata.detail.status || {};
+	const deliveryTypeMap = {
+		0: 'ftIdenticalAmount',
+		1: 'ftRandomAmount',
+		2: 'nft'
+	};
+	const deliveryMode = deliveryTypeMap[status.delivery.type?.rawValue];
+	return {
+		index: parseInt(rawdata.index),
+		strategyMode,
+		strategyData: {
+			consumable: status.consumable,
+			threshold: parseInt(status.threshold),
+			pendingEnding: rawdata.detail.strategyData.ending['1'],
+			claimableEnding: rawdata.detail.strategyData.ending['2'],
+			minValid:
+				strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.minimiumValid : undefined,
+			valid: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.valid : undefined,
+			winners: strategyMode === 'raffleStrategy' ? rawdata.detail.strategyData.winners : undefined
+		},
+		currentState: strategyStatusMap[status?.currentState?.rawValue],
+		deliveryMode,
+		deliveryStatus: {
+			deliveryTokenIdentifier: status.delivery.deliveryTokenType.typeID,
+			// status
+			maxClaimableShares: parseInt(status.delivery.maxClaimableShares),
+			claimedShares: parseInt(status.delivery.claimedShares),
+			restAmount: status.delivery.restAmount,
+			oneShareAmount: status.delivery.oneShareAmount,
+			totalAmount: status.delivery.totalAmount
+		},
+		userStatus: rawdata.userAddress
+			? {
+					eligible: rawdata.userInfo.eligible,
+					claimable: rawdata.userInfo.claimable,
+					claimed: rawdata.userInfo.claimed
+			  }
+			: null
+	};
 }
 
 /**
- * @return {Promise<import('../components/eventseries/types').StrategyQueryResult>}
+ * @return {Promise<import('../components/eventseries/types.js').StrategyQueryResult>}
  */
-export const getSeriesStrategies = async (acct, seriesId, includingAvailables = false, user = undefined) => {
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetSeriesStrategies, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(seriesId, t.UInt64),
-      arg(includingAvailables, t.Bool),
-      arg(user ?? null, t.Optional(t.Address))
-    ],
-    null
-  )
-  if (!raw) return null
-  return {
-    available: raw.available && parseRawTreasuryData(raw.available),
-    strategies: raw.strategies.map(one => parseStrategyDetail(one)),
-    userTotalScore: raw.userTotalScore,
-    userConsumableScore: raw.userConsumableScore,
-  }
-}
+export const getSeriesStrategies = async (
+	acct,
+	seriesId,
+	includingAvailables = false,
+	user = undefined
+) => {
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetSeriesStrategies, addressMap),
+		(arg, t) => [
+			arg(acct, t.Address),
+			arg(seriesId, t.UInt64),
+			arg(includingAvailables, t.Bool),
+			arg(user ?? null, t.Optional(t.Address))
+		],
+		null
+	);
+	if (!raw) return null;
+	return {
+		available: raw.available && parseRawTreasuryData(raw.available),
+		strategies: raw.strategies.map((one) => parseStrategyDetail(one)),
+		userTotalScore: raw.userTotalScore,
+		userConsumableScore: raw.userConsumableScore
+	};
+};
 
 // ***********************
 // ** Achievement Board **
@@ -3179,163 +3152,136 @@ export const getSeriesStrategies = async (acct, seriesId, includingAvailables = 
 
 /**
  * check if you have achievement board
- * 
+ *
  * @param {string} acct
  */
 export const hasAchievementBoard = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scHasAchievementBoard, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address)
-    ],
-    false
-  )
-}
-
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scHasAchievementBoard, addressMap),
+		(arg, t) => [arg(acct, t.Address)],
+		false
+	);
+};
 
 /**
  * get records
- * 
+ *
  * @param {string} acct
  * @param {string} host
  * @param {number} seriesIds
  */
 export const getAchievementRecords = async (acct, host, seriesIds) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetAchievementRecords, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(host, t.Address),
-      arg(seriesIds, t.Array(t.UInt64))
-    ],
-    []
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetAchievementRecords, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(host, t.Address), arg(seriesIds, t.Array(t.UInt64))],
+		[]
+	);
+};
 
 /**
  * get and check goals
- * 
+ *
  * @param {string} acct
  * @param {string} host
  * @param {number} seriesId
- * @return {Promise<import('../components/eventseries/types').EventSeriesUserStatus>}
+ * @return {Promise<import('../components/eventseries/types.js').EventSeriesUserStatus>}
  */
 export const getAndCheckEventSeriesGoals = async (acct, host, seriesId) => {
-  const raw = await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(host, t.Address),
-      arg(seriesId, t.UInt64)
-    ],
-    {}
-  )
-  if (!raw) return null
-  return {
-    goals: raw.goals.map(one => parseRawGoalData(one)).filter(one => !!one),
-    owned: raw.owned.map(one => parseEventIdentifier(one)).filter(one => !!one),
-    totalScore: parseInt(raw.totalScore) ?? 0,
-    consumableScore: parseInt(raw.consumableScore) ?? 0,
-  }
-}
+	const raw = await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetAndCheckEventSeriesGoals, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(host, t.Address), arg(seriesId, t.UInt64)],
+		{}
+	);
+	if (!raw) return null;
+	return {
+		goals: raw.goals.map((one) => parseRawGoalData(one)).filter((one) => !!one),
+		owned: raw.owned.map((one) => parseEventIdentifier(one)).filter((one) => !!one),
+		totalScore: parseInt(raw.totalScore) ?? 0,
+		consumableScore: parseInt(raw.consumableScore) ?? 0
+	};
+};
 
 /**
  * @param {string} acct
  * @param {string[]} paths
- * @returns {Promise<import('../components/eventseries/types').TokenBalance[]>}
+ * @returns {Promise<import('../components/eventseries/types.js').TokenBalance[]>}
  */
 export const getTokenBalances = async (acct, paths) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetBalances, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(paths, t.Array(t.String))
-    ],
-    []
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetBalances, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(paths, t.Array(t.String))],
+		[]
+	);
+};
 
 /**
- * @param {string} acct 
- * @returns {Promise<import('../components/eventseries/types').CollectionInfo[]>}
+ * @param {string} acct
+ * @returns {Promise<import('../components/eventseries/types.js').CollectionInfo[]>}
  */
 export const getCollectionsNotEmpty = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetCollectionsNotEmpty, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address)
-    ],
-    []
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetCollectionsNotEmpty, addressMap),
+		(arg, t) => [arg(acct, t.Address)],
+		[]
+	);
+};
 
 /**
- * @returns {Promise<import('../components/eventseries/types').CollectionInfo[]>}
+ * @returns {Promise<import('../components/eventseries/types.js').CollectionInfo[]>}
  */
 export const getCollections = async (identifer) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scGetCollections, addressMap),
-    (arg, t) => [
-      arg(identifer ?? null, t.Optional(t.String)),
-    ],
-    []
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scGetCollections, addressMap),
+		(arg, t) => [arg(identifer ?? null, t.Optional(t.String))],
+		[]
+	);
+};
 
 /**
- * @returns {Promise<import('../components/eventseries/types').CollectionInfo>}
+ * @returns {Promise<import('../components/eventseries/types.js').CollectionInfo>}
  */
 export const getCollectionInfo = async function (identifier) {
-  const dic = get(cachedCollections) ?? {};
-  let info = dic[identifier];
-  if (!info) {
-    const collections = await getCollections(identifier);
-    if (collections && collections[0]) {
-      info = collections[0];
-      cachedCollections.set(
-        Object.assign(dic, { [info.nftIdentifier]: info })
-      );
-    }
-  }
-  return info;
-}
+	const dic = get(cachedCollections) ?? {};
+	let info = dic[identifier];
+	if (!info) {
+		const collections = await getCollections(identifier);
+		if (collections && collections[0]) {
+			info = collections[0];
+			cachedCollections.set(Object.assign(dic, { [info.nftIdentifier]: info }));
+		}
+	}
+	return info;
+};
 
 /**
  * @returns {Promise<boolean[]>}
  */
 export const ownsSpecificFloatsAll = async (acct, eventIds) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scOwnsSpecificFloatsAll, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-      arg(eventIds, t.Array(t.UInt64)),
-    ],
-    (eventIds ?? []).map(one => false)
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scOwnsSpecificFloatsAll, addressMap),
+		(arg, t) => [arg(acct, t.Address), arg(eventIds, t.Array(t.UInt64))],
+		(eventIds ?? []).map((one) => false)
+	);
+};
 
 /**
  * @param {string} acct
  */
 export const isEmeraldPassActive = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scIsPassActive, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-    ],
-    false
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scIsPassActive, addressMap),
+		(arg, t) => [arg(acct, t.Address)],
+		false
+	);
+};
 
 /**
  * @param {string} acct
  */
 export const canCreateNewChallenge = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-    ],
-    false
-  )
-}
+	return await generalQuery(
+		cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
+		(arg, t) => [arg(acct, t.Address)],
+		false
+	);
+};
