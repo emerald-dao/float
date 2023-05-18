@@ -1,26 +1,19 @@
 <script type="ts">
-	import dappInfo from '$lib/config/config';
-	import { transactionInProgress } from '$stores/FlowStore';
+	import { StatsSection } from '@emerald-dao/component-library';
+	import {
+		EventTypesSection,
+		ExperiencesSection,
+		HeroSection,
+		HowItWorksSection,
+		MintAFloatSection,
+		TechnicalDetailsSection
+	} from './_components/sections';
 </script>
 
-<section>
-	{#if $transactionInProgress}
-		<div>aaa</div>
-	{/if}
-	<div class="container">
-		<h1>Welcome to <span>{dappInfo.title}</span></h1>
-		<p>{dappInfo.description}</p>
-		<p>Crafted by {dappInfo.author}</p>
-	</div>
-</section>
-
-<style type="scss">
-	h1,
-	p {
-		text-align: center;
-	}
-
-	span {
-		color: var(--clr-primary-main);
-	}
-</style>
+<HeroSection />
+<StatsSection bordersColor="var(--clr-border-primary)" />
+<EventTypesSection />
+<ExperiencesSection />
+<HowItWorksSection />
+<TechnicalDetailsSection />
+<MintAFloatSection />
