@@ -7,9 +7,7 @@
 	import { Header, Footer } from '@emerald-dao/component-library';
 	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
 	import { theme } from '$stores/ThemeStore';
-	import { logIn, unauthenticate } from '$flow/actions';
 	import { user } from '$stores/FlowStore';
-	import { browser } from '$app/environment';
 </script>
 
 <Header themeStore={theme} user={$user} />
@@ -17,3 +15,11 @@
 	<slot />
 </main>
 <Footer {navElements} {emeraldTools} socials={socialMedia} />
+
+<style type="scss">
+	main {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+</style>
