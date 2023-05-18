@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { multiplyArray } from '$lib/utilities/multiplyArray';
 	import SectionHeading from './atoms/SectionHeading.svelte';
@@ -99,6 +100,8 @@
 </script>
 
 <section class="column-11">
+	<Blur color="tertiary" right="30%" top="10%" />
+	<Blur left="30%" top="20%" />
 	<SectionHeading
 		title="Life is about experiences. Collect them!"
 		description="Create your personal collection of all the events you assisted."
@@ -121,6 +124,7 @@
 <style type="scss">
 	section {
 		overflow-x: hidden;
+		position: relative;
 
 		.floats-wrapper {
 			display: grid;
