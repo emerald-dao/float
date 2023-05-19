@@ -10,7 +10,7 @@
 	import { user } from '$stores/FlowStore';
 </script>
 
-<Header themeStore={theme} user={$user} />
+<Header themeStore={theme} user={$user} {navElements} />
 <main>
 	<slot />
 </main>
