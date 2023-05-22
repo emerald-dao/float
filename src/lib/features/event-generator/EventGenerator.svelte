@@ -4,6 +4,7 @@
 	import { setContext } from 'svelte';
 	import StepButtons from './components/atoms/StepButtons.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import Blur from '$lib/components/Blur.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -16,7 +17,9 @@
 		<StepButtons stepsStore={eventGeneratorSteps} activeStepStore={eventGeneratorActiveStep} />
 	</div>
 	<div class="generated-nft-wrapper">
-		<FloatTicket float={$generatedNft} />
+		<Blur color="tertiary" right="0" top="30%" />
+		<Blur left="0" bottom="20%" />
+		<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 	</div>
 </section>
 
@@ -37,6 +40,7 @@
 		}
 
 		.generated-nft-wrapper {
+			position: relative;
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
