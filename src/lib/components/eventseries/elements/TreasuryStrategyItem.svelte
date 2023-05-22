@@ -83,7 +83,7 @@
       additionalMap.PLACEHOLDER_FT_BALANCE_PATH = tokenData.path.balance;
     } else {
       const info = await getCollectionInfo(identifier);
-      const ownedCollectionPublic = `${PLACEHOLDER_CONTRACT}.CollectionPublic`;
+      const ownedCollectionPublic = `${additionalMap.PLACEHOLDER_CONTRACT}.CollectionPublic`;
       if (
         info.publicLinkedType.restrictions.find(
           (one) =>
