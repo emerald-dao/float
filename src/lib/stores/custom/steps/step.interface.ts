@@ -3,6 +3,7 @@ import type { SvelteComponent } from 'svelte';
 
 export interface Step {
 	name: string;
+	title?: string;
 	description?: string;
 	component: typeof SvelteComponent;
 	action: null | (() => Promise<ActionExecutionResult>);

@@ -14,7 +14,8 @@
 <main>
 	<slot />
 </main>
-<Footer {navElements} {emeraldTools} socials={socialMedia} />
+
+<!-- <Footer {navElements} {emeraldTools} socials={socialMedia} /> -->
 
 <style type="scss">
 	main {
