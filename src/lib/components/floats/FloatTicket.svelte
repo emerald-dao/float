@@ -1,29 +1,26 @@
 <script lang="ts">
+	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { Label } from '@emerald-dao/component-library';
 
-	export let title: string;
-	export let floatNumber: number;
-	export let attendantAddress: string;
-	export let eventType: string;
-	export let eventOrganizer: string;
+	export let float: FLOAT;
 </script>
 
 <div class="main-wrapper">
 	<div class="secondary-wrapper">
 		<div class="header-wrapper">
 			<span class="large">FLOAT</span>
-			<Label color="tertiary">{`#${floatNumber}`}</Label>
+			<Label color="tertiary">{`#${float.id}`}</Label>
 		</div>
 		<div class="body-wrapper">
-			<span><strong>{attendantAddress}</strong> has attended</span>
+			<span><strong>{float.originalRecipient}</strong> has attended</span>
 			<div class="logo-wrapper row-4">
 				<img src="/ec-logo.png" alt="event-logo" />
-				<div class="column-2">
-					<h3>{title}</h3>
-					<Label color="neutral">{eventType}</Label>
+				<div class="column-space-between">
+					<h3>{float.eventName}</h3>
+					<Label color="neutral">{float.eventType}</Label>
 				</div>
 			</div>
-			<span>Organized by <strong>{eventOrganizer}</strong></span>
+			<span>Organized by <strong>{float.eventHost}</strong></span>
 		</div>
 		<div class="footer-wrapper">
 			<span class="small">Powered by the Flow Blockchain</span>

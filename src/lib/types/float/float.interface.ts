@@ -1,3 +1,5 @@
+import type { EventType } from '../event/even-type.type';
+
 export interface FLOAT {
 	id: string;
 	dateReceived: string;
@@ -10,4 +12,6 @@ export interface FLOAT {
 	serial: string;
 	totalSupply: string | null;
 	transferrable: boolean;
+	// needed for the UI
+	eventType: EventType;
 }

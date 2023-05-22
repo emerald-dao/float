@@ -1,4 +1,12 @@
+import type { EventType } from '$lib/types/event/even-type.type';
+
 export interface EventGeneratorData {
-	id: string;
-	// Data needed to create an event
+	description: string;
+	eventId: string;
+	host: string;
+	image: string;
+	name: string;
+	totalSupply: string;
+	transferrable: boolean;
+	eventType: EventType;
 }

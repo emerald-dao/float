@@ -7,7 +7,6 @@ export const eventGeneratorSteps = createSteps([
 		name: 'General Data',
 		component: EventBasicDataStep,
 		title: 'Tell us about your event',
-		description: 'This information will let us know more about your event',
 		action: null,
 		state: 'active',
 		button: {
@@ -18,6 +17,7 @@ export const eventGeneratorSteps = createSteps([
 	{
 		name: 'General Data',
 		component: FloatImage,
+		title: 'Let’s personalize your FLOAT!',
 		action: null,
 		state: 'active',
 		button: {

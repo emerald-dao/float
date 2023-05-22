@@ -1,100 +1,136 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { multiplyArray } from '$lib/utilities/multiplyArray';
 	import SectionHeading from './atoms/SectionHeading.svelte';
 
-	const FLOATS = [
+	const FLOATS: FLOAT[] = [
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		},
 		{
-			title: 'The Emerald Conference',
-			number: 1242343,
-			attendantAddress: '0x1234567890',
-			eventType: 'Conference',
-			eventOrganizer: 'Emerald DAO'
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		},
+		{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		},
+		{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		},
+		{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		},
+		{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		},
+		{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
 		}
 	];
 </script>
@@ -109,13 +145,7 @@
 	<div class="floats-wrapper">
 		{#each multiplyArray(FLOATS, 30) as float, i}
 			<div class="float-{i}">
-				<FloatTicket
-					title={float.title}
-					floatNumber={float.number}
-					attendantAddress={float.attendantAddress}
-					eventType={float.eventType}
-					eventOrganizer={float.eventOrganizer}
-				/>
+				<FloatTicket {float} />
 			</div>
 		{/each}
 	</div>
