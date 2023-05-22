@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { Label } from '@emerald-dao/component-library';
 
@@ -6,6 +7,30 @@
 	export let showBack = false;
 
 	let hover: boolean = false;
+
+	// When the FLOAT ticket is rendered in the Event Generator, we receive the image as a File, not a URL.
+	// The reactive statement bellow, checks if the image is a File and then transforms it into a base 64 format.
+	// Then, it displays the image as a background in the floatBack div.
+	$: if (
+		typeof float.eventImage !== 'string' &&
+		float.eventImage?.type &&
+		float.eventImage?.type.startsWith('image/') &&
+		browser
+	) {
+		displayImage(float.eventImage as File);
+	}
+
+	let floatBack: HTMLDivElement;
+
+	const displayImage = (file: File) => {
+		const reader = new FileReader();
+		reader.readAsDataURL(file); // base 64 format
+
+		reader.onload = () => {
+			floatBack.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+			floatBack.style.backgroundSize = 'cover';
+		};
+	};
 </script>
 
 <div
@@ -40,8 +65,12 @@
 				</div>
 			</div>
 		</div>
-		<div class="float-back">
-			<img src="/test-toucan.png" alt="float" />
+		<div class="float-back" bind:this={floatBack}>
+			{#if float.eventImage && typeof float.eventImage === 'string'}
+				<img src={float.eventImage} alt="float" />
+			{:else if float.eventImage === undefined}
+				<img src="/test-toucan.png" alt="float" />
+			{/if}
 		</div>
 	</div>
 </div>

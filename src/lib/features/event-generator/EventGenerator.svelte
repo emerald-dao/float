@@ -45,7 +45,7 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			padding: var(--space-12);
+			padding: var(--space-16);
 		}
 	}
 </style>
