@@ -1,6 +1,6 @@
 <script>
   import { t } from "svelte-i18n";
-  import { authenticate, createEventSeries, canCreateNewChallenge } from "$lib/flow/actions";
+  import { authenticate, createEventSeries } from "$lib/flow/actions";
   import { user, eventSeries } from "$lib/flow/stores";
   import { PAGE_TITLE_EXTENSION } from "$lib/constants";
   import { notifications } from "$lib/notifications";
@@ -55,10 +55,6 @@
       slots.push({ event: null, required: i < initIndex + emptyRequired });
     }
     draftEventSeries.emptySlots = slots;
-  }
-
-  async function canCreateNew(address) {
-    return await canCreateNewChallenge(address)
   }
 
   async function initCreateEventSeries() {
@@ -168,20 +164,6 @@
     </button>
   </div>
   {:else}
-    {#await canCreateNew($user?.addr)}
-      <Loading />
-    {:then canCreate}
-    {#if !canCreate}
-      <div class="text-center">
-        <p>
-          { $t('challenges.create.hint-ecpass-1') }
-        </p>
-        <p>
-          { $t('challenges.create.hint-ecpass-2') }
-          <a href="https://pass.ecdao.org/" target="_blank">Emerald Pass</a>
-        </p>
-      </div>
-    {:else}
     <label for="seriesName">
       {$t("challenges.create.name")}
       <input
@@ -337,8 +319,6 @@
         </button>
       {/if}
     </footer>
-    {/if}
-    {/await}
   {/if}
   </article>
 </div>
