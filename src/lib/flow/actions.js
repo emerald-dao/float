@@ -3315,27 +3315,31 @@ export const ownsSpecificFloatsAll = async (acct, eventIds) => {
 }
 
 /**
+ * @deprecated
  * @param {string} acct
  */
 export const isEmeraldPassActive = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scIsPassActive, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-    ],
-    false
-  )
+  throw new Error("Deprecated Method");
+  // return await generalQuery(
+  //   cadence.replaceImportAddresses(cadence.scIsPassActive, addressMap),
+  //   (arg, t) => [
+  //     arg(acct, t.Address),
+  //   ],
+  //   false
+  // )
 }
 
 /**
+ * @deprecated
  * @param {string} acct
  */
 export const canCreateNewChallenge = async (acct) => {
-  return await generalQuery(
-    cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
-    (arg, t) => [
-      arg(acct, t.Address),
-    ],
-    false
-  )
+  throw new Error("Deprecated Method");
+  // return await generalQuery(
+  //   cadence.replaceImportAddresses(cadence.scCanCreateNew, addressMap),
+  //   (arg, t) => [
+  //     arg(acct, t.Address),
+  //   ],
+  //   false
+  // )
 }

@@ -1,6 +1,5 @@
 import FLOATEventSeries from "../FLOATEventSeries.cdc"
 import MetadataViews from "../../core-contracts/MetadataViews.cdc"
-import EmeraldPass from "../../core-contracts/EmeraldPass.cdc"
 
 transaction(
   name: String,
@@ -13,8 +12,6 @@ transaction(
   presetRequired: [Bool]
 ) {
   let builder: &FLOATEventSeries.EventSeriesBuilder
-  let isUserPassActive: Bool
-  let existingAmount: UInt64
 
   prepare(acct: AuthAccount) {
     // SETUP Event Series builder resource, link public and private
@@ -31,16 +28,11 @@ transaction(
           (FLOATEventSeries.FLOATAchievementBoardPublicPath, target: FLOATEventSeries.FLOATAchievementBoardStoragePath)
     }
 
-    self.isUserPassActive = EmeraldPass.isActive(user: acct.address)
-
     self.builder = acct.borrow<&FLOATEventSeries.EventSeriesBuilder>(from: FLOATEventSeries.FLOATEventSeriesBuilderStoragePath)
       ?? panic("Could not borrow the Event Series builder.")
-    
-    self.existingAmount = UInt64(self.builder.getIDs().length)
   }
 
   pre {
-    self.isUserPassActive || self.existingAmount == 0: "You need to enable Emerald Pass to create more challenges"
     emptySlots >= emptySlotsRequired: "empty slots(required) should not be greator then empty slots"
     Int(emptySlots) + presetHosts.length > 0: "event slots should be greator then zero."
     presetHosts.length == presetEventIds.length: "preset slots should be same length"
