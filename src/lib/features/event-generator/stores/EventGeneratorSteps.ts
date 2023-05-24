@@ -1,6 +1,12 @@
 import { createActiveStep } from '$stores/custom/steps/ActiveStep';
 import { createSteps } from '$stores/custom/steps/Steps';
-import { EventBasicDataStep, FloatImage } from '../components/steps';
+import {
+	EventBasicDataStep,
+	FloatImageStep,
+	ClaimingOptionsStep,
+	TradingOptionsStep,
+	PowerUpsStep
+} from '../components/steps';
 
 export const eventGeneratorSteps = createSteps([
 	{
@@ -16,12 +22,45 @@ export const eventGeneratorSteps = createSteps([
 	},
 	{
 		name: 'General Data',
-		component: FloatImage,
+		component: FloatImageStep,
 		title: 'Let’s personalize your FLOAT!',
 		action: null,
-		state: 'active',
+		state: 'inactive',
 		button: {
 			text: 'Next',
+			icon: 'tabler:arrow-right'
+		}
+	},
+	{
+		name: 'Claiming Options',
+		component: ClaimingOptionsStep,
+		title: 'How will your audience claim their FLOAT?',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Next',
+			icon: 'tabler:arrow-right'
+		}
+	},
+	{
+		name: 'Trading Options',
+		component: TradingOptionsStep,
+		title: 'Can your audience trade their FLOAT?',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Next',
+			icon: 'tabler:arrow-right'
+		}
+	},
+	{
+		name: 'Power Ups',
+		component: PowerUpsStep,
+		title: 'Give super powers to your FLOAT',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Create Event',
 			icon: 'tabler:arrow-right'
 		}
 	}

@@ -10,7 +10,9 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	name: '',
 	totalSupply: '',
 	transferrable: false,
-	eventType: 'hackathon'
+	claimable: false,
+	eventType: 'hackathon',
+	powerups: {}
 });
 
 export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($eventGeneratorData) => ({
