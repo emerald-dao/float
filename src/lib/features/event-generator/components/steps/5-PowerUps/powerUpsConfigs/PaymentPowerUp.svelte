@@ -2,11 +2,10 @@
 	import PowerUpConfigWrapper from '../atoms/PowerUpConfigWrapper.svelte';
 	import POWER_UPS from '../powerUps';
 
-	// get 'paymemt' power up
-	const paymentPowerUp = POWER_UPS.find((powerUp) => powerUp.type === 'payment');
+	const powerUpData = POWER_UPS.find((powerUp) => powerUp.type === 'payment');
 </script>
 
-<PowerUpConfigWrapper powerUpData={paymentPowerUp}>
+<PowerUpConfigWrapper {powerUpData}>
 	<div>
 		<input type="text" />
 	</div>

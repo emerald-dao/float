@@ -18,11 +18,23 @@
 </script>
 
 <StepComponentWrapper>
-	{#each POWER_UPS as { type, name, description }}
-		<PowerUpToggle
-			{name}
-			active={$eventGeneratorData.powerups[type] !== undefined}
-			on:click={() => handleSelectPowerUp(type)}
-		/>
-	{/each}
+	<div>
+		{#each POWER_UPS as { type, name, icon }}
+			<PowerUpToggle
+				{name}
+				{icon}
+				active={$eventGeneratorData.powerups[type] !== undefined}
+				on:click={() => handleSelectPowerUp(type)}
+			/>
+		{/each}
+	</div>
 </StepComponentWrapper>
+
+<style lang="scss">
+	div {
+		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: var(--space-4);
+	}
+</style>

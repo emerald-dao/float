@@ -5,9 +5,9 @@
 		PowerUps
 	} from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Icon from '@iconify/svelte';
-	import POWER_UPS from '../powerUps';
+	import POWER_UPS, { type PowerUp } from '../powerUps';
 
-	export let powerUpData: PowerUpData;
+	export let powerUpData: PowerUp;
 
 	const handleTogglePowerUp = (powerUpType: PowerUps) => {
 		eventGeneratorData.update((data) => {
@@ -28,8 +28,8 @@
 	<div>
 		<div class="title-wrapper row-space-between">
 			<span class="title w-medium row-1 align-center">
-				<Icon icon="tabler:coin" />
-				Payment
+				<Icon icon={powerUpData.icon} />
+				{powerUpData.name}
 			</span>
 			<label for={`active-${powerUpData.type}`} class="switch">
 				<input

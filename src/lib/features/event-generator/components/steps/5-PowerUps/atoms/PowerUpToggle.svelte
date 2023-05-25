@@ -3,10 +3,11 @@
 
 	export let name: string;
 	export let active: boolean;
+	export let icon: string;
 </script>
 
 <span on:click class="row-2 align-center" class:active>
-	<Icon icon="tabler:cash" />
+	<Icon {icon} />
 	{name}
 </span>
 
@@ -17,11 +18,12 @@
 		width: fit-content;
 		padding: var(--space-1) var(--space-3);
 		border-radius: var(--radius-3);
+		cursor: pointer;
 
 		&.active {
-			background-color: var(--clr-primary-badge);
-			color: var(--clr-primary-main);
-			border-color: var(--clr-primary-main);
+			background-color: var(--clr-tertiary-badge);
+			color: var(--clr-tertiary-main);
+			border-color: var(--clr-tertiary-main);
 		}
 	}
 </style>
