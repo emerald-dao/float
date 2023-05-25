@@ -24,7 +24,7 @@
 	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type] !== undefined;
 </script>
 
-<div class="card-primary column-5" class:inactive={!powerUpActive}>
+<div class="card-primary column-5">
 	<div>
 		<div class="title-wrapper row-space-between">
 			<span class="title w-medium row-1 align-center">
@@ -61,9 +61,5 @@
 		.description {
 			padding-bottom: var(--space-4);
 		}
-	}
-
-	.inactive {
-		opacity: 0.7;
 	}
 </style>
