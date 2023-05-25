@@ -20,12 +20,7 @@
 <StepComponentWrapper>
 	<div>
 		{#each POWER_UPS as { type, name, icon }}
-			<PowerUpToggle
-				{name}
-				{icon}
-				active={$eventGeneratorData.powerups[type] !== undefined}
-				on:click={() => handleSelectPowerUp(type)}
-			/>
+			<PowerUpToggle {name} {icon} {type} on:click={() => handleSelectPowerUp(type)} />
 		{/each}
 	</div>
 </StepComponentWrapper>

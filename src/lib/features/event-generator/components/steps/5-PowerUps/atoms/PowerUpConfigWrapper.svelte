@@ -24,7 +24,7 @@
 	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type] !== undefined;
 </script>
 
-<div class="card-primary column-5">
+<div class="card-primary column-5" class:inactive={!powerUpActive}>
 	<div>
 		<div class="title-wrapper row-space-between">
 			<span class="title w-medium row-1 align-center">
@@ -36,7 +36,7 @@
 					type="checkbox"
 					name={`active-${powerUpData.type}`}
 					id={`active-${powerUpData.type}`}
-					value={powerUpActive}
+					checked={powerUpActive}
 					on:change={() => handleTogglePowerUp(powerUpData.type)}
 				/>
 				<span class="slider" />
@@ -61,5 +61,9 @@
 		.description {
 			padding-bottom: var(--space-4);
 		}
+	}
+
+	.inactive {
+		opacity: 0.7;
 	}
 </style>
