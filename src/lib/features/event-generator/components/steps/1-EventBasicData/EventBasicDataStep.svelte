@@ -1,14 +1,46 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { EVENT_TYPES } from '$lib/types/event/even-type.type';
-	import { DropZone } from '@emerald-dao/component-library';
+	import { DropZone, InputWrapper } from '@emerald-dao/component-library';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
+	import validationSuite from './validation';
+	import type { SuiteRunResult } from 'vest';
+
+	export let stepDataValid: boolean;
+
+	const handleChange = (input: Event) => {
+		const target = input.target as HTMLInputElement;
+
+		res = validationSuite($eventGeneratorData, target.name);
+
+		(res as SuiteRunResult).done((result) => {
+			res = result;
+		});
+	};
+
+	let res = validationSuite.get();
+
+	$: stepDataValid = res.isValid() && $eventGeneratorData.logo.length > 0;
 </script>
 
 <StepComponentWrapper>
 	<div class="column-1">
-		<label for="event-name">Event name</label>
-		<input type="text" bind:value={$eventGeneratorData.name} name="event-name" />
+		<InputWrapper
+			label="Event name"
+			name="event-name"
+			errors={res.getErrors('event-name')}
+			isValid={res.isValid('event-name')}
+			required={true}
+		>
+			<input
+				type="text"
+				bind:value={$eventGeneratorData.name}
+				name="event-name"
+				on:input={handleChange}
+				maxlength="28"
+				placeholder="Flow hackathon"
+			/>
+		</InputWrapper>
 	</div>
 	<div class="column-1">
 		<label for="event-type">Event type</label>

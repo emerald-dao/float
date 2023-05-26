@@ -1,10 +1,10 @@
 import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 import type { SvelteComponent } from 'svelte';
-import PaymentPowerUp from './powerUpsConfigs/PaymentPowerUp.svelte';
-import TimeLimitPowerUp from './powerUpsConfigs/TimeLimitPowerUp.svelte';
-import SecretCodePowerUp from './powerUpsConfigs/SecretCodePowerUp.svelte';
-import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalancePowerUp.svelte';
-import LimitedPowerUp from './powerUpsConfigs/LimitedPowerUp.svelte';
+import PaymentPowerUp from './powerUpsConfigs/Payment/PaymentPowerUp.svelte';
+import TimeLimitPowerUp from './powerUpsConfigs/TimeLimit/TimeLimitPowerUp.svelte';
+import SecretCodePowerUp from './powerUpsConfigs/SecretCode/SecretCodePowerUp.svelte';
+import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalance/MinimumBalancePowerUp.svelte';
+import LimitedPowerUp from './powerUpsConfigs/Limited/LimitedPowerUp.svelte';
 
 export interface PowerUp<T extends PowerUpType> {
 	type: T;

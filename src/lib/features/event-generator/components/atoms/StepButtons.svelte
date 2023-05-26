@@ -6,6 +6,7 @@
 
 	export let activeStepStore: ReturnType<typeof createActiveStep>;
 	export let stepsStore: ReturnType<typeof createSteps>;
+	export let stepDataValid: boolean;
 </script>
 
 <div class="row-space-between">
@@ -17,7 +18,11 @@
 			</Button>
 		{/if}
 	</div>
-	<Button on:click={() => activeStepStore.increment()} size="large">
+	<Button
+		on:click={() => activeStepStore.increment()}
+		size="large"
+		state={stepDataValid ? 'active' : 'disabled'}
+	>
 		{#if $stepsStore[$activeStepStore].button}
 			{$stepsStore[$activeStepStore].button.text}
 		{:else}

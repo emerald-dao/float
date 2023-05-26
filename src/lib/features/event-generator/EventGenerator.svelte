@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
@@ -15,6 +15,8 @@
 
 	const activePowerUp = writable('payment');
 
+	let stepDataValid: boolean;
+
 	setContext('activePowerUp', activePowerUp);
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 4;
@@ -25,8 +27,15 @@
 
 <section>
 	<div class="step-component-wrapper">
-		<svelte:component this={$eventGeneratorSteps[$eventGeneratorActiveStep].component} />
-		<StepButtons stepsStore={eventGeneratorSteps} activeStepStore={eventGeneratorActiveStep} />
+		<svelte:component
+			this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
+			bind:stepDataValid
+		/>
+		<StepButtons
+			stepsStore={eventGeneratorSteps}
+			activeStepStore={eventGeneratorActiveStep}
+			bind:stepDataValid
+		/>
 	</div>
 	<div class="generated-nft-wrapper">
 		<Blur color="tertiary" right="0" top="30%" />

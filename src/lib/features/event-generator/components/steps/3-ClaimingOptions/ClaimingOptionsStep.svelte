@@ -3,6 +3,8 @@
 	import RadioCards from '../../atoms/RadioCards.svelte';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 
+	export let stepDataValid = true;
+
 	const CLAIMING_OPTIONS = [
 		{
 			value: false,
