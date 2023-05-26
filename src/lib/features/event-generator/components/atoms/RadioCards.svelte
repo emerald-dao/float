@@ -22,17 +22,24 @@
 
 <style lang="scss">
 	.card {
-		opacity: 0.7;
+		opacity: 0.6;
 		cursor: pointer;
+		transition: 0.6s;
+		border: none;
+		background-color: var(--clr-neutral-badge);
 
 		span:first-child {
+			transition: 0.6s;
 			color: var(--clr-heading-main);
 		}
 
 		&.active {
 			opacity: 1;
-			border-color: var(--clr-primary-main);
 			background-color: var(--clr-primary-badge);
+
+			span:first-child {
+				color: var(--clr-primary-main);
+			}
 		}
 	}
 </style>

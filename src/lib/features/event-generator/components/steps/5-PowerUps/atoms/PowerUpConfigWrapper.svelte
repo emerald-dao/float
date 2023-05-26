@@ -20,7 +20,7 @@
 <div class="card-primary column-5" in:fly={{ y: 60, duration: 800 }}>
 	<div>
 		<div class="title-wrapper row-space-between">
-			<span class="title w-medium row-1 align-center">
+			<span class="title row-2 align-center">
 				<Icon icon={powerUpData.icon} />
 				{powerUpData.name}
 			</span>
@@ -45,10 +45,11 @@
 <style lang="scss">
 	.card-primary {
 		.title-wrapper {
-			margin-bottom: var(--space-2);
+			margin-bottom: var(--space-3);
 
 			span {
 				color: var(--clr-heading-main);
+				font-size: var(--font-size-4);
 			}
 		}
 
