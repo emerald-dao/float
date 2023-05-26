@@ -31,8 +31,8 @@
 
 		&.active {
 			opacity: 1;
-			border-color: var(--clr-tertiary-main);
-			background-color: var(--clr-tertiary-badge);
+			border-color: var(--clr-primary-main);
+			background-color: var(--clr-primary-badge);
 		}
 	}
 </style>
