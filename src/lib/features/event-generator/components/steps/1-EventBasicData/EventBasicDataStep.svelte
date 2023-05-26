@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { EVENT_TYPES } from '$lib/types/event/even-type.type';
+	import { DropZone } from '@emerald-dao/component-library';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 </script>
 
@@ -16,5 +17,14 @@
 				<option value={eventType}>{eventType}</option>
 			{/each}
 		</select>
+	</div>
+	<div class="column-1">
+		<label for="event-logo"> Event logo </label>
+		<DropZone
+			bind:bindValue={$eventGeneratorData.logo}
+			name="event-logo"
+			maxAmountOfFiles={1}
+			accept={['image/png', 'image/jpeg', 'image/jpg']}
+		/>
 	</div>
 </StepComponentWrapper>

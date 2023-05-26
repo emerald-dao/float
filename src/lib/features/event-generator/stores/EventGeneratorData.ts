@@ -6,6 +6,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	description: '',
 	eventId: '',
 	host: '',
+	logo: [],
 	image: [],
 	name: '',
 	totalSupply: '',
@@ -34,7 +35,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 		},
 		minimumBalance: {
 			active: false,
-			data: ''
+			data: 0
 		}
 	}
 });
@@ -43,6 +44,7 @@ export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($event
 	eventDescription: $eventGeneratorData.description,
 	eventHost: $eventGeneratorData.host,
 	eventId: $eventGeneratorData.eventId,
+	eventLogo: $eventGeneratorData.logo[0] as File,
 	eventImage: $eventGeneratorData.image[0] as File,
 	eventName: $eventGeneratorData.name,
 	totalSupply: $eventGeneratorData.totalSupply,

@@ -7,6 +7,7 @@ export interface FLOAT {
 	eventHost: string;
 	eventId: string;
 	eventImage: string | File;
+	eventLogo: string | File;
 	eventName: string;
 	originalRecipient: string;
 	serial: string;

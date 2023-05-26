@@ -6,6 +6,7 @@ export interface EventGeneratorData {
 	eventType: EventType;
 	description: string;
 	host: string;
+	logo: [File] | [];
 	image: [File] | [];
 	totalSupply: string;
 	transferrable: boolean;

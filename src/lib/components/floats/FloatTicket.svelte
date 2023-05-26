@@ -17,18 +17,28 @@
 		float.eventImage?.type.startsWith('image/') &&
 		browser
 	) {
-		displayImage(float.eventImage as File);
+		displayImage(float.eventImage as File, floatBack);
+	}
+
+	$: if (
+		typeof float.eventLogo !== 'string' &&
+		float.eventLogo?.type &&
+		float.eventLogo?.type.startsWith('image/') &&
+		browser
+	) {
+		displayImage(float.eventLogo as File, floatLogo);
 	}
 
 	let floatBack: HTMLDivElement;
+	let floatLogo: HTMLDivElement;
 
-	const displayImage = (file: File) => {
+	const displayImage = (file: File, element: HTMLDivElement) => {
 		const reader = new FileReader();
 		reader.readAsDataURL(file); // base 64 format
 
 		reader.onload = () => {
-			floatBack.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
-			floatBack.style.backgroundSize = 'cover';
+			element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+			element.style.backgroundSize = 'cover';
 		};
 	};
 </script>
@@ -52,7 +62,11 @@
 				<div class="body-wrapper">
 					<span><strong>{float.originalRecipient}</strong> has attended</span>
 					<div class="logo-wrapper row-4">
-						<img src="/ec-logo.png" alt="event-logo" />
+						{#if float.eventLogo && typeof float.eventLogo === 'string'}
+							<img src={float.eventLogo} alt="event-logo" />
+						{:else if float.eventLogo && typeof float.eventLogo !== 'string'}
+							<div class="float-logo" bind:this={floatLogo} />
+						{/if}
 						<div class="column-space-between">
 							<h3>{float.eventName}</h3>
 							<Label color="neutral">{float.eventType}</Label>
@@ -136,9 +150,11 @@
 						border-block: 1px dashed var(--clr-border-primary);
 
 						.logo-wrapper {
+							.float-logo,
 							img {
 								width: 80px;
 								height: 80px;
+								border-radius: var(--radius-1);
 							}
 						}
 					}
