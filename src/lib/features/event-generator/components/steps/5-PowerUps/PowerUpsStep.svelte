@@ -2,7 +2,7 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import type {
 		PowerUpData,
-		PowerUps
+		PowerUpType
 	} from '$lib/features/event-generator/types/event-generator-data.interface';
 	import { getContext } from 'svelte';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
@@ -10,9 +10,9 @@
 	import POWER_UPS from './powerUps';
 	import type { Writable } from 'svelte/store';
 
-	const activePowerUp: Writable<PowerUps> = getContext('activePowerUp');
+	const activePowerUp: Writable<PowerUpType> = getContext('activePowerUp');
 
-	const handleSelectPowerUp = (powerUpType: PowerUps) => {
+	const handleSelectPowerUp = (powerUpType: PowerUpType) => {
 		$activePowerUp = powerUpType;
 	};
 </script>

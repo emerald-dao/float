@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import type { PowerUps } from '$lib/features/event-generator/types/event-generator-data.interface';
+	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Icon from '@iconify/svelte';
 
 	export let name: string;
-	export let type: PowerUps;
+	export let type: PowerUpType;
 	export let icon: string;
 
-	$: active = $eventGeneratorData.powerups[type] !== undefined;
+	$: active = $eventGeneratorData.powerups[type].active === true;
 </script>
 
 <span on:click class="row-2 align-center" class:active>

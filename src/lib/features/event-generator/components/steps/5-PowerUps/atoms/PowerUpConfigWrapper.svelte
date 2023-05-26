@@ -1,28 +1,20 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import type {
-		PowerUpData,
-		PowerUps
-	} from '$lib/features/event-generator/types/event-generator-data.interface';
+	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Icon from '@iconify/svelte';
-	import POWER_UPS, { type PowerUp } from '../powerUps';
+	import type { PowerUp } from '../powerUps';
 
-	export let powerUpData: PowerUp;
+	export let powerUpData: PowerUp<PowerUpType>;
 
-	const handleTogglePowerUp = (powerUpType: PowerUps) => {
+	const handleTogglePowerUp = (powerUpType: PowerUpType) => {
 		eventGeneratorData.update((data) => {
-			if (data.powerups[powerUpType]) {
-				delete data.powerups[powerUpType];
-			} else {
-				data.powerups[powerUpType] = POWER_UPS.find((powerUp) => powerUp.type === powerUpType)
-					?.data as PowerUpData<typeof powerUpType>;
-			}
+			data.powerups[powerUpType].active = !data.powerups[powerUpType].active;
 			return data;
 		});
 	};
 
-	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type] !== undefined;
+	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type].active === true;
 </script>
 
 <div class="card-primary column-5" in:fly={{ y: 60, duration: 800 }}>

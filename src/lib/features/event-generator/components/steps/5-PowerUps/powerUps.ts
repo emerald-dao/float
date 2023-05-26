@@ -1,7 +1,4 @@
-import type {
-	PowerUpData,
-	PowerUps
-} from '$lib/features/event-generator/types/event-generator-data.interface';
+import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 import type { SvelteComponent } from 'svelte';
 import PaymentPowerUp from './powerUpsConfigs/PaymentPowerUp.svelte';
 import TimeLimitPowerUp from './powerUpsConfigs/TimeLimitPowerUp.svelte';
@@ -9,38 +6,34 @@ import SecretCodePowerUp from './powerUpsConfigs/SecretCodePowerUp.svelte';
 import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalancePowerUp.svelte';
 import LimitedPowerUp from './powerUpsConfigs/LimitedPowerUp.svelte';
 
-export interface PowerUp {
-	type: PowerUps;
+export interface PowerUp<T extends PowerUpType> {
+	type: T;
 	name: string;
-	data: PowerUpData<typeof this.type>; // improve this
 	icon: string;
 	description: string;
 	component: typeof SvelteComponent;
 }
 
-const POWER_UPS: PowerUp[] = [
+const POWER_UPS: PowerUp<PowerUpType>[] = [
 	{
 		type: 'payment',
 		name: 'Payment',
 		icon: 'tabler:cash',
 		description: 'This FLOAT costs $FLOW to claim. Suitable for things like tickets.',
-		data: 'fef', // how can i handle this?
 		component: PaymentPowerUp
 	},
 	{
-		type: 'time-limit',
+		type: 'timelock',
 		name: 'Time Limit',
 		icon: 'tabler:clock',
 		description: 'This FLOAT will only be available for a limited time.',
-		data: 'fef', // how can i handle this?
 		component: TimeLimitPowerUp
 	},
 	{
-		type: 'secret-code',
+		type: 'secretCode',
 		name: 'Secret Code',
 		icon: 'tabler:key',
 		description: 'This FLOAT can only be claimed by entering a secret code.',
-		data: 'fef', // how can i handle this?
 		component: SecretCodePowerUp
 	},
 	{
@@ -48,15 +41,13 @@ const POWER_UPS: PowerUp[] = [
 		name: 'Limit Supply',
 		icon: 'tabler:chart-bubble',
 		description: 'This FLOAT can only be claimed a limited number of times.',
-		data: 'fef', // how can i handle this?
 		component: LimitedPowerUp
 	},
 	{
-		type: 'minimum-balance',
+		type: 'minimumBalance',
 		name: 'Minimum Balance',
 		icon: 'tabler:coin',
 		description: 'This FLOAT can only be claimed by users with a minimum $FLOW balance.',
-		data: 'fef', // how can i handle this?
 		component: MinimumBalancePowerUp
 	}
 ];

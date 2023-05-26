@@ -6,29 +6,38 @@ export interface EventGeneratorData {
 	eventType: EventType;
 	description: string;
 	host: string;
-	image: [File];
+	image: [File] | [];
 	totalSupply: string;
 	transferrable: boolean;
 	claimable: boolean;
 	powerups: {
-		[key in PowerUps]: PowerUpData<key>;
+		[key in PowerUpType]: {
+			active: boolean;
+			data: PowerUpData<key>;
+		};
 	};
 }
 
-export const POWER_UPS = ['payment', 'timelock', 'secretCode', 'limited', 'minimumBalance'];
+export const POWER_UPS = [
+	'payment',
+	'timelock',
+	'secretCode',
+	'limited',
+	'minimumBalance'
+] as const;
 
-export type PowerUps = (typeof POWER_UPS)[number];
+export type PowerUpType = (typeof POWER_UPS)[number];
 
 type PaymentPowerUpData = number;
 type TimeLockPowerUpData = {
-	starteDate: string; // unix timestamp
+	startDate: string; // unix timestamp
 	endDate: string; // unix timestamp
 };
 type SecretCodePowerUpData = string;
 type LimitedPowerUpData = number;
-type MinimumBalance = string;
+type MinimumBalance = number;
 
-export type PowerUpData<T extends PowerUps> = T extends 'payment'
+export type PowerUpData<T extends PowerUpType> = T extends 'payment'
 	? PaymentPowerUpData
 	: T extends 'timelock'
 	? TimeLockPowerUpData
