@@ -31,16 +31,11 @@
 		transition: 0.2s;
 
 		&.active {
-			background-color: var(--clr-primary-badge);
 			color: var(--clr-primary-main);
-
-			&.selected {
-				border: 1px solid var(--clr-primary-main);
-			}
 		}
 
 		&.selected {
-			border: 1px solid var(--clr-text-main);
+			border: 1px solid var(--clr-border-primary);
 		}
 	}
 </style>
