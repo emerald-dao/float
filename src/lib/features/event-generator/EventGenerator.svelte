@@ -32,11 +32,15 @@
 		<Blur color="tertiary" right="0" top="30%" />
 		<Blur left="0" bottom="20%" />
 		{#if !powerUpsStep}
-			<div transition:fly|local={{ x: 500, duration: 700 }}>
+			<div
+				class="column align-center"
+				transition:fly|local={{ x: 500, duration: 700 }}
+				style="position: absolute;"
+			>
 				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>
 		{:else}
-			<div in:fly|local={{ x: -200, duration: 500, delay: 500 }} style="position: absolute">
+			<div in:fly|local={{ x: -200, duration: 500, delay: 500 }}>
 				<svelte:component this={activePowerUpComponent} />
 			</div>
 		{/if}
@@ -67,6 +71,10 @@
 			justify-content: center;
 			align-items: center;
 			padding: var(--space-16);
+
+			div {
+				width: 100%;
+			}
 		}
 	}
 </style>

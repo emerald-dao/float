@@ -20,8 +20,12 @@ export const POWER_UPS = ['payment', 'timelock', 'secretCode', 'limited', 'minim
 export type PowerUps = (typeof POWER_UPS)[number];
 
 type PaymentPowerUpData = number;
-type TimeLockPowerUpData = string;
+type TimeLockPowerUpData = {
+	starteDate: string; // unix timestamp
+	endDate: string; // unix timestamp
+};
 type SecretCodePowerUpData = string;
+type LimitedPowerUpData = number;
 type MinimumBalance = string;
 
 export type PowerUpData<T extends PowerUps> = T extends 'payment'
@@ -30,6 +34,8 @@ export type PowerUpData<T extends PowerUps> = T extends 'payment'
 	? TimeLockPowerUpData
 	: T extends 'secretCode'
 	? SecretCodePowerUpData
+	: T extends 'limited'
+	? LimitedPowerUpData
 	: T extends 'minimumBalance'
 	? MinimumBalance
 	: never;

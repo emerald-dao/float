@@ -7,6 +7,7 @@ import PaymentPowerUp from './powerUpsConfigs/PaymentPowerUp.svelte';
 import TimeLimitPowerUp from './powerUpsConfigs/TimeLimitPowerUp.svelte';
 import SecretCodePowerUp from './powerUpsConfigs/SecretCodePowerUp.svelte';
 import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalancePowerUp.svelte';
+import LimitedPowerUp from './powerUpsConfigs/LimitedPowerUp.svelte';
 
 export interface PowerUp {
 	type: PowerUps;
@@ -41,6 +42,14 @@ const POWER_UPS: PowerUp[] = [
 		description: 'This FLOAT can only be claimed by entering a secret code.',
 		data: 'fef', // how can i handle this?
 		component: SecretCodePowerUp
+	},
+	{
+		type: 'limited',
+		name: 'Limit Supply',
+		icon: 'tabler:chart-bubble',
+		description: 'This FLOAT can only be claimed a limited number of times.',
+		data: 'fef', // how can i handle this?
+		component: LimitedPowerUp
 	},
 	{
 		type: 'minimum-balance',

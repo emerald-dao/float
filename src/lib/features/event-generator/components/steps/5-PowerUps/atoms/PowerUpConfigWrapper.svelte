@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import type {
 		PowerUpData,
@@ -24,7 +25,7 @@
 	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type] !== undefined;
 </script>
 
-<div class="card-primary column-5">
+<div class="card-primary column-5" in:fly={{ y: 60, duration: 800 }}>
 	<div>
 		<div class="title-wrapper row-space-between">
 			<span class="title w-medium row-1 align-center">
@@ -43,7 +44,7 @@
 			</label>
 		</div>
 		<span class="description small">
-			This FLOAT costs $FLOW to claim. Suitable for things like tickets.
+			{powerUpData.description}
 		</span>
 	</div>
 	<slot />
@@ -53,6 +54,7 @@
 	.card-primary {
 		.title-wrapper {
 			margin-bottom: var(--space-2);
+
 			span {
 				color: var(--clr-heading-main);
 			}
