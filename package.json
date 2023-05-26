@@ -19,7 +19,7 @@
 		"@emerald-dao/component-library": "^4.0.0",
 		"@emerald-dao/design-system": "^2.1.0",
 		"@iconify/svelte": "^3.1.3",
-		"@onflow/fcl": "1.3.2",
+		"@onflow/fcl": "^1.2.1",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "^1.0.0",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",

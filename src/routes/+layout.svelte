@@ -7,10 +7,13 @@
 	import { Header, Footer } from '@emerald-dao/component-library';
 	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
 	import { theme } from '$stores/ThemeStore';
-	import { user } from '$stores/FlowStore';
+	import { user } from '$stores/flow/FlowStore';
+	import { logIn, unauthenticate } from '$flow/actions';
+	import { getFindProfile } from '$flow/utils';
+	import type { CurrentUserObject } from '@onflow/fcl';
 </script>
 
-<Header themeStore={theme} user={$user} {navElements} />
+<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
 <main>
 	<slot />
 </main>

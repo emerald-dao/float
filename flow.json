@@ -1,0 +1,141 @@
+{
+  "contracts": {
+    "FCLCrypto": {
+      "source": "./src/flow/cadence/utility/FCLCrypto.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7"
+      }
+    },
+    "FUSD": {
+      "source": "./src/flow/cadence/utility/FUSD.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0x3c5959b568896393",
+        "testnet": "0xe223d8a629e49c68"
+      }
+    },
+    "FlowToken": {
+      "source": "./src/flow/cadence/utility/FlowToken.cdc",
+      "aliases": {
+        "emulator": "0x0ae53cb6e3f42a79",
+        "mainnet": "0x1654653399040a61",
+        "testnet": "0x7e60df042a9c0868"
+      }
+    },
+    "FiatToken": {
+      "source": "./src/flow/cadence/utility/FiatToken.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "testnet": "0xa983fecbed621163",
+        "mainnet": "0xb19436aae4d94622"
+      }
+    },
+    "OnChainMultiSig": {
+      "source": "./src/flow/cadence/utility/OnChainMultiSig.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "testnet": "0x5a5b0a73a29e83f1",
+        "mainnet": "0x220c1b4155f86f2f"
+      }
+    },
+    "FungibleToken": {
+      "source": "./src/flow/cadence/utility/FungibleToken.cdc",
+      "aliases": {
+        "emulator": "0xee82856bf20e2aa6",
+        "mainnet": "0xf233dcee88fe0abe",
+        "testnet": "0x9a0766d93b6608b7"
+      }
+    },
+    "FungibleTokenMetadataViews": {
+      "source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0xf233dcee88fe0abe",
+        "testnet": "0x9a0766d93b6608b7"
+      }
+    },
+    "MetadataViews": {
+      "source": "./src/flow/cadence/utility/MetadataViews.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0x1d7e57aa55817448",
+        "testnet": "0x631e88ae7f1d7c20"
+      }
+    },
+    "NonFungibleToken": {
+      "source": "./src/flow/cadence/utility/NonFungibleToken.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0x1d7e57aa55817448",
+        "testnet": "0x631e88ae7f1d7c20"
+      }
+    },
+    "NFTCatalog": {
+      "source": "./src/flow/cadence/utility/NFTCatalog.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0x49a7cda3a1eecc29",
+        "testnet": "0x324c34e1c517e4db"
+      }
+    },
+    "NFTCatalogSnapshot": {
+      "source": "./src/flow/cadence/utility/NFTCatalogSnapshot.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0x49a7cda3a1eecc29",
+        "testnet": "0x324c34e1c517e4db"
+      }
+    },
+    "FLOAT": {
+      "source": "./src/flow/cadence/FLOAT.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7"
+      }
+    },
+    "FLOATVerifiers": {
+      "source": "./src/flow/cadence/FLOATVerifiers.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7"
+      }
+    },
+    "FIND": {
+      "source": "./src/flow/cadence/utility/FIND.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "testnet": "0x35717efbbce11c74",
+        "mainnet": "0x097bafa4e0b48eef"
+      }
+    },
+    "FindViews": {
+      "source": "./src/flow/cadence/utility/FindViews.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "testnet": "0x35717efbbce11c74",
+        "mainnet": "0x097bafa4e0b48eef"
+      }
+    }
+  },
+  "networks": {
+    "emulator": "127.0.0.1:3569",
+    "mainnet": "access.mainnet.nodes.onflow.org:9000",
+    "testnet": "access.devnet.nodes.onflow.org:9000"
+  },
+  "accounts": {
+    "emulator-account": {
+      "address": "f8d6e0586b0a20c7",
+      "key": "fc49a771829ff480841164af13b18a68cd697b6e79c80af7f8470a9e651dfac5"
+    }
+  },
+  "deployments": {
+    "emulator": {
+      "emulator-account": [
+        "NonFungibleToken",
+        "MetadataViews",
+        "FindViews",
+        "FIND",
+        "FLOAT",
+        "FLOATVerifiers"
+      ]
+    }
+  }
+}

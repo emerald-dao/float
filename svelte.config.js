@@ -8,7 +8,7 @@ const config = {
 		alias: {
 			$atoms: 'src/lib/components/atoms/index.ts',
 			$stores: 'src/lib/stores/',
-			$flow: 'src/lib/flow/'
+			$flow: 'src/flow/'
 		}
 	},
 
