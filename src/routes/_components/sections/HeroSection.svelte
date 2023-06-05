@@ -15,11 +15,13 @@
 		</p>
 	</div>
 	<FloatTicket
-		title="Cadence Conversation"
-		floatNumber={43245}
-		attendantAddress="0x32194321bnj12"
-		eventType="Discord AMA"
-		eventOrganizer="Emerald City DAO"
+		float={{
+			id: '123456789',
+			originalRecipient: 'John Doe',
+			eventName: 'Emerald City',
+			eventType: 'hackathon',
+			eventHost: 'Emerald DAO'
+		}}
 	/>
 	<div class="column-2 center">
 		<Button color="primary" size="large" width="extended">Create an Event - it's free!</Button>
