@@ -3,8 +3,17 @@
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import { Button } from '@emerald-dao/component-library';
+	import { onMount } from 'svelte';
 
 	export let event: Event;
+
+	let noDates = false;
+
+	onMount(() => {
+		noDates = event.verifiers.every(
+			(verifier) => !('dateStart' in verifier && 'dateEnding' in verifier)
+		);
+	});
 </script>
 
 <section class="container">
@@ -23,15 +32,26 @@
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
-	<div class="container-small details-wrapper">
-		<div>
-			<p class="large">{`${event.dateCreated}`}</p>
-			<p class="small">Start Date</p>
-		</div>
-		<div>
-			<p class="large">06/30/2023</p>
-			<p class="small">End Date</p>
-		</div>
+	<div class="container-small details-wrapper {noDates ? 'two-columns' : ''}">
+		{#if event.verifiers.length > 0}
+			{#each event.verifiers as verifier}
+				{#if 'dateStart' in verifier && 'dateEnding' in verifier}
+					<div>
+						<p class="large">{verifier.dateStart}</p>
+						<p class="small">Start Date</p>
+					</div>
+					<div>
+						<p class="large">{verifier.dateEnding}</p>
+						<p class="small">End Date</p>
+					</div>
+				{/if}
+			{/each}
+		{:else}
+			<div>
+				<p class="large">{event.dateCreated}</p>
+				<p class="small">Start Date</p>
+			</div>
+		{/if}
 		<div>
 			<p class="large">Free</p>
 			<p class="small">Price</p>
@@ -86,6 +106,10 @@
 			border-top: 1px dashed var(--clr-border-primary);
 			border-bottom: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) 0 var(--space-5) 0;
+
+			&.two-columns {
+				grid-template-columns: repeat(2, 1fr);
+			}
 
 			.small {
 				color: var(--clr-text-off);
