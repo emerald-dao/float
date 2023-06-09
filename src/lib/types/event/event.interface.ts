@@ -1,6 +1,6 @@
 // FLOATs interfaces and types
 
-import type { EventType } from './even-type.type';
+import type { EventTypeEnum } from '../content/metadata/event-types.enum';
 import type { Limited, MinimumBalance, Secret, Timelock } from './verifiers.interface';
 
 export interface Event {
@@ -19,7 +19,7 @@ export interface Event {
 	verifiers: EventVerifier[];
 
 	// Added by Chino
-	eventType: EventType;
+	eventType: EventTypeEnum;
 }
 
 type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
