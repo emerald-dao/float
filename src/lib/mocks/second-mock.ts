@@ -1,3 +1,4 @@
+import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
 import type { Event } from '$lib/types/event/event.interface';
 
 export const overview: Event = {
@@ -16,5 +17,5 @@ export const overview: Event = {
 	verifiers: [{ dateStart: '06/05/2023', dateEnding: '06/20/2023' }],
 
 	// Added by Chino
-	eventType: 'hackathon'
+	eventType: EventTypeEnum.Workshop
 };
