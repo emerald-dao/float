@@ -197,7 +197,7 @@
 
 					.line {
 						flex: 1;
-						border: 6px dashed rgba(56, 232, 198, 0.1);
+						border: 1px dashed rgba(56, 232, 198, 0.1);
 						width: 2px;
 					}
 
