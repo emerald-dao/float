@@ -1,39 +1,27 @@
 <script type="ts">
-	import { Tab, TabList, TabPanel, Tabs } from '@emerald-dao/component-library';
 	import type { Event } from '$lib/types/event/event.interface';
 	import UserCollection from './sections/UserCollection.svelte';
-	import UserChallenges from './sections/UserChallenges.svelte';
 
 	export let contentList: Event[];
 </script>
 
-<Tabs>
-	<section class="container">
-		<div class="header-wrapper">
-			<div class="row">
-				<img src="/test-toucan.png" alt="float" />
-				<p>mateor.find</p>
-			</div>
-			<div class="tabs-wrapper">
-				<TabList>
-					<Tab><span class="xsmall">Main Funders</span></Tab>
-					<Tab><span class="xsmall">Main Holders</span></Tab>
-				</TabList>
-			</div>
-			<div>
-				<p>26 FLOATs</p>
-			</div>
+<section class="container">
+	<div class="header-wrapper">
+		<div class="row">
+			<img src="/test-toucan.png" alt="float" />
+			<p>mateor.find</p>
 		</div>
-		<div>
-			<TabPanel>
-				<UserCollection {contentList} />
-			</TabPanel>
-			<TabPanel>
-				<UserChallenges {contentList} />
-			</TabPanel>
+		<div class="title-wrapper">
+			<h4 class="xsmall">Collection</h4>
 		</div>
-	</section>
-</Tabs>
+		<div class="right-wrapper">
+			<p>26 FLOATs</p>
+		</div>
+	</div>
+	<div>
+		<UserCollection {contentList} />
+	</div>
+</section>
 
 <style type="scss">
 	.header-wrapper {
@@ -62,9 +50,12 @@
 			}
 		}
 
-		.tabs-wrapper {
-			align-content: center;
-			width: fit-content;
+		.title-wrapper {
+			text-align: center;
+		}
+
+		.right-wrapper {
+			text-align: right;
 		}
 	}
 </style>
