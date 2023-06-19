@@ -8,6 +8,8 @@
 	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy } from 'svelte';
+	import EventSmallTicket from '$lib/components/events/EventSmallTicket.svelte';
+	import EventTicket from '$lib/components/events/EventTicket.svelte';
 
 	let selectedButton = 'layout'; // Default selected button
 
@@ -25,7 +27,8 @@
 			extraMetadata: { key: 'string' },
 			groups: ['TRY'],
 			host: 'Twitter',
-			image: 'string',
+			image:
+				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			name: 'FIRST EVENT',
 			totalSupply: '2,306',
 			transferrable: false,
@@ -43,7 +46,8 @@
 			extraMetadata: { key: 'string' },
 			groups: ['TRY'],
 			host: 'Twitter',
-			image: 'string',
+			image:
+				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			name: 'SECOND EVENT',
 			totalSupply: '2,306',
 			transferrable: false,
@@ -61,7 +65,8 @@
 			extraMetadata: { key: 'string' },
 			groups: ['TRY'],
 			host: 'Twitter',
-			image: 'string',
+			image:
+				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			name: 'THIRD EVENT',
 			totalSupply: '2,306',
 			transferrable: false,
@@ -104,20 +109,20 @@
 				</Button>
 			</div>
 		</div>
-		<Button><Icon icon="ep:circle-plus" />Create New</Button>
+		<Button href="/event-generator"><Icon icon="ep:circle-plus" />Create New</Button>
 	</div>
 	{#if selectedButton === 'layout'}
 		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
-				<FloatTicket float={$generatedNft} />
+				<EventTicket {event} />
 			{/each}
 		</div>
 	{:else}
-		<ul class="list" in:fly={{ x: 10, duration: 400 }}>
+		<div class="list" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
-				<li>{event.name} Id: {event.eventId}</li>
+				<EventSmallTicket {event} />
 			{/each}
-		</ul>
+		</div>
 	{/if}
 </div>
 
@@ -127,6 +132,7 @@
 		flex-direction: column;
 		justify-content: center;
 		gap: var(--space-10);
+		padding: var(--space-6) 0;
 
 		.row-4 {
 			input {
@@ -158,6 +164,12 @@
 			display: grid;
 			grid-template-columns: repeat(2, 1fr);
 			gap: var(--space-10);
+		}
+
+		.list {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-5);
 		}
 	}
 </style>
