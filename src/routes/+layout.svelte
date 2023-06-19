@@ -10,7 +10,15 @@
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
-	import type { CurrentUserObject } from '@onflow/fcl';
+	import { onMount } from 'svelte';
+
+	onMount(() => {
+		let html = document.querySelector('html');
+
+		if (html) {
+			html.setAttribute('data-theme', $theme);
+		}
+	});
 </script>
 
 <Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
