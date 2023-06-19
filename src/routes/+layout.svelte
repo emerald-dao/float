@@ -11,9 +11,26 @@
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
 	import type { CurrentUserObject } from '@onflow/fcl';
+	import { page } from '$app/stores';
+
+	let route: string | null;
+
+	function extractFirstSegment(route: string): string | null {
+		const regex = /^\/([^\/]+)/;
+		const matches = route.match(regex);
+		if (matches && matches.length === 2) {
+			return matches[1];
+		}
+		return null;
+	}
+
+	$: route = typeof $page.route.id === 'string' ? extractFirstSegment($page.route.id) : null;
 </script>
 
-<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
+<div style="display: {route === 'admin' ? 'none' : 'block'}">
+	<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
+</div>
+
 <main>
 	<slot />
 </main>
