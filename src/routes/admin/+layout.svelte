@@ -6,7 +6,7 @@
 	let route: string | null;
 
 	function extractSecondPart(route: string): string | null {
-		const regex = /^\/\w+\/(.+)$/;
+		const regex = /^\/\w+\/([^\/]+)(?:\/|$)/;
 		const matches = route.match(regex);
 		if (matches && matches.length === 2) {
 			return matches[1];
@@ -34,7 +34,6 @@
 		flex-direction: column;
 		gap: var(--space-8);
 		overflow: hidden;
-		height: 200vh;
 
 		@include mq(medium) {
 			display: grid;
@@ -44,10 +43,6 @@
 
 		.nav-wrapper {
 			border-right: 2px solid var(--clr-neutral-900);
-		}
-
-		.main-wrapper {
-			padding-block: var(--space-6);
 		}
 	}
 </style>

@@ -15,7 +15,7 @@
 
 <style type="scss">
 	.column-6 {
-		padding: var(--space-8) 0;
+		padding: var(--space-6) 0;
 
 		.sidebar-link {
 			font-size: var(--font-size-3);
