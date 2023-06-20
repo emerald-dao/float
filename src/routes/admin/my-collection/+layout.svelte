@@ -4,7 +4,6 @@
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import FloatSmallTicket from '$lib/components/floats/FloatSmallTicket.svelte';
-	import FloatInfo from './_components/FloatInfo.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy } from 'svelte';
 
@@ -18,7 +17,7 @@
 			eventType: 'hackathon',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '12',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -37,7 +36,7 @@
 			eventType: 'workshop',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '34',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -56,7 +55,7 @@
 			eventType: 'conference',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '56',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -75,7 +74,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '78',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -94,7 +93,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '910',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -113,7 +112,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '1112',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -132,7 +131,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '1314',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -151,7 +150,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '1516',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -170,7 +169,7 @@
 			eventType: 'other',
 			eventHost: 'Emerald DAO',
 
-			eventId: '1234',
+			eventId: '1718',
 			eventImage:
 				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 			eventLogo:
@@ -217,14 +216,14 @@
 			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
 				<p>No results found</p>
 			{:else}
-				{#each $searchStore.filtered as float}
-					<FloatSmallTicket {float} />
+				{#each $searchStore.filtered as float, i}
+					<FloatSmallTicket {float} {i} />
 				{/each}
 			{/if}
 		</div>
 	</div>
 	<div class="right-wrapper">
-		<FloatInfo />
+		<slot />
 	</div>
 </div>
 
@@ -239,6 +238,7 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-9);
+			padding: var(--space-6) var(--space-2);
 
 			.top-wrapper {
 				display: flex;

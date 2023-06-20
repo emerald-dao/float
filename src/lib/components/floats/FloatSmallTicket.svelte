@@ -2,12 +2,13 @@
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import { page } from '$app/stores';
 
 	export let float: FLOAT;
 </script>
 
-<div class="main-wrapper">
-	<div class="info-wrapper">
+<a class="main-wrapper" href={`/admin/my-collection/${float.eventId}`}>
+	<div class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}">
 		<div class="row-3 details-wrapper">
 			<img src={float.eventLogo} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
@@ -31,9 +32,13 @@
 			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
 		</Button>
 	</div>
-</div>
+</a>
 
 <style type="scss">
+	a {
+		text-decoration: none;
+		color: unset;
+	}
 	.main-wrapper {
 		display: grid;
 		grid-template-columns: 6fr 0.5fr 0.5fr;
@@ -75,6 +80,11 @@
 					color: var(--clr-primary-main);
 				}
 			}
+		}
+
+		.selected {
+			background-color: var(--clr-surface-secondary);
+			border: var(--border-width-primary) solid var(--clr-border-primary);
 		}
 
 		.button-wrapper {
