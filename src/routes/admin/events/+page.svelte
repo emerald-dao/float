@@ -109,7 +109,7 @@
 		</div>
 		<Button href="/event-generator"><Icon icon="ep:circle-plus" />Create New</Button>
 	</div>
-	{#if selectedButton === 'layout'}
+	{#if viewEventsMode === 'grid'}
 		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
 				<EventCardGrid {event} />
