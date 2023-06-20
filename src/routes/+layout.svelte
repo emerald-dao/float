@@ -10,7 +10,7 @@
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
-	import type { CurrentUserObject } from '@onflow/fcl';
+	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 
 	let route: string | null;
@@ -25,11 +25,19 @@
 	}
 
 	$: route = typeof $page.route.id === 'string' ? extractFirstSegment($page.route.id) : null;
+
+	onMount(() => {
+		let html = document.querySelector('html');
+
+		if (html) {
+			html.setAttribute('data-theme', $theme);
+		}
+	});
 </script>
 
-<div style="display: {route === 'admin' ? 'none' : 'block'}">
+{#if route !== 'admin'}
 	<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
-</div>
+{/if}
 
 <main>
 	<slot />
