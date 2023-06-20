@@ -4,18 +4,16 @@
 	import { fly } from 'svelte/transition';
 	import type { Event } from '$lib/types/event/event.interface';
 	import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy } from 'svelte';
-	import EventSmallTicket from '$lib/components/events/EventSmallTicket.svelte';
-	import EventTicket from '$lib/components/events/EventTicket.svelte';
+	import EventCardList from '$lib/components/events/EventCardList.svelte';
+	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
 
-	let selectedButton = 'layout'; // Default selected button
+	let viewEventsMode: 'grid' | 'list' = 'grid';
 
 	// Function to handle button click
-	function handleButtonClick(buttonType: 'layout' | 'list') {
-		selectedButton = buttonType;
+	function handleButtonClick(buttonType: 'grid' | 'list') {
+		viewEventsMode = buttonType;
 	}
 
 	const events: Event[] = [
@@ -98,12 +96,12 @@
 		<Button color="neutral">Show inactive</Button>
 		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		<div class="row-2">
-			<div class={`button-wrapper ${selectedButton === 'layout' ? 'selected' : 'unselected'}`}>
-				<Button type="transparent" on:click={() => handleButtonClick('layout')}>
+			<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : 'unselected'}`}>
+				<Button type="transparent" on:click={() => handleButtonClick('grid')}>
 					<Icon icon="basil:layout-outline" color="var(--clr-heading-inverse)" />
 				</Button>
 			</div>
-			<div class={`button-wrapper ${selectedButton === 'list' ? 'selected' : 'unselected'}`}>
+			<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : 'unselected'}`}>
 				<Button type="transparent" on:click={() => handleButtonClick('list')}>
 					<Icon icon="ic:round-list" color="var(--clr-heading-inverse)" />
 				</Button>
@@ -114,13 +112,13 @@
 	{#if selectedButton === 'layout'}
 		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
-				<EventTicket {event} />
+				<EventCardGrid {event} />
 			{/each}
 		</div>
 	{:else}
 		<div class="list" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
-				<EventSmallTicket {event} />
+				<EventCardList {event} />
 			{/each}
 		</div>
 	{/if}
