@@ -3,6 +3,11 @@ export const navElements = [
 		name: 'Create Event',
 		url: '/event-generator',
 		prefetch: true
+	},
+	{
+		name: 'Admin',
+		url: '/admin',
+		prefetch: true
 	}
 ];
 

@@ -10,7 +10,7 @@
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Badges from '../atoms/Badges.svelte';
-	import { createSearchStore, searchHandler } from '../../stores/searchBar';
+	import { createSearchStore, searchHandler } from '../../../../stores/searchBar';
 
 	export let contentList: Event[];
 	export let typeOfEventFilter = true;

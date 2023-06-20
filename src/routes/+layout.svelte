@@ -11,6 +11,20 @@
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
 	import { onMount } from 'svelte';
+	import { page } from '$app/stores';
+
+	let route: string | null;
+
+	function extractFirstSegment(route: string): string | null {
+		const regex = /^\/([^\/]+)/;
+		const matches = route.match(regex);
+		if (matches && matches.length === 2) {
+			return matches[1];
+		}
+		return null;
+	}
+
+	$: route = typeof $page.route.id === 'string' ? extractFirstSegment($page.route.id) : null;
 
 	onMount(() => {
 		let html = document.querySelector('html');
@@ -21,7 +35,10 @@
 	});
 </script>
 
-<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
+{#if route !== 'admin'}
+	<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
+{/if}
+
 <main>
 	<slot />
 </main>
