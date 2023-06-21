@@ -24,7 +24,9 @@
 		}}
 	/>
 	<div class="column-2 center">
-		<Button color="primary" size="large" width="extended">Create an Event - it's free!</Button>
+		<Button color="primary" size="large" width="extended" href="/event-generator"
+			>Create an Event - it's free!</Button
+		>
 		<div class="column center">
 			<span class="xsmall">FLOAT is 100% free</span>
 			<span class="xsmall">We only charge a tiny percentage on payed FLOATs. </span>

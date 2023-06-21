@@ -1,25 +1,27 @@
 <script type="ts">
-	import type { Event } from '$lib/types/event/event.interface';
+	import type { FLOAT } from '$lib/types/float/float.interface';
+	import type { User } from '$lib/types/user/user.interface';
 	import UserCollection from './sections/UserCollection.svelte';
 
-	export let contentList: Event[];
+	export let floats: FLOAT[];
+	export let userData: User;
 </script>
 
 <section class="container">
 	<div class="header-wrapper">
 		<div class="row">
-			<img src="/test-toucan.png" alt="float" />
-			<p>mateor.find</p>
+			<img src={userData.image} alt="float" />
+			<p>{userData.name}</p>
 		</div>
 		<div class="title-wrapper">
 			<h4 class="xsmall">Collection</h4>
 		</div>
 		<div class="right-wrapper">
-			<p>26 FLOATs</p>
+			<p>{`${floats.length} FLOATs`}</p>
 		</div>
 	</div>
 	<div>
-		<UserCollection {contentList} />
+		<UserCollection {floats} />
 	</div>
 </section>
 

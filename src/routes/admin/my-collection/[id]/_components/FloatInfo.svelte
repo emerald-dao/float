@@ -2,25 +2,7 @@
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
-	let float: FLOAT = {
-		id: '1234',
-		dateReceived: '6/14/2023',
-		eventDescription: 'Event description 1',
-		originalRecipient: 'John Doe',
-		eventName: 'Emerald City',
-		eventType: 'hackathon',
-		eventHost: 'Emerald DAO',
-
-		eventId: '1234',
-		eventImage:
-			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-		eventLogo:
-			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-		serial: 'NO IDEA',
-		totalSupply: '4536',
-		transferrable: false
-	};
+	export let float: FLOAT;
 </script>
 
 <div class="main-wrapper">

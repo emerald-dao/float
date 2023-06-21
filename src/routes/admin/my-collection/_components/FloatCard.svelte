@@ -1,38 +1,44 @@
 <script type="ts">
-	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
+	import toggleVisibility from '../../_actions/float-actions/toggleFloatVisibility';
+	import burnFloat from '../../_actions/float-actions/burnFloat';
 
 	export let float: FLOAT;
 </script>
 
-<a class="main-wrapper" href={`/admin/my-collection/${float.eventId}`}>
-	<div class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}">
+<div class="main-wrapper">
+	<a
+		class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}"
+		href={`/admin/my-collection/${float.eventId}`}
+	>
 		<div class="row-3 details-wrapper">
 			<img src={float.eventLogo} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
-				<p>{float.eventDescription}</p>
-				<span class="small">{float.eventType}</span>
+				<p class="small">{float.eventName}</p>
+				<span class="xsmall">{float.eventType}</span>
 			</div>
 		</div>
 		<div class="date-wrapper">
-			<p class="small">February</p>
-			<p class="medium w-semibold">2023</p>
+			<p class="xsmall">
+				{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+			</p>
+			<p class="xsmall w-medium">{new Date(float.dateReceived).getFullYear()}</p>
 		</div>
-	</div>
+	</a>
 
 	<div class="button-wrapper">
-		<Button type="transparent" width="no-width">
-			<Icon icon="mdi:eye-off-outline" color="var(--clr-neutral-600)" />
-		</Button>
+		<button class="header-link" on:click={() => toggleVisibility()}>
+			<Icon icon="mdi:eye-off-outline" />
+		</button>
 	</div>
 	<div class="button-wrapper">
-		<Button type="transparent" width="no-width">
-			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
-		</Button>
+		<button class="header-link danger" on:click={() => burnFloat()}>
+			<Icon icon="ph:trash" />
+		</button>
 	</div>
-</a>
+</div>
 
 <style type="scss">
 	a {
@@ -54,6 +60,7 @@
 
 			.details-wrapper {
 				align-items: center;
+
 				.column-1 {
 					p {
 						text-align: left;
@@ -71,10 +78,13 @@
 			}
 
 			.date-wrapper {
+				display: flex;
+				flex-direction: column;
 				background-color: var(--clr-primary-badge);
 				border-radius: var(--radius-2);
 				padding: var(--space-3);
 				text-align: center;
+				justify-content: center;
 
 				p {
 					color: var(--clr-primary-main);
@@ -90,6 +100,16 @@
 		.button-wrapper {
 			display: flex;
 			justify-content: flex-end;
+
+			.header-link {
+				background-color: transparent;
+				border: none;
+				padding: 0;
+
+				&.danger {
+					color: var(--clr-alert-main);
+				}
+			}
 		}
 	}
 </style>
