@@ -1,10 +1,9 @@
 <script type="ts">
-	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
-	import toggleVisibility from '$lib/features/float-actions/toggleFloatVisibility';
-	import burnFloat from '$lib/features/float-actions/burnFloat';
+	import toggleVisibility from '../../../routes/admin/_actions/float-actions/toggleFloatVisibility';
+	import burnFloat from '../../../routes/admin/_actions/float-actions/burnFloat';
 
 	export let float: FLOAT;
 </script>

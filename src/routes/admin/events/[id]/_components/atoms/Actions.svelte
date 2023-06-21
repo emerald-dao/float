@@ -1,8 +1,8 @@
 <script>
-	import archiveEvent from '$lib/features/event-actions/archiveEvent';
-	import deleteEvent from '$lib/features/event-actions/deleteEvent';
-	import toggleClaiming from '$lib/features/event-actions/toggleClaiming';
-	import toggleTransfering from '$lib/features/event-actions/toggleTransfering';
+	import archiveEvent from '../../../../_actions/event-actions/archiveEvent';
+	import deleteEvent from '../../../../_actions/event-actions/deleteEvent';
+	import toggleClaiming from '../../../../_actions/event-actions/toggleClaiming';
+	import toggleTransfering from '../../../../_actions/event-actions/toggleTransfering';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 </script>
