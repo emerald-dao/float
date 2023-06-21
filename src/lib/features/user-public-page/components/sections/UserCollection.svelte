@@ -1,29 +1,36 @@
 <script type="ts">
 	import Filters from '$lib/components/filters/Filters.svelte';
-	import { InputWrapper, ProgressSteps } from '@emerald-dao/component-library';
+	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import { filterContent } from '../../functions/filterContent';
 	import { createFilters } from '../../functions/filters';
-	import type { Event } from '$lib/types/event/event.interface';
+	import { filterContent } from '../../functions/filterContent';
 	import type { ProgressStates } from '@emerald-dao/component-library/components/ProgressStep/progress-states.type';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Badges from '../atoms/Badges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
 	export let floats: FLOAT[];
-	export let typeOfEventFilter = true;
+
+	let typeOfEventFilter: Filter = {
+		title: 'Type of event',
+		slug: 'type-of-event',
+		filterElement: floats.map((float) => ({
+			icon: 'house',
+			slug: float.eventType
+		})),
+		filterBucket: []
+	};
 
 	let filters: Filter[] = [];
 
 	let activeFilters = {
-		typeOfEvent: typeOfEventFilter
+		typeOfEvent: true
 	};
 
 	onMount(() => {
-		filters = createFilters(activeFilters);
+		filters = createFilters(activeFilters, typeOfEventFilter);
 	});
 
 	$: searchCadence = floats.map((float) => ({
