@@ -1,32 +1,33 @@
-<script>
+<script lang="ts">
+	import type { User } from '$lib/types/user/user.interface';
 	import Icon from '@iconify/svelte';
+
+	export let userData: User;
+	export let floatsClaimed: number;
+	export let eventsCreated: number;
 </script>
 
 <section class="container-small">
-	<img src="/test-toucan.png" alt="float" />
-	<h1 class="medium">mateor.find</h1>
+	<img src={userData.image} alt="float" />
+	<h1 class="medium">{userData.name}</h1>
 	<div class="row-7">
-		<div class="row media-wrapper">
-			<Icon icon="tabler:brand-twitter" width="22" height="22" />
-			<p>@___mateor</p>
-		</div>
-		<div class="row media-wrapper">
-			<Icon icon="tabler:brand-twitter" width="22" height="22" />
-			<p>@___mateor</p>
-		</div>
-		<div class="row media-wrapper">
-			<Icon icon="tabler:brand-twitter" width="22" height="22" />
-			<p>@___mateor</p>
-		</div>
+		{#if userData.socialMedia}
+			{#each Object.entries(userData.socialMedia) as mediaUrl}
+				<div class="row media-wrapper">
+					<Icon icon="tabler:brand-twitter" width="22" height="22" />
+					<p>{mediaUrl}</p>
+				</div>
+			{/each}
+		{/if}
 	</div>
 	<div class="stats-wrapper">
 		<div>
-			<p class="large">26</p>
-			<p class="small">FLOATs claimed</p>
+			<p class="large">{floatsClaimed}</p>
+			<p class="small">Floats Claimed</p>
 		</div>
 		<div>
-			<p class="large">7</p>
-			<p class="small">Events created</p>
+			<p class="large">{eventsCreated}</p>
+			<p class="small">Events Created</p>
 		</div>
 	</div>
 </section>

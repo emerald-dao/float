@@ -11,8 +11,9 @@
 	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Badges from '../atoms/Badges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../stores/searchBar';
+	import type { FLOAT } from '$lib/types/float/float.interface';
 
-	export let contentList: Event[];
+	export let floats: FLOAT[];
 	export let typeOfEventFilter = true;
 
 	let filters: Filter[] = [];
@@ -25,10 +26,10 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchCadence = contentList.map((example) => ({
-		...example,
+	$: searchCadence = floats.map((float) => ({
+		...float,
 
-		searchTerms: `${example.name}`
+		searchTerms: `${float.eventName}`
 	}));
 
 	$: searchStore = createSearchStore(searchCadence);
@@ -39,16 +40,16 @@
 		unsubscribe();
 	});
 
-	let filteredContent: Promise<Event[]> | Event[];
+	let filteredContent: Promise<FLOAT[]> | FLOAT[];
 
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
 		filteredContent = filterContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterContent(filters, contentList, activeFilters);
+		filteredContent = filterContent(filters, floats, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
-		filteredContent = contentList;
+		filteredContent = floats;
 	}
 
 	let steps: Step[] = [];
@@ -123,7 +124,7 @@
 	<div class="rightside">
 		{#await filteredContent then contents}
 			{#if contents.length > 0}
-				{#each contents as content}
+				{#each contents as float}
 					<div class="main-wrapper">
 						<div class="timeline">
 							<div class="line" />
@@ -134,7 +135,7 @@
 							<div class="line" />
 						</div>
 						<div class="tickets">
-							<FloatTicket float={$generatedNft} />
+							<FloatTicket {float} />
 						</div>
 					</div>
 				{/each}

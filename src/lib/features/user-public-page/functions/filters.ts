@@ -1,5 +1,5 @@
 import type { Filter } from '$lib/types/content/filters/filter.interface';
-import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
+import { EVENT_TYPES } from '$lib/types/event/even-type.type';
 
 export const typeOfEventFilter: Filter = {
 	title: 'Type of event',
@@ -7,51 +7,19 @@ export const typeOfEventFilter: Filter = {
 	filterElement: [
 		{
 			icon: 'icon',
-			slug: EventTypeEnum.BirthdayParty
+			slug: EVENT_TYPES[0]
 		},
 		{
 			icon: 'icon',
-			slug: EventTypeEnum.Conference
+			slug: EVENT_TYPES[1]
 		},
 		{
 			icon: 'icon',
-			slug: EventTypeEnum.DiscordAMA
+			slug: EVENT_TYPES[2]
 		},
 		{
 			icon: 'icon',
-			slug: EventTypeEnum.LiveStreaming
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.Online
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.OnsiteCourse
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.ProductLunch
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.Sport
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.Twitter
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.Webinar
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.Workshop
-		},
-		{
-			icon: 'icon',
-			slug: EventTypeEnum.YouTube
+			slug: EVENT_TYPES[3]
 		}
 	],
 	filterBucket: []

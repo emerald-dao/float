@@ -1,4 +1,4 @@
-import type { EventTypeEnum } from '../metadata/event-types.enum';
+import type { EventType } from '$lib/types/event/even-type.type';
 
 export interface Filter {
 	title: string;
@@ -12,4 +12,4 @@ interface FilterElement {
 	slug: FilterSlugs;
 }
 
-export type FilterSlugs = EventTypeEnum;
+export type FilterSlugs = EventType;

@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 
 export const load = async ({ params }) => {
 	try {
-		const overviewFile = await import(`../../../lib/mocks/${params.eventId}.ts`);
+		const overviewFile = await import(`../_mock-data/${params.eventId}.ts`);
 
 		return {
 			overview: overviewFile.overview

@@ -1,7 +1,10 @@
 <script type="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
+	import type { FLOAT } from '$lib/types/float/float.interface';
+
+	export let pinnedFloats: string[];
+	export let floats: FLOAT[];
 </script>
 
 <section class="container">
@@ -9,8 +12,11 @@
 	<div>
 		<Blur color="tertiary" right="22%" top="30%" />
 		<Blur left="22%" bottom="20%" />
-		<FloatTicket float={$generatedNft} />
-		<FloatTicket float={$generatedNft} />
+		{#each pinnedFloats as floatId}
+			{#if floats.find((float) => float.id === floatId)}
+				<FloatTicket float={floats.find((float) => float.id === floatId)} />
+			{/if}
+		{/each}
 	</div>
 </section>
 
