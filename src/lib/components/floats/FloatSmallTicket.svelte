@@ -3,12 +3,17 @@
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
+	import toggleVisibility from '$lib/features/float-actions/toggleFloatVisibility';
+	import burnFloat from '$lib/features/float-actions/burnFloat';
 
 	export let float: FLOAT;
 </script>
 
-<a class="main-wrapper" href={`/admin/my-collection/${float.eventId}`}>
-	<div class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}">
+<div class="main-wrapper">
+	<a
+		class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}"
+		href={`/admin/my-collection/${float.eventId}`}
+	>
 		<div class="row-3 details-wrapper">
 			<img src={float.eventLogo} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
@@ -20,19 +25,19 @@
 			<p class="small">February</p>
 			<p class="medium w-semibold">2023</p>
 		</div>
-	</div>
+	</a>
 
 	<div class="button-wrapper">
-		<Button type="transparent" width="no-width">
-			<Icon icon="mdi:eye-off-outline" color="var(--clr-neutral-600)" />
-		</Button>
+		<button class="header-link" on:click={() => toggleVisibility()}>
+			<Icon icon="mdi:eye-off-outline" />
+		</button>
 	</div>
 	<div class="button-wrapper">
-		<Button type="transparent" width="no-width">
-			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
-		</Button>
+		<button class="header-link danger" on:click={() => burnFloat()}>
+			<Icon icon="ph:trash" />
+		</button>
 	</div>
-</a>
+</div>
 
 <style type="scss">
 	a {
@@ -90,6 +95,16 @@
 		.button-wrapper {
 			display: flex;
 			justify-content: flex-end;
+
+			.header-link {
+				background-color: transparent;
+				border: none;
+				padding: 0;
+
+				&.danger {
+					color: var(--clr-alert-main);
+				}
+			}
 		}
 	}
 </style>

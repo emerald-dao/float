@@ -216,8 +216,8 @@
 			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
 				<p>No results found</p>
 			{:else}
-				{#each $searchStore.filtered as float, i}
-					<FloatSmallTicket {float} {i} />
+				{#each $searchStore.filtered as float}
+					<FloatSmallTicket {float} />
 				{/each}
 			{/if}
 		</div>

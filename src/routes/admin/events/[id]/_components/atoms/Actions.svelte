@@ -1,4 +1,8 @@
 <script>
+	import archiveEvent from '$lib/features/event-actions/archiveEvent';
+	import deleteEvent from '$lib/features/event-actions/deleteEvent';
+	import toggleClaiming from '$lib/features/event-actions/toggleClaiming';
+	import toggleTransfering from '$lib/features/event-actions/toggleTransfering';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 </script>
@@ -11,32 +15,30 @@
 	<div class="column-3">
 		<div class="row-3">
 			<label for="claiming" class="switch">
-				<input type="checkbox" name="claiming" id="claiming" />
+				<input type="checkbox" name="claiming" id="claiming" on:change={() => toggleClaiming()} />
 				<span class="slider" />
 			</label>
 			<p class="small">Claiming ative</p>
 		</div>
 		<div class="row-3">
-			<label for="other" class="switch">
-				<input type="checkbox" name="other" id="other" />
-				<span class="slider" />
-			</label>
-			<p class="small">Other option</p>
-		</div>
-		<div class="row-3">
 			<label for="transfering" class="switch">
-				<input type="checkbox" name="transfering" id="transfering" />
+				<input
+					type="checkbox"
+					name="transfering"
+					id="transfering"
+					on:change={() => toggleTransfering()}
+				/>
 				<span class="slider" />
 			</label>
 			<p class="small">User transfering</p>
 		</div>
 	</div>
 	<div class="event-actions">
-		<Button type="transparent">
+		<Button type="transparent" on:click={() => deleteEvent()}>
 			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
 			<p style="color: var(--clr-alert-main);">Delete Event</p>
 		</Button>
-		<Button type="transparent">
+		<Button type="transparent" on:click={() => archiveEvent()}>
 			<Icon icon="ph:archive-bold" color="var(--clr-text-main)" />
 			<p style="color: var(--clr-text-main);">Archive Event</p>
 		</Button>
