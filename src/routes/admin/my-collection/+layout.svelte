@@ -34,11 +34,6 @@
 			</div>
 			<div class="input-wrapper">
 				<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-				<div class="button-wrapper">
-					<Button type="transparent">
-						<Icon icon="tabler:arrows-sort" color="var(--clr-text-main)" />
-					</Button>
-				</div>
 			</div>
 		</div>
 		<div class="bottom-wrapper">
