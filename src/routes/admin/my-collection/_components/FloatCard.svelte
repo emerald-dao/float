@@ -2,8 +2,8 @@
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
-	import toggleVisibility from '../../../routes/admin/_actions/float-actions/toggleFloatVisibility';
-	import burnFloat from '../../../routes/admin/_actions/float-actions/burnFloat';
+	import toggleVisibility from '../../_actions/float-actions/toggleFloatVisibility';
+	import burnFloat from '../../_actions/float-actions/burnFloat';
 
 	export let float: FLOAT;
 </script>
@@ -16,13 +16,15 @@
 		<div class="row-3 details-wrapper">
 			<img src={float.eventLogo} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
-				<p>{float.eventDescription}</p>
-				<span class="small">{float.eventType}</span>
+				<p class="small">{float.eventName}</p>
+				<span class="xsmall">{float.eventType}</span>
 			</div>
 		</div>
 		<div class="date-wrapper">
-			<p class="small">February</p>
-			<p class="medium w-semibold">2023</p>
+			<p class="xsmall">
+				{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+			</p>
+			<p class="xsmall w-medium">{new Date(float.dateReceived).getFullYear()}</p>
 		</div>
 	</a>
 
@@ -58,6 +60,7 @@
 
 			.details-wrapper {
 				align-items: center;
+
 				.column-1 {
 					p {
 						text-align: left;
@@ -75,10 +78,13 @@
 			}
 
 			.date-wrapper {
+				display: flex;
+				flex-direction: column;
 				background-color: var(--clr-primary-badge);
 				border-radius: var(--radius-2);
 				padding: var(--space-3);
 				text-align: center;
+				justify-content: center;
 
 				p {
 					color: var(--clr-primary-main);

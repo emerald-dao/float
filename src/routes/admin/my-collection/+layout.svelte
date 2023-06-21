@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
-	import FloatSmallTicket from '$lib/components/floats/FloatSmallTicket.svelte';
+	import FloatCard from './_components/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, setContext } from 'svelte';
 
@@ -46,7 +46,7 @@
 				<p>No results found</p>
 			{:else}
 				{#each $searchStore.filtered as float}
-					<FloatSmallTicket {float} />
+					<FloatCard {float} />
 				{/each}
 			{/if}
 		</div>
