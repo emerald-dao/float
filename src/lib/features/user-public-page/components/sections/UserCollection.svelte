@@ -59,7 +59,6 @@
 		filteredContent = floats;
 	}
 
-	let steps: Step[] = [];
 	let badges: BadgesInterface[] = [];
 
 	interface Step {
@@ -71,25 +70,6 @@
 		icon: string;
 		name: string;
 	}
-
-	steps = [
-		{
-			name: '2020',
-			state: 'inactive'
-		},
-		{
-			name: '2021',
-			state: 'inactive'
-		},
-		{
-			name: '2022',
-			state: 'inactive'
-		},
-		{
-			name: '2023',
-			state: 'inactive'
-		}
-	];
 
 	badges = [
 		{
@@ -136,8 +116,10 @@
 						<div class="timeline">
 							<div class="line" />
 							<div class="date-wrapper">
-								<p class="small">February</p>
-								<p class="large w-medium">2023</p>
+								<p class="small">
+									{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+								</p>
+								<p class="large w-medium">{new Date(float.dateReceived).getFullYear()}</p>
 							</div>
 							<div class="line" />
 						</div>
