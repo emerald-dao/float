@@ -43,7 +43,9 @@
 	<slot />
 </main>
 
-<!-- <Footer {navElements} {emeraldTools} socials={socialMedia} /> -->
+{#if route === null}
+	<Footer {navElements} {emeraldTools} socials={socialMedia} />
+{/if}
 
 <style lang="scss">
 	main {
