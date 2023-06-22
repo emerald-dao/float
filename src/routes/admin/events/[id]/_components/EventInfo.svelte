@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Icon from '@iconify/svelte';
@@ -73,7 +73,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;

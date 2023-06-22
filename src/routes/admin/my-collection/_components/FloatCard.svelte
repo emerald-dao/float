@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
@@ -40,7 +40,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	a {
 		text-decoration: none;
 		color: unset;

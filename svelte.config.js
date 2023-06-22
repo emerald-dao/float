@@ -14,7 +14,7 @@ const config = {
 
 	preprocess: [
 		preprocess({
-			postcss: true,
+			postcss: false, // this is turned off because it breaks CSS container query
 			scss: {
 				prependData: `@import './node_modules/@emerald-dao/component-library/styles/utils/mixins';`
 			}

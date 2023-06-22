@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { StatsSection } from '@emerald-dao/component-library';
 	import {
 		EventTypesSection,

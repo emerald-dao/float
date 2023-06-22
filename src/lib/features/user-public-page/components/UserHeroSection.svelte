@@ -32,7 +32,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		display: flex;
 		flex-direction: column;

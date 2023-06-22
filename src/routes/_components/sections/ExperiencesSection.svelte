@@ -151,7 +151,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		overflow-x: hidden;
 		position: relative;

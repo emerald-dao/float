@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Icon from '@iconify/svelte';
 </script>
 
@@ -13,7 +13,7 @@
 	</a>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.column-6 {
 		padding: var(--space-6) 0;
 

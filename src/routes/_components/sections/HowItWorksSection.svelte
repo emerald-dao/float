@@ -40,7 +40,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	.cards-wrapper {
 		display: flex;
 		flex-direction: column;

@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
@@ -33,7 +33,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;

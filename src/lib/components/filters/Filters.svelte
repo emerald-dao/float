@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import TagToggle from '$lib/components/atoms/TagToggle.svelte';
 	import type { Filter, FilterSlugs } from '$lib/types/content/filters/filter.interface';
 
@@ -39,7 +39,7 @@
 	</div>
 {/each}
 
-<style type="scss">
+<style lang="scss">
 	h5 {
 		margin-bottom: var(--space-3);
 		font-size: var(--font-size-3);

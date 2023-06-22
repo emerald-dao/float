@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	export let claim: Claim;
 
 	interface Claim {
@@ -27,7 +27,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;

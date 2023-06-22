@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Filters from '$lib/components/filters/Filters.svelte';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
@@ -135,7 +135,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.content-wrapper {
 		display: flex;
 		flex-direction: column;

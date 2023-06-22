@@ -47,7 +47,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	.container-small {
 		background-color: var(--clr-neutral-50);
 		padding: var(--space-16);

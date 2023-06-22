@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { getContext } from 'svelte';
 	import FloatInfo from './_components/FloatInfo.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';

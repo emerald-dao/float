@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { User } from '$lib/types/user/user.interface';
 	import UserCollection from './sections/UserCollection.svelte';
@@ -25,7 +25,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	.header-wrapper {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);

@@ -45,7 +45,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.domains-wrapper {
 		display: flex;
 		flex-direction: column;
