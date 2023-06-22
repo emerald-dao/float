@@ -11,5 +11,17 @@
 	floatsClaimed={data.floats.length}
 	eventsCreated={data.events.length}
 />
-<PinnedFloats pinnedFloats={data.user.pinnedFloats} floats={data.floats} />
+<div>
+	<PinnedFloats pinnedFloats={data.user.pinnedFloats} floats={data.floats} />
+</div>
 <UserActivity floats={data.floats} userData={data.user} />
+
+<style type="scss">
+	div {
+		display: none;
+
+		@include mq(small) {
+			display: block;
+		}
+	}
+</style>

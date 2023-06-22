@@ -36,7 +36,7 @@
 
 	.main-wrapper {
 		display: grid;
-		grid-template-columns: 0.9fr 1fr;
+		grid-template-columns: 1fr 0.5fr;
 		justify-content: space-between;
 		border: var(--border-width-primary) solid var(--clr-border-primary);
 		border-radius: var(--radius-4);

@@ -25,39 +25,51 @@
 	</div>
 </section>
 
-<style lang="scss">
-	.header-wrapper {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		justify-content: center;
-		align-items: center;
-		text-align: center;
-		position: sticky;
-		top: 10px;
-		z-index: 1000;
-		background-color: var(--clr-background-primary);
+<style type="scss">
+	section {
+		padding-block: 0;
 
-		.row {
-			align-items: center;
-			gap: var(--space-4);
+		@include mq(small) {
+			padding-block: 4rem;
+		}
+		.header-wrapper {
+			display: none;
 
-			img {
-				width: 56px;
-				height: 56px;
-				border-radius: 50%;
+			@include mq(small) {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+				position: sticky;
+				top: 0;
+				z-index: 1000;
+				background-color: var(--clr-background-primary);
+				padding: var(--space-2) 0;
 			}
 
-			p {
-				color: var(--clr-heading-main);
+			.row {
+				align-items: center;
+				gap: var(--space-4);
+
+				img {
+					width: 56px;
+					height: 56px;
+					border-radius: 50%;
+				}
+
+				p {
+					color: var(--clr-heading-main);
+				}
 			}
-		}
 
-		.title-wrapper {
-			text-align: center;
-		}
+			.title-wrapper {
+				text-align: center;
+			}
 
-		.right-wrapper {
-			text-align: right;
+			.right-wrapper {
+				text-align: right;
+			}
 		}
 	}
 </style>
