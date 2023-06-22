@@ -149,7 +149,6 @@
 	.content-wrapper {
 		display: flex;
 		flex-direction: column;
-		align-items: flex-start;
 		gap: var(--space-5);
 		margin-top: var(--space-12);
 
@@ -187,8 +186,14 @@
 			align-items: center;
 
 			.main-wrapper {
-				display: grid;
-				grid-template-columns: 1fr 3fr;
+				display: flex;
+				flex-direction: column;
+				justify-content: center;
+
+				@include mq(small) {
+					display: grid;
+					grid-template-columns: 1fr 3fr;
+				}
 
 				.timeline {
 					display: flex;
@@ -196,9 +201,11 @@
 					align-items: center;
 
 					.line {
-						flex: 1;
-						border: 1px dashed rgba(56, 232, 198, 0.1);
-						width: 2px;
+						@include mq(small) {
+							flex: 1;
+							border: 1px dashed rgba(56, 232, 198, 0.1);
+							width: 2px;
+						}
 					}
 
 					.date-wrapper {
@@ -214,8 +221,11 @@
 				}
 
 				.tickets {
-					overflow: hidden;
-					padding: var(--space-12) var(--space-9);
+					padding: var(--space-6) var(--space-4);
+
+					@include mq(small) {
+						padding: var(--space-12) var(--space-9);
+					}
 				}
 			}
 		}

@@ -64,5 +64,17 @@
 </script>
 
 <UserHeroSection />
-<PinnedFloats />
+<div>
+	<PinnedFloats />
+</div>
 <UserActivity {contentList} />
+
+<style type="scss">
+	div {
+		display: none;
+
+		@include mq(small) {
+			display: block;
+		}
+	}
+</style>

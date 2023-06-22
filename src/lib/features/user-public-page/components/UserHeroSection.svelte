@@ -5,7 +5,7 @@
 <section class="container-small">
 	<img src="/test-toucan.png" alt="float" />
 	<h1 class="medium">mateor.find</h1>
-	<div class="row-7">
+	<div class="social-media">
 		<div class="row media-wrapper">
 			<Icon icon="tabler:brand-twitter" width="22" height="22" />
 			<p>@___mateor</p>
@@ -38,6 +38,11 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--space-6);
+		padding-block: 4rem 0;
+
+		@include mq(small) {
+			padding-block: 4rem;
+		}
 
 		img {
 			width: 260px;
@@ -45,11 +50,22 @@
 			border-radius: 50%;
 		}
 
-		.media-wrapper {
-			gap: var(--space-1);
-			border: 1px solid var(--clr-border-primary);
-			padding: var(--space-2) var(--space-3);
-			border-radius: var(--radius-3);
+		.social-media {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-2);
+
+			@include mq(small) {
+				flex-direction: row;
+				gap: var(--space-7);
+			}
+
+			.media-wrapper {
+				gap: var(--space-1);
+				border: 1px solid var(--clr-border-primary);
+				padding: var(--space-2) var(--space-3);
+				border-radius: var(--radius-3);
+			}
 		}
 
 		.stats-wrapper {

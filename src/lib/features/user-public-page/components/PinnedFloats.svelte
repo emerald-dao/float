@@ -9,8 +9,10 @@
 	<div>
 		<Blur color="tertiary" right="22%" top="30%" />
 		<Blur left="22%" bottom="20%" />
-		<FloatTicket float={$generatedNft} />
-		<FloatTicket float={$generatedNft} />
+		<div class="floats-wrapper">
+			<FloatTicket float={$generatedNft} />
+			<FloatTicket float={$generatedNft} />
+		</div>
 	</div>
 </section>
 
@@ -22,10 +24,16 @@
 		gap: var(--space-13);
 		align-items: center;
 
-		div {
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
+		.floats-wrapper {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 			gap: var(--space-11);
+
+			@include mq(medium) {
+				flex-direction: row;
+			}
 		}
 	}
 </style>

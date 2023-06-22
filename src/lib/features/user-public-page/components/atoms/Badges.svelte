@@ -25,6 +25,14 @@
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 
+		@include mq(small) {
+			grid-template-columns: repeat(5, 1fr);
+		}
+
+		@include mq(medium) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
 		.main-wrapper {
 			display: flex;
 			flex-direction: column;
