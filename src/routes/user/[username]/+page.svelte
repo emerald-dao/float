@@ -1,7 +1,7 @@
 <script>
-	import PinnedFloats from '$lib/features/user-public-page/components/PinnedFloats.svelte';
-	import UserActivity from '$lib/features/user-public-page/components/UserActivity.svelte';
-	import UserHeroSection from '$lib/features/user-public-page/components/UserHeroSection.svelte';
+	import PinnedFloats from '../_components/PinnedFloats.svelte';
+	import UserActivity from '../_components/UserActivity.svelte';
+	import UserHeroSection from '../_components/UserHeroSection.svelte';
 
 	export let data;
 </script>

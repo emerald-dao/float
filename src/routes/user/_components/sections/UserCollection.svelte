@@ -3,13 +3,13 @@
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import { createFilters } from '../../functions/filters';
-	import { filterContent } from '../../functions/filterContent';
 	import type { ProgressStates } from '@emerald-dao/component-library/components/ProgressStep/progress-states.type';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Badges from '../atoms/Badges.svelte';
-	import { createSearchStore, searchHandler } from '../../../../stores/searchBar';
+	import { createSearchStore, searchHandler } from '../../../../lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import { createFilters } from '../../_functions/filters';
+	import { filterContent } from '../../_functions/filterContent';
 
 	export let floats: FLOAT[];
 
