@@ -216,8 +216,8 @@
 			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
 				<p>No results found</p>
 			{:else}
-				{#each $searchStore.filtered as float, i}
-					<FloatSmallTicket {float} {i} />
+				{#each $searchStore.filtered as float}
+					<FloatSmallTicket {float} />
 				{/each}
 			{/if}
 		</div>
@@ -229,10 +229,14 @@
 
 <style type="scss">
 	.main-wrapper {
-		display: grid;
-		grid-template-columns: 2fr 3fr;
-		justify-content: center;
-		gap: var(--space-4);
+		display: block;
+
+		@include mq(small) {
+			display: grid;
+			grid-template-columns: 0.9fr 1fr;
+			justify-content: center;
+			gap: var(--space-4);
+		}
 
 		.left-wrapper {
 			display: flex;
@@ -278,7 +282,12 @@
 		}
 
 		.right-wrapper {
-			background-color: var(--clr-background-secondary);
+			display: none;
+
+			@include mq(small) {
+				display: block;
+				background-color: var(--clr-background-secondary);
+			}
 		}
 	}
 </style>
