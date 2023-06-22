@@ -71,13 +71,18 @@
 			}
 
 			.date-wrapper {
-				background-color: var(--clr-primary-badge);
-				border-radius: var(--radius-2);
-				padding: var(--space-3);
-				text-align: center;
+				display: none;
 
-				p {
-					color: var(--clr-primary-main);
+				@include mq(medium) {
+					display: block;
+					background-color: var(--clr-primary-badge);
+					border-radius: var(--radius-2);
+					padding: var(--space-3);
+					text-align: center;
+
+					p {
+						color: var(--clr-primary-main);
+					}
 				}
 			}
 		}
