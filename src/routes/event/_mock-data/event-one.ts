@@ -1,4 +1,4 @@
-import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
+import { EVENT_TYPES } from '$lib/types/event/even-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 
 export const overview: Event = {
@@ -14,8 +14,8 @@ export const overview: Event = {
 	totalSupply: '2,306',
 	transferrable: false,
 	url: 'https://www.google.com.uy/',
-	verifiers: [{ dateStart: '06/05/2023', dateEnding: '06/20/2023' }],
+	verifiers: [],
 
 	// Added by Chino
-	eventType: EventTypeEnum.Workshop
+	eventType: EVENT_TYPES[0]
 };

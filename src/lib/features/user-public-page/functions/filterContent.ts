@@ -1,9 +1,9 @@
 import type { Filter } from '$lib/types/content/filters/filter.interface';
-import type { Event } from '$lib/types/event/event.interface';
+import type { FLOAT } from '$lib/types/float/float.interface';
 
 export const filterContent = async (
 	_filters: Filter[],
-	contents: Event[],
+	contents: FLOAT[],
 	activeFilters: {
 		typeOfEvent: boolean;
 	}
@@ -17,7 +17,7 @@ export const filterContent = async (
 	return filteredContent;
 };
 
-const filterTypeOfEvent = async (_filters: Filter[], contents: Event[]) => {
+const filterTypeOfEvent = async (_filters: Filter[], contents: FLOAT[]) => {
 	const filter = _filters.filter((flt) => {
 		return flt.slug === 'type-of-event';
 	});

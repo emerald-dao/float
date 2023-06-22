@@ -4,6 +4,7 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import { Button } from '@emerald-dao/component-library';
 	import { onMount } from 'svelte';
+	import claimFloat from '../../../routes/event/_actions/claimFloat';
 
 	export let event: Event;
 
@@ -57,7 +58,7 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<Button size="medium" width="extended"><p>Claim FLOAT</p></Button>
+	<Button size="medium" width="extended" on:click={() => claimFloat()}><p>Claim FLOAT</p></Button>
 </section>
 
 <style type="scss">

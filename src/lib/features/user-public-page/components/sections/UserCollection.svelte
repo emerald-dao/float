@@ -1,34 +1,42 @@
 <script type="ts">
 	import Filters from '$lib/components/filters/Filters.svelte';
-	import { InputWrapper, ProgressSteps } from '@emerald-dao/component-library';
+	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import { filterContent } from '../../functions/filterContent';
 	import { createFilters } from '../../functions/filters';
-	import type { Event } from '$lib/types/event/event.interface';
+	import { filterContent } from '../../functions/filterContent';
 	import type { ProgressStates } from '@emerald-dao/component-library/components/ProgressStep/progress-states.type';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Badges from '../atoms/Badges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../stores/searchBar';
+	import type { FLOAT } from '$lib/types/float/float.interface';
 
-	export let contentList: Event[];
-	export let typeOfEventFilter = true;
+	export let floats: FLOAT[];
+
+	let typeOfEventFilter: Filter = {
+		title: 'Type of event',
+		slug: 'type-of-event',
+		filterElement: floats.map((float) => ({
+			icon: 'house',
+			slug: float.eventType
+		})),
+		filterBucket: []
+	};
 
 	let filters: Filter[] = [];
 
 	let activeFilters = {
-		typeOfEvent: typeOfEventFilter
+		typeOfEvent: true
 	};
 
 	onMount(() => {
-		filters = createFilters(activeFilters);
+		filters = createFilters(activeFilters, typeOfEventFilter);
 	});
 
-	$: searchCadence = contentList.map((example) => ({
-		...example,
+	$: searchCadence = floats.map((float) => ({
+		...float,
 
-		searchTerms: `${example.name}`
+		searchTerms: `${float.eventName}`
 	}));
 
 	$: searchStore = createSearchStore(searchCadence);
@@ -39,19 +47,18 @@
 		unsubscribe();
 	});
 
-	let filteredContent: Promise<Event[]> | Event[];
+	let filteredContent: Promise<FLOAT[]> | FLOAT[];
 
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
 		filteredContent = filterContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterContent(filters, contentList, activeFilters);
+		filteredContent = filterContent(filters, floats, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
-		filteredContent = contentList;
+		filteredContent = floats;
 	}
 
-	let steps: Step[] = [];
 	let badges: BadgesInterface[] = [];
 
 	interface Step {
@@ -63,25 +70,6 @@
 		icon: string;
 		name: string;
 	}
-
-	steps = [
-		{
-			name: '2020',
-			state: 'inactive'
-		},
-		{
-			name: '2021',
-			state: 'inactive'
-		},
-		{
-			name: '2022',
-			state: 'inactive'
-		},
-		{
-			name: '2023',
-			state: 'inactive'
-		}
-	];
 
 	badges = [
 		{
@@ -123,18 +111,20 @@
 	<div class="rightside">
 		{#await filteredContent then contents}
 			{#if contents.length > 0}
-				{#each contents as content}
+				{#each contents as float}
 					<div class="main-wrapper">
 						<div class="timeline">
 							<div class="line" />
 							<div class="date-wrapper">
-								<p class="small">February</p>
-								<p class="large w-medium">2023</p>
+								<p class="small">
+									{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+								</p>
+								<p class="large w-medium">{new Date(float.dateReceived).getFullYear()}</p>
 							</div>
 							<div class="line" />
 						</div>
 						<div class="tickets">
-							<FloatTicket float={$generatedNft} />
+							<FloatTicket {float} />
 						</div>
 					</div>
 				{/each}

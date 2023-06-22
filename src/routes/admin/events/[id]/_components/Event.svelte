@@ -1,10 +1,10 @@
 <script type="ts">
 	import { fly } from 'svelte/transition';
 	import type { Event } from '$lib/types/event/event.interface';
-	import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
 	import Domain from './atoms/Domain.svelte';
 	import Actions from './atoms/Actions.svelte';
 	import EventInfo from './EventInfo.svelte';
+	import { EVENT_TYPES } from '$lib/types/event/even-type.type';
 
 	let event: Event = {
 		claimable: true,
@@ -21,7 +21,7 @@
 		transferrable: false,
 		url: 'https://www.google.com.uy/',
 		verifiers: [],
-		eventType: EventTypeEnum.Conference
+		eventType: EVENT_TYPES[0]
 	};
 
 	let claimableLinks = [

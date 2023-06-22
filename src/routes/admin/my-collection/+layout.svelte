@@ -1,187 +1,16 @@
 <script type="ts">
 	import { fly } from 'svelte/transition';
-	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
-	import FloatSmallTicket from '$lib/components/floats/FloatSmallTicket.svelte';
+	import FloatCard from './_components/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, setContext } from 'svelte';
 
-	const floats: FLOAT[] = [
-		{
-			id: '1234',
-			dateReceived: '6/14/2023',
-			eventDescription: 'Event description 1',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO',
+	export let data;
 
-			eventId: '12',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
+	setContext('floats', data.floats);
 
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '5/14/2023',
-			eventDescription: 'Event description 2',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'workshop',
-			eventHost: 'Emerald DAO',
-
-			eventId: '34',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/14/2023',
-			eventDescription: 'Event description 3',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'conference',
-			eventHost: 'Emerald DAO',
-
-			eventId: '56',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '78',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '910',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '1112',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '1314',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '1516',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		},
-		{
-			id: '1234',
-			dateReceived: '4/5/2023',
-			eventDescription: 'Event description 4',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'other',
-			eventHost: 'Emerald DAO',
-
-			eventId: '1718',
-			eventImage:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-			eventLogo:
-				'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-
-			serial: 'NO IDEA',
-			totalSupply: null,
-			transferrable: false
-		}
-	];
-
-	$: searchEvent = floats.map((example) => ({
+	$: searchEvent = data.floats.map((example) => ({
 		...example,
 
 		searchTerms: `${example.eventName} ${example.eventId}`
@@ -205,11 +34,6 @@
 			</div>
 			<div class="input-wrapper">
 				<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-				<div class="button-wrapper">
-					<Button type="transparent">
-						<Icon icon="tabler:arrows-sort" color="var(--clr-text-main)" />
-					</Button>
-				</div>
 			</div>
 		</div>
 		<div class="bottom-wrapper">
@@ -217,7 +41,7 @@
 				<p>No results found</p>
 			{:else}
 				{#each $searchStore.filtered as float}
-					<FloatSmallTicket {float} />
+					<FloatCard {float} />
 				{/each}
 			{/if}
 		</div>
@@ -266,11 +90,6 @@
 					display: grid;
 					grid-template-columns: 3fr 1fr;
 					justify-content: space-between;
-
-					.button-wrapper {
-						display: flex;
-						justify-content: flex-end;
-					}
 				}
 			}
 
