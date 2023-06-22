@@ -12,13 +12,13 @@
 	<div>
 		<Blur color="tertiary" right="22%" top="30%" />
 		<Blur left="22%" bottom="20%" />
-		{#each pinnedFloats as floatId}
-			{#if floats.find((float) => float.id === floatId)}
-				<div class="floats-wrapper">
+		<div class="floats-wrapper">
+			{#each pinnedFloats as floatId}
+				{#if floats.find((float) => float.id === floatId)}
 					<FloatTicket float={floats.find((float) => float.id === floatId)} />
-				</div>
-			{/if}
-		{/each}
+				{/if}
+			{/each}
+		</div>
 	</div>
 </section>
 
