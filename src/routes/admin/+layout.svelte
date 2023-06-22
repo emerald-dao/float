@@ -32,8 +32,6 @@
 	.container-large {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-8);
-		overflow: hidden;
 
 		@include mq(medium) {
 			display: grid;
@@ -42,7 +40,12 @@
 		}
 
 		.nav-wrapper {
-			border-right: 2px solid var(--clr-neutral-900);
+			border-bottom: 1px solid var(--clr-neutral-700);
+
+			@include mq(medium) {
+				border-bottom: none;
+				border-right: 1px solid var(--clr-neutral-700);
+			}
 		}
 	}
 </style>
