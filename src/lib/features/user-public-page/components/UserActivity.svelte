@@ -25,13 +25,14 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		padding-block: 0;
 
 		@include mq(small) {
 			padding-block: 4rem;
 		}
+
 		.header-wrapper {
 			display: none;
 

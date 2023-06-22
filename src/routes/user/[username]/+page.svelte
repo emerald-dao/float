@@ -16,7 +16,7 @@
 </div>
 <UserActivity floats={data.floats} userData={data.user} />
 
-<style type="scss">
+<style lang="scss">
 	div {
 		display: none;
 
