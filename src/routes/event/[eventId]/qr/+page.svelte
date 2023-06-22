@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import EventQrCard from '$lib/components/EventQRCard.svelte';
 </script>

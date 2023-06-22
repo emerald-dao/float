@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { page } from '$app/stores';
 	import AdminHeader from './_components/navigation/AdminHeader.svelte';
 	import AdminNav from './_components/navigation/AdminNav.svelte';
@@ -28,7 +28,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.container-large {
 		display: flex;
 		flex-direction: column;

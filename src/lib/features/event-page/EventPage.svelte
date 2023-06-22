@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { Event } from '$lib/types/event/event.interface';
@@ -61,7 +61,7 @@
 	<Button size="medium" width="extended" on:click={() => claimFloat()}><p>Claim FLOAT</p></Button>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		position: relative;
 		display: flex;

@@ -145,13 +145,13 @@
 	<div class="floats-wrapper">
 		{#each multiplyArray(FLOATS, 30) as float, i}
 			<div class="float-{i}">
-				<FloatTicket {float} />
+				<FloatTicket {float} minWidth="400px" />
 			</div>
 		{/each}
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		overflow-x: hidden;
 		position: relative;

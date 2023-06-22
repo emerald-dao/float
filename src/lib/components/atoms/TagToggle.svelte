@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { Label } from '@emerald-dao/component-library';
 	import { createEventDispatcher } from 'svelte';
 

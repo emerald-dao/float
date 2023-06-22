@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
 	import { Label } from '@emerald-dao/component-library';
 	import EventTypeCard from './atoms/EventTypeCard.svelte';
 	import SectionHeading from '../atoms/SectionHeading.svelte';
@@ -84,7 +84,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	.labels-wrapper {
 		display: flex;
 		flex-wrap: wrap;

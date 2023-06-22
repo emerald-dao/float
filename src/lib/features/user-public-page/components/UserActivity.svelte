@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { User } from '$lib/types/user/user.interface';
 	import UserCollection from './sections/UserCollection.svelte';

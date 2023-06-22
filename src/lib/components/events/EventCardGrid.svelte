@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
@@ -28,7 +28,7 @@
 	</div>
 </a>
 
-<style type="scss">
+<style lang="scss">
 	a {
 		text-decoration: none;
 		color: unset;

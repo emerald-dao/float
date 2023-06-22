@@ -1,7 +1,5 @@
-<script type="ts">
+<script lang="ts">
 	import { fly } from 'svelte/transition';
-	import { Button } from '@emerald-dao/component-library';
-	import Icon from '@iconify/svelte';
 	import FloatCard from './_components/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, setContext } from 'svelte';
@@ -51,7 +49,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: block;
 

@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import '../app.postcss';
 	import '@emerald-dao/design-system/build/variables-dark.css';
 	import '@emerald-dao/design-system/build/variables-light.css';
@@ -45,7 +45,7 @@
 
 <!-- <Footer {navElements} {emeraldTools} socials={socialMedia} /> -->
 
-<style type="scss">
+<style lang="scss">
 	main {
 		display: flex;
 		flex-direction: column;

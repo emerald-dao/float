@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { fly } from 'svelte/transition';
 	import type { Event } from '$lib/types/event/event.interface';
 	import Domain from './atoms/Domain.svelte';
@@ -47,7 +47,7 @@
 	</div>
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;

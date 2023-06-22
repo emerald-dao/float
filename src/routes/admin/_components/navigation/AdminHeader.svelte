@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
 
@@ -21,7 +21,7 @@
 	</div>
 </header>
 
-<style type="scss">
+<style lang="scss">
 	header {
 		background-color: var(--clr-background-primary);
 		z-index: 999;

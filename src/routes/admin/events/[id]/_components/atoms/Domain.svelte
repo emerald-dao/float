@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 
@@ -50,7 +50,7 @@
 	{/each}
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.domains-wrapper {
 		display: flex;
 		flex-direction: column;

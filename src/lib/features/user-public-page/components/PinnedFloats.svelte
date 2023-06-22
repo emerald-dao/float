@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
@@ -22,7 +22,7 @@
 	</div>
 </section>
 
-<style type="scss">
+<style lang="scss">
 	section {
 		position: relative;
 		display: flex;

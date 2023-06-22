@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
@@ -79,7 +79,7 @@
 	{/if}
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;

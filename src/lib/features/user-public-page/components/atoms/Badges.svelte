@@ -1,4 +1,4 @@
-<script type="ts">
+<script lang="ts">
 	import Icon from '@iconify/svelte';
 
 	export let badges: Badges[];
@@ -20,7 +20,7 @@
 	{/each}
 </div>
 
-<style type="scss">
+<style lang="scss">
 	.badges-wrapper {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
