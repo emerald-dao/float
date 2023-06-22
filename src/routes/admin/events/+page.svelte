@@ -5,13 +5,28 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import { EventTypeEnum } from '$lib/types/content/metadata/event-types.enum';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import EventCardList from '$lib/components/events/EventCardList.svelte';
 	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
 
 	let viewEventsMode: 'grid' | 'list' = 'grid';
 
-	// Function to handle button click
+	const setDefaultViewMode = () => {
+		const screenWidth = window.innerWidth;
+
+		if (screenWidth < 640) {
+			viewEventsMode = 'grid';
+		}
+	};
+
+	onMount(() => {
+		window.addEventListener('resize', setDefaultViewMode);
+
+		return () => {
+			window.removeEventListener('resize', setDefaultViewMode);
+		};
+	});
+
 	function handleButtonClick(buttonType: 'grid' | 'list') {
 		viewEventsMode = buttonType;
 	}
@@ -101,7 +116,7 @@
 					<Icon icon="basil:layout-outline" color="var(--clr-heading-inverse)" />
 				</Button>
 			</div>
-			<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : 'unselected'}`}>
+			<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : 'unselected'} list`}>
 				<Button type="transparent" on:click={() => handleButtonClick('list')}>
 					<Icon icon="ic:round-list" color="var(--clr-heading-inverse)" />
 				</Button>
@@ -147,6 +162,12 @@
 					border-radius: var(--radius-1);
 				}
 
+				.list {
+					display: none;
+					@include mq(small) {
+						display: flex;
+					}
+				}
 				.selected {
 					background-color: var(--clr-primary-500);
 				}
@@ -158,10 +179,16 @@
 		}
 
 		.events-wrapper {
+			display: flex;
+			flex-direction: column;
 			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
 			gap: var(--space-10);
+
+			@include mq(medium) {
+				display: grid;
+				grid-template-columns: repeat(2, 1fr);
+				width: 100%;
+			}
 		}
 
 		.list {
