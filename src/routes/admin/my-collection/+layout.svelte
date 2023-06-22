@@ -53,10 +53,14 @@
 
 <style type="scss">
 	.main-wrapper {
-		display: grid;
-		grid-template-columns: 2fr 3fr;
-		justify-content: center;
-		gap: var(--space-4);
+		display: block;
+
+		@include mq(small) {
+			display: grid;
+			grid-template-columns: 0.9fr 1fr;
+			justify-content: center;
+			gap: var(--space-4);
+		}
 
 		.left-wrapper {
 			display: flex;
@@ -86,11 +90,6 @@
 					display: grid;
 					grid-template-columns: 3fr 1fr;
 					justify-content: space-between;
-
-					.button-wrapper {
-						display: flex;
-						justify-content: flex-end;
-					}
 				}
 			}
 
@@ -102,7 +101,12 @@
 		}
 
 		.right-wrapper {
-			background-color: var(--clr-background-secondary);
+			display: none;
+
+			@include mq(small) {
+				display: block;
+				background-color: var(--clr-background-secondary);
+			}
 		}
 	}
 </style>

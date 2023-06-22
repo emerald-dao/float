@@ -49,16 +49,27 @@
 
 <style type="scss">
 	.main-wrapper {
-		display: grid;
-		grid-template-columns: 2fr 3fr;
+		display: flex;
+		flex-direction: column;
 		justify-content: center;
-		gap: var(--space-6);
+
+		@include mq(medium) {
+			display: grid;
+			grid-template-columns: 2fr 3fr;
+			justify-content: center;
+			gap: var(--space-6);
+		}
 
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-10);
 			padding: var(--space-6) 0;
+			border-bottom: 4px solid var(--clr-border-primary);
+
+			@include mq(medium) {
+				border-bottom: none;
+			}
 
 			.header-wrapper {
 				display: flex;
@@ -80,7 +91,9 @@
 		}
 
 		.right-wrapper {
-			background-color: var(--clr-background-secondary);
+			@include mq(medium) {
+				background-color: var(--clr-background-secondary);
+			}
 		}
 	}
 </style>

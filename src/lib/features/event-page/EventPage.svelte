@@ -68,7 +68,6 @@
 		flex-direction: column;
 		align-items: center;
 		gap: var(--space-13);
-		overflow: hidden;
 
 		.main-wrapper {
 			display: flex;
@@ -80,7 +79,7 @@
 			.side-wrapper {
 				display: none;
 
-				@include mq('medium') {
+				@include mq(medium) {
 					display: block;
 					h4 {
 						color: var(--clr-text-main);

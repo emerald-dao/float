@@ -10,7 +10,7 @@
 <section class="container-small">
 	<img src={userData.image} alt="float" />
 	<h1 class="medium">{userData.name}</h1>
-	<div class="row-7">
+	<div class="social-media">
 		{#if userData.socialMedia}
 			{#each Object.entries(userData.socialMedia) as mediaUrl}
 				<div class="row media-wrapper">
@@ -39,6 +39,11 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--space-6);
+		padding-block: 4rem 0;
+
+		@include mq(small) {
+			padding-block: 4rem;
+		}
 
 		img {
 			width: 260px;
@@ -46,11 +51,22 @@
 			border-radius: 50%;
 		}
 
-		.media-wrapper {
-			gap: var(--space-1);
-			border: 1px solid var(--clr-border-primary);
-			padding: var(--space-2) var(--space-3);
-			border-radius: var(--radius-3);
+		.social-media {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-2);
+
+			@include mq(small) {
+				flex-direction: row;
+				gap: var(--space-7);
+			}
+
+			.media-wrapper {
+				gap: var(--space-1);
+				border: 1px solid var(--clr-border-primary);
+				padding: var(--space-2) var(--space-3);
+				border-radius: var(--radius-3);
+			}
 		}
 
 		.stats-wrapper {

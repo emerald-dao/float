@@ -86,9 +86,12 @@
 			justify-content: space-between;
 			width: 100%;
 			align-items: center;
-			padding: var(--space-6) var(--space-12);
-			padding-bottom: var(--space-4);
+			padding: var(--space-4) var(--space-4);
 			border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
+
+			@include mq(medium) {
+				padding: var(--space-6) var(--space-12);
+			}
 
 			.status-wrapper {
 				display: flex;
@@ -117,7 +120,6 @@
 		}
 
 		.ticket-wrapper {
-			overflow: hidden;
 			padding: 0 var(--space-3);
 		}
 
