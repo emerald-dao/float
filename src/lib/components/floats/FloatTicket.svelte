@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import type { FLOAT } from '$lib/types/float/float.interface';
-	import { Label } from '@emerald-dao/component-library';
 
 	export let float: FLOAT;
 	export let showBack = false;
+	export let minWidth = '300px';
+	export let maxWidth = '600px';
 
-	let hover: boolean = false;
+	let flip: boolean = false;
 
 	// When the FLOAT ticket is rendered in the Event Generator, we receive the image as a File, not a URL.
 	// The reactive statement bellow, checks if the image is a File and then transforms it into a base 64 format.
@@ -43,13 +44,15 @@
 	};
 </script>
 
-<!-- on:mouseenter={() => (hover = true)}
-on:mouseleave={() => (hover = false)} -->
-<div class="main-wrapper">
+<div
+	class="main-wrapper"
+	style={`min-width: ${minWidth}; max-width: ${maxWidth}`}
+	on:click={() => (flip = !flip)}
+>
 	<div
 		class="secondary-wrapper"
-		class:flip={hover || showBack}
-		class:inverse-flip={showBack && hover}
+		class:flip={flip || showBack}
+		class:inverse-flip={showBack && flip}
 	>
 		<div class="float-front">
 			<div class="content">
@@ -91,10 +94,9 @@ on:mouseleave={() => (hover = false)} -->
 	.main-wrapper {
 		perspective: 1400px;
 		width: 100%;
-		max-width: 600px;
-		min-width: 300px;
 		container-type: inline-size;
 		container-name: ticket;
+		cursor: pointer;
 
 		@container ticket (max-width: 500px) {
 			.secondary-wrapper {
