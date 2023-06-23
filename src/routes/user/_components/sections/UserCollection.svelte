@@ -103,8 +103,10 @@
 				<input type="text" placeholder="Search by title..." bind:value={$searchStore.search} />
 			</InputWrapper>
 		</div>
-		<h5>Filters</h5>
-		<Filters bind:filters />
+		<div class="filters-wrapper">
+			<h5>Filters</h5>
+			<Filters bind:filters />
+		</div>
 		<h5>Badges</h5>
 		<Badges {badges} />
 	</div>
@@ -161,11 +163,24 @@
 			padding-bottom: var(--space-4);
 
 			@include mq(medium) {
-				padding-block: var(--space-9);
 				gap: var(--space-8);
 				border-bottom: none;
 				position: sticky;
 				top: 60px;
+			}
+
+			.filters-wrapper {
+				display: none;
+
+				@include mq(small) {
+					display: flex;
+					flex-direction: column;
+					gap: var(--space-4);
+				}
+
+				@include mq(medium) {
+					gap: var(--space-8);
+				}
 			}
 		}
 

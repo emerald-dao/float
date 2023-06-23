@@ -4,30 +4,9 @@
 	import Domain from './atoms/Domain.svelte';
 	import Actions from './atoms/Actions.svelte';
 	import EventInfo from './EventInfo.svelte';
-	import { EVENT_TYPES } from '$lib/types/event/even-type.type';
 
-	let event: Event = {
-		claimable: true,
-		dateCreated: '06/05/2023',
-		description: 'This is the first mock',
-		eventId: '56',
-		extraMetadata: { key: 'string' },
-		groups: ['TRY'],
-		host: 'Twitter',
-		image:
-			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-		name: 'FIRST EVENT',
-		totalSupply: '2,306',
-		transferrable: false,
-		url: 'https://www.google.com.uy/',
-		verifiers: [],
-		eventType: EVENT_TYPES[0]
-	};
-
-	let claimableLinks = [
-		{ type: 'Page', link: 'https://floats.city/event/4359' },
-		{ type: 'Qr', link: 'https://floats.city/qr/4359' }
-	];
+	export let event: Event;
+	export let claims;
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
@@ -39,11 +18,11 @@
 			</div>
 			<span class="small">{event.eventType}</span>
 		</div>
-		<Domain {claimableLinks} />
+		<Domain {event} />
 		<Actions />
 	</div>
 	<div class="right-wrapper">
-		<EventInfo />
+		<EventInfo {claims} />
 	</div>
 </div>
 

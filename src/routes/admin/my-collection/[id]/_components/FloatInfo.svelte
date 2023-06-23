@@ -24,10 +24,6 @@
 			<p class="large">{float.dateReceived}</p>
 			<p class="small">Start Date</p>
 		</div>
-		<div>
-			<p class="large">{float.dateReceived}</p>
-			<p class="small">End Date</p>
-		</div>
 		<div class="price">
 			<p class="large">Free</p>
 			<p class="small">Price</p>
@@ -46,40 +42,23 @@
 
 		.top-wrapper {
 			display: flex;
-			flex-direction: column;
-			justify-content: center;
+			justify-content: space-around;
 			align-items: center;
 			text-align: center;
-			gap: var(--space-6);
+			width: 80%;
 
-			@include mq(medium) {
-				display: grid;
-				grid-template-columns: repeat(2, 1fr);
-				text-align: center;
-				width: 80%;
-
-				h4 {
-					color: var(--clr-text-main);
-				}
-
-				p {
-					color: var(--clr-text-off);
-				}
+			h4 {
+				color: var(--clr-text-main);
 			}
-		}
 
-		.ticket-wrapper {
-			display: none;
-
-			@include mq(medium) {
-				display: flex;
+			p {
+				color: var(--clr-text-off);
 			}
 		}
 
 		.details-wrapper {
 			display: grid;
-			grid-template-rows: auto auto;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: repeat(2, 1fr);
 			justify-content: center;
 			align-items: center;
 			text-align: center;
@@ -88,23 +67,6 @@
 			border-bottom: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) 0 var(--space-5) 0;
 			width: 80%;
-
-			.price {
-				grid-row: 2;
-				grid-column: 1 / span 2;
-				text-align: center;
-			}
-
-			@include mq(medium) {
-				display: grid;
-				grid-template-rows: 1fr;
-				grid-template-columns: repeat(3, 1fr);
-
-				.price {
-					grid-row: 1;
-					grid-column: 3;
-				}
-			}
 
 			.small {
 				color: var(--clr-text-off);
