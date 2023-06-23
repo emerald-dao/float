@@ -21,7 +21,7 @@ function transformEventToFloat(event: Event): FLOAT {
 		transferrable: event.transferrable,
 		eventType: event.eventType
 	};
-	console.log(float);
+
 	return float;
 }
 
