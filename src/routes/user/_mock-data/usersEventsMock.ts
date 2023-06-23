@@ -13,7 +13,9 @@ const usersEventsMock: Event[] = [
 		},
 		groups: ['0x1234567890', '0x1234567890'],
 		host: '0x1234567890',
-		image: 'https://i.pravatar.cc/300',
+		eventImage:
+			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
+		eventLogo: 'https://i.pravatar.cc/300',
 		name: 'Event Name',
 		totalSupply: '10000',
 		transferrable: true,

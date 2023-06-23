@@ -10,7 +10,8 @@ export interface Event {
 	extraMetadata: { [key: string]: any };
 	groups: string[];
 	host: string;
-	image: string;
+	eventImage: string;
+	eventLogo: string;
 	name: string;
 	price: string | null;
 	totalSupply: string;
