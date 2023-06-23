@@ -4,6 +4,7 @@
 	import { Button } from '@emerald-dao/component-library';
 	import { onMount } from 'svelte';
 	import claimFloat from '../../../routes/event/_actions/claimFloat';
+	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 
 	export let data;
 
@@ -25,7 +26,7 @@
 		<div class="event-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<FloatTicket float={data.overview} />
+			<FloatTicket float={transformEventToFloat(data.overview)} />
 		</div>
 		<div class="side-wrapper">
 			<h4>{`${data.overview.totalSupply}`}</h4>
