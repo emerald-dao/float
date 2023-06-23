@@ -3,6 +3,7 @@ import type { Event } from '$lib/types/event/event.interface';
 
 const eventsMock: Event[] = [
 	{
+		price: '200',
 		claimable: true,
 		dateCreated: '06/05/2023',
 		description: 'This is the first mock',
@@ -22,6 +23,7 @@ const eventsMock: Event[] = [
 		eventType: EVENT_TYPES[0]
 	},
 	{
+		price: '100',
 		claimable: true,
 		dateCreated: '06/05/2023',
 		description: 'This is the second mock',
@@ -41,6 +43,7 @@ const eventsMock: Event[] = [
 		eventType: EVENT_TYPES[1]
 	},
 	{
+		price: '200',
 		claimable: true,
 		dateCreated: '06/05/2023',
 		description: 'This is the third mock',

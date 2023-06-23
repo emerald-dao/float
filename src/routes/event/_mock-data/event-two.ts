@@ -2,6 +2,7 @@ import { EVENT_TYPES } from '$lib/types/event/even-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 
 export const overview: Event = {
+	price: null,
 	claimable: true,
 	dateCreated: '06/05/2023',
 	description: 'This is the first mock',

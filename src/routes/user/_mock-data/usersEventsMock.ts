@@ -3,6 +3,7 @@ import type { Event } from '$lib/types/event/event.interface';
 
 const usersEventsMock: Event[] = [
 	{
+		price: '600',
 		claimable: true,
 		dateCreated: '2021-08-01T00:00:00.000Z',
 		description: 'This is a description',

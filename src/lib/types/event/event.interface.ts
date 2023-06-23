@@ -12,6 +12,7 @@ export interface Event {
 	host: string;
 	image: string;
 	name: string;
+	price: string | null;
 	totalSupply: string;
 	transferrable: boolean;
 	url: string;
