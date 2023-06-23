@@ -53,7 +53,11 @@
 			</div>
 		{/if}
 		<div>
-			<p class="large">Free</p>
+			{#if !data.overview.price}
+				<p class="large">Free</p>
+			{:else}
+				<p class="large">USD {data.overview.price}</p>
+			{/if}
 			<p class="small">Price</p>
 		</div>
 	</div>
