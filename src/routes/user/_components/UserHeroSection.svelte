@@ -13,10 +13,10 @@
 	<div class="social-media">
 		{#if userData.socialMedia}
 			{#each Object.entries(userData.socialMedia) as mediaUrl}
-				<div class="row media-wrapper">
+				<a class="row media-wrapper" href={mediaUrl[1]} target="_blank">
 					<Icon icon="tabler:brand-twitter" width="22" height="22" />
-					<p>{mediaUrl}</p>
-				</div>
+					<p>{[mediaUrl[0]]}</p>
+				</a>
 			{/each}
 		{/if}
 	</div>
@@ -66,6 +66,8 @@
 				border: 1px solid var(--clr-border-primary);
 				padding: var(--space-2) var(--space-3);
 				border-radius: var(--radius-3);
+				text-decoration: none;
+				color: var(--clr-text-main);
 			}
 		}
 
