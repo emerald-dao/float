@@ -13,7 +13,7 @@
 	<div class="left-wrapper">
 		<div class="header-wrapper">
 			<div class="row-3">
-				<img src={event.image} alt="logo" height="57" width="68" />
+				<img src={event.eventImage} alt="logo" height="57" width="68" />
 				<h4>{event.name}</h4>
 			</div>
 			<span class="small">{event.eventType}</span>

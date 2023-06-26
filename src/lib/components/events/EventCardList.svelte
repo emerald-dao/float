@@ -9,7 +9,7 @@
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
 	<div class="left-wrapper">
 		<div class="row-3 details-wrapper">
-			<img src={event.image} width={'54px'} height={'45px'} alt="logo" />
+			<img src={event.eventImage} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
 				<p>{event.description}</p>
 				<span class="small">{event.eventType}</span>
