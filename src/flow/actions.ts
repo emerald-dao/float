@@ -6,6 +6,8 @@ import { executeTransaction, replaceWithProperValues } from './utils';
 
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
 
+import getEventsScript from './cadence/scripts/get_events.cdc?raw';
+
 if (browser) {
 	// set Svelte $user store to currentUser,
 	// so other components can access it
@@ -54,3 +56,19 @@ const createEvent = async (floatObject) => {
 };
 
 export const createEventExecution = (floatObject) => executeTransaction(() => createEvent(floatObject));
+
+export const getEvents = async (
+	userAddress: string
+) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventsScript),
+			args: (arg, t) => [
+				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log('Error in getEvents', e);
+		throw new Error('Error in getEvents');
+	}
+};
