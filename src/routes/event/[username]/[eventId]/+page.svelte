@@ -7,14 +7,15 @@
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 
 	export let data;
+	console.log(data.overview);
 
 	let noDates = false;
 
-	// onMount(() => {
-	// 	noDates = data.overview.verifiers.every(
-	// 		(verifier) => !('dateStart' in verifier && 'dateEnding' in verifier)
-	// 	);
-	// });
+	onMount(() => {
+		noDates = data.overview.verifiers.every(
+			(verifier) => !('dateStart' in verifier && 'dateEnding' in verifier)
+		);
+	});
 </script>
 
 <section class="container">
@@ -36,7 +37,7 @@
 	<div class="container-small details-wrapper {noDates ? 'two-columns' : ''}">
 		{#if data.overview.verifiers.length > 0}
 			{#each data.overview.verifiers as verifier}
-				<!-- {#if 'dateStart' in verifier && 'dateEnding' in verifier}
+				{#if 'dateStart' in verifier && 'dateEnding' in verifier}
 					<div>
 						<p class="large">{verifier.dateStart}</p>
 						<p class="small">Start Date</p>
@@ -45,7 +46,7 @@
 						<p class="large">{verifier.dateEnding}</p>
 						<p class="small">End Date</p>
 					</div>
-				{/if} -->
+				{/if}
 			{/each}
 		{:else}
 			<div>
