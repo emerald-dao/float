@@ -1,7 +1,6 @@
 import type { User } from '$lib/types/user/user.interface';
 
 const userMock: User = {
-	id: 1,
 	name: 'John Doe',
 	walletAddress: '0x1234567890',
 	socialMedia: {
