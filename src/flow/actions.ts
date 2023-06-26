@@ -4,9 +4,12 @@ import './config';
 import { user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
 
+// Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
 
+// Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
+import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 
 if (browser) {
@@ -66,6 +69,24 @@ export const getEvents = async (
 			cadence: replaceWithProperValues(getEventsScript),
 			args: (arg, t) => [
 				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log('Error in getEvents', e);
+		throw new Error('Error in getEvents');
+	}
+};
+
+export const getEvent = async (
+	eventHost: string,
+	eventId: string
+) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventScript),
+			args: (arg, t) => [
+				arg(eventHost, t.Address),
+				arg(eventId, t.UInt64)
 			]
 		});
 	} catch (e) {

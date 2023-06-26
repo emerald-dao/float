@@ -30,6 +30,7 @@ pub struct FLOATMetadata {
   pub let eventType: String
   pub let originalRecipient: Address
   pub let eventId: UInt64
+  pub let serial: UInt64
 
   init(_ float: &FLOAT.NFT, _ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
     self.dateReceived = float.dateReceived
@@ -43,5 +44,6 @@ pub struct FLOATMetadata {
     self.eventType = "other"
     self.originalRecipient = float.originalRecipient
     self.id = float.id
+    self.serial = float.serial
   }
 }
