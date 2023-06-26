@@ -7,6 +7,7 @@ import { executeTransaction, replaceWithProperValues } from './utils';
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
 
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
+import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -70,5 +71,21 @@ export const getEvents = async (
 	} catch (e) {
 		console.log('Error in getEvents', e);
 		throw new Error('Error in getEvents');
+	}
+};
+
+export const getFLOATs = async (
+	userAddress: string
+) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getFLOATsScript),
+			args: (arg, t) => [
+				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log('Error in getFLOATs', e);
+		throw new Error('Error in getFLOATs');
 	}
 };
