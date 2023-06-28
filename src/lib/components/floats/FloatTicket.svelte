@@ -76,11 +76,11 @@
 					<span>Organized by <strong>{float.eventHost}</strong></span>
 				</div>
 				<div class="footer-wrapper">
-					<span class="small">Powered by the Flow Blockchain</span>
+					<span id="part-to-style" class="small">Powered by the Flow Blockchain</span>
 				</div>
 			</div>
 		</div>
-		<div class="float-back" bind:this={floatBack}>
+		<div class="float-back" bind:this={floatBack} id="element-to-exclude">
 			{#if float.eventImage && typeof float.eventImage === 'string'}
 				<img src={float.eventImage} alt="float" />
 			{:else if float.eventImage === undefined}

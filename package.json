@@ -50,5 +50,8 @@
 		"vest": "^4.6.11",
 		"vite": "^4.0.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"dom-to-image": "^2.6.0"
+	}
 }
