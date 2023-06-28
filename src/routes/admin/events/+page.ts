@@ -4,7 +4,7 @@ import eventsMock from '../_mock-data/eventsMock.js';
 import { get } from 'svelte/store';
 
 export async function load() {
-	const events = await getEvents(get(user).addr);
+	const events = await getEvents('0x99bd48c8036e2876');
 	return {
 		events
 	};
