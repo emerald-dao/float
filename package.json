@@ -38,6 +38,7 @@
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.6.2",
 		"prettier-plugin-svelte": "^2.7.0",
+		"qrcode": "^1.5.3",
 		"sass": "^1.54.9",
 		"scrypt-async": "2.0.1",
 		"sha3": "2.1.4",
@@ -50,8 +51,5 @@
 		"vest": "^4.6.11",
 		"vite": "^4.0.0"
 	},
-	"type": "module",
-	"dependencies": {
-		"qrcode": "^1.5.3"
-	}
+	"type": "module"
 }
