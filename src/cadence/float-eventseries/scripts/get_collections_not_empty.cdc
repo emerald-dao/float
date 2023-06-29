@@ -13,17 +13,21 @@ pub fun main(
 
   for key in catalog.keys {
       let value = catalog[key]!
-      let tempPathStr = "catalog".concat(key)
-      let tempPublicPath = PublicPath(identifier: tempPathStr)!
-      account.link<&{MetadataViews.ResolverCollection}>(
-          tempPublicPath,
-          target: value.collectionData.storagePath
-      )
-      let collectionCap = account.getCapability<&{MetadataViews.ResolverCollection}>(tempPublicPath)
-      if !collectionCap.check() {
-          continue
+      let tempPathStr = "tempPathCatalog".concat(key)
+
+      var count: UInt64 = 0
+      if let tempPublicPath = PublicPath(identifier: tempPathStr) {
+        account.link<&{MetadataViews.ResolverCollection}>(
+            tempPublicPath,
+            target: value.collectionData.storagePath
+        )
+        let collectionCap = account.getCapability<&{MetadataViews.ResolverCollection}>(tempPublicPath)
+        if !collectionCap.check() {
+            continue
+        }
+        count = NFTRetrieval.getNFTCountFromCap(collectionIdentifier : key, collectionCap : collectionCap)
       }
-      let count = NFTRetrieval.getNFTCountFromCap(collectionIdentifier : key, collectionCap : collectionCap)
+
       if count != 0 {
         ret.append(NFTCollectionInfo(
           key: key,
