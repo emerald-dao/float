@@ -10,7 +10,7 @@
 	let qrCodeDataUrl: string;
 
 	onMount(async () => {
-		let qr = `http://localhost:5173/event/${$page.params.username}/${data.overview.eventId}`;
+		let qr = `${$page.url.origin}/event/${$page.params.username}/${data.overview.eventId}`;
 		qrCodeDataUrl = await generateQRCode(qr);
 	});
 </script>
@@ -18,7 +18,7 @@
 <section class="container center column-10">
 	<Blur color="tertiary" right="20%" top="30%" />
 	<Blur left="20%" bottom="20%" />
-	<EventQrCard title="I visited FLOAT's Home Page" type="Website Visit" qrUrl={qrCodeDataUrl} />
+	<EventQrCard title={data.overview.name} type={data.overview.eventType} qrUrl={qrCodeDataUrl} />
 </section>
 
 <style lang="scss">
