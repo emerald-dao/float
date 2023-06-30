@@ -28,6 +28,7 @@
 		"babel-loader": "^8.2.5",
 		"buffer": "6.0.3",
 		"cssnano": "^6.0.0",
+		"dom-to-image": "^2.6.0",
 		"elliptic": "6.5.4",
 		"eslint": "^8.16.0",
 		"eslint-config-prettier": "^8.3.0",
@@ -50,8 +51,5 @@
 		"vest": "^4.6.11",
 		"vite": "^4.0.0"
 	},
-	"type": "module",
-	"dependencies": {
-		"dom-to-image": "^2.6.0"
-	}
+	"type": "module"
 }
