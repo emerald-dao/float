@@ -42,9 +42,9 @@
 		<Blur left="0" bottom="20%" />
 		{#if !powerUpsStep}
 			<div
+				id="target-element"
 				class="column align-center"
 				transition:fly|local={{ x: 500, duration: 700 }}
-				style="position: absolute;"
 			>
 				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>

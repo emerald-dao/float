@@ -68,7 +68,7 @@
 						{:else if float.eventLogo && typeof float.eventLogo !== 'string'}
 							<div class="float-logo" bind:this={floatLogo} />
 						{/if}
-						<div class="column-space-between">
+						<div id="title-style" class="column-space-between">
 							<h3 class="w-medium">{float.eventName}</h3>
 							<span class="label">{float.eventType}</span>
 						</div>
@@ -76,7 +76,7 @@
 					<span>Organized by <strong>{float.eventHost}</strong></span>
 				</div>
 				<div class="footer-wrapper">
-					<span id="part-to-style" class="small">Powered by the Flow Blockchain</span>
+					<span id="powered-by-style" class="small">Powered by the Flow Blockchain</span>
 				</div>
 			</div>
 		</div>
