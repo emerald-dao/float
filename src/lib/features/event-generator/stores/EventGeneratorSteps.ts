@@ -5,7 +5,8 @@ import {
 	FloatImageStep,
 	ClaimingOptionsStep,
 	TradingOptionsStep,
-	PowerUpsStep
+	PowerUpsStep,
+	ReviewStep
 } from '../components/steps';
 
 export const eventGeneratorSteps = createSteps([
@@ -57,6 +58,17 @@ export const eventGeneratorSteps = createSteps([
 		name: 'Power Ups',
 		component: PowerUpsStep,
 		title: 'Give super powers to your FLOAT',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Review Event',
+			icon: 'tabler:arrow-right'
+		}
+	},
+	{
+		name: 'Review',
+		component: ReviewStep,
+		title: 'Review your event prior to confirming',
 		action: null,
 		state: 'inactive',
 		button: {
