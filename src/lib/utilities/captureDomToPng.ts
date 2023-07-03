@@ -13,6 +13,7 @@ const captureDomToPng = async (
 
 	try {
 		if (elementToCapture) {
+			elementToCapture.style.width = '600px';
 			elementToCapture.style.background = 'transparent';
 		}
 
@@ -20,9 +21,10 @@ const captureDomToPng = async (
 			filter: (node: HTMLElement) => node.id !== 'element-to-exclude'
 		});
 
-		if (poweredByStyle && titleStyle) {
-			poweredByStyle.style.backgroundColor = '';
-			poweredByStyle.style.color = '';
+		if (elementToCapture && poweredByStyle && titleStyle) {
+			elementToCapture.style.width = '';
+			poweredByStyle.style.textAlign = '';
+			poweredByStyle.style.width = '';
 			titleStyle.style.width = '';
 		}
 
