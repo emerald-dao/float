@@ -6,6 +6,7 @@
 	export let showBack = false;
 	export let minWidth = '300px';
 	export let maxWidth = '600px';
+	export let isForScreenshot: boolean = false;
 
 	let flip: boolean = false;
 
@@ -68,7 +69,7 @@
 						{:else if float.eventLogo && typeof float.eventLogo !== 'string'}
 							<div class="float-logo" bind:this={floatLogo} />
 						{/if}
-						<div id="title-style" class="column-space-between">
+						<div id={isForScreenshot ? 'title-style' : ''} class="column-space-between">
 							<h3 class="w-medium">{float.eventName}</h3>
 							<span class="label">{float.eventType}</span>
 						</div>
@@ -76,11 +77,13 @@
 					<span>Organized by <strong>{float.eventHost}</strong></span>
 				</div>
 				<div class="footer-wrapper">
-					<span id="powered-by-style" class="small">Powered by the Flow Blockchain</span>
+					<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"
+						>Powered by the Flow Blockchain</span
+					>
 				</div>
 			</div>
 		</div>
-		<div class="float-back" bind:this={floatBack} id="element-to-exclude">
+		<div class="float-back" bind:this={floatBack} id={isForScreenshot ? 'element-to-exclude' : ''}>
 			{#if float.eventImage && typeof float.eventImage === 'string'}
 				<img src={float.eventImage} alt="float" />
 			{:else if float.eventImage === undefined}
