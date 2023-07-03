@@ -20,6 +20,7 @@
 	setContext('activePowerUp', activePowerUp);
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 4;
+	$: reviewStep = $eventGeneratorActiveStep === 5;
 	$: activePowerUpComponent = POWER_UPS.find(
 		(powerUp) => powerUp.type === $activePowerUp
 	)?.component;
@@ -40,17 +41,28 @@
 	<div class="generated-nft-wrapper">
 		<Blur color="tertiary" right="0" top="30%" />
 		<Blur left="0" bottom="20%" />
-		{#if !powerUpsStep}
-			<div
-				id="target-element"
-				class="column align-center"
-				transition:fly|local={{ x: 500, duration: 700 }}
-			>
-				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+		{#if reviewStep}
+			<div transition:fly|local={{ x: 500, duration: 700 }}>
+				<div>
+					<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				</div>
+				<div class="target">
+					<div id="target-element">
+						<FloatTicket
+							float={$generatedNft}
+							showBack={$eventGeneratorActiveStep === 1}
+							isForScreenshot={true}
+						/>
+					</div>
+				</div>
 			</div>
-		{:else}
+		{:else if powerUpsStep}
 			<div in:fly|local={{ x: -200, duration: 500, delay: 500 }}>
 				<svelte:component this={activePowerUpComponent} />
+			</div>
+		{:else}
+			<div class="column align-center" transition:fly|local={{ x: 500, duration: 700 }}>
+				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>
 		{/if}
 	</div>
@@ -82,7 +94,15 @@
 			padding: var(--space-16);
 
 			div {
+				display: flex;
+				align-items: center;
+				justify-content: center;
 				width: 100%;
+
+				.target {
+					position: absolute;
+					right: -99999px;
+				}
 			}
 		}
 	}
