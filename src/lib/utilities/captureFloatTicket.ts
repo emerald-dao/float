@@ -1,6 +1,6 @@
 import domtoimage from 'dom-to-image';
 
-const captureDomToPng = async (
+const captureFloatTicket = async (
 	elementToCapture: HTMLElement | null,
 	poweredByStyle: HTMLElement | null,
 	titleStyle: HTMLElement | null
@@ -29,6 +29,7 @@ const captureDomToPng = async (
 		}
 
 		console.log(dataUrl);
+
 		return dataUrl;
 	} catch (error) {
 		console.error('Error capturing image:', error);
@@ -43,4 +44,4 @@ const captureDomToPng = async (
 	}
 };
 
-export default captureDomToPng;
+export default captureFloatTicket;
