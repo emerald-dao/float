@@ -1,5 +1,6 @@
 import { createActiveStep } from '$stores/custom/steps/ActiveStep';
 import { createSteps } from '$stores/custom/steps/Steps';
+import { createEvent } from '../actions/createEvent';
 import {
 	EventBasicDataStep,
 	FloatImageStep,
@@ -69,7 +70,7 @@ export const eventGeneratorSteps = createSteps([
 		name: 'Review',
 		component: ReviewStep,
 		title: 'Review your event prior to confirming',
-		action: null,
+		action: createEvent,
 		state: 'inactive',
 		button: {
 			text: 'Create Event',
