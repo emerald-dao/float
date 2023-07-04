@@ -10,6 +10,8 @@
 	import POWER_UPS from './powerUps';
 	import type { Writable } from 'svelte/store';
 
+	export let stepDataValid = true;
+
 	const activePowerUp: Writable<PowerUpType> = getContext('activePowerUp');
 
 	const handleSelectPowerUp = (powerUpType: PowerUpType) => {
