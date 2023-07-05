@@ -32,6 +32,7 @@
 	a {
 		text-decoration: none;
 		color: unset;
+		word-break: break-word;
 	}
 
 	.main-wrapper {

@@ -121,13 +121,11 @@
 		.events-wrapper {
 			display: flex;
 			flex-direction: column;
-			width: 100%;
 			gap: var(--space-10);
 
 			@include mq(medium) {
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
-				width: 100%;
 			}
 		}
 
