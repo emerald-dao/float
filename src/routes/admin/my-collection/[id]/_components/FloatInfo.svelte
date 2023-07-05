@@ -29,7 +29,8 @@
 			<p class="small">Start Date</p>
 		</div>
 		<div class="price">
-			<p class="large">Free</p>
+			<!-- This is temporary, whe should change the hardcoded price-->
+			<p class="large">Free(temporary)</p>
 			<p class="small">Price</p>
 		</div>
 	</div>
