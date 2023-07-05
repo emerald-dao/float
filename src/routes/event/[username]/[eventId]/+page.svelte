@@ -5,11 +5,28 @@
 	import { onMount } from 'svelte';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
+	import { unixTimeStampToDate } from '$lib/utilities/unixTimeStampToDate';
 
 	export let data;
-	console.log(data.overview);
 
 	let noDates = false;
+	let starDate: string;
+	let endDate: string;
+	let dates = {};
+
+	data.overview.verifiers.forEach((verifier) => {
+		if (verifier.dateStart) {
+			dates.dateStart = verifier.dateStart;
+		}
+		if (verifier.dateEnding) {
+			dates.dateEnding = verifier.dateEnding;
+		}
+	});
+
+	if (dates.dateStart && dates.dateEnding) {
+		starDate = unixTimeStampToDate(dates.dateStart);
+		endDate = unixTimeStampToDate(dates.dateEnding);
+	}
 
 	onMount(() => {
 		noDates = data.overview.verifiers.every(
@@ -35,19 +52,15 @@
 		</div>
 	</div>
 	<div class="container-small details-wrapper {noDates ? 'two-columns' : ''}">
-		{#if data.overview.verifiers.length > 0}
-			{#each data.overview.verifiers as verifier}
-				{#if 'dateStart' in verifier && 'dateEnding' in verifier}
-					<div>
-						<p class="large">{verifier.dateStart}</p>
-						<p class="small">Start Date</p>
-					</div>
-					<div>
-						<p class="large">{verifier.dateEnding}</p>
-						<p class="small">End Date</p>
-					</div>
-				{/if}
-			{/each}
+		{#if starDate && endDate}
+			<div>
+				<p class="large">{starDate}</p>
+				<p class="small">Start Date</p>
+			</div>
+			<div>
+				<p class="large">{endDate}</p>
+				<p class="small">End Date</p>
+			</div>
 		{:else}
 			<div>
 				<p class="large">{data.overview.dateCreated}</p>
