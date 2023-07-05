@@ -4,8 +4,12 @@
 	import { page } from '$app/stores';
 	import toggleVisibility from '../../_actions/float-actions/toggleFloatVisibility';
 	import burnFloat from '../../_actions/float-actions/burnFloat';
+	import { unixTimeStampToDate } from '$lib/utilities/unixTimeStampToDate';
 
 	export let float: FLOAT;
+
+	let month = unixTimeStampToDate(float.dateReceived, 'month');
+	let year = unixTimeStampToDate(float.dateReceived, 'year');
 </script>
 
 <div class="main-wrapper">
@@ -14,7 +18,7 @@
 		href={`/admin/my-collection/${float.eventId}`}
 	>
 		<div class="row-3 details-wrapper">
-			<img src={float.eventLogo} width={'54px'} height={'45px'} alt="logo" />
+			<img src={float.eventImage} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
 				<p class="small">{float.eventName}</p>
 				<span class="xsmall">{float.eventType}</span>
@@ -22,9 +26,9 @@
 		</div>
 		<div class="date-wrapper">
 			<p class="xsmall">
-				{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+				{month}
 			</p>
-			<p class="xsmall w-medium">{new Date(float.dateReceived).getFullYear()}</p>
+			<p class="xsmall w-medium">{year}</p>
 		</div>
 	</a>
 

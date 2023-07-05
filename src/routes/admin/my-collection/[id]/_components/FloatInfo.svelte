@@ -1,8 +1,12 @@
 <script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import { unixTimeStampToDate } from '$lib/utilities/unixTimeStampToDate';
 
 	export let float: FLOAT;
+	let startDate: string;
+
+	$: startDate = unixTimeStampToDate(float.dateReceived);
 </script>
 
 <div class="main-wrapper">
@@ -21,7 +25,7 @@
 	</div>
 	<div class="details-wrapper">
 		<div>
-			<p class="large">{float.dateReceived}</p>
+			<p class="large">{startDate}</p>
 			<p class="small">Start Date</p>
 		</div>
 		<div class="price">

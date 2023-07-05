@@ -28,7 +28,7 @@
 		<div class="top-wrapper">
 			<div class="title-wrapper">
 				<h5>My Collection</h5>
-				<p class="medium">41 FLOATs</p>
+				<p class="medium">{$searchStore.filtered.length} FLOATs</p>
 			</div>
 			<div class="input-wrapper">
 				<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
