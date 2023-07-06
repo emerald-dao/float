@@ -10,7 +10,7 @@
 		<div
 			class="circle"
 			style={`width: ${baseCircleSize + i * circlesSizeIncrement}rem; opacity: ${
-				1 - i * opacityIncrement
+				0.8 - i * opacityIncrement
 			};`}
 		/>
 	{/each}
@@ -25,7 +25,7 @@
 			position: absolute;
 			border-radius: 50%;
 			aspect-ratio: 1/1;
-			border: 2px dashed var(--clr-neutral-200);
+			border: 5px dashed var(--clr-neutral-200);
 			animation: rotation 220s linear infinite;
 		}
 	}

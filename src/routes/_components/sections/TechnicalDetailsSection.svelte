@@ -21,7 +21,7 @@
 </script>
 
 <section>
-	<div class="container-small">
+	<div class="container-small shadow-medium">
 		<div class="center column-10" style="z-index: 10">
 			<div class="header-wrapper center column-2">
 				<h2 class="w-bold">Own your digital stuff</h2>

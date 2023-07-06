@@ -7,7 +7,7 @@
 	export let icon: string;
 </script>
 
-<div class="main-wrapper">
+<div class="card-primary">
 	<img src={imageUrl} alt={`${title} event`} />
 	<div class="column-2 body">
 		<div class="row-2 align-center">
@@ -19,9 +19,7 @@
 </div>
 
 <style lang="scss">
-	.main-wrapper {
-		border-radius: var(--radius-5);
-		background-color: var(--clr-background-secondary);
+	.card-primary {
 		overflow: hidden;
 
 		@include mq('small') {
@@ -35,6 +33,7 @@
 			height: 18rem;
 			width: 100%;
 			object-fit: cover;
+			border-radius: var(--radius-2);
 		}
 
 		.body {

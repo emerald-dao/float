@@ -55,7 +55,7 @@
 		class:flip={flip || showBack}
 		class:inverse-flip={showBack && flip}
 	>
-		<div class="float-front">
+		<div class="float-front shadow-large">
 			<div class="content">
 				<div class="header-wrapper">
 					<span class="large">FLOAT</span>
@@ -83,7 +83,11 @@
 				</div>
 			</div>
 		</div>
-		<div class="float-back" bind:this={floatBack} id={isForScreenshot ? 'element-to-exclude' : ''}>
+		<div
+			class="float-back shadow-large"
+			bind:this={floatBack}
+			id={isForScreenshot ? 'element-to-exclude' : ''}
+		>
 			{#if float.eventImage && typeof float.eventImage === 'string'}
 				<img src={float.eventImage} alt="float" />
 			{:else if float.eventImage === undefined}

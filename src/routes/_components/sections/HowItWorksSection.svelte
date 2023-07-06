@@ -25,7 +25,7 @@
 	/>
 	<div class="cards-wrapper">
 		{#each STEPS as step, i}
-			<div class="step-card">
+			<div class="card-primary">
 				<div class="row-2 align-center">
 					<span class="step-number w-medium">
 						{i + 1}
@@ -52,25 +52,16 @@
 			width: 100%;
 		}
 
-		.step-card {
-			background-color: var(--clr-background-secondary);
-			padding: var(--space-8);
-			border-radius: var(--radius-4);
+		.step-number {
+			background-color: var(--clr-primary-badge);
+			color: var(--clr-primary-main);
+			font-size: var(--font-size-4);
+			height: 2rem;
+			width: 2rem;
 			display: flex;
-			flex-direction: column;
-			gap: var(--space-3);
-
-			.step-number {
-				background-color: var(--clr-primary-badge);
-				color: var(--clr-primary-main);
-				font-size: var(--font-size-4);
-				height: 2rem;
-				width: 2rem;
-				display: flex;
-				justify-content: center;
-				align-items: center;
-				border-radius: 50%;
-			}
+			justify-content: center;
+			align-items: center;
+			border-radius: 50%;
 		}
 	}
 </style>
