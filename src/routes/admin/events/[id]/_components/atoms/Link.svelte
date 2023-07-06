@@ -5,6 +5,7 @@
 	export let id: string;
 	export let qr: boolean = false;
 	export let page: boolean = false;
+	export let user: {};
 </script>
 
 <div class="main-wrapper">
@@ -19,9 +20,9 @@
 	</div>
 	<div class="row-3 link-wrapper">
 		{#if page}
-			<span class="link">https://floats.city/event/{id}</span>
+			<span class="link">https://floats.city/event/{user.name}/{id}</span>
 		{:else if qr}
-			<span class="link">https://floats.city/qr/{id}</span>
+			<span class="link">https://floats.city/event/{user.name}/{id}/qr</span>
 		{/if}
 		<div class="row-2">
 			<div class="button-wrapper">
