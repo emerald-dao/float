@@ -6,7 +6,6 @@
 	import '@emerald-dao/component-library/styles/app.scss';
 	import { Header, Footer } from '@emerald-dao/component-library';
 	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
-	import { theme } from '$stores/ThemeStore';
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
@@ -30,13 +29,13 @@
 		let html = document.querySelector('html');
 
 		if (html) {
-			html.setAttribute('data-theme', $theme);
+			html.setAttribute('data-theme', 'light');
 		}
 	});
 </script>
 
 {#if route !== 'admin'}
-	<Header {logIn} {unauthenticate} {getFindProfile} themeStore={theme} user={$user} {navElements} />
+	<Header {logIn} {unauthenticate} {getFindProfile} user={$user} {navElements} />
 {/if}
 
 <main>
