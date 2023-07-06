@@ -6,8 +6,9 @@
 	import StepButtons from './components/atoms/StepButtons.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Blur from '$lib/components/Blur.svelte';
-	import POWER_UPS from './components/steps/5-PowerUps/powerUps';
+	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
+	import Icon from '@iconify/svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -64,6 +65,10 @@
 			<div class="column align-center" transition:fly|local={{ x: 500, duration: 700 }}>
 				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>
+			<span class="small click-to-flip row-2 align-center">
+				<Icon icon="tabler:360" width="1.3rem" />
+				Click ticket to flip
+			</span>
 		{/if}
 	</div>
 </section>
@@ -80,10 +85,12 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-			background-color: var(--clr-background-secondary);
+			background-color: var(--clr-background-primary);
 			border-right: 0.1px solid var(--clr-border-primary);
 			padding: var(--space-18);
 			overflow: hidden;
+			box-shadow: 0px 0px 20px 0 var(--clr-shadow-primary);
+			z-index: 2;
 		}
 
 		.generated-nft-wrapper {
@@ -93,6 +100,14 @@
 			justify-content: center;
 			align-items: center;
 			padding: var(--space-16);
+			background-color: var(--clr-background-secondary);
+			z-index: 0;
+
+			.click-to-flip {
+				color: var(--clr-text-off);
+				position: absolute;
+				bottom: var(--space-8);
+			}
 
 			div {
 				display: flex;

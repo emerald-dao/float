@@ -15,28 +15,36 @@
 	$: selected = $activePowerUp === type;
 </script>
 
-<span on:click class="row-2 align-center w-medium" class:active class:selected>
+<span
+	on:click
+	class="row-2 align-center w-medium"
+	class:active
+	class:selected
+	class:shadow-medium={selected}
+>
 	<Icon {icon} />
 	{name}
 </span>
 
 <style lang="scss">
 	span {
-		background-color: var(--clr-neutral-badge);
+		background-color: var(--clr-surface-secondary);
 		width: fit-content;
 		padding: var(--space-2) var(--space-5);
 		border-radius: var(--radius-3);
 		cursor: pointer;
-		border: 2px solid transparent;
-		transition: 0.2s;
+		border: 1px solid var(--clr-border-primary);
+		transition: 0.4s;
+		opacity: 0.6;
 
 		&.active {
 			background-color: var(--clr-primary-badge);
 			color: var(--clr-primary-main);
+			border-color: var(--clr-primary-main);
 		}
 
 		&.selected {
-			border: 2px solid var(--clr-border-primary);
+			opacity: 1;
 		}
 	}
 </style>

@@ -2,23 +2,25 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import POWER_UPS, { type PowerUp } from '../../powerUps';
+	import { type PowerUp, POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+
+	const powerUpData = POWER_UPS.find(
+		(powerUp) => powerUp.type === 'timelock'
+	) as PowerUp<'timelock'>;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
 		(res as SuiteRunResult).done((result) => {
 			res = result;
+
+			$powerUpsValidations.timelock = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
-
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'timelock'
-	) as PowerUp<'timelock'>;
 </script>
 
 <PowerUpConfigWrapper {powerUpData}>

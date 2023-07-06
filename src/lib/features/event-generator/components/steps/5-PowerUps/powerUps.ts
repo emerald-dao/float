@@ -5,6 +5,7 @@ import TimeLimitPowerUp from './powerUpsConfigs/TimeLimit/TimeLimitPowerUp.svelt
 import SecretCodePowerUp from './powerUpsConfigs/SecretCode/SecretCodePowerUp.svelte';
 import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalance/MinimumBalancePowerUp.svelte';
 import LimitedPowerUp from './powerUpsConfigs/Limited/LimitedPowerUp.svelte';
+import { writable } from 'svelte/store';
 
 export interface PowerUp<T extends PowerUpType> {
 	type: T;
@@ -14,7 +15,7 @@ export interface PowerUp<T extends PowerUpType> {
 	component: typeof SvelteComponent;
 }
 
-const POWER_UPS: PowerUp<PowerUpType>[] = [
+export const POWER_UPS: PowerUp<PowerUpType>[] = [
 	{
 		type: 'payment',
 		name: 'Payment',
@@ -52,4 +53,9 @@ const POWER_UPS: PowerUp<PowerUpType>[] = [
 	}
 ];
 
-export default POWER_UPS;
+const POWER_UPS_VALIDATION_DATA = POWER_UPS.reduce((acc, powerUp) => {
+	acc[powerUp.type] = false;
+	return acc;
+}, {} as { [key in PowerUpType]: boolean });
+
+export const powerUpsValidations = writable(POWER_UPS_VALIDATION_DATA);

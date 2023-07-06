@@ -1,22 +1,24 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import POWER_UPS, { type PowerUp } from '../../powerUps';
+	import { type PowerUp, POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import { CurrencyInput } from '@emerald-dao/component-library';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+
+	const powerUpData = POWER_UPS.find((powerUp) => powerUp.type === 'payment') as PowerUp<'payment'>;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
 		(res as SuiteRunResult).done((result) => {
 			res = result;
+
+			$powerUpsValidations.payment = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
-
-	const powerUpData = POWER_UPS.find((powerUp) => powerUp.type === 'payment') as PowerUp<'payment'>;
 </script>
 
 <PowerUpConfigWrapper {powerUpData}>

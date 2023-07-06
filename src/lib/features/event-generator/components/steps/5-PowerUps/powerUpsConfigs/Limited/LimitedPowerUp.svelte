@@ -2,21 +2,23 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import POWER_UPS, { type PowerUp } from '../../powerUps';
+	import { type PowerUp, POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+
+	const powerUpData = POWER_UPS.find((powerUp) => powerUp.type === 'limited') as PowerUp<'limited'>;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
 		(res as SuiteRunResult).done((result) => {
 			res = result;
+
+			$powerUpsValidations.limited = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
-
-	const powerUpData = POWER_UPS.find((powerUp) => powerUp.type === 'limited') as PowerUp<'limited'>;
 </script>
 
 <PowerUpConfigWrapper {powerUpData}>

@@ -2,23 +2,25 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { CurrencyInput } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import POWER_UPS, { type PowerUp } from '../../powerUps';
+	import { type PowerUp, POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import type { SuiteRunResult } from 'vest';
 	import validationSuite from './validation';
+
+	const powerUpData = POWER_UPS.find(
+		(powerUp) => powerUp.type === 'minimumBalance'
+	) as PowerUp<'minimumBalance'>;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
 		(res as SuiteRunResult).done((result) => {
 			res = result;
+
+			$powerUpsValidations.minimumBalance = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
-
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'minimumBalance'
-	) as PowerUp<'minimumBalance'>;
 </script>
 
 <PowerUpConfigWrapper {powerUpData}>

@@ -24,39 +24,56 @@
 </script>
 
 <StepComponentWrapper>
-	<div class="column-1">
-		<InputWrapper
-			label="Event name"
-			name="event-name"
-			errors={res.getErrors('event-name')}
-			isValid={res.isValid('event-name')}
-			required={true}
-		>
-			<input
-				type="text"
-				bind:value={$eventGeneratorData.name}
+	<div>
+		<div class="column">
+			<InputWrapper
+				label="Event name"
 				name="event-name"
-				on:input={handleChange}
-				maxlength="30"
-				placeholder="Flow hackathon"
+				errors={res.getErrors('event-name')}
+				isValid={res.isValid('event-name')}
+				required={true}
+			>
+				<input
+					type="text"
+					bind:value={$eventGeneratorData.name}
+					name="event-name"
+					on:input={handleChange}
+					maxlength="30"
+					placeholder="Flow hackathon"
+				/>
+			</InputWrapper>
+		</div>
+		<div class="column-1">
+			<label for="event-type">Event type</label>
+			<select name="event-type" id="event-type" bind:value={$eventGeneratorData.eventType}>
+				{#each EVENT_TYPES as eventType}
+					<option value={eventType}>{eventType}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="event-logo-wrapper">
+			<label for="event-logo"> Event logo </label>
+			<DropZone
+				bind:bindValue={$eventGeneratorData.logo}
+				name="event-logo"
+				maxAmountOfFiles={1}
+				accept={['image/png', 'image/jpeg', 'image/jpg']}
 			/>
-		</InputWrapper>
-	</div>
-	<div class="column-1">
-		<label for="event-type">Event type</label>
-		<select name="event-type" id="event-type" bind:value={$eventGeneratorData.eventType}>
-			{#each EVENT_TYPES as eventType}
-				<option value={eventType}>{eventType}</option>
-			{/each}
-		</select>
-	</div>
-	<div class="column-1">
-		<label for="event-logo"> Event logo </label>
-		<DropZone
-			bind:bindValue={$eventGeneratorData.logo}
-			name="event-logo"
-			maxAmountOfFiles={1}
-			accept={['image/png', 'image/jpeg', 'image/jpg']}
-		/>
+		</div>
 	</div>
 </StepComponentWrapper>
+
+<style lang="scss">
+	label {
+		margin-bottom: 2px;
+	}
+
+	select {
+		padding: var(--space-2);
+		font-size: var(--font-size-1);
+	}
+
+	.event-logo-wrapper {
+		margin-top: var(--space-6);
+	}
+</style>
