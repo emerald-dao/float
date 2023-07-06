@@ -37,7 +37,7 @@
 				bind:value={$eventGeneratorData.name}
 				name="event-name"
 				on:input={handleChange}
-				maxlength="28"
+				maxlength="30"
 				placeholder="Flow hackathon"
 			/>
 		</InputWrapper>

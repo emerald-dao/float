@@ -83,6 +83,7 @@
 			background-color: var(--clr-background-secondary);
 			border-right: 0.1px solid var(--clr-border-primary);
 			padding: var(--space-18);
+			overflow: hidden;
 		}
 
 		.generated-nft-wrapper {
