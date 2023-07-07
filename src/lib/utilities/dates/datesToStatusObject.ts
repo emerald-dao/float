@@ -1,4 +1,4 @@
-export const compareDates = (
+export const datesToStatusObject = (
 	dateStart: string,
 	dateEnding: string
 ): {

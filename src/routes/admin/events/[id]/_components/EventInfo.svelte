@@ -3,7 +3,7 @@
 	import Icon from '@iconify/svelte';
 	import ClaimTicket from './atoms/ClaimTicket.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
-	import { compareDates } from '$lib/utilities/compareDates';
+	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
 	import Status from '$lib/components/events/Status.svelte';
 
@@ -16,7 +16,7 @@
 
 	event.verifiers.forEach((verifier: any) => {
 		if (verifier.dateStart && verifier.dateEnding) {
-			actualStatus = compareDates(verifier.dateStart, verifier.dateEnding);
+			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
 		}
 	});
 </script>

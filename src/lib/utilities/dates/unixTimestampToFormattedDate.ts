@@ -1,4 +1,4 @@
-export const unixTimeStampToDate = (
+export const unixTimestampToFormattedDate = (
 	timestamp: string,
 	format: 'year' | 'month' | 'date' = 'date'
 ): string => {
