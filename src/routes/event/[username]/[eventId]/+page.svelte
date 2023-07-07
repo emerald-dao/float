@@ -26,6 +26,8 @@
 	if (dates.dateStart && dates.dateEnding) {
 		starDate = unixTimestampToFormattedDate(dates.dateStart);
 		endDate = unixTimestampToFormattedDate(dates.dateEnding);
+	} else {
+		starDate = unixTimestampToFormattedDate(data.overview.dateCreated);
 	}
 
 	onMount(() => {
@@ -38,7 +40,7 @@
 <section class="container">
 	<div class="main-wrapper">
 		<div class="side-wrapper">
-			<h4>{`#${data.overview.eventId}`}</h4>
+			<h4>{`# ${data.overview.eventId}`}</h4>
 			<p class="small">Event ID</p>
 		</div>
 		<div class="event-wrapper">
@@ -63,7 +65,7 @@
 			</div>
 		{:else}
 			<div>
-				<p class="large">{data.overview.dateCreated}</p>
+				<p class="large">{starDate}</p>
 				<p class="small">Start Date</p>
 			</div>
 		{/if}
@@ -71,7 +73,7 @@
 			{#if !data.overview.price}
 				<p class="large">Free</p>
 			{:else}
-				<p class="large">USD {data.overview.price}</p>
+				<p class="large">{Number(data.overview.price).toFixed(2)} FLOW</p>
 			{/if}
 			<p class="small">Price</p>
 		</div>
