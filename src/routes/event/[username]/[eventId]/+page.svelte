@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
-	import { unixTimeStampToDate } from '$lib/utilities/unixTimeStampToDate';
+	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let data;
 
@@ -24,8 +24,8 @@
 	});
 
 	if (dates.dateStart && dates.dateEnding) {
-		starDate = unixTimeStampToDate(dates.dateStart);
-		endDate = unixTimeStampToDate(dates.dateEnding);
+		starDate = unixTimestampToFormattedDate(dates.dateStart);
+		endDate = unixTimestampToFormattedDate(dates.dateEnding);
 	}
 
 	onMount(() => {

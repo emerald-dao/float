@@ -7,22 +7,23 @@
 
 	export let event: Event;
 	export let claims;
+	export let user: {};
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
 	<div class="left-wrapper">
 		<div class="header-wrapper">
 			<div class="row-3">
-				<img src={event.eventImage} alt="logo" height="57" width="68" />
+				<img src={event.image} alt="logo" height="57" width="68" />
 				<h4>{event.name}</h4>
 			</div>
 			<span class="small">{event.eventType}</span>
 		</div>
-		<Domain {event} />
+		<Domain {event} {user} />
 		<Actions />
 	</div>
 	<div class="right-wrapper">
-		<EventInfo {claims} />
+		<EventInfo {claims} {event} />
 	</div>
 </div>
 

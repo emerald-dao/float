@@ -1,30 +1,43 @@
 <script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { generatedNft } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import Icon from '@iconify/svelte';
 	import ClaimTicket from './atoms/ClaimTicket.svelte';
+	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
+	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
+	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
+	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
+	export let event;
 	export let claims;
+	let actualStatus: {
+		status: string;
+		daysRemaining: number;
+	};
+
+	event.verifiers.forEach((verifier: any) => {
+		if (verifier.dateStart && verifier.dateEnding) {
+			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
+		}
+	});
 </script>
 
 <div class="main-wrapper">
 	<div class="top-wrapper">
 		<div class="column-wrapper">
-			<div class="status-wrapper">
-				<Icon icon="ion:ellipse-sharp" color="var(--clr-primary-main)" />
-				<p class="xsmall">active</p>
-			</div>
+			<EventStatus {actualStatus} />
 		</div>
 		<div class="column-wrapper">
-			<h5>2,305 / ∞</h5>
+			<h5>{event.totalSupply}</h5>
 			<p class="small">FLOATs claimed</p>
 		</div>
-		<div class="column-wrapper">
-			<p>20 days left</p>
-		</div>
+		{#if actualStatus}
+			<div class="column-wrapper">
+				<DaysLeft {actualStatus} />
+			</div>
+		{/if}
 	</div>
 	<div class="ticket-wrapper">
-		<FloatTicket float={$generatedNft} />
+		<FloatTicket float={transformEventToFloat(event)} />
 	</div>
 	<div class="claims-wrapper">
 		<div class="row-1">
@@ -55,20 +68,6 @@
 
 			@include mq(medium) {
 				padding: var(--space-6) var(--space-12);
-			}
-
-			.status-wrapper {
-				display: flex;
-				width: fit-content;
-				background-color: var(--clr-primary-badge);
-				padding: var(--space-1) var(--space-2);
-				border-radius: var(--radius-1);
-				text-align: center;
-				gap: var(--space-1);
-
-				p {
-					color: var(--clr-primary-main);
-				}
 			}
 
 			.column-wrapper {

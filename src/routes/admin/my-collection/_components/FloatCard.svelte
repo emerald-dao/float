@@ -4,12 +4,12 @@
 	import { page } from '$app/stores';
 	import toggleVisibility from '../../_actions/float-actions/toggleFloatVisibility';
 	import burnFloat from '../../_actions/float-actions/burnFloat';
-	import { unixTimeStampToDate } from '$lib/utilities/unixTimeStampToDate';
+	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let float: FLOAT;
 
-	let month = unixTimeStampToDate(float.dateReceived, 'month');
-	let year = unixTimeStampToDate(float.dateReceived, 'year');
+	let month = unixTimestampToFormattedDate(float.dateReceived, 'month');
+	let year = unixTimestampToFormattedDate(float.dateReceived, 'year');
 </script>
 
 <div class="main-wrapper">
