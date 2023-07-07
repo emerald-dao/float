@@ -7,7 +7,7 @@ import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalance/MinimumBalan
 import LimitedPowerUp from './powerUpsConfigs/Limited/LimitedPowerUp.svelte';
 import { writable } from 'svelte/store';
 
-export interface PowerUp<T extends PowerUpType> {
+export interface PowerUpGeneratorData<T extends PowerUpType> {
 	type: T;
 	name: string;
 	icon: string;
@@ -15,7 +15,7 @@ export interface PowerUp<T extends PowerUpType> {
 	component: typeof SvelteComponent;
 }
 
-export const POWER_UPS: PowerUp<PowerUpType>[] = [
+export const POWER_UPS: PowerUpGeneratorData<PowerUpType>[] = [
 	{
 		type: 'payment',
 		name: 'Payment',

@@ -3,9 +3,9 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Icon from '@iconify/svelte';
-	import type { PowerUp } from '../powerUps';
+	import type { PowerUpGeneratorData } from '../powerUps';
 
-	export let powerUpData: PowerUp<PowerUpType>;
+	export let powerUpData: PowerUpGeneratorData<PowerUpType>;
 
 	const handleTogglePowerUp = (powerUpType: PowerUpType) => {
 		eventGeneratorData.update((data) => {
