@@ -34,7 +34,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="column-7">
+		<div class="column-8">
 			<div>
 				<h4 class="w-medium">Basic configurations</h4>
 				<p class="small">Can be changed later.</p>
@@ -62,7 +62,7 @@
 			{#if hasPowerUps()}
 				<div>
 					<h4 class="w-medium">+ Power Ups</h4>
-					<p class="small">Can not changed later.</p>
+					<p class="small">Can not be changed later.</p>
 					<div class="content-wrapper">
 						<PowerUpsReview />
 					</div>
@@ -87,7 +87,7 @@
 		}
 
 		.content-wrapper {
-			margin-top: var(--space-3);
+			margin-top: var(--space-2);
 			display: flex;
 			flex-direction: row;
 			flex-wrap: wrap;

@@ -54,7 +54,7 @@
 				/>
 			</div>
 		{:else if powerUpsStep}
-			<div in:fly|local={{ x: -200, duration: 500, delay: 200 }}>
+			<div in:fly|local={{ x: -200, duration: 500, delay: 200 }} class="power-up-wrapper">
 				<svelte:component this={activePowerUpComponent} />
 			</div>
 		{:else}
@@ -113,8 +113,14 @@
 			z-index: 0;
 			flex: 1;
 
-			.ticket-wrapper {
+			.ticket-wrapper,
+			.power-up-wrapper {
 				width: 100%;
+			}
+
+			.power-up-wrapper {
+				height: 100%;
+				margin-top: var(--space-16);
 			}
 
 			.click-to-flip {

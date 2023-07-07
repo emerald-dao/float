@@ -28,7 +28,6 @@
 
 <style lang="scss">
 	span {
-		background-color: var(--clr-surface-secondary);
 		width: fit-content;
 		padding: var(--space-2) var(--space-5);
 		border-radius: var(--radius-3);
@@ -40,11 +39,18 @@
 		&.active {
 			background-color: var(--clr-primary-badge);
 			color: var(--clr-primary-main);
-			border-color: var(--clr-primary-main);
+			// border-color: var(--clr-primary-main);
 		}
 
 		&.selected {
+			background-color: var(--clr-surface-secondary);
+			border-color: var(--clr-border-primary);
 			opacity: 1;
+		}
+
+		&.active.selected {
+			background-color: var(--clr-primary-badge);
+			border-color: var(--clr-primary-main);
 		}
 	}
 </style>
