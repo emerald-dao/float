@@ -4,8 +4,8 @@
 	import ClaimTicket from './atoms/ClaimTicket.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { compareDates } from '$lib/utilities/compareDates';
-	import Status from './atoms/Status.svelte';
-	import DaysLeft from './atoms/DaysLeft.svelte';
+	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
+	import Status from '$lib/components/events/Status.svelte';
 
 	export let event;
 	export let claims;

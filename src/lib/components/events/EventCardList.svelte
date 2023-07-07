@@ -2,8 +2,8 @@
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import { compareDates } from '$lib/utilities/compareDates';
-	import Status from '../../../routes/admin/events/[id]/_components/atoms/Status.svelte';
-	import DaysLeft from '../../../routes/admin/events/[id]/_components/atoms/DaysLeft.svelte';
+	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
+	import Status from '$lib/components/events/Status.svelte';
 
 	export let event: Event;
 	let actualStatus: {
