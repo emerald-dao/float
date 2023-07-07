@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { setContext } from 'svelte';
@@ -27,42 +27,38 @@
 	)?.component;
 </script>
 
-<section>
-	<div class="step-component-wrapper">
-		<svelte:component
-			this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
-			bind:stepDataValid
-		/>
-		<StepButtons
-			stepsStore={eventGeneratorSteps}
-			activeStepStore={eventGeneratorActiveStep}
-			bind:stepDataValid
-		/>
-	</div>
+<section class:review-step={reviewStep}>
+	{#if !reviewStep}
+		<div class="step-component-wrapper">
+			<svelte:component
+				this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
+				bind:stepDataValid
+			/>
+			<StepButtons
+				stepsStore={eventGeneratorSteps}
+				activeStepStore={eventGeneratorActiveStep}
+				bind:stepDataValid
+			/>
+		</div>
+	{/if}
 	<div class="generated-nft-wrapper">
 		<Blur color="tertiary" right="0" top="30%" />
 		<Blur left="0" bottom="20%" />
 		{#if reviewStep}
-			<div transition:fly|local={{ x: 500, duration: 700 }}>
-				<div>
-					<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
-				</div>
-				<div class="target">
-					<div id="target-element">
-						<FloatTicket
-							float={$generatedNft}
-							showBack={$eventGeneratorActiveStep === 1}
-							isForScreenshot={true}
-						/>
-					</div>
-				</div>
+			<div class="review-step-wrapper">
+				<svelte:component this={$eventGeneratorSteps[$eventGeneratorActiveStep].component} />
+				<StepButtons
+					stepsStore={eventGeneratorSteps}
+					activeStepStore={eventGeneratorActiveStep}
+					stepDataValid={true}
+				/>
 			</div>
 		{:else if powerUpsStep}
-			<div in:fly|local={{ x: -200, duration: 500, delay: 500 }}>
+			<div in:fly|local={{ x: -200, duration: 500, delay: 200 }}>
 				<svelte:component this={activePowerUpComponent} />
 			</div>
 		{:else}
-			<div class="column align-center" transition:fly|local={{ x: 500, duration: 700 }}>
+			<div class="column align-center ticket-wrapper" in:fly|local={{ x: 500, duration: 700 }}>
 				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>
 			<span class="small click-to-flip row-2 align-center">
@@ -81,6 +77,13 @@
 		grid-template-columns: 4fr 5fr;
 		overflow: hidden;
 
+		&.review-step {
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			background-color: red;
+		}
+
 		.step-component-wrapper {
 			display: flex;
 			flex-direction: column;
@@ -93,6 +96,12 @@
 			z-index: 2;
 		}
 
+		.review-step-wrapper {
+			flex: 1;
+			display: grid;
+			grid-template-rows: 1fr auto;
+		}
+
 		.generated-nft-wrapper {
 			position: relative;
 			display: flex;
@@ -102,23 +111,16 @@
 			padding: var(--space-16);
 			background-color: var(--clr-background-secondary);
 			z-index: 0;
+			flex: 1;
+
+			.ticket-wrapper {
+				width: 100%;
+			}
 
 			.click-to-flip {
 				color: var(--clr-text-off);
 				position: absolute;
 				bottom: var(--space-8);
-			}
-
-			div {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				width: 100%;
-
-				.target {
-					position: absolute;
-					right: -99999px;
-				}
 			}
 		}
 	}

@@ -11,5 +11,7 @@
 </script>
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon}>
-	{powerUpData.data}
+	<span class="small">
+		{powerUpData.data}
+	</span>
 </PowerUpReviewCard>
