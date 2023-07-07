@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { Button } from '@emerald-dao/component-library';
+	import { Button, Currency } from '@emerald-dao/component-library';
 	import { onMount } from 'svelte';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
@@ -73,7 +73,13 @@
 			{#if !data.overview.price}
 				<p class="large">Free</p>
 			{:else}
-				<p class="large">{Number(data.overview.price).toFixed(2)} FLOW</p>
+				<Currency
+					amount={data.overview.price}
+					currency={'FLOW'}
+					fontSize={'18px'}
+					decimalNumbers={2}
+					thinCurrency={false}
+				/>
 			{/if}
 			<p class="small">Price</p>
 		</div>
