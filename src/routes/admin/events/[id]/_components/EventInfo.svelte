@@ -5,7 +5,7 @@
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
-	import Status from '$lib/components/events/Status.svelte';
+	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
 	export let event;
 	export let claims;
@@ -24,7 +24,7 @@
 <div class="main-wrapper">
 	<div class="top-wrapper">
 		<div class="column-wrapper">
-			<Status {actualStatus} />
+			<EventStatus {actualStatus} />
 		</div>
 		<div class="column-wrapper">
 			<h5>{event.totalSupply}</h5>

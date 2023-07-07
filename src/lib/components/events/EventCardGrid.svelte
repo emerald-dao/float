@@ -3,7 +3,7 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
-	import Status from '$lib/components/events/Status.svelte';
+	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
 	export let event: Event;
 	let actualStatus: {
@@ -33,7 +33,7 @@
 	</div>
 	<div class="bottom-wrapper">
 		<div class="status-wrapper">
-			<Status {actualStatus} />
+			<EventStatus {actualStatus} />
 		</div>
 		{#if actualStatus}
 			<DaysLeft {actualStatus} />
