@@ -159,7 +159,7 @@
 				gap: var(--space-8);
 				border-bottom: none;
 				position: sticky;
-				top: 60px;
+				top: 90px;
 			}
 
 			.filters-wrapper {
