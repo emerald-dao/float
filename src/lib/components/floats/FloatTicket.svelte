@@ -63,7 +63,7 @@
 					<span class="label">{`#${float.id}`}</span>
 				</div>
 				<div class="body-wrapper">
-					<span><span class="w-medium">{float.originalRecipient}</span> has attended</span>
+					<!-- <span><span class="w-medium">{"float.originalRecipient"}</span> has attended</span> -->
 					<div class="logo-wrapper row-4">
 						{#if float.eventLogo && typeof float.eventLogo === 'string'}
 							<img src={float.eventLogo} alt="event-logo" />
@@ -206,6 +206,7 @@
 						gap: 0.8em;
 						border-block: 1px dashed var(--clr-border-primary);
 						color: var(--clr-text-off);
+						height: 100%;
 
 						.w-medium {
 							color: var(--clr-text-main);

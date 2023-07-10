@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { fade, fly } from 'svelte/transition';
+	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { setContext } from 'svelte';
@@ -9,6 +9,7 @@
 	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
+	import { fetchProfile } from '$lib/utilities/profiles/fetchProfile';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -20,11 +21,18 @@
 
 	setContext('activePowerUp', activePowerUp);
 
+	const getProfile = async () => {
+		const profile = await fetchProfile('jacob');
+
+		$eventGeneratorData.host = profile.name;
+	};
+
 	$: powerUpsStep = $eventGeneratorActiveStep === 4;
 	$: reviewStep = $eventGeneratorActiveStep === 5;
 	$: activePowerUpComponent = POWER_UPS.find(
 		(powerUp) => powerUp.type === $activePowerUp
 	)?.component;
+	$: getProfile();
 </script>
 
 <section class:review-step={reviewStep}>
@@ -81,7 +89,6 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
-			background-color: red;
 		}
 
 		.step-component-wrapper {
