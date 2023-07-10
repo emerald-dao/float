@@ -16,7 +16,7 @@ export async function load({ params }) {
 			facebook: 'https://facebook.com/JohnDoe'
 		},
 		image: '',
-		pinnedFloats: ['1', '2']
+		pinnedFloats: ['187900113', '196985252']
 	};
 	if (findProfile) {
 		user.name = findProfile.name;
