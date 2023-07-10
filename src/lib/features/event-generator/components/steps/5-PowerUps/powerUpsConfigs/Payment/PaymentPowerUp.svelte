@@ -10,6 +10,8 @@
 		(powerUp) => powerUp.type === 'payment'
 	) as PowerUpGeneratorData<'payment'>;
 
+	$: isActive = $eventGeneratorData.powerups.payment.active;
+
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
@@ -29,6 +31,7 @@
 			currency="FLOW"
 			label="FLOAT price"
 			name="payment"
+			disabled={!isActive}
 			isValid={res.isValid()}
 			errors={res.getErrors('payment')}
 			bind:value={$eventGeneratorData.powerups.payment.data}

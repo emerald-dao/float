@@ -10,6 +10,8 @@
 		(powerUp) => powerUp.type === 'limited'
 	) as PowerUpGeneratorData<'limited'>;
 
+	$: isActive = $eventGeneratorData.powerups.limited.active;
+
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
@@ -34,6 +36,7 @@
 			<input
 				type="number"
 				name="limited-amount"
+				disabled={!isActive}
 				bind:value={$eventGeneratorData.powerups.limited.data}
 				on:input={handleChange}
 			/>

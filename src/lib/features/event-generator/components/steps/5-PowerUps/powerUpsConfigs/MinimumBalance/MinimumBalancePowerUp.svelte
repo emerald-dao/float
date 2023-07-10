@@ -10,6 +10,8 @@
 		(powerUp) => powerUp.type === 'minimumBalance'
 	) as PowerUpGeneratorData<'minimumBalance'>;
 
+	$: isActive = $eventGeneratorData.powerups.minimumBalance.active;
+
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
@@ -29,6 +31,7 @@
 			currency="FLOW"
 			label="Minimum FLOAT balance"
 			name="minimum-balance"
+			disabled={!isActive}
 			isValid={res.isValid()}
 			errors={res.getErrors('minimum-balance')}
 			bind:value={$eventGeneratorData.powerups.minimumBalance.data}

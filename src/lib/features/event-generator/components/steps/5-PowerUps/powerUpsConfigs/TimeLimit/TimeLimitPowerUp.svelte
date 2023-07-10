@@ -10,6 +10,8 @@
 		(powerUp) => powerUp.type === 'timelock'
 	) as PowerUpGeneratorData<'timelock'>;
 
+	$: isActive = $eventGeneratorData.powerups.timelock.active;
+
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
@@ -35,6 +37,7 @@
 				<input
 					type="date"
 					name="start-date"
+					disabled={!isActive}
 					bind:value={$eventGeneratorData.powerups.timelock.data.startDate}
 					on:input={handleChange}
 				/>
@@ -51,6 +54,7 @@
 				<input
 					type="date"
 					name="end-date"
+					disabled={!isActive}
 					bind:value={$eventGeneratorData.powerups.timelock.data.endDate}
 					on:input={handleChange}
 				/>

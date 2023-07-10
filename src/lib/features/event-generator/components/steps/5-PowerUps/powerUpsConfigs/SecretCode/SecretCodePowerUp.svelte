@@ -10,6 +10,8 @@
 		(powerUp) => powerUp.type === 'secretCode'
 	) as PowerUpGeneratorData<'secretCode'>;
 
+	$: isActive = $eventGeneratorData.powerups.secretCode.active;
+
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
@@ -34,6 +36,7 @@
 			<input
 				type="text"
 				name="secret-code"
+				disabled={!isActive}
 				bind:value={$eventGeneratorData.powerups.secretCode.data}
 				on:input={handleChange}
 			/>
