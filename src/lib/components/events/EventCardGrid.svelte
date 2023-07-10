@@ -1,9 +1,21 @@
 <script lang="ts">
-	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
+	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
+	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
+	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
 	export let event: Event;
+	let actualStatus: {
+		status: string;
+		daysRemaining: number;
+	};
+
+	event.verifiers.forEach((verifier: any) => {
+		if (verifier.dateStart && verifier.dateEnding) {
+			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
+		}
+	});
 </script>
 
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
@@ -11,7 +23,7 @@
 		<div class="row-3 details-wrapper">
 			<img src={event.image} width={'54px'} height={'45px'} alt="logo" />
 			<div class="column-1">
-				<p class="large">{event.description}</p>
+				<p class="large">{event.name}</p>
 				<span class="small">{event.eventType}</span>
 			</div>
 		</div>
@@ -21,10 +33,11 @@
 	</div>
 	<div class="bottom-wrapper">
 		<div class="status-wrapper">
-			<Icon icon="ion:ellipse-sharp" color="var(--clr-primary-main)" />
-			<p class="xsmall">active</p>
+			<EventStatus {actualStatus} />
 		</div>
-		<p>20 days left</p>
+		{#if actualStatus}
+			<DaysLeft {actualStatus} />
+		{/if}
 	</div>
 </a>
 

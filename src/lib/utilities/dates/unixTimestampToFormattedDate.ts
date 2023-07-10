@@ -1,11 +1,11 @@
-export const unixTimeStampToDate = (
+export const unixTimestampToFormattedDate = (
 	timestamp: string,
 	format: 'year' | 'month' | 'date' = 'date'
 ): string => {
 	const seconds = Math.floor(Number(timestamp));
-	const fractionalSeconds = Math.round((Number(timestamp) % 1) * 1000); // Assuming decimal part represents fractional seconds
+	const fractionalSeconds = Math.round((Number(timestamp) % 1) * 1000);
 
-	const date = new Date(seconds * 1000 + fractionalSeconds); // Add fractional seconds to the timestamp
+	const date = new Date(seconds * 1000 + fractionalSeconds);
 
 	const month = date.getMonth();
 	const year = date.getFullYear();

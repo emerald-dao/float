@@ -5,6 +5,7 @@
 	import Link from './Link.svelte';
 
 	export let event: Event;
+	export let user: {};
 </script>
 
 <div class="domains-wrapper">
@@ -12,8 +13,8 @@
 		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
 		<p>DOMAINS</p>
 	</div>
-	<Link id={event.eventId} page={true} />
-	<Link id={event.eventId} qr={true} />
+	<Link id={event.eventId} page={true} {user} />
+	<Link id={event.eventId} qr={true} {user} />
 </div>
 
 <style lang="scss">

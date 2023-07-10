@@ -4,4 +4,4 @@
 	export let data;
 </script>
 
-<Event event={data.event} claims={data.eventClaims} />
+<Event event={data.event} claims={data.eventClaims} user={data.user} />
