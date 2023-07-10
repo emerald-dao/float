@@ -72,8 +72,6 @@
 					on:input={handleChange}
 				/>
 			</InputWrapper>
-			{$eventGeneratorData.powerups.timelock.data.startDate}
-			{startDate}
 		</div>
 		<div>
 			<InputWrapper

@@ -9,29 +9,31 @@
 	) as PowerUpGeneratorData<'timelock'>;
 
 	const powerUpData = $eventGeneratorData.powerups.timelock;
-
-	$: formattedStartDate = unixTimestampToFormattedDate(powerUpData.data.startDate);
 </script>
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon}>
 	<div class="row-7">
 		{#if powerUpData.data.startDate}
 			<div class="column">
-				<span class="small"> Start date </span>
-				{formattedStartDate}
+				<span class="off small"> Start date </span>
+				<span class="small">
+					{unixTimestampToFormattedDate(powerUpData.data.endDate)}
+				</span>
 			</div>
 		{/if}
 		{#if powerUpData.data.endDate}
 			<div class="column">
-				<span class="small"> End date </span>
-				{unixTimestampToFormattedDate(powerUpData.data.endDate)}
+				<span class="off small"> End date </span>
+				<span class="small">
+					{unixTimestampToFormattedDate(powerUpData.data.endDate)}
+				</span>
 			</div>
 		{/if}
 	</div>
 </PowerUpReviewCard>
 
 <style lang="scss">
-	span.small {
+	span.off {
 		color: var(--clr-text-off);
 	}
 </style>
