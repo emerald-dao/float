@@ -68,7 +68,7 @@
 
 			.title-wrapper {
 				margin-bottom: var(--space-4);
-				gap: var(--space-15);
+				gap: var(--space-10);
 
 				h4 {
 					color: var(--clr-heading-main);

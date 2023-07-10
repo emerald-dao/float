@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
+	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import { POWER_UPS, type PowerUpGeneratorData } from '../../../5-PowerUps/powerUps';
 	import PowerUpReviewCard from '../atoms/PowerUpReviewCard.svelte';
 
@@ -8,21 +9,29 @@
 	) as PowerUpGeneratorData<'timelock'>;
 
 	const powerUpData = $eventGeneratorData.powerups.timelock;
+
+	$: formattedStartDate = unixTimestampToFormattedDate(powerUpData.data.startDate);
 </script>
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon}>
-	<div class="row-2">
+	<div class="row-7">
 		{#if powerUpData.data.startDate}
-			<div class="column-1">
-				<span> Starte date </span>
-				{powerUpData.data}
+			<div class="column">
+				<span class="small"> Start date </span>
+				{formattedStartDate}
 			</div>
 		{/if}
 		{#if powerUpData.data.endDate}
-			<div class="column-1">
-				<span> End date </span>
-				{powerUpData.data}
+			<div class="column">
+				<span class="small"> End date </span>
+				{unixTimestampToFormattedDate(powerUpData.data.endDate)}
 			</div>
 		{/if}
 	</div>
 </PowerUpReviewCard>
+
+<style lang="scss">
+	span.small {
+		color: var(--clr-text-off);
+	}
+</style>

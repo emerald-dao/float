@@ -92,6 +92,7 @@
 			flex-direction: row;
 			flex-wrap: wrap;
 			gap: var(--space-3);
+			align-items: flex-start;
 
 			.card {
 				padding: var(--space-4);
