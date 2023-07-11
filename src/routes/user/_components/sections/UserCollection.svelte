@@ -10,18 +10,9 @@
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
 	import { filterContent } from '../../_functions/filterContent';
+	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let floats: FLOAT[];
-
-	let typeOfEventFilter: Filter = {
-		title: 'Type of event',
-		slug: 'type-of-event',
-		filterElement: floats.map((float) => ({
-			icon: 'house',
-			slug: float.eventType
-		})),
-		filterBucket: []
-	};
 
 	let filters: Filter[] = [];
 
@@ -30,16 +21,16 @@
 	};
 
 	onMount(() => {
-		filters = createFilters(activeFilters, typeOfEventFilter);
+		filters = createFilters(activeFilters);
 	});
 
-	$: searchCadence = floats.map((float) => ({
+	$: searchFloat = floats.map((float) => ({
 		...float,
 
 		searchTerms: `${float.eventName}`
 	}));
 
-	$: searchStore = createSearchStore(searchCadence);
+	$: searchStore = createSearchStore(searchFloat);
 
 	$: unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 
@@ -119,9 +110,11 @@
 							<div class="line" />
 							<div class="date-wrapper">
 								<p class="small">
-									{new Date(float.dateReceived).toLocaleString('default', { month: 'long' })}
+									{unixTimestampToFormattedDate(float.dateReceived, 'month')}
 								</p>
-								<p class="large w-medium">{new Date(float.dateReceived).getFullYear()}</p>
+								<p class="large w-medium">
+									{unixTimestampToFormattedDate(float.dateReceived, 'year')}
+								</p>
 							</div>
 							<div class="line" />
 						</div>
@@ -166,7 +159,7 @@
 				gap: var(--space-8);
 				border-bottom: none;
 				position: sticky;
-				top: 60px;
+				top: 90px;
 			}
 
 			.filters-wrapper {

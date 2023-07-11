@@ -11,9 +11,11 @@
 	floatsClaimed={data.floats.length}
 	eventsCreated={data.events.length}
 />
-<div>
-	<PinnedFloats pinnedFloats={data.user.pinnedFloats} floats={data.floats} />
-</div>
+{#if data.user.pinnedFloats.length > 0}
+	<div>
+		<PinnedFloats pinnedFloats={data.user.pinnedFloats} floats={data.floats} />
+	</div>
+{/if}
 <UserActivity floats={data.floats} userData={data.user} />
 
 <style lang="scss">
