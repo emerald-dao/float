@@ -56,7 +56,7 @@
 		class:flip={flip || showBack}
 		class:inverse-flip={showBack && flip}
 	>
-		<div class="float-front shadow-large">
+		<div class="float-front">
 			<div class="content">
 				<div class="header-wrapper">
 					<span class="large">FLOAT</span>
@@ -96,7 +96,7 @@
 			</div>
 		</div>
 		<div
-			class="float-back shadow-large center"
+			class="float-back center"
 			bind:this={floatBack}
 			id={isForScreenshot ? 'element-to-exclude' : ''}
 		>
@@ -118,6 +118,7 @@
 		container-type: inline-size;
 		container-name: ticket;
 		cursor: pointer;
+		filter: drop-shadow(var(--shadow-large-x) 5px 10px var(--shadow-large-color));
 
 		@container ticket (max-width: 500px) {
 			.secondary-wrapper {
@@ -149,7 +150,34 @@
 				backface-visibility: hidden;
 				top: 0;
 				border-radius: 2em;
-				background-color: var(--clr-surface-secondary);
+				background: radial-gradient(
+						circle at left center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					),
+					radial-gradient(
+						circle at right center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					);
+				mask-image: radial-gradient(
+						circle at left center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					),
+					radial-gradient(
+						circle at right center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					);
 				padding: 5% 7%;
 				width: 100%;
 				height: 100%;
@@ -268,7 +296,6 @@
 			.float-back {
 				transform: rotateY(180deg);
 				overflow: hidden;
-				background-color: var(--clr-surface-secondary);
 			}
 		}
 	}
