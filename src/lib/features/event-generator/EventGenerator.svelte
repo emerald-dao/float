@@ -1,15 +1,17 @@
 <script lang="ts">
+	import { user } from './../../stores/flow/FlowStore';
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
-	import { setContext } from 'svelte';
+	import { onMount, setContext } from 'svelte';
 	import StepButtons from './components/atoms/StepButtons.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
-	import { fetchProfile } from '$lib/utilities/profiles/fetchProfile';
+	import getProfile from '$lib/utilities/profiles/getProfile';
+	import type { Profile } from '$lib/types/user/profile.interface';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -21,18 +23,23 @@
 
 	setContext('activePowerUp', activePowerUp);
 
-	const getProfile = async () => {
-		const profile = await fetchProfile('jacob');
+	const getProfileAsync = async (userAddress: string) => {
+		const userProfile = (await getProfile(userAddress)) as Profile;
 
-		$eventGeneratorData.host = profile.name;
+		$eventGeneratorData.host = userProfile.name;
 	};
+
+	onMount(() => {
+		if ($user.addr) {
+			getProfileAsync($user.addr);
+		}
+	});
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 4;
 	$: reviewStep = $eventGeneratorActiveStep === 5;
 	$: activePowerUpComponent = POWER_UPS.find(
 		(powerUp) => powerUp.type === $activePowerUp
 	)?.component;
-	$: getProfile();
 </script>
 
 <section class:review-step={reviewStep}>
