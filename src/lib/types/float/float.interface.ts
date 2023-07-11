@@ -13,6 +13,5 @@ export interface FLOAT {
 	serial: string;
 	totalSupply: string | null;
 	transferrable: boolean;
-	// needed for the UI
 	eventType: EventType;
 }

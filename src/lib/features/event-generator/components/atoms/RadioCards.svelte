@@ -11,7 +11,7 @@
 
 {#each options as { value, title, description }}
 	<div
-		class="card column-1"
+		class="card-primary column-1"
 		on:click={() => (selectedValue = value)}
 		class:active={selectedValue === value}
 	>
@@ -21,12 +21,10 @@
 {/each}
 
 <style lang="scss">
-	.card {
+	.card-primary {
 		opacity: 0.6;
 		cursor: pointer;
 		transition: 0.6s;
-		border: none;
-		background-color: var(--clr-neutral-badge);
 
 		span:first-child {
 			transition: 0.6s;
@@ -36,6 +34,7 @@
 		&.active {
 			opacity: 1;
 			background-color: var(--clr-primary-badge);
+			border-color: var(--clr-primary-main);
 
 			span:first-child {
 				color: var(--clr-primary-main);

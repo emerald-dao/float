@@ -2,23 +2,27 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import POWER_UPS, { type PowerUp } from '../../powerUps';
+	import { type PowerUpGeneratorData, POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+
+	const powerUpData = POWER_UPS.find(
+		(powerUp) => powerUp.type === 'secretCode'
+	) as PowerUpGeneratorData<'secretCode'>;
+
+	$: isActive = $eventGeneratorData.powerups.secretCode.active;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
 
 		(res as SuiteRunResult).done((result) => {
 			res = result;
+
+			$powerUpsValidations.secretCode = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
-
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secretCode'
-	) as PowerUp<'secretCode'>;
 </script>
 
 <PowerUpConfigWrapper {powerUpData}>
@@ -32,6 +36,7 @@
 			<input
 				type="text"
 				name="secret-code"
+				disabled={!isActive}
 				bind:value={$eventGeneratorData.powerups.secretCode.data}
 				on:input={handleChange}
 			/>
