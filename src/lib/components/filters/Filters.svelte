@@ -21,9 +21,6 @@
 
 {#each filters as filter, i}
 	<div>
-		{#if hasTitles}
-			<h5>{filter.title}</h5>
-		{/if}
 		<div class="tags-wrapper">
 			{#each filter.filterElement as element}
 				<TagToggle

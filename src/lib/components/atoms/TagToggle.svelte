@@ -22,8 +22,8 @@
 		<Label
 			iconLeft={icon}
 			state={value ? 'on' : 'off'}
-			color={value ? 'tertiary' : 'neutral'}
-			hasBorder={false}
+			color={value ? 'tertiary' : 'transparent'}
+			hasBorder={true}
 		>
 			<span class="w-regular small" class:on={value}>
 				<slot />
@@ -38,7 +38,8 @@
 	}
 
 	span {
-		color: var(--clr-text-off);
+		// color: var(--clr-text-off);
+		padding: 0.2rem;
 
 		&.on {
 			color: var(--clr-tertiary-main);
