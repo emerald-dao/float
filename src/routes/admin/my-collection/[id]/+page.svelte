@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
+	import { getContext, onMount } from 'svelte';
 	import FloatInfo from './_components/FloatInfo.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
@@ -7,6 +7,10 @@
 	const floats: FLOAT[] = getContext('floats');
 
 	$: activeFloat = floats.find((float) => float.eventId === $page.params.id);
+
+	onMount(() => {
+		activeFloat = floats[0];
+	});
 </script>
 
 {#if activeFloat === undefined}

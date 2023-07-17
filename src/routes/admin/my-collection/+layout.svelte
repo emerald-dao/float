@@ -55,7 +55,7 @@
 
 		@include mq(small) {
 			display: grid;
-			grid-template-columns: 0.9fr 1fr;
+			grid-template-columns: 1.1fr 1fr;
 			justify-content: center;
 			gap: var(--space-4);
 		}
@@ -71,7 +71,7 @@
 				flex-direction: column;
 				gap: var(--space-4);
 				justify-content: center;
-				padding-bottom: var(--space-3);
+				padding-bottom: var(--space-5);
 				border-bottom: var(--border-width-primary) solid var(--clr-border-primary);
 
 				.title-wrapper {
@@ -100,10 +100,10 @@
 
 		.right-wrapper {
 			display: none;
+			border-left: var(--clr-neutral-900) 0.5px solid;
 
 			@include mq(small) {
 				display: block;
-				background-color: var(--clr-background-secondary);
 			}
 		}
 	}
