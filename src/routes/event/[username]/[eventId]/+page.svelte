@@ -8,7 +8,6 @@
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let data;
-	console.log('test');
 
 	let noDates = false;
 	let starDate: string;
