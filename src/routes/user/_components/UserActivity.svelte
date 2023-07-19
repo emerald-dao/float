@@ -35,6 +35,7 @@
 
 		.header-wrapper {
 			display: none;
+			border-bottom: 1px dashed var(--clr-border-primary);
 
 			@include mq(small) {
 				display: grid;

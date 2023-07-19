@@ -38,7 +38,7 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			margin-bottom: var(--space-8);
+			margin-bottom: var(--space-2);
 
 			.background {
 				display: flex;
