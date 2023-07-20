@@ -19,12 +19,6 @@
 
 	$: unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 
-	$: activeFloat = data.floats.find((float) => float.eventId === $page.params.id);
-
-	onMount(() => {
-		activeFloat = data.floats[0];
-	});
-
 	onDestroy(() => {
 		unsubscribe();
 	});
