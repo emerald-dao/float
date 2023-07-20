@@ -25,7 +25,7 @@
 			</div>
 		</div>
 		<div class="date-wrapper">
-			<div class="test">
+			<div class="label-wrapper">
 				<span class="xsmall">
 					{month}
 				</span>
@@ -96,7 +96,7 @@
 				justify-content: center;
 				align-items: center;
 
-				.test {
+				.label-wrapper {
 					height: min-content;
 					background-color: var(--clr-primary-badge);
 					border-radius: var(--radius-2);
@@ -113,6 +113,7 @@
 		.selected {
 			background-color: var(--clr-surface-secondary);
 			border: var(--border-width-primary) solid var(--clr-border-primary);
+			box-shadow: 0px 0px 10px 0 var(--clr-shadow-primary);
 		}
 
 		.button-wrapper {

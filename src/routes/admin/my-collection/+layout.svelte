@@ -2,7 +2,8 @@
 	import { fly } from 'svelte/transition';
 	import FloatCard from './_components/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, setContext } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
+	import { page } from '$app/stores';
 
 	export let data;
 
@@ -17,6 +18,12 @@
 	$: searchStore = createSearchStore(searchEvent);
 
 	$: unsubscribe = searchStore.subscribe((model) => searchHandler(model));
+
+	$: activeFloat = data.floats.find((float) => float.eventId === $page.params.id);
+
+	onMount(() => {
+		activeFloat = data.floats[0];
+	});
 
 	onDestroy(() => {
 		unsubscribe();
@@ -100,10 +107,10 @@
 
 		.right-wrapper {
 			display: none;
-			border-left: var(--clr-neutral-900) 0.5px solid;
 
 			@include mq(small) {
 				display: block;
+				background-color: var(--clr-background-secondary);
 			}
 		}
 	}
