@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
@@ -11,7 +10,7 @@
 		daysRemaining: number;
 	};
 
-	event.verifiers.forEach((verifier: any) => {
+	$: event.verifiers.forEach((verifier: any) => {
 		if (verifier.dateStart && verifier.dateEnding) {
 			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
 		}
@@ -21,7 +20,7 @@
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
 	<div class="top-wrapper">
 		<div class="row-3 details-wrapper">
-			<img src={event.image} width={'54px'} height={'45px'} alt="logo" />
+			<img src={event.image} width={'45px'} height={'45px'} alt="logo" />
 			<div class="column-1">
 				<p class="large">{event.name}</p>
 				<span class="small">{event.eventType}</span>
@@ -94,7 +93,6 @@
 				display: flex;
 				align-items: center;
 				height: fit-content;
-				background-color: var(--clr-primary-badge);
 				padding: var(--space-1) var(--space-2);
 				border-radius: var(--radius-1);
 				text-align: center;

@@ -107,7 +107,7 @@
 		flex-direction: column;
 		justify-content: center;
 		gap: var(--space-10);
-		padding: var(--space-6) var(--space-18) 0 var(--space-6);
+		padding: var(--space-6) var(--space-18) var(--space-6) var(--space-6);
 
 		.row-2 {
 			display: grid;
