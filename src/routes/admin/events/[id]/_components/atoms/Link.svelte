@@ -1,11 +1,38 @@
 <script lang="ts">
-	import { Button } from '@emerald-dao/component-library';
+	import { Button, CopyToClipboard } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
+	import { writable } from 'svelte/store';
 
 	export let id: string;
 	export let qr: boolean = false;
 	export let page: boolean = false;
 	export let user: {};
+
+	const tooltipText = writable('Copy to clipboard');
+
+	function copyToClipboard() {
+		// Determine which URL to copy based on the `{#if}` conditions
+		const urlToCopy = page
+			? `https://floats.city/event/${user.name}/${id}`
+			: `https://floats.city/event/${user.name}/${id}/qr`;
+
+		const tempInput = document.createElement('textarea');
+		tempInput.value = urlToCopy;
+		document.body.appendChild(tempInput);
+
+		tempInput.select();
+		tempInput.setSelectionRange(0, 99999);
+
+		document.execCommand('copy');
+
+		document.body.removeChild(tempInput);
+
+		tooltipText.set('Copied');
+
+		setTimeout(() => {
+			tooltipText.set('Copy to clipboard');
+		}, 2000);
+	}
 </script>
 
 <div class="main-wrapper">
@@ -25,17 +52,23 @@
 			<span class="link">https://floats.city/event/{user.name}/{id}/qr</span>
 		{/if}
 		<div class="row-2">
-			<div class="button-wrapper">
-				<Button type="transparent">
-					<Icon icon="ph:copy-bold" hFlip={true} color="var(--clr-text-main)" />
+			<div class="button-wrapper" data-tooltip={$tooltipText}>
+				<Button type="transparent" on:click={copyToClipboard}>
+					<Icon icon="tabler:copy" color="var(--clr-text-main)" />
 				</Button>
 			</div>
-			<div class="button-wrapper">
-				<Button type="transparent">
-					<Icon icon="gridicons:external" color="var(--clr-text-main)" />
+			<div class="button-wrapper" data-tooltip="Open in new tab">
+				<Button
+					type="transparent"
+					target="_blank"
+					href={page
+						? `https://floats.city/event/${user.name}/${id}`
+						: `https://floats.city/event/${user.name}/${id}/qr`}
+				>
+					<Icon icon="tabler:external-link" color="var(--clr-text-main)" />
 				</Button>
 			</div>
-			<div class="button-wrapper">
+			<div class="button-wrapper" data-tooltip="Share">
 				<Button type="transparent">
 					<Icon icon="tabler:share" color="var(--clr-text-main)" />
 				</Button>
