@@ -96,7 +96,8 @@
 		gap: var(--space-13);
 
 		.main-wrapper {
-			display: flex;
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
 			justify-content: center;
 			align-items: center;
 			text-align: center;

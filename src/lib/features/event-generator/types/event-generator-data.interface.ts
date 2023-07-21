@@ -19,7 +19,7 @@ export interface EventGeneratorData {
 	};
 }
 
-export const POWER_UPS = [
+export const POWER_UPS_TYPES = [
 	'payment',
 	'timelock',
 	'secretCode',
@@ -27,7 +27,7 @@ export const POWER_UPS = [
 	'minimumBalance'
 ] as const;
 
-export type PowerUpType = (typeof POWER_UPS)[number];
+export type PowerUpType = (typeof POWER_UPS_TYPES)[number];
 
 type PaymentPowerUpData = number;
 type TimeLockPowerUpData = {

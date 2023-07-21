@@ -1,22 +1,31 @@
 <script lang="ts">
-	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import type {
-		PowerUpData,
-		PowerUpType
-	} from '$lib/features/event-generator/types/event-generator-data.interface';
+	import { powerUpsValidations } from './powerUps';
+	import { POWER_UPS } from './powerUps';
+	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import { getContext } from 'svelte';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import PowerUpToggle from './atoms/PowerUpToggle.svelte';
-	import POWER_UPS from './powerUps';
-	import type { Writable } from 'svelte/store';
+	import { derived, type Writable } from 'svelte/store';
+	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 
-	export let stepDataValid = true;
+	export let stepDataValid: boolean;
 
 	const activePowerUp: Writable<PowerUpType> = getContext('activePowerUp');
 
 	const handleSelectPowerUp = (powerUpType: PowerUpType) => {
 		$activePowerUp = powerUpType;
 	};
+
+	const stepDataValidStore = derived(
+		[eventGeneratorData, powerUpsValidations],
+		([$eventGeneratorData, $powerUpsValidations]) => {
+			return Object.entries($powerUpsValidations).every(([key, value]) => {
+				return $eventGeneratorData.powerups[key as PowerUpType].active ? value : true;
+			});
+		}
+	);
+
+	$: stepDataValid = $stepDataValidStore;
 </script>
 
 <StepComponentWrapper>

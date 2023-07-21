@@ -89,8 +89,8 @@
 <div class="content-wrapper">
 	<div class="leftside">
 		<h5>Search</h5>
-		<div>
-			<InputWrapper name="search" errors={[]} isValid={false} icon="tabler:search">
+		<div class="input-wrapper">
+			<InputWrapper name="search" errors={[]} isValid={false}>
 				<input type="text" placeholder="Search by title..." bind:value={$searchStore.search} />
 			</InputWrapper>
 		</div>
@@ -98,8 +98,10 @@
 			<h5>Filters</h5>
 			<Filters bind:filters />
 		</div>
-		<h5>Badges</h5>
-		<Badges {badges} />
+		<div class="badges-wrapper">
+			<h5>Badges</h5>
+			<Badges {badges} />
+		</div>
 	</div>
 	<div class="rightside">
 		{#await filteredContent then contents}
@@ -141,6 +143,10 @@
 			margin: 0;
 		}
 
+		.input-wrapper {
+			border-bottom: 1px dashed var(--clr-border-primary);
+		}
+
 		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 1fr 2fr;
@@ -162,8 +168,11 @@
 				top: 90px;
 			}
 
-			.filters-wrapper {
+			.filters-wrapper,
+			.badges-wrapper {
 				display: none;
+				padding-bottom: 2rem;
+				border-bottom: 1px dashed var(--clr-border-primary);
 
 				@include mq(small) {
 					display: flex;
@@ -172,7 +181,7 @@
 				}
 
 				@include mq(medium) {
-					gap: var(--space-8);
+					gap: var(--space-6);
 				}
 			}
 		}

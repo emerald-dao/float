@@ -10,7 +10,7 @@
 <section class="container">
 	<h4>Pinned FLOATs</h4>
 	<div>
-		<Blur color="tertiary" right="22%" top="30%" />
+		<Blur color="tertiary" right="22%" top="15%" />
 		<Blur left="22%" bottom="20%" />
 		<div class="floats-wrapper">
 			{#each pinnedFloats as floatId}
@@ -29,6 +29,7 @@
 		flex-direction: column;
 		gap: var(--space-13);
 		align-items: center;
+		border-bottom: 1px dashed var(--clr-border-primary);
 
 		.floats-wrapper {
 			display: flex;

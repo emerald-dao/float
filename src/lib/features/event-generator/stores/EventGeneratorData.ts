@@ -50,7 +50,7 @@ export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($event
 	totalSupply: $eventGeneratorData.totalSupply,
 	transferrable: $eventGeneratorData.transferrable,
 	eventType: $eventGeneratorData.eventType,
-	originalRecipient: 'someone.find',
+	originalRecipient: 'jacob.find',
 	id: '00001',
 	serial: '',
 	dateReceived: ''

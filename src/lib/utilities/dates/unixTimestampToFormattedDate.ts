@@ -13,7 +13,7 @@ export const unixTimestampToFormattedDate = (
 	if (format === 'year') {
 		return year.toString();
 	} else if (format === 'month') {
-		const formattedMonth = date.toLocaleString('en-US', { month: 'long' });
+		const formattedMonth = date.toLocaleString('en-US', { month: 'short' });
 		return formattedMonth;
 	} else {
 		const day = date.getDate();

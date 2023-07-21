@@ -41,6 +41,7 @@
 		reader.onload = () => {
 			element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
 			element.style.backgroundSize = 'cover';
+			element.style.backgroundPosition = 'center';
 		};
 	};
 </script>
@@ -55,26 +56,37 @@
 		class:flip={flip || showBack}
 		class:inverse-flip={showBack && flip}
 	>
-		<div class="float-front shadow-large">
+		<div class="float-front">
 			<div class="content">
 				<div class="header-wrapper">
 					<span class="large">FLOAT</span>
 					<span class="label">{`#${float.id}`}</span>
 				</div>
 				<div class="body-wrapper">
-					<span><strong>{float.originalRecipient}</strong> has attended</span>
+					<!-- <span><span class="w-medium">{"float.originalRecipient"}</span> has attended</span> -->
 					<div class="logo-wrapper row-4">
 						{#if float.eventLogo && typeof float.eventLogo === 'string'}
 							<img src={float.eventLogo} alt="event-logo" />
 						{:else if float.eventLogo && typeof float.eventLogo !== 'string'}
 							<div class="float-logo" bind:this={floatLogo} />
+						{:else}
+							<div class="image-placeholder">
+								<p>Insert an image</p>
+							</div>
 						{/if}
-						<div id={isForScreenshot ? 'title-style' : ''} class="column-space-between">
-							<h3 class="w-medium">{float.eventName}</h3>
+						<div
+							id={isForScreenshot ? 'title-style' : ''}
+							class="column-space-between heading-wrapper"
+						>
+							{#if float.eventName.length > 0}
+								<h3 class="w-medium">{float.eventName}</h3>
+							{:else}
+								<h3 class="w-medium event-name-placeholder">Event Name</h3>
+							{/if}
 							<span class="label">{float.eventType}</span>
 						</div>
 					</div>
-					<span>Organized by <strong>{float.eventHost}</strong></span>
+					<span>Organized by <span class="w-medium">{float.eventHost}</span></span>
 				</div>
 				<div class="footer-wrapper">
 					<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"
@@ -84,14 +96,16 @@
 			</div>
 		</div>
 		<div
-			class="float-back shadow-large"
+			class="float-back center"
 			bind:this={floatBack}
 			id={isForScreenshot ? 'element-to-exclude' : ''}
 		>
 			{#if float.eventImage && typeof float.eventImage === 'string'}
 				<img src={float.eventImage} alt="float" />
 			{:else if float.eventImage === undefined}
-				<img src="/test-toucan.png" alt="float" />
+				<div class="content">
+					<p>Insert an image</p>
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -104,6 +118,7 @@
 		container-type: inline-size;
 		container-name: ticket;
 		cursor: pointer;
+		filter: drop-shadow(var(--shadow-large-x) 5px 10px var(--shadow-large-color));
 
 		@container ticket (max-width: 500px) {
 			.secondary-wrapper {
@@ -135,24 +150,64 @@
 				backface-visibility: hidden;
 				top: 0;
 				border-radius: 2em;
+				background: radial-gradient(
+						circle at left center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					),
+					radial-gradient(
+						circle at right center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					);
+				mask-image: radial-gradient(
+						circle at left center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					),
+					radial-gradient(
+						circle at right center,
+						transparent 4%,
+						var(--clr-surface-secondary) 4%,
+						var(--clr-surface-secondary) 80%,
+						transparent 0
+					);
+				padding: 5% 7%;
+				width: 100%;
+				height: 100%;
+
+				.content {
+					border: 1px dashed var(--clr-border-primary);
+					border-radius: 1.3em;
+					width: 100%;
+					height: 100%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					overflow: hidden;
+
+					p {
+						color: var(--clr-text-off);
+					}
+				}
 			}
 
 			.float-front {
-				background-color: var(--clr-surface-secondary);
-				padding: 5% 7%;
 				position: relative;
-				width: 100%;
-				height: 100%;
 				transition: transform 1.4s;
 				transform-style: preserve-3d;
 
 				.content {
-					border: 1px solid var(--clr-border-primary);
-					border-radius: 1.3em;
-					width: 100%;
-					height: 100%;
+					border-style: solid;
 					display: grid;
 					grid-template-rows: auto 1fr auto;
+					grid-template-columns: 100%;
 
 					.header-wrapper,
 					.footer-wrapper {
@@ -178,18 +233,60 @@
 						justify-content: space-between;
 						gap: 0.8em;
 						border-block: 1px dashed var(--clr-border-primary);
+						color: var(--clr-text-off);
+						height: 100%;
 
-						h3 {
-							font-size: 2.2em;
-							margin-bottom: 0.15em;
+						.w-medium {
+							color: var(--clr-text-main);
 						}
 
 						.logo-wrapper {
+							display: flex;
+							flex-direction: row;
+							align-items: center;
+							justify-content: flex-start;
+
 							.float-logo,
-							img {
-								width: 80px;
-								height: 80px;
+							img,
+							.image-placeholder {
+								min-width: 18%;
+								max-width: 18%;
+								aspect-ratio: 1 / 1;
 								border-radius: var(--radius-1);
+							}
+
+							.image-placeholder {
+								border: 1px dashed var(--clr-border-primary);
+								display: flex;
+								justify-content: center;
+								align-items: center;
+								padding: 1em;
+
+								p {
+									font-size: 0.6em;
+									line-height: 1.1;
+									text-align: center;
+									color: var(--clr-text-off);
+								}
+							}
+
+							.heading-wrapper {
+								overflow: hidden;
+
+								h3 {
+									font-size: 1.5em;
+									margin-bottom: 0.15em;
+									text-overflow: ellipsis;
+									white-space: nowrap;
+									overflow: hidden;
+									width: 100%;
+									min-height: 1.2em;
+									color: var(--clr-heading-main);
+
+									&.event-name-placeholder {
+										color: var(--clr-text-off);
+									}
+								}
 							}
 						}
 					}

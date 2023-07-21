@@ -69,7 +69,7 @@ export const eventGeneratorSteps = createSteps([
 	{
 		name: 'Review',
 		component: ReviewStep,
-		title: 'Review your event prior to confirming',
+		title: 'Launch your event!',
 		action: createEvent,
 		state: 'inactive',
 		button: {
