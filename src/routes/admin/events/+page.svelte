@@ -7,17 +7,8 @@
 	import EventCardList from '$lib/components/events/EventCardList.svelte';
 	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
 	import type { Event } from '$lib/types/event/event.interface.js';
-	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject.js';
 
 	export let data;
-
-	data.events.forEach((event: Event) => {
-		event.verifiers.forEach((verifier) => {
-			if (verifier.dateStart && verifier.dateEnding) {
-				event.status = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
-			}
-		});
-	});
 
 	let viewEventsMode: 'grid' | 'list' = 'grid';
 	let showInactive = true;
@@ -36,6 +27,7 @@
 
 	onMount(() => {
 		window.addEventListener('resize', setDefaultViewMode);
+		filteredEvents = data.events;
 
 		return () => {
 			window.removeEventListener('resize', setDefaultViewMode);

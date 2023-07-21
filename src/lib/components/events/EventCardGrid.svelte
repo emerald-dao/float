@@ -5,16 +5,6 @@
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
 	export let event: Event;
-	let actualStatus: {
-		status: string;
-		daysRemaining: number;
-	};
-
-	$: event.verifiers.forEach((verifier: any) => {
-		if (verifier.dateStart && verifier.dateEnding) {
-			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
-		}
-	});
 </script>
 
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
@@ -32,10 +22,10 @@
 	</div>
 	<div class="bottom-wrapper">
 		<div class="status-wrapper">
-			<EventStatus {actualStatus} />
+			<EventStatus actualStatus={event.status} />
 		</div>
-		{#if actualStatus}
-			<DaysLeft {actualStatus} />
+		{#if event.status}
+			<DaysLeft actualStatus={event.status} />
 		{/if}
 	</div>
 </a>
