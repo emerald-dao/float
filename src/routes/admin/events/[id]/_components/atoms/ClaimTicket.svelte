@@ -1,5 +1,6 @@
 <script lang="ts">
 	export let claim: Claim;
+	export let i: number;
 
 	interface Claim {
 		image: string;
@@ -12,16 +13,16 @@
 <div class="main-wrapper">
 	<div class="wrapper">
 		<div class="left-wrapper">
-			<p class="small">#32</p>
+			<p class="small">#{i + 1}</p>
 			<div class="row-3">
 				<img src={claim.image} width={'30px'} height={'30px'} alt="logo" />
-				<p>0x2f3043tpx3f43g</p>
+				<p>{claim.walletAddress}</p>
 			</div>
 		</div>
 		<div class="right-wrapper">
 			<div class="row-2">
-				<p>17:32</p>
-				<p>04/20/23</p>
+				<p>{claim.time}</p>
+				<p>{claim.date}</p>
 			</div>
 		</div>
 	</div>
@@ -65,16 +66,13 @@
 
 				.row-3 {
 					align-items: center;
-					background-color: var(--clr-neutral-500);
+					background-color: rgba(133, 133, 133, 0.1);
 					border-radius: 100px;
 					width: max-content;
+					padding-right: var(--space-2);
 
 					img {
 						border-radius: 50%;
-					}
-
-					p {
-						padding: var(--space-1);
 					}
 				}
 			}

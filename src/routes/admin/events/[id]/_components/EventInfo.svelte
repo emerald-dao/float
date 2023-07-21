@@ -44,8 +44,8 @@
 			<Icon icon="tabler:news" color="var(--clr-neutral-600)" />
 			<p>LATEST CLAIMS</p>
 		</div>
-		{#each claims as claim}
-			<ClaimTicket {claim} />
+		{#each claims as claim, i}
+			<ClaimTicket {claim} {i} />
 		{/each}
 	</div>
 </div>
