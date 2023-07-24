@@ -1,37 +1,22 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
-	import { onMount } from 'svelte';
 
-	let selectedOption = '';
+	let activePage = '';
 
-	onMount(() => {
-		const currentPath = window.location.pathname;
-		if (currentPath.includes('/admin/events')) {
-			selectedOption = 'events';
-		} else if (currentPath.includes('/admin/my-collection')) {
-			selectedOption = 'collection';
-		}
-	});
-
-	function selectOption(option: string) {
-		selectedOption = option;
+	$: if ($page.route.id) {
+		const pathRegex = /^\/admin\/(events|my-collection)(\/.*)?$/;
+		const match = $page.route.id.match(pathRegex);
+		activePage = match ? match[1] : '';
 	}
 </script>
 
 <div class="column-6">
-	<a
-		href="/admin/events"
-		class="sidebar-link {selectedOption === 'events' ? 'selected' : ''}"
-		on:click={() => selectOption('events')}
-	>
-		<Icon icon="mdi:calendar-outline" hFlip={true} />
+	<a href="/admin/events" class="sidebar-link" class:active={activePage === 'events'}>
+		<Icon icon="tabler:calendar-event" />
 		Events
 	</a>
-	<a
-		href="/admin/my-collection"
-		class="sidebar-link {selectedOption === 'collection' ? 'selected' : ''}"
-		on:click={() => selectOption('collection')}
-	>
+	<a href="/admin/my-collection" class="sidebar-link" class:active={activePage === 'my-collection'}>
 		<Icon icon="tabler:ticket" />
 		My collection
 	</a>
@@ -44,10 +29,11 @@
 		.sidebar-link {
 			font-size: var(--font-size-3);
 			display: flex;
-		}
 
-		.selected {
-			color: var(--clr-neutral-50);
+			&.active {
+				font-weight: bold;
+				color: var(--clr-heading-main);
+			}
 		}
 	}
 </style>

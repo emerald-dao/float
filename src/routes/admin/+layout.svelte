@@ -3,6 +3,8 @@
 	import AdminHeader from './_components/navigation/AdminHeader.svelte';
 	import AdminNav from './_components/navigation/AdminNav.svelte';
 
+	export let data;
+
 	let route: string | null;
 
 	function extractSecondPart(route: string): string | null {
@@ -17,9 +19,10 @@
 	$: route = typeof $page.route.id === 'string' ? extractSecondPart($page.route.id) : null;
 </script>
 
-<AdminHeader {route} />
+<AdminHeader {route} userName={data.user.name} userAvatar={data.user.avatar} />
 
-<div class="container-large">
+<div class="main-container">
+	<div />
 	<div class="nav-wrapper">
 		<AdminNav />
 	</div>
@@ -29,13 +32,13 @@
 </div>
 
 <style lang="scss">
-	.container-large {
+	.main-container {
 		display: flex;
 		flex-direction: column;
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 160px auto;
+			grid-template-columns: 0.15fr 0.25fr auto;
 			gap: var(--space-8);
 		}
 

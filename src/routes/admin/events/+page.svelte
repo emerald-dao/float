@@ -6,10 +6,16 @@
 	import { onDestroy, onMount } from 'svelte';
 	import EventCardList from '$lib/components/events/EventCardList.svelte';
 	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
+	import type { Event } from '$lib/types/event/event.interface.js';
 
 	export let data;
 
 	let viewEventsMode: 'grid' | 'list' = 'grid';
+	let showInactive = true;
+
+	const toggleInactive = () => {
+		showInactive = !showInactive;
+	};
 
 	const setDefaultViewMode = () => {
 		const screenWidth = window.innerWidth;
@@ -21,6 +27,7 @@
 
 	onMount(() => {
 		window.addEventListener('resize', setDefaultViewMode);
+		filteredEvents = data.events;
 
 		return () => {
 			window.removeEventListener('resize', setDefaultViewMode);
@@ -31,9 +38,12 @@
 		viewEventsMode = buttonType;
 	}
 
-	$: searchEvent = data.events.map((example) => ({
-		...example,
+	$: filteredEvents = showInactive
+		? data.events
+		: data.events.filter((event: Event) => !event.status || event.status.status === 'InProgress');
 
+	$: searchEvent = filteredEvents.map((example) => ({
+		...example,
 		searchTerms: `${example.name} ${example.eventId}`
 	}));
 
@@ -47,22 +57,26 @@
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
-	<div class="row-4">
-		<Button color="neutral">Show inactive</Button>
-		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-		<div class="row-2">
-			<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : 'unselected'}`}>
-				<Button type="transparent" on:click={() => handleEventsViewModeChange('grid')}>
-					<Icon icon="basil:layout-outline" color="var(--clr-heading-inverse)" />
-				</Button>
-			</div>
-			<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : 'unselected'} list`}>
-				<Button type="transparent" on:click={() => handleEventsViewModeChange('list')}>
-					<Icon icon="ic:round-list" color="var(--clr-heading-inverse)" />
-				</Button>
-			</div>
+	<div class="row-2">
+		<div class="button-wrapper">
+			<Button color="neutral" type="transparent" on:click={toggleInactive}>
+				{showInactive ? 'Hide Inactive' : 'Show Inactive'}
+			</Button>
 		</div>
-		<Button href="/event-generator"><Icon icon="ep:circle-plus" />Create New</Button>
+		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
+
+		<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : ''}`}>
+			<Button type="transparent" on:click={() => handleEventsViewModeChange('grid')}>
+				<Icon icon="tabler:layout-grid" color="var(--clr-heading-main)" />
+			</Button>
+		</div>
+		<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : ''} list`}>
+			<Button type="transparent" on:click={() => handleEventsViewModeChange('list')}>
+				<Icon icon="tabler:list" color="var(--clr-heading-main)" />
+			</Button>
+		</div>
+
+		<Button href="/event-generator"><Icon icon="tabler:circle-plus" />Create New</Button>
 	</div>
 	{#if viewEventsMode === 'grid'}
 		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
@@ -85,36 +99,30 @@
 		flex-direction: column;
 		justify-content: center;
 		gap: var(--space-10);
-		padding: var(--space-6) 0;
+		padding: var(--space-6) var(--space-18) var(--space-6) var(--space-6);
 
-		.row-4 {
-			input {
-				max-width: 600px;
-				height: 45px;
-				padding: 0;
+		.row-2 {
+			display: grid;
+			grid-template-columns: 0.2fr 1.4fr 0.05fr 0.2fr;
+			@include mq(small) {
+				grid-template-columns: 0.3fr 1.4fr 0.07fr 0.07fr auto;
+			}
+			.button-wrapper {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				border-radius: var(--radius-1);
+				background-color: rgba(133, 133, 133, 0.1);
 			}
 
-			.row-2 {
-				.button-wrapper {
+			.list {
+				display: none;
+				@include mq(small) {
 					display: flex;
-					align-items: center;
-					justify-content: center;
-					border-radius: var(--radius-1);
 				}
-
-				.list {
-					display: none;
-					@include mq(small) {
-						display: flex;
-					}
-				}
-				.selected {
-					background-color: var(--clr-primary-500);
-				}
-
-				.unselected {
-					background-color: var(--clr-neutral-100);
-				}
+			}
+			.selected {
+				border: 2px solid var(--clr-heading-main);
 			}
 		}
 

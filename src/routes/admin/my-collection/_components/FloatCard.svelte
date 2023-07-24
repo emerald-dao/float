@@ -18,7 +18,7 @@
 		href={`/admin/my-collection/${float.eventId}`}
 	>
 		<div class="row-3 details-wrapper">
-			<img src={float.eventImage} width={'54px'} height={'54px'} alt="logo" />
+			<img src={float.eventImage} width={'45px'} height={'45px'} alt="logo" />
 			<div class="column-1">
 				<p class="event-name small">{float.eventName}</p>
 				<span class="xsmall">{float.eventType}</span>

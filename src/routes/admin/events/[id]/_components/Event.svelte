@@ -14,7 +14,7 @@
 	<div class="left-wrapper">
 		<div class="header-wrapper">
 			<div class="row-3">
-				<img src={event.image} alt="logo" height="57" width="68" />
+				<img src={event.image} alt="logo" height="60" width="60" />
 				<h4>{event.name}</h4>
 			</div>
 			<span class="small">{event.eventType}</span>
@@ -35,7 +35,7 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 2fr 3fr;
+			grid-template-columns: 2fr 2.5fr;
 			justify-content: center;
 			gap: var(--space-6);
 		}
@@ -71,7 +71,9 @@
 		}
 
 		.right-wrapper {
+			border-left: var(--clr-neutral-900) 0.5px solid;
 			@include mq(medium) {
+				padding: 0 var(--space-8);
 				background-color: var(--clr-background-secondary);
 			}
 		}

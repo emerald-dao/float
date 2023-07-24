@@ -21,7 +21,7 @@
 	.domains-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: var(--space-6);
 
 		.row-1 {
 			align-items: center;
