@@ -38,7 +38,7 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 0.15fr 0.25fr 2fr;
+			grid-template-columns: 0.15fr 0.25fr auto;
 			gap: var(--space-8);
 		}
 
