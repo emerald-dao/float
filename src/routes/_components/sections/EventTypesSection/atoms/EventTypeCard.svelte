@@ -21,16 +21,17 @@
 <style lang="scss">
 	.card-primary {
 		overflow: hidden;
+		padding: 0%;
 
 		@include mq('small') {
 			display: grid;
 			align-items: center;
 			width: 100%;
-			grid-template-columns: 2fr 3fr;
+			grid-template-columns: 2fr 2fr;
 		}
 
 		img {
-			height: 18rem;
+			height: 12rem;
 			width: 100%;
 			object-fit: cover;
 			border-radius: var(--radius-2);

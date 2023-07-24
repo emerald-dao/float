@@ -73,7 +73,7 @@
 		{#each EVENT_TYPES as event}
 			<div on:click={() => (selectedEvent = event)} class="label-button-wrapper">
 				<Label
-					size="large"
+					size="medium"
 					color={selectedEvent.name === event.name ? 'tertiary' : 'neutral'}
 					iconLeft={event.icon}
 				>
