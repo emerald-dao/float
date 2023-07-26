@@ -45,7 +45,7 @@
 		p.h5 {
 			text-align: center;
 			color: var(--clr-text-main);
-			max-width: 45ch;
+			max-width: 40ch;
 		}
 	}
 </style>

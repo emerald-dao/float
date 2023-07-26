@@ -84,7 +84,9 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<Button size="medium" width="extended" on:click={() => claimFloat()}><p>Claim FLOAT</p></Button>
+	<div>
+		<Button size="medium" width="extended" on:click={() => claimFloat()}><p>Claim FLOAT</p></Button>
+	</div>
 </section>
 
 <style lang="scss">
@@ -96,17 +98,19 @@
 		gap: var(--space-13);
 
 		.main-wrapper {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
-			justify-content: center;
-			align-items: center;
-			text-align: center;
-			gap: var(--space-16);
+			@media (min-width: 890px) {
+				display: grid;
+				grid-template-columns: repeat(3, 1fr);
+				justify-content: center;
+				align-items: center;
+				text-align: center;
+				gap: var(--space-16);
+			}
 
 			.side-wrapper {
 				display: none;
 
-				@include mq(medium) {
+				@media (min-width: 890px) {
 					display: block;
 					h4 {
 						color: var(--clr-text-main);

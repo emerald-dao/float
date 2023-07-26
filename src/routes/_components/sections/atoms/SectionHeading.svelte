@@ -16,6 +16,7 @@
 <style lang="scss">
 	h2 {
 		text-align: center;
+		max-width: 20ch;
 	}
 
 	p.h5 {

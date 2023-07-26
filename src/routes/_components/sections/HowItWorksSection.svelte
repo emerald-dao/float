@@ -52,6 +52,12 @@
 			width: 100%;
 		}
 
+		.card-primary {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-2);
+		}
+
 		.step-number {
 			background-color: var(--clr-primary-badge);
 			color: var(--clr-primary-main);
