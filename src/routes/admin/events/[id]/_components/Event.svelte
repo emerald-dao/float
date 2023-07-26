@@ -35,16 +35,15 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 2fr 2.5fr;
+			grid-template-columns: 2fr 2fr;
 			justify-content: center;
-			gap: var(--space-6);
 		}
 
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-10);
-			padding: var(--space-6) 0;
+			padding: var(--space-6) 0 var(--space-6) var(--space-8);
 			border-bottom: 4px solid var(--clr-border-primary);
 
 			@include mq(medium) {
@@ -55,6 +54,7 @@
 				display: flex;
 				flex-direction: column;
 				gap: var(--space-2);
+				padding-right: var(--space-8);
 
 				.row-3 {
 					align-items: center;
@@ -73,7 +73,6 @@
 		.right-wrapper {
 			border-left: var(--clr-neutral-900) 0.5px solid;
 			@include mq(medium) {
-				padding: 0 var(--space-8);
 				background-color: var(--clr-background-secondary);
 			}
 		}

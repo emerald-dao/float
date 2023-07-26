@@ -22,6 +22,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-6);
+		padding-right: var(--space-8);
 
 		.row-1 {
 			align-items: center;

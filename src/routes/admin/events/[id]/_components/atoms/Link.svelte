@@ -88,27 +88,30 @@
 
 		.row-1 {
 			align-items: center;
-			width: 100%;
-
-			p {
-				color: var(--clr-text-off);
-			}
 		}
 
 		.link-wrapper {
-			display: grid;
-			grid-template-columns: 3fr 1fr;
-			width: 100%;
+			display: flex;
+			flex-direction: column;
+
+			@include mq(small) {
+				display: grid;
+				grid-template-columns: 3fr 1fr;
+			}
 
 			.link {
 				border: var(--border-width-primary) solid var(--clr-neutral-600);
 				border-radius: var(--radius-2);
 				padding: var(--space-2) var(--space-3);
+				overflow: hidden;
 			}
 
 			.row-2 {
 				align-items: center;
-				justify-content: flex-end;
+
+				@include mq(small) {
+					justify-content: flex-end;
+				}
 
 				.button-wrapper {
 					display: flex;

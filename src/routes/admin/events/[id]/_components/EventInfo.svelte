@@ -63,11 +63,11 @@
 			justify-content: space-between;
 			width: 100%;
 			align-items: center;
-			padding: var(--space-4) var(--space-4);
+			padding: var(--space-4) var(--space-8);
 			border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
 
 			@include mq(medium) {
-				padding: var(--space-6) var(--space-12);
+				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
 			}
 
 			.column-wrapper {

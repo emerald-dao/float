@@ -46,7 +46,7 @@
 			min-width: 280px;
 			width: 50%;
 
-			@include mq(medium) {
+			@include mq(small) {
 				display: grid;
 				justify-content: space-between;
 				grid-template-columns: 0.9fr 1fr;
@@ -79,11 +79,11 @@
 
 			.right-wrapper {
 				display: flex;
-				justify-content: flex-start;
+				justify-content: center;
 				align-items: center;
 				gap: var(--space-2);
 
-				@include mq(medium) {
+				@include mq(small) {
 					justify-content: flex-end;
 				}
 			}
