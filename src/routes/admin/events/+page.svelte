@@ -60,7 +60,9 @@
 	<div class="row-2">
 		<div class="button-wrapper">
 			<Button color="neutral" type="transparent" on:click={toggleInactive}>
-				{showInactive ? 'Hide Inactive' : 'Show Inactive'}
+				<p style="color: var(--clr-text-off); fon">
+					{showInactive ? 'Hide Inactive' : 'Show Inactive'}
+				</p>
 			</Button>
 		</div>
 		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
@@ -78,7 +80,9 @@
 
 		<Button href="/event-generator"><Icon icon="tabler:circle-plus" />Create New</Button>
 	</div>
-	{#if viewEventsMode === 'grid'}
+	{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
+		<p>No results found</p>
+	{:else if viewEventsMode === 'grid'}
 		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
 			{#each $searchStore.filtered as event}
 				<EventCardGrid {event} />
@@ -109,7 +113,7 @@
 			display: grid;
 			grid-template-columns: 0.15fr auto 0.05fr 0.15fr;
 			@include mq(small) {
-				grid-template-columns: 0.3fr 1.4fr 0.07fr 0.07fr auto;
+				grid-template-columns: 0.27fr 1.4fr 0.07fr 0.07fr auto;
 			}
 			.button-wrapper {
 				display: flex;
@@ -117,6 +121,11 @@
 				justify-content: center;
 				border-radius: var(--radius-1);
 				background-color: rgba(133, 133, 133, 0.1);
+
+				p {
+					color: var(--clr-text-off);
+					font-size: var(--font-size-1);
+				}
 			}
 
 			.grid,
