@@ -65,7 +65,7 @@
 		</div>
 		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 
-		<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : ''}`}>
+		<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : ''} grid`}>
 			<Button type="transparent" on:click={() => handleEventsViewModeChange('grid')}>
 				<Icon icon="tabler:layout-grid" color="var(--clr-heading-main)" />
 			</Button>
@@ -99,11 +99,15 @@
 		flex-direction: column;
 		justify-content: center;
 		gap: var(--space-10);
-		padding: var(--space-6) var(--space-18) var(--space-6) var(--space-6);
+		padding: var(--space-6) var(--space-8);
+
+		@include mq(medium) {
+			padding: var(--space-6) var(--space-15) var(--space-6) var(--space-8);
+		}
 
 		.row-2 {
 			display: grid;
-			grid-template-columns: 0.2fr 1.4fr 0.05fr 0.2fr;
+			grid-template-columns: 0.15fr auto 0.05fr 0.15fr;
 			@include mq(small) {
 				grid-template-columns: 0.3fr 1.4fr 0.07fr 0.07fr auto;
 			}
@@ -115,12 +119,15 @@
 				background-color: rgba(133, 133, 133, 0.1);
 			}
 
+			.grid,
 			.list {
 				display: none;
+
 				@include mq(small) {
 					display: flex;
 				}
 			}
+
 			.selected {
 				border: 2px solid var(--clr-heading-main);
 			}

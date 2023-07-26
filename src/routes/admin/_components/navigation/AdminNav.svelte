@@ -24,7 +24,11 @@
 
 <style lang="scss">
 	.column-6 {
-		padding: var(--space-6) 0;
+		padding: var(--space-6) var(--space-8);
+
+		@include mq(medium) {
+			padding: var(--space-6) 0 var(--space-6) var(--space-8);
+		}
 
 		.sidebar-link {
 			font-size: var(--font-size-3);
