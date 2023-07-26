@@ -54,7 +54,7 @@
 	.main-wrapper {
 		display: block;
 
-		@include mq(small) {
+		@media (min-width: 730px) {
 			display: grid;
 			grid-template-columns: 1.1fr 1fr;
 			justify-content: center;
@@ -65,7 +65,11 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-9);
-			padding: var(--space-6) var(--space-2);
+			padding: var(--space-6) var(--space-8);
+
+			@include mq(small) {
+				padding: var(--space-6) var(--space-8);
+			}
 
 			.top-wrapper {
 				display: flex;
@@ -101,8 +105,7 @@
 
 		.right-wrapper {
 			display: none;
-
-			@include mq(small) {
+			@media (min-width: 730px) {
 				display: block;
 				background-color: var(--clr-background-secondary);
 			}
