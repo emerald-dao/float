@@ -11,14 +11,16 @@
 	<div class="fake-div" />
 	<div class="main-wrapper">
 		<div class="row-4">
-			<img src={userAvatar} alt="float" />
+			<a href="/user/{userName}">
+				<img src={userAvatar} alt="float" />
+			</a>
 			{#if $page.params.id}
 				<p>
-					<a href="/admin/{route}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
+					<a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
 						.params.id}
 				</p>
 			{:else}
-				<p>{userName} / <a href="/admin/{route}">{route}</a></p>
+				<p><a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
 			{/if}
 		</div>
 	</div>
