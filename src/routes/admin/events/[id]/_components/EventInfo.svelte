@@ -66,6 +66,10 @@
 			padding: var(--space-4) var(--space-8);
 			border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
 
+			@include mq(small) {
+				padding: var(--space-4) var(--space-18);
+			}
+
 			@include mq(medium) {
 				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
 			}

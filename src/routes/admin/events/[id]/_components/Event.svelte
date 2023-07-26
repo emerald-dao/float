@@ -37,6 +37,7 @@
 			display: grid;
 			grid-template-columns: 2fr 2fr;
 			justify-content: center;
+			height: 100vh;
 		}
 
 		.left-wrapper {
