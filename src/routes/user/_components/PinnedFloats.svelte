@@ -30,9 +30,6 @@
 		gap: var(--space-13);
 		align-items: center;
 		border-bottom: 1px dashed var(--clr-border-primary);
-		border-top: 1px dashed var(--clr-border-primary);
-		margin-top: var(--space-10);
-		margin-bottom: var(--space-12);
 
 		.floats-wrapper {
 			display: flex;
