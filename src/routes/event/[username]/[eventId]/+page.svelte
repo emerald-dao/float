@@ -98,7 +98,7 @@
 		gap: var(--space-13);
 
 		.main-wrapper {
-			@include mq(small) {
+			@media (min-width: 890px) {
 				display: grid;
 				grid-template-columns: repeat(3, 1fr);
 				justify-content: center;
@@ -110,7 +110,7 @@
 			.side-wrapper {
 				display: none;
 
-				@include mq(small) {
+				@media (min-width: 890px) {
 					display: block;
 					h4 {
 						color: var(--clr-text-main);
