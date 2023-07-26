@@ -8,7 +8,8 @@
 </script>
 
 <header>
-	<div class="main-wrapper row">
+	<div class="fake-div" />
+	<div class="main-wrapper">
 		<div class="row-4">
 			<img src={userAvatar} alt="float" />
 			{#if $page.params.id}
@@ -20,6 +21,8 @@
 				<p>{userName} / <a href="/admin/{route}">{route}</a></p>
 			{/if}
 		</div>
+	</div>
+	<div class="icon-wrapper">
 		<a href="/">
 			<Icon icon="tabler:home" color="var(--clr-primary-main)" width="30" height="30" />
 		</a>
@@ -28,38 +31,56 @@
 
 <style lang="scss">
 	header {
-		background-color: var(--clr-background-primary);
-		z-index: 999;
+		display: flex;
+		flex-direction: row;
 		border-bottom: 0.1px var(--clr-border-primary) solid;
-	}
-	.main-wrapper {
-		padding: var(--space-3) var(--space-18) var(--space-3) var(--space-19);
-		top: 10px;
-		gap: var(--space-4);
 		justify-content: space-between;
+		padding: 0 var(--space-8);
 
-		.row-4 {
-			align-items: center;
-			img {
-				width: 56px;
-				height: 56px;
-				border-radius: 50%;
-			}
+		@include mq(medium) {
+			display: grid;
+			grid-template-columns: 0.15fr 3fr 0.5fr;
+			gap: var(--space-8);
+			padding: 0;
+		}
 
-			p {
-				color: var(--clr-heading-main);
-			}
-
-			a {
-				display: inline;
-				text-decoration: none;
-				color: var(--clr-heading-main);
+		.fake-div {
+			display: none;
+			@include mq(medium) {
+				display: block;
 			}
 		}
 
-		a {
+		.main-wrapper {
+			padding: var(--space-3) 0;
+
+			.row-4 {
+				align-items: center;
+				img {
+					width: 56px;
+					height: 56px;
+					border-radius: 50%;
+				}
+
+				p {
+					color: var(--clr-heading-main);
+				}
+
+				a {
+					display: inline;
+					text-decoration: none;
+					color: var(--clr-heading-main);
+				}
+			}
+		}
+		.icon-wrapper {
 			display: flex;
 			align-items: center;
+			justify-content: flex-end;
+
+			@include mq(medium) {
+				padding-right: var(--space-15);
+			}
 		}
 	}
 </style>
