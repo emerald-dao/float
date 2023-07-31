@@ -7,7 +7,7 @@
 	export let event: Event;
 </script>
 
-<a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
+<a class="main-wrapper shadow-small" href={`/admin/events/${event.eventId}`}>
 	<div class="left-wrapper">
 		<div class="row-3 details-wrapper">
 			<img src={event.image} width={'45px'} height={'45px'} alt="logo" />

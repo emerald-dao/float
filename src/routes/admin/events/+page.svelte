@@ -57,79 +57,84 @@
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
-	<div class="row-2">
-		<div class="button-wrapper">
-			<Button color="neutral" type="transparent" on:click={toggleInactive}>
-				<p style="color: var(--clr-text-off); fon">
-					{showInactive ? 'Hide Inactive' : 'Show Inactive'}
-				</p>
-			</Button>
-		</div>
+	<div class="commands-wrapper">
+		<button class="button-wrapper" on:click={toggleInactive}>
+			{showInactive ? 'Hide Inactive' : 'Show Inactive'}
+		</button>
 		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-
-		<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : ''} grid`}>
-			<Button type="transparent" on:click={() => handleEventsViewModeChange('grid')}>
-				<Icon icon="tabler:layout-grid" color="var(--clr-heading-main)" />
-			</Button>
-		</div>
-		<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : ''} list`}>
-			<Button type="transparent" on:click={() => handleEventsViewModeChange('list')}>
-				<Icon icon="tabler:list" color="var(--clr-heading-main)" />
-			</Button>
-		</div>
-
-		<Button href="/event-generator"><Icon icon="tabler:circle-plus" />Create New</Button>
+		<button
+			class="button-wrapper grid-button"
+			class:selected={viewEventsMode === 'grid'}
+			on:click={() => handleEventsViewModeChange('grid')}
+		>
+			<Icon icon="tabler:layout-grid" />
+		</button>
+		<button
+			class="button-wrapper list-button"
+			class:selected={viewEventsMode === 'list'}
+			on:click={() => handleEventsViewModeChange('list')}
+		>
+			<Icon icon="tabler:list" />
+		</button>
+		<Button href="/event-generator">
+			<span class="button-text">
+				<Icon icon="tabler:plus" />New Event
+			</span>
+		</Button>
 	</div>
-	{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
-		<p>No results found</p>
-	{:else if viewEventsMode === 'grid'}
-		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
-			{#each $searchStore.filtered as event}
-				<EventCardGrid {event} />
-			{/each}
-		</div>
-	{:else}
-		<div class="list" in:fly={{ x: 10, duration: 400 }}>
-			{#each $searchStore.filtered as event}
-				<EventCardList {event} />
-			{/each}
-		</div>
-	{/if}
+	<div class="events-wrapper">
+		{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
+			<p>No results found</p>
+		{:else if viewEventsMode === 'grid'}
+			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
+				{#each $searchStore.filtered as event}
+					<EventCardGrid {event} />
+				{/each}
+			</div>
+		{:else}
+			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
+				{#each $searchStore.filtered as event}
+					<EventCardList {event} />
+				{/each}
+			</div>
+		{/if}
+	</div>
 </div>
 
 <style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		gap: var(--space-10);
-		padding: var(--space-6) var(--space-8);
 
 		@include mq(medium) {
-			padding: var(--space-6) var(--space-15) var(--space-6) var(--space-8);
+			overflow-y: auto;
 		}
 
-		.row-2 {
-			display: grid;
-			grid-template-columns: 0.15fr auto 0.05fr 0.15fr;
-			@include mq(small) {
-				grid-template-columns: 0.27fr 1.4fr 0.07fr 0.07fr auto;
-			}
+		.commands-wrapper {
+			display: flex;
+			justify-content: space-between;
+			gap: var(--space-3);
+			position: sticky;
+			top: 0;
+			background-color: var(--clr-background-primary);
+			padding-block: var(--space-6);
+			border-bottom: 0.5px solid var(--clr-border-primary);
+			padding: var(--space-4) var(--space-14) var(--space-4) var(--space-10);
+
 			.button-wrapper {
+				border-radius: var(--radius-1);
+				background-color: var(--clr-neutral-badge);
+				border: 2px solid transparent;
+				cursor: pointer;
+				font-size: var(--font-size-1);
 				display: flex;
 				align-items: center;
-				justify-content: center;
-				border-radius: var(--radius-1);
-				background-color: rgba(133, 133, 133, 0.1);
-
-				p {
-					color: var(--clr-text-off);
-					font-size: var(--font-size-1);
-				}
+				white-space: nowrap;
+				text-align: center;
 			}
 
-			.grid,
-			.list {
+			.grid-button,
+			.list-button {
 				display: none;
 
 				@include mq(small) {
@@ -140,9 +145,17 @@
 			.selected {
 				border: 2px solid var(--clr-heading-main);
 			}
+
+			.button-text {
+				white-space: nowrap;
+				text-align: center;
+				display: flex;
+				align-items: center;
+				gap: var(--space-1);
+			}
 		}
 
-		.events-wrapper {
+		.events-grid-wrapper {
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-10);
@@ -153,10 +166,15 @@
 			}
 		}
 
-		.list {
+		.events-list-wrapper {
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-5);
+		}
+
+		.events-grid-wrapper,
+		.events-list-wrapper {
+			padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
 		}
 	}
 </style>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
@@ -12,11 +13,11 @@
 <div class="main-wrapper">
 	<div class="top-wrapper">
 		<div>
-			<h4>{`#${float.eventId}`}</h4>
+			<p class="large">{`#${float.eventId}`}</p>
 			<p class="small">Event ID</p>
 		</div>
 		<div>
-			<h4>{float.totalSupply}</h4>
+			<p class="large">{float.totalSupply}</p>
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
@@ -42,23 +43,21 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		gap: var(--space-8);
-		padding: var(--space-6);
+		gap: var(--space-12);
+		padding: var(--space-8) var(--space-15);
+		height: 100%;
 
 		.top-wrapper {
 			display: flex;
-			justify-content: space-around;
+			justify-content: space-between;
+			width: 100%;
+			gap: var(--space-4);
 			align-items: center;
 			text-align: center;
-			width: 80%;
+		}
 
-			h4 {
-				color: var(--clr-text-main);
-			}
-
-			p {
-				color: var(--clr-text-off);
-			}
+		.ticket-wrapper {
+			width: 100%;
 		}
 
 		.details-wrapper {
@@ -71,11 +70,15 @@
 			border-top: 1px dashed var(--clr-border-primary);
 			border-bottom: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) 0 var(--space-5) 0;
-			width: 80%;
+			width: 100%;
+		}
 
-			.small {
-				color: var(--clr-text-off);
-			}
+		p.small {
+			color: var(--clr-text-off);
+		}
+
+		p.large {
+			color: var(--clr-text-primary);
 		}
 	}
 </style>

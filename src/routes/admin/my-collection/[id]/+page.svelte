@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import { getContext, onMount } from 'svelte';
 	import FloatInfo from './_components/FloatInfo.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
