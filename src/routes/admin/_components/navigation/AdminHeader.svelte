@@ -25,8 +25,8 @@
 			</div>
 		</div>
 		<div class="icon-wrapper">
-			<a href="/">
-				<Icon icon="tabler:home" color="var(--clr-primary-main)" width="25" />
+			<a href="/" class="header-link">
+				<Icon icon="tabler:home" width="25" />
 			</a>
 		</div>
 	</header>

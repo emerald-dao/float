@@ -105,17 +105,12 @@
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;
-
-		@include mq(medium) {
-			overflow-y: auto;
-		}
+		overflow: hidden;
 
 		.commands-wrapper {
 			display: flex;
 			justify-content: space-between;
 			gap: var(--space-3);
-			position: sticky;
-			top: 0;
 			background-color: var(--clr-background-primary);
 			padding-block: var(--space-6);
 			border-bottom: 0.5px solid var(--clr-border-primary);
@@ -129,6 +124,7 @@
 				font-size: var(--font-size-1);
 				display: flex;
 				align-items: center;
+				justify-content: center;
 				white-space: nowrap;
 				text-align: center;
 			}
@@ -136,6 +132,7 @@
 			.grid-button,
 			.list-button {
 				display: none;
+				min-width: var(--space-10);
 
 				@include mq(small) {
 					display: flex;
@@ -151,10 +148,18 @@
 				text-align: center;
 				display: flex;
 				align-items: center;
+				justify-content: center;
 				gap: var(--space-1);
 			}
 		}
 
+		.events-wrapper {
+			padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
+
+			@include mq(medium) {
+				overflow-y: auto;
+			}
+		}
 		.events-grid-wrapper {
 			display: flex;
 			flex-direction: column;
@@ -170,11 +175,6 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-5);
-		}
-
-		.events-grid-wrapper,
-		.events-list-wrapper {
-			padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
 		}
 	}
 </style>

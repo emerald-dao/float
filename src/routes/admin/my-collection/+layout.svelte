@@ -29,11 +29,9 @@
 		<div class="top-wrapper">
 			<div class="title-wrapper">
 				<h5>My Collection</h5>
-				<p class="medium">{$searchStore.filtered.length} FLOATs</p>
+				<p class="small off">{$searchStore.filtered.length} FLOATs</p>
 			</div>
-			<div class="input-wrapper">
-				<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-			</div>
+			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		</div>
 		<div class="bottom-wrapper">
 			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
@@ -67,13 +65,11 @@
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-9);
 
 			@include mq(small) {
 				flex: 1;
 				min-height: 100%;
 				max-height: 100%;
-				overflow-y: auto;
 				border-right: 0.5px solid var(--clr-border-primary);
 			}
 
@@ -84,24 +80,21 @@
 				justify-content: center;
 				padding-bottom: var(--space-5);
 				border-bottom: 0.5px solid var(--clr-border-primary);
-				position: sticky;
-				top: 0;
 				background-color: var(--clr-background-primary);
 
 				.title-wrapper {
 					display: flex;
 					justify-content: space-between;
-					align-items: center;
+					align-items: flex-end;
 
 					h5 {
 						margin: 0;
+						font-size: var(--font-size-4);
 					}
-				}
 
-				.input-wrapper {
-					display: grid;
-					grid-template-columns: 3fr 1fr;
-					justify-content: space-between;
+					.off {
+						color: var(--clr-text-off);
+					}
 				}
 			}
 
@@ -109,7 +102,10 @@
 				display: flex;
 				flex-direction: column;
 				gap: var(--space-5);
-				padding-top: 0 !important;
+
+				@include mq(small) {
+					overflow-y: auto;
+				}
 			}
 
 			.top-wrapper,

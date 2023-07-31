@@ -2,7 +2,6 @@
 	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
-	import toggleVisibility from '../../_actions/float-actions/toggleFloatVisibility';
 	import burnFloat from '../../_actions/float-actions/burnFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
@@ -33,17 +32,6 @@
 			</div>
 		</div>
 	</a>
-
-	<div class="button-wrapper">
-		<button class="header-link" on:click={() => toggleVisibility()}>
-			<Icon icon="mdi:eye-off-outline" />
-		</button>
-	</div>
-	<div class="button-wrapper">
-		<button class="header-link danger" on:click={() => burnFloat()}>
-			<Icon icon="ph:trash" />
-		</button>
-	</div>
 </div>
 
 <style lang="scss">
@@ -51,12 +39,8 @@
 		text-decoration: none;
 		color: unset;
 	}
-	.main-wrapper {
-		display: grid;
-		grid-template-columns: 6fr 0.5fr 0.5fr;
-		align-items: center;
-		gap: var(--space-1);
 
+	.main-wrapper {
 		.info-wrapper {
 			display: flex;
 			justify-content: space-between;
@@ -114,21 +98,6 @@
 			background-color: var(--clr-surface-secondary);
 			border: var(--border-width-primary) solid var(--clr-border-primary);
 			box-shadow: 0px 0px 10px 0 var(--clr-shadow-primary);
-		}
-
-		.button-wrapper {
-			display: flex;
-			justify-content: flex-end;
-
-			.header-link {
-				background-color: transparent;
-				border: none;
-				padding: 0;
-
-				&.danger {
-					color: var(--clr-alert-main);
-				}
-			}
 		}
 	}
 </style>
