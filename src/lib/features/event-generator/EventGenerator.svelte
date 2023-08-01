@@ -43,20 +43,28 @@
 </script>
 
 <section class:review-step={reviewStep}>
-	{#if !reviewStep}
-		<div class="step-component-wrapper">
+	<div class="step-component-wrapper" class:hide-on-medium={reviewStep}>
+		<div>
 			<svelte:component
 				this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
 				bind:stepDataValid
 			/>
-			<StepButtons
-				stepsStore={eventGeneratorSteps}
-				activeStepStore={eventGeneratorActiveStep}
-				bind:stepDataValid
-			/>
+			{#if powerUpsStep}
+				<div
+					in:fly|local={{ x: -200, duration: 500, delay: 200 }}
+					class="power-up-wrapper mobile-power-ups hide-on-medium"
+				>
+					<svelte:component this={activePowerUpComponent} />
+				</div>
+			{/if}
 		</div>
-	{/if}
-	<div class="generated-nft-wrapper">
+		<StepButtons
+			stepsStore={eventGeneratorSteps}
+			activeStepStore={eventGeneratorActiveStep}
+			bind:stepDataValid
+		/>
+	</div>
+	<div class="right-column hide-on-small">
 		<Blur color="tertiary" right="0" top="30%" />
 		<Blur left="0" bottom="20%" />
 		{#if reviewStep}
@@ -86,11 +94,15 @@
 
 <style lang="scss">
 	section {
-		padding-block: 0;
+		display: flex;
 		flex: 1;
-		display: grid;
-		grid-template-columns: 4fr 5fr;
-		overflow: hidden;
+		padding-block: 0;
+
+		@include mq(medium) {
+			display: grid;
+			grid-template-columns: 4fr 5fr;
+			overflow: hidden;
+		}
 
 		&.review-step {
 			display: flex;
@@ -100,14 +112,28 @@
 
 		.step-component-wrapper {
 			display: flex;
+			flex: 1;
+			height: 100%;
 			flex-direction: column;
 			justify-content: space-between;
 			background-color: var(--clr-background-primary);
 			border-right: 0.1px solid var(--clr-border-primary);
-			padding: var(--space-18);
 			overflow: hidden;
 			box-shadow: 0px 0px 20px 0 var(--clr-shadow-primary);
 			z-index: 2;
+			padding: var(--space-9) var(--space-6);
+			width: 100%;
+			gap: var(--space-8);
+
+			@include mq(medium) {
+				padding: var(--space-18);
+			}
+		}
+
+		.mobile-power-ups {
+			padding-top: var(--space-6);
+			border-top: 0.5px solid var(--clr-border-primary);
+			margin-top: var(--space-6);
 		}
 
 		.review-step-wrapper {
@@ -116,9 +142,8 @@
 			grid-template-rows: 1fr auto;
 		}
 
-		.generated-nft-wrapper {
+		.right-column {
 			position: relative;
-			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
@@ -126,6 +151,14 @@
 			background-color: var(--clr-background-secondary);
 			z-index: 0;
 			flex: 1;
+
+			&.hide-on-small {
+				display: none;
+
+				@include mq(medium) {
+					display: flex;
+				}
+			}
 
 			.ticket-wrapper,
 			.power-up-wrapper {
@@ -142,6 +175,12 @@
 				position: absolute;
 				bottom: var(--space-8);
 			}
+		}
+	}
+
+	.hide-on-medium {
+		@include mq(medium) {
+			display: none !important;
 		}
 	}
 </style>

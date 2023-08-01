@@ -3,6 +3,7 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
+	import { Label } from '@emerald-dao/component-library';
 
 	export let event: Event;
 </script>
@@ -10,23 +11,23 @@
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
 	<div class="left-wrapper">
 		<div class="row-3 details-wrapper">
-			<img src={event.image} width={'45px'} height={'45px'} alt="logo" />
+			<img src={event.image} width="55px" height="55px" alt="logo" />
 			<div class="column-1">
-				<p>{event.name}</p>
-				<span class="small">{event.eventType}</span>
+				<p class="w-medium">{event.name}</p>
+				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
 			</div>
 		</div>
 		<div>
-			<p>{event.totalSupply} FLOATs claimed</p>
+			<span>{event.totalSupply} FLOATs claimed</span>
 		</div>
 	</div>
 	<div class="right-wrapper">
-		<div class="status-wrapper">
-			<EventStatus actualStatus={event.status} />
-		</div>
 		{#if event.status}
 			<DaysLeft actualStatus={event.status} />
 		{/if}
+		<div class="status-wrapper">
+			<EventStatus actualStatus={event.status} />
+		</div>
 	</div>
 </a>
 
@@ -41,9 +42,14 @@
 		grid-template-columns: 1fr 0.5fr;
 		justify-content: space-between;
 		border: var(--border-width-primary) solid var(--clr-border-primary);
-		border-radius: var(--radius-4);
-		padding: var(--space-3) var(--space-4);
-		background: var(--clr-surface-primary);
+		border-radius: var(--radius-2);
+		padding: var(--space-3) var(--space-6);
+		transition: 300ms ease-in-out;
+
+		&:hover {
+			background: var(--clr-surface-secondary);
+			box-shadow: 0px 2px 6px 0 var(--clr-shadow-primary);
+		}
 
 		.left-wrapper {
 			display: grid;
@@ -53,6 +59,11 @@
 
 			.details-wrapper {
 				align-items: center;
+
+				img {
+					border-radius: var(--radius-0);
+				}
+
 				.column-1 {
 					p {
 						text-align: left;

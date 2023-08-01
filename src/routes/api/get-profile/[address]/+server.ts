@@ -6,6 +6,8 @@ export async function GET({ params, setHeaders }) {
 		async (data) => (await data.json()) as Profile
 	);
 
+	console.log(profile);
+
 	setHeaders({ 'cache-control': 'max-age=14400, public' });
 
 	return new Response(JSON.stringify(profile));

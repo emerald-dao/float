@@ -29,11 +29,9 @@
 		<div class="top-wrapper">
 			<div class="title-wrapper">
 				<h5>My Collection</h5>
-				<p class="medium">{$searchStore.filtered.length} FLOATs</p>
+				<p class="small off">{$searchStore.filtered.length} FLOATs</p>
 			</div>
-			<div class="input-wrapper">
-				<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-			</div>
+			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		</div>
 		<div class="bottom-wrapper">
 			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
@@ -54,21 +52,27 @@
 	.main-wrapper {
 		display: block;
 
-		@media (min-width: 730px) {
+		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 1.1fr 1fr;
 			justify-content: center;
-			gap: var(--space-4);
+			flex: 1;
+			min-height: 1px;
+			max-height: 100%;
+			overflow-y: hidden;
 		}
 
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-9);
-			padding: var(--space-6) var(--space-8);
 
-			@include mq(small) {
-				padding: var(--space-6) var(--space-8);
+			@include mq(medium) {
+				flex: 1;
+				min-height: 100%;
+				max-height: 100%;
+				border-right: 0.5px solid var(--clr-border-primary);
+				box-shadow: 20px 0px 15px -22px var(--clr-shadow-primary);
+				z-index: 1;
 			}
 
 			.top-wrapper {
@@ -77,22 +81,22 @@
 				gap: var(--space-4);
 				justify-content: center;
 				padding-bottom: var(--space-5);
-				border-bottom: var(--border-width-primary) solid var(--clr-border-primary);
+				border-bottom: 0.5px solid var(--clr-border-primary);
+				background-color: var(--clr-background-primary);
 
 				.title-wrapper {
 					display: flex;
 					justify-content: space-between;
-					align-items: center;
+					align-items: flex-end;
 
 					h5 {
 						margin: 0;
+						font-size: var(--font-size-4);
 					}
-				}
 
-				.input-wrapper {
-					display: grid;
-					grid-template-columns: 3fr 1fr;
-					justify-content: space-between;
+					.off {
+						color: var(--clr-text-off);
+					}
 				}
 			}
 
@@ -100,12 +104,26 @@
 				display: flex;
 				flex-direction: column;
 				gap: var(--space-5);
+
+				@include mq(small) {
+					overflow-y: auto;
+				}
+			}
+
+			.top-wrapper,
+			.bottom-wrapper {
+				padding: var(--space-6) var(--space-6);
+
+				@include mq(small) {
+					padding: var(--space-6) var(--space-8);
+				}
 			}
 		}
 
 		.right-wrapper {
 			display: none;
-			@media (min-width: 730px) {
+
+			@include mq(medium) {
 				display: block;
 				background-color: var(--clr-background-secondary);
 			}
