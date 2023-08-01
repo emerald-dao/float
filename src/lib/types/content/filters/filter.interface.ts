@@ -10,6 +10,7 @@ export interface Filter {
 interface FilterElement {
 	icon: string;
 	slug: FilterSlugs;
+	text: string;
 }
 
 export type FilterSlugs = EventType;

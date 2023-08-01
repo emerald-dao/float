@@ -3,7 +3,6 @@
 	import type { Filter, FilterSlugs } from '$lib/types/content/filters/filter.interface';
 
 	export let filters: Filter[];
-	export let hasTitles = true;
 
 	const addToFilterBucket = (bucket: number, slug: FilterSlugs) => {
 		filters[bucket].filterBucket.push(slug);
@@ -29,7 +28,7 @@
 					on:selected={() => (filters[i].filterBucket = addToFilterBucket(i, element.slug))}
 					on:unselected={() => (filters[i].filterBucket = deleteFromFilterBucket(i, element.slug))}
 				>
-					{element.slug}
+					{element.text}
 				</TagToggle>
 			{/each}
 		</div>
@@ -37,12 +36,6 @@
 {/each}
 
 <style lang="scss">
-	h5 {
-		margin-bottom: var(--space-3);
-		font-size: var(--font-size-3);
-		margin-top: 0;
-	}
-
 	.tags-wrapper {
 		display: flex;
 		flex-direction: row;
