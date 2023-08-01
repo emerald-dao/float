@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import AdminHeader from './_components/navigation/AdminHeader.svelte';
-	import AdminNav from './_components/navigation/AdminNav.svelte';
 	import '@emerald-dao/component-library/styles/app.scss';
+	import AdminNavMobile from './_components/navigation/AdminNavMobile.svelte';
+	import AdminNavDesktop from './_components/navigation/AdminNavDesktop.svelte';
 
 	export let data;
 
@@ -23,7 +24,8 @@
 <div class="main-wrapper">
 	<AdminHeader {route} userName={data.user.name} userAvatar={data.user.avatar} />
 	<div class="secondary-wrapper">
-		<AdminNav />
+		<AdminNavMobile />
+		<AdminNavDesktop />
 		<slot />
 	</div>
 </div>

@@ -52,21 +52,21 @@
 	.main-wrapper {
 		display: block;
 
-		@media (min-width: 730px) {
+		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 1.1fr 1fr;
 			justify-content: center;
 			flex: 1;
 			min-height: 1px;
 			max-height: 100%;
-			// overflow-y: hidden;
+			overflow-y: hidden;
 		}
 
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
 
-			@include mq(small) {
+			@include mq(medium) {
 				flex: 1;
 				min-height: 100%;
 				max-height: 100%;
@@ -112,7 +112,7 @@
 
 			.top-wrapper,
 			.bottom-wrapper {
-				padding: var(--space-6) var(--space-4);
+				padding: var(--space-6) var(--space-6);
 
 				@include mq(small) {
 					padding: var(--space-6) var(--space-8);
@@ -123,7 +123,7 @@
 		.right-wrapper {
 			display: none;
 
-			@media (min-width: 730px) {
+			@include mq(medium) {
 				display: block;
 				background-color: var(--clr-background-secondary);
 			}

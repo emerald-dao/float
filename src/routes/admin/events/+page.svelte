@@ -75,9 +75,10 @@
 		overflow: hidden;
 
 		.events-wrapper {
-			padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
+			padding: var(--space-6);
 
 			@include mq(medium) {
+				padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
 				overflow-y: auto;
 			}
 		}
@@ -85,9 +86,10 @@
 		.events-grid-wrapper {
 			display: flex;
 			flex-direction: column;
-			gap: var(--space-10);
+			gap: var(--space-6);
 
 			@include mq(medium) {
+				gap: var(--space-10);
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
 			}

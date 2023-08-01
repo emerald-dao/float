@@ -30,9 +30,13 @@
 		border: 1px solid var(--clr-border-primary);
 		border-radius: var(--radius-1);
 		background-color: var(--clr-neutral-badge);
+		display: none;
+
+		@include mq(small) {
+			display: flex;
+		}
 
 		button {
-			display: none;
 			min-width: var(--space-10);
 			cursor: pointer;
 			border: none;
@@ -40,12 +44,9 @@
 			color: var(--clr-text-off);
 			transition: all 0.3s ease-in-out;
 			border-radius: var(--radius-0);
-
-			@include mq(small) {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
+			align-items: center;
+			justify-content: center;
+			display: flex;
 
 			&.grid-button {
 				margin: var(--space-1) 0 var(--space-1) var(--space-1);

@@ -37,13 +37,14 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: space-between;
-		padding: 0 var(--space-14);
+		padding: 0 var(--space-6);
 		border-bottom: 0.1px var(--clr-border-primary) solid;
 
 		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 1fr auto;
 			gap: var(--space-8);
+			padding: 0 var(--space-14);
 		}
 
 		.main-wrapper {
@@ -69,6 +70,7 @@
 				}
 			}
 		}
+
 		.icon-wrapper {
 			display: flex;
 			align-items: center;
