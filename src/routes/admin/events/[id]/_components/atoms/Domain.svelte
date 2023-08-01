@@ -13,7 +13,7 @@
 		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
 		<p>DOMAINS</p>
 	</div>
-	<Link id={event.eventId} page={true} {user} />
+	<Link id={event.eventId} eventPage={true} {user} />
 	<Link id={event.eventId} qr={true} {user} />
 </div>
 
