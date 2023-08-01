@@ -72,7 +72,7 @@
 
 				h4 {
 					color: var(--clr-heading-main);
-					font-size: var(--font-size-5);
+					font-size: var(--font-size-4);
 				}
 			}
 		}

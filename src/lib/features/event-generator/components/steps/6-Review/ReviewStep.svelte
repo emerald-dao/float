@@ -20,10 +20,8 @@
 
 <StepComponentWrapper alignCenter={true}>
 	<div class="main-wrapper">
-		<div in:fly|local={{ x: -500, duration: 700 }}>
-			<div>
-				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
-			</div>
+		<div in:fly|local={{ x: -500, duration: 700 }} class="float-wrapper">
+			<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			<div class="target">
 				<div id="target-element">
 					<FloatTicket
@@ -74,16 +72,25 @@
 
 <style lang="scss">
 	.main-wrapper {
-		display: grid;
-		grid-template-columns: 4fr 3fr;
+		display: flex;
+		flex-direction: column;
 		margin-bottom: var(--space-10);
 		gap: var(--space-15);
 		flex: 1;
 		align-items: center;
 
+		@include mq(medium) {
+			display: grid;
+			grid-template-columns: 4fr 3fr;
+		}
+
 		h4 {
 			font-size: var(--font-size-4);
 			margin-bottom: var(--space-1);
+		}
+
+		.float-wrapper {
+			width: 100%;
 		}
 
 		.content-wrapper {
