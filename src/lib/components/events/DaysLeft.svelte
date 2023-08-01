@@ -1,14 +1,19 @@
 <script lang="ts">
+	import Icon from '@iconify/svelte';
+
 	export let actualStatus: {
 		status: string;
 		daysRemaining: number;
 	};
 </script>
 
-{#if actualStatus.status === 'NotStarted'}
-	<p>{actualStatus.daysRemaining} days to start</p>
-{:else if actualStatus.status === 'InProgress'}
-	<p>{actualStatus.daysRemaining} days left</p>
-{:else}
-	<p>Finished</p>
-{/if}
+<span class="small row-1 align-center">
+	<Icon icon="tabler:clock" />
+	{#if actualStatus.status === 'NotStarted'}
+		{actualStatus.daysRemaining} days to start
+	{:else if actualStatus.status === 'InProgress'}
+		{actualStatus.daysRemaining} days left
+	{:else}
+		Finished
+	{/if}
+</span>

@@ -59,7 +59,7 @@
 			flex: 1;
 			min-height: 1px;
 			max-height: 100%;
-			overflow: hidden;
+			// overflow-y: hidden;
 		}
 
 		.left-wrapper {
@@ -71,6 +71,8 @@
 				min-height: 100%;
 				max-height: 100%;
 				border-right: 0.5px solid var(--clr-border-primary);
+				box-shadow: 20px 0px 15px -22px var(--clr-shadow-primary);
+				z-index: 1;
 			}
 
 			.top-wrapper {
@@ -120,6 +122,7 @@
 
 		.right-wrapper {
 			display: none;
+
 			@media (min-width: 730px) {
 				display: block;
 				background-color: var(--clr-background-secondary);

@@ -1,27 +1,22 @@
 <script lang="ts">
-	import { Button } from '@emerald-dao/component-library';
-	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount } from 'svelte';
 	import EventCardList from '$lib/components/events/EventCardList.svelte';
 	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
 	import type { Event } from '$lib/types/event/event.interface.js';
+	import EventsTopNavbar from './_components/EventsTopNavbar.svelte';
 
 	export let data;
 
-	let viewEventsMode: 'grid' | 'list' = 'grid';
-	let showInactive = true;
-
-	const toggleInactive = () => {
-		showInactive = !showInactive;
-	};
+	let viewMode: 'grid' | 'list' = 'grid';
+	let showInactive = false;
 
 	const setDefaultViewMode = () => {
 		const screenWidth = window.innerWidth;
 
 		if (screenWidth < 640) {
-			viewEventsMode = 'grid';
+			viewMode = 'grid';
 		}
 	};
 
@@ -33,10 +28,6 @@
 			window.removeEventListener('resize', setDefaultViewMode);
 		};
 	});
-
-	function handleEventsViewModeChange(buttonType: 'grid' | 'list') {
-		viewEventsMode = buttonType;
-	}
 
 	$: filteredEvents = showInactive
 		? data.events
@@ -57,35 +48,11 @@
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
-	<div class="commands-wrapper">
-		<button class="button-wrapper" on:click={toggleInactive}>
-			{showInactive ? 'Hide Inactive' : 'Show Inactive'}
-		</button>
-		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-		<button
-			class="button-wrapper grid-button"
-			class:selected={viewEventsMode === 'grid'}
-			on:click={() => handleEventsViewModeChange('grid')}
-		>
-			<Icon icon="tabler:layout-grid" />
-		</button>
-		<button
-			class="button-wrapper list-button"
-			class:selected={viewEventsMode === 'list'}
-			on:click={() => handleEventsViewModeChange('list')}
-		>
-			<Icon icon="tabler:list" />
-		</button>
-		<Button href="/event-generator">
-			<span class="button-text">
-				<Icon icon="tabler:plus" />New Event
-			</span>
-		</Button>
-	</div>
+	<EventsTopNavbar bind:viewMode bind:showInactive bind:searchStore />
 	<div class="events-wrapper">
 		{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
 			<p>No results found</p>
-		{:else if viewEventsMode === 'grid'}
+		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
 					<EventCardGrid {event} />
@@ -107,52 +74,6 @@
 		flex-direction: column;
 		overflow: hidden;
 
-		.commands-wrapper {
-			display: flex;
-			justify-content: space-between;
-			gap: var(--space-3);
-			background-color: var(--clr-background-primary);
-			padding-block: var(--space-6);
-			border-bottom: 0.5px solid var(--clr-border-primary);
-			padding: var(--space-4) var(--space-14) var(--space-4) var(--space-10);
-
-			.button-wrapper {
-				border-radius: var(--radius-1);
-				background-color: var(--clr-neutral-badge);
-				border: 2px solid transparent;
-				cursor: pointer;
-				font-size: var(--font-size-1);
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				white-space: nowrap;
-				text-align: center;
-			}
-
-			.grid-button,
-			.list-button {
-				display: none;
-				min-width: var(--space-10);
-
-				@include mq(small) {
-					display: flex;
-				}
-			}
-
-			.selected {
-				border: 2px solid var(--clr-heading-main);
-			}
-
-			.button-text {
-				white-space: nowrap;
-				text-align: center;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				gap: var(--space-1);
-			}
-		}
-
 		.events-wrapper {
 			padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
 
@@ -160,6 +81,7 @@
 				overflow-y: auto;
 			}
 		}
+
 		.events-grid-wrapper {
 			display: flex;
 			flex-direction: column;

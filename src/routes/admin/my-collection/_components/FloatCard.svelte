@@ -1,8 +1,6 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
-	import burnFloat from '../../_actions/float-actions/burnFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let float: FLOAT;
@@ -14,10 +12,11 @@
 <div class="main-wrapper">
 	<a
 		class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}"
+		class:selected={float.eventId === $page.params.id}
 		href={`/admin/my-collection/${float.eventId}`}
 	>
 		<div class="row-3 details-wrapper">
-			<img src={float.eventImage} width={'45px'} height={'45px'} alt="logo" />
+			<img src={float.eventImage} width="45px" height="45px" alt="logo" />
 			<div class="column-1">
 				<p class="event-name small">{float.eventName}</p>
 				<span class="xsmall">{float.eventType}</span>
@@ -38,6 +37,7 @@
 	a {
 		text-decoration: none;
 		color: unset;
+		transition: 300ms ease-in-out;
 	}
 
 	.main-wrapper {
