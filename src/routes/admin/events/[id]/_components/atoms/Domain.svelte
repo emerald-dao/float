@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import Link from './Link.svelte';
@@ -11,7 +10,7 @@
 <div class="domains-wrapper">
 	<div class="row-1">
 		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
-		<p>DOMAINS</p>
+		<p>EVENT URLs</p>
 	</div>
 	<Link id={event.eventId} page={true} {user} />
 	<Link id={event.eventId} qr={true} {user} />
@@ -21,7 +20,7 @@
 	.domains-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-6);
+		gap: var(--space-3);
 		padding-right: var(--space-8);
 
 		.row-1 {

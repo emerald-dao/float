@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Icon from '@iconify/svelte';
-	import ClaimTicket from './atoms/ClaimTicket.svelte';
+	import ClaimTicketCard from './atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
@@ -9,6 +9,7 @@
 
 	export let event;
 	export let claims;
+
 	let actualStatus: {
 		status: string;
 		daysRemaining: number;
@@ -40,13 +41,15 @@
 		<FloatTicket float={transformEventToFloat(event)} />
 	</div>
 	<div class="claims-wrapper">
-		<div class="row-1">
+		<div class="row-1 claims-title-wrapper">
 			<Icon icon="tabler:news" color="var(--clr-neutral-600)" />
 			<p>LATEST CLAIMS</p>
 		</div>
-		{#each claims as claim, i}
-			<ClaimTicket {claim} {i} />
-		{/each}
+		<div class="claim-tickets">
+			{#each claims as claim, i}
+				<ClaimTicketCard {claim} {i} />
+			{/each}
+		</div>
 	</div>
 </div>
 
@@ -57,6 +60,7 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--space-10);
+		height: 100%;
 
 		.top-wrapper {
 			display: flex;
@@ -87,7 +91,11 @@
 		}
 
 		.ticket-wrapper {
-			padding: 0 var(--space-3);
+			width: 100%;
+
+			@include mq(medium) {
+				padding: 0 var(--space-15) 0 var(--space-12);
+			}
 		}
 
 		.claims-wrapper {
@@ -96,15 +104,25 @@
 			justify-content: center;
 			width: 100%;
 			justify-content: center;
-			gap: var(--space-4);
+			max-height: 100%;
+			overflow-y: hidden;
 
-			.row-1 {
+			.claims-title-wrapper {
+				padding: var(--space-2) var(--space-12);
 				display: flex;
 				align-items: center;
 				justify-content: flex-start;
-				padding: var(--space-2) var(--space-12);
 				width: 100%;
-				border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
+				border-bottom: 0.5px solid var(--clr-border-primary);
+			}
+
+			.claim-tickets {
+				display: flex;
+				padding: var(--space-2) var(--space-12);
+				flex-direction: column;
+				gap: var(--space-3);
+				overflow-y: auto;
+				padding-top: var(--space-3);
 			}
 		}
 	}
