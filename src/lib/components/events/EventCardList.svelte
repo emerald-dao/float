@@ -11,7 +11,7 @@
 <a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
 	<div class="left-wrapper">
 		<div class="row-3 details-wrapper">
-			<img src={event.image} width={'45px'} height={'45px'} alt="logo" />
+			<img src={event.image} width="55px" height="55px" alt="logo" />
 			<div class="column-1">
 				<p class="w-medium">{event.name}</p>
 				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
@@ -59,6 +59,11 @@
 
 			.details-wrapper {
 				align-items: center;
+
+				img {
+					border-radius: var(--radius-0);
+				}
+
 				.column-1 {
 					p {
 						text-align: left;

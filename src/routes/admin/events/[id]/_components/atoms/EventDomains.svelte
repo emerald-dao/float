@@ -21,7 +21,11 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-3);
-		padding-right: var(--space-8);
+		padding-inline: var(--space-6);
+
+		@include mq(medium) {
+			padding-inline: var(--space-8);
+		}
 
 		.row-1 {
 			align-items: center;

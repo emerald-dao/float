@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import Domain from './_components/atoms/Domain.svelte';
-	import Actions from './_components/atoms/Actions.svelte';
+	import EventDomains from './_components/atoms/EventDomains.svelte';
+	import EventActions from './_components/atoms/EventActions.svelte';
 	import EventInfo from './_components/EventInfo.svelte';
 	import { Label } from '@emerald-dao/component-library';
 
@@ -19,10 +19,10 @@
 				</div>
 			</div>
 		</div>
-		<Domain event={data.event} user={data.user} />
-		<Actions />
+		<EventDomains event={data.event} user={data.user} />
+		<EventActions />
 	</div>
-	<div class="right-wrapper">
+	<div class="right-wrapper hide-on-small">
 		<EventInfo claims={data.eventClaims} event={data.event} />
 	</div>
 </div>
@@ -44,20 +44,15 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-10);
-			padding: var(--space-6) 0 var(--space-6) var(--space-8);
-			border-bottom: 4px solid var(--clr-border-primary);
+			padding: var(--space-6) 0 var(--space-6) 0;
 			box-shadow: 5px 2px 8px -6px var(--clr-shadow-primary);
 			z-index: 1;
-
-			@include mq(medium) {
-				border-bottom: none;
-			}
 
 			.header-wrapper {
 				display: flex;
 				flex-direction: column;
 				gap: var(--space-2);
-				padding-right: var(--space-8);
+				padding-inline: var(--space-8);
 
 				img {
 					border-radius: var(--radius-0);
@@ -66,12 +61,20 @@
 		}
 
 		.right-wrapper {
-			border-left: var(--clr-neutral-900) 0.5px solid;
+			border-left: var(--clr-border-primary) 0.5px solid;
 			overflow: hidden;
 
 			@include mq(medium) {
 				background-color: var(--clr-background-secondary);
 			}
+		}
+	}
+
+	.hide-on-small {
+		display: none;
+
+		@include mq(small) {
+			display: block;
 		}
 	}
 </style>
