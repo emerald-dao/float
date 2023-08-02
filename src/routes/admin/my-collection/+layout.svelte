@@ -11,8 +11,6 @@
 	let paginationMax: number;
 	let paginationMin: number;
 
-	let pageMove: 'next' | 'previous' = 'next';
-
 	setContext('floats', data.floats);
 
 	$: searchEvent = data.floats.map((example) => ({
