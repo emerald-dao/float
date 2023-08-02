@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { Label } from '@emerald-dao/component-library';
-
 	export let status: boolean;
 
 	$: text = status ? 'Claimable' : 'Not claimable';

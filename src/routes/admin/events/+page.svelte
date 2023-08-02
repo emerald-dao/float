@@ -2,8 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount } from 'svelte';
-	import EventCardList from '$lib/components/events/EventCardList.svelte';
-	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
+	import EventCard from '$lib/components/events/EventCard.svelte';
 	import type { Event } from '$lib/types/event/event.interface.js';
 	import EventsTopNavbar from './_components/EventsTopNavbar.svelte';
 
@@ -22,18 +21,13 @@
 
 	onMount(() => {
 		window.addEventListener('resize', setDefaultViewMode);
-		filteredEvents = data.events;
 
 		return () => {
 			window.removeEventListener('resize', setDefaultViewMode);
 		};
 	});
 
-	$: filteredEvents = showInactive
-		? data.events
-		: data.events.filter((event: Event) => !event.status || event.status.status === 'InProgress');
-
-	$: searchEvent = filteredEvents.map((example) => ({
+	$: searchEvent = data.events.map((example) => ({
 		...example,
 		searchTerms: `${example.name} ${example.eventId}`
 	}));
@@ -55,13 +49,13 @@
 		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCardGrid {event} />
+					<EventCard {event} display="grid" showUnclaimable={showInactive} />
 				{/each}
 			</div>
 		{:else}
 			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCardList {event} />
+					<EventCard {event} display="list" showUnclaimable={showInactive} />
 				{/each}
 			</div>
 		{/if}

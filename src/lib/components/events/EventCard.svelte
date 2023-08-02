@@ -7,63 +7,64 @@
 	import TimelockStateLabel from '$lib/features/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/components/LimitedStateLabel.svelte';
 	import EventStatus from './EventStatus.svelte';
+	import { isClaimable } from '$lib/features/verifiers/functions/isClaimable';
 
 	export let event: Event;
+	export let display: 'grid' | 'list' = 'list';
 
+	export let showUnclaimable = true;
+
+	let claimability: boolean;
 	let verifiersStatus: VerifiersStatus;
 
 	onMount(() => {
 		verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
 	});
 
-	$: mainImage = event.eventImage || '/test-toucan.png';
+	$: if (verifiersStatus) {
+		claimability = !event.claimable ? event.claimable : isClaimable(verifiersStatus);
+	}
 </script>
 
-<a class="main-wrapper" href={`/admin/events/${event.eventId}`}>
-	<img src={mainImage} alt="Event image" class="main-image" />
-	<div class="top-wrapper">
-		<div class="row-3 details-wrapper">
-			<img src={event.image} width="55px" height="55px" alt="logo" />
-			<div class="column-1">
-				<p class="w-medium">{event.name}</p>
-				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
+{#if showUnclaimable || claimability}
+	<a class={`main-wrapper ${display}`} href={`/admin/events/${event.eventId}`}>
+		<div class="general-info-wrapper">
+			<div class="title-wrapper row-3">
+				<img src={event.image} width="55px" height="55px" alt="logo" />
+				<div class="name-wrapper">
+					<p class="w-medium">{event.name}</p>
+					<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
+				</div>
+			</div>
+			<div class="minted-floats-wrapper">
+				<span class="w-medium">
+					{Number(event.totalSupply).toLocaleString()} FLOATs
+				</span>
+				<span class="small"> claimed </span>
 			</div>
 		</div>
-		<div>
-			<span class="w-medium">
-				{event.totalSupply} FLOATs
-			</span>
-			<span class="small"> claimed </span>
-		</div>
-	</div>
-	<div class="bottom-wrapper">
-		<div class="status-wrapper column-1">
-			<EventStatus status={event.claimable} />
-		</div>
-		<div class="powerups-wrapper">
-			{#if verifiersStatus}
-				{#if verifiersStatus.timelockStatus}
-					<TimelockStateLabel timelockStatus={verifiersStatus.timelockStatus} />
-				{/if}
-				{#if verifiersStatus.limitedStatus}
-					<LimitedStateLabel limitedStatus={verifiersStatus.limitedStatus} />
-				{/if}
-				{#if verifiersStatus.timelockStatus === null && verifiersStatus.limitedStatus === null}
-					<span class="xsmall"> No active powerups </span>
-				{/if}
+		<div class="secondary-wrapper">
+			<div class="status-wrapper column-1">
+				<EventStatus status={claimability} />
+			</div>
+			{#if verifiersStatus && (verifiersStatus.timelockStatus !== null || verifiersStatus.limitedStatus !== null)}
+				<div class="powerups-wrapper">
+					{#if verifiersStatus.timelockStatus}
+						<TimelockStateLabel timelockStatus={verifiersStatus.timelockStatus} />
+					{/if}
+					{#if verifiersStatus.limitedStatus}
+						<LimitedStateLabel limitedStatus={verifiersStatus.limitedStatus} />
+					{/if}
+				</div>
 			{/if}
 		</div>
-	</div>
-</a>
+	</a>
+{/if}
 
 <style lang="scss">
-	a {
+	.main-wrapper {
 		text-decoration: none;
 		color: unset;
-		word-break: break-word;
-	}
-
-	.main-wrapper {
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
@@ -71,7 +72,6 @@
 		border: 1px solid var(--clr-border-primary);
 		border-radius: var(--radius-2);
 		transition: 300ms ease-in-out;
-		overflow: hidden;
 		background-color: var(--clr-surface-primary);
 
 		&:hover {
@@ -79,28 +79,21 @@
 			box-shadow: 0px 2px 6px 0 var(--clr-shadow-primary);
 		}
 
-		.main-image {
-			width: 100%;
-			height: 100px;
-			object-fit: cover;
-			border-bottom: 0.5px solid var(--clr-border-primary);
-		}
-
-		.top-wrapper {
+		.general-info-wrapper {
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
 			gap: var(--space-7);
-			padding: 0 var(--space-8) 0;
+			padding: var(--space-8) var(--space-8) 0px var(--space-8);
 
-			.details-wrapper {
+			.title-wrapper {
 				align-items: center;
 
 				img {
 					border-radius: var(--radius-0);
 				}
 
-				.column-1 {
+				.name-wrapper {
 					p {
 						text-align: left;
 						color: var(--clr-heading-main);
@@ -118,7 +111,7 @@
 			}
 		}
 
-		.bottom-wrapper {
+		.secondary-wrapper {
 			display: flex;
 			align-items: flex-start;
 			border-top: 1px dashed var(--clr-border-primary);
@@ -136,6 +129,31 @@
 			.status-wrapper,
 			.powerups-wrapper {
 				padding: var(--space-5);
+			}
+		}
+
+		&.list {
+			flex-direction: row;
+			padding: var(--space-1) var(--space-6);
+
+			.general-info-wrapper {
+				padding: 0;
+				flex-direction: row;
+				align-items: center;
+				gap: var(--space-12);
+			}
+
+			.secondary-wrapper {
+				flex-direction: row-reverse;
+				align-items: center;
+				border-top: none;
+				padding: 0;
+
+				.powerups-wrapper {
+					border-right: 1px dashed var(--clr-border-primary);
+					height: 100%;
+					border-left: none;
+				}
 			}
 		}
 	}
