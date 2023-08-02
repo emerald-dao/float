@@ -39,11 +39,15 @@
 <div class="main-wrapper">
 	<div class="row-1">
 		{#if eventPage}
-			<Icon icon="ph:app-window" color="var(--clr-neutral-600)" />
-			<p>Claiming page</p>
+			<p class="small row-1 align-center">
+				<Icon icon="tabler:browser" />
+				Claiming page
+			</p>
 		{:else if qr}
-			<Icon icon="ic:baseline-qrcode" color="var(--clr-neutral-600)" />
-			<p>QR Code</p>
+			<p class="small row-1 align-center">
+				<Icon icon="tabler:qrcode" />
+				QR Code
+			</p>
 		{/if}
 	</div>
 	<div class="row-3 link-wrapper">
@@ -78,9 +82,9 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-2);
-		border: var(--border-width-primary) dashed var(--clr-neutral-600);
-		padding: var(--space-2) var(--space-3);
-		border-radius: var(--radius-2);
+		border: var(--border-width-primary) dashed var(--clr-border-primary);
+		padding: var(--space-3);
+		border-radius: var(--radius-1);
 
 		.row-1 {
 			align-items: center;
@@ -91,20 +95,20 @@
 			flex-direction: column;
 
 			@include mq(small) {
-				display: grid;
-				grid-template-columns: 3fr 1fr;
+				display: flex;
+				flex-direction: row;
 			}
 
 			.link {
-				border: var(--border-width-primary) solid var(--clr-neutral-600);
-				border-radius: var(--radius-2);
-				padding: var(--space-2) var(--space-3);
+				border: var(--border-width-primary) solid var(--clr-border-primary);
+				border-radius: var(--radius-1);
+				padding: var(--space-1) var(--space-3);
 				overflow: hidden;
+				font-size: var(--font-size-1);
+				width: 100%;
 			}
 
 			.row-3 {
-				align-items: center;
-
 				@include mq(small) {
 					justify-content: center;
 				}
@@ -114,7 +118,7 @@
 					align-items: center;
 					justify-content: center;
 					border-radius: var(--radius-1);
-					border: var(--border-width-primary) solid var(--clr-neutral-600);
+					border: var(--border-width-primary) solid var(--clr-border-primary);
 				}
 			}
 		}

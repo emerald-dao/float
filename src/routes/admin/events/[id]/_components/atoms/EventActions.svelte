@@ -7,7 +7,7 @@
 	import Icon from '@iconify/svelte';
 </script>
 
-<div class="domains-wrapper">
+<div class="main-wrapper">
 	<div class="row-1">
 		<Icon icon="uil:bolt-alt" color="var(--clr-neutral-600)" />
 		<p>ACTIONS</p>
@@ -33,7 +33,7 @@
 			<p class="small">User transfering</p>
 		</div>
 	</div>
-	<div class="event-actions">
+	<!-- <div class="event-actions">
 		<Button type="transparent" on:click={() => deleteEvent()}>
 			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
 			<p style="color: var(--clr-alert-main);">Delete Event</p>
@@ -42,14 +42,19 @@
 			<Icon icon="ph:archive-bold" color="var(--clr-text-main)" />
 			<p style="color: var(--clr-text-main);">Archive Event</p>
 		</Button>
-	</div>
+	</div> -->
 </div>
 
 <style lang="scss">
-	.domains-wrapper {
+	.main-wrapper {
 		display: flex;
 		flex-direction: column;
 		gap: var(--space-3);
+		padding-inline: var(--space-6);
+
+		@include mq(medium) {
+			padding-inline: var(--space-8);
+		}
 
 		.row-1 {
 			align-items: center;
@@ -59,14 +64,15 @@
 		}
 
 		.column-3 {
-			border-bottom: 1px dashed var(--clr-border-primary);
+			// border-bottom: 1px dashed var(--clr-border-primary);
 			padding-bottom: var(--space-6);
 		}
 	}
-	.event-actions {
-		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: var(--space-5);
-	}
+
+	// .event-actions {
+	// 	display: flex;
+	// 	align-items: center;
+	// 	justify-content: flex-start;
+	// 	gap: var(--space-5);
+	// }
 </style>

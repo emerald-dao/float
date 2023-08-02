@@ -11,7 +11,7 @@
 	}
 </script>
 
-<div class="column-6">
+<div class="container-large">
 	<a href="/admin/events" class="sidebar-link" class:active={activePage === 'events'}>
 		<Icon icon="tabler:calendar-event" />
 		Events
@@ -23,11 +23,25 @@
 </div>
 
 <style lang="scss">
-	.column-6 {
-		padding: var(--space-6) var(--space-8);
+	.container-large {
+		display: none;
+		padding: var(--space-6) var(--space-14);
+		width: 100%;
+		flex-direction: column;
+
+		@include mq(small) {
+			display: flex;
+			padding: var(--space-4) var(--space-6);
+			border-bottom: 0.5px solid var(--clr-border-primary);
+			gap: var(--space-4);
+		}
 
 		@include mq(medium) {
-			padding: var(--space-6) 0 var(--space-6) var(--space-8);
+			border-right: 0.5px solid var(--clr-border-primary);
+			display: flex;
+			padding: var(--space-6) var(--space-4) 0 var(--space-14);
+			border-bottom: 0.5px solid var(--clr-border-primary);
+			gap: var(--space-6);
 		}
 
 		.sidebar-link {

@@ -7,50 +7,44 @@
 	export let userAvatar: string;
 </script>
 
-<header>
-	<div class="fake-div" />
-	<div class="main-wrapper">
-		<div class="row-4">
-			<a href="/user/{userName}">
-				<img src={userAvatar} alt="float" />
-			</a>
-			{#if $page.params.id}
-				<p>
-					<a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
-						.params.id}
-				</p>
-			{:else}
-				<p><a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
-			{/if}
+<div class="header-wrapper">
+	<header>
+		<div class="main-wrapper">
+			<div class="row-4">
+				<a href="/user/{userName}">
+					<img src={userAvatar} alt="float" />
+				</a>
+				{#if $page.params.id}
+					<p>
+						<a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
+							.params.id}
+					</p>
+				{:else}
+					<p><a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
+				{/if}
+			</div>
 		</div>
-	</div>
-	<div class="icon-wrapper">
-		<a href="/">
-			<Icon icon="tabler:home" color="var(--clr-primary-main)" width="30" height="30" />
-		</a>
-	</div>
-</header>
+		<div class="icon-wrapper">
+			<a href="/" class="header-link">
+				<Icon icon="tabler:home" width="25" />
+			</a>
+		</div>
+	</header>
+</div>
 
 <style lang="scss">
 	header {
 		display: flex;
 		flex-direction: row;
-		border-bottom: 0.1px var(--clr-border-primary) solid;
 		justify-content: space-between;
-		padding: 0 var(--space-8);
+		padding: 0 var(--space-6);
+		border-bottom: 0.1px var(--clr-border-primary) solid;
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 0.15fr 3fr 0.5fr;
+			grid-template-columns: 1fr auto;
 			gap: var(--space-8);
-			padding: 0;
-		}
-
-		.fake-div {
-			display: none;
-			@include mq(medium) {
-				display: block;
-			}
+			padding: 0 var(--space-14);
 		}
 
 		.main-wrapper {
@@ -58,6 +52,7 @@
 
 			.row-4 {
 				align-items: center;
+
 				img {
 					width: 56px;
 					height: 56px;
@@ -75,13 +70,14 @@
 				}
 			}
 		}
+
 		.icon-wrapper {
 			display: flex;
 			align-items: center;
 			justify-content: flex-end;
 
 			@include mq(medium) {
-				padding-right: var(--space-15);
+				padding-right: var(--space-1);
 			}
 		}
 	}

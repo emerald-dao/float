@@ -36,6 +36,8 @@
 
 {#if route !== 'admin'}
 	<Header {logIn} {unauthenticate} {getFindProfile} user={$user} {navElements} />
+{:else}
+	<div />
 {/if}
 
 <main>
@@ -50,6 +52,5 @@
 	main {
 		display: flex;
 		flex-direction: column;
-		min-width: 0;
 	}
 </style>

@@ -1,27 +1,22 @@
 <script lang="ts">
-	import { Button } from '@emerald-dao/component-library';
-	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount } from 'svelte';
 	import EventCardList from '$lib/components/events/EventCardList.svelte';
 	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
 	import type { Event } from '$lib/types/event/event.interface.js';
+	import EventsTopNavbar from './_components/EventsTopNavbar.svelte';
 
 	export let data;
 
-	let viewEventsMode: 'grid' | 'list' = 'grid';
-	let showInactive = true;
-
-	const toggleInactive = () => {
-		showInactive = !showInactive;
-	};
+	let viewMode: 'grid' | 'list' = 'grid';
+	let showInactive = false;
 
 	const setDefaultViewMode = () => {
 		const screenWidth = window.innerWidth;
 
 		if (screenWidth < 640) {
-			viewEventsMode = 'grid';
+			viewMode = 'grid';
 		}
 	};
 
@@ -33,10 +28,6 @@
 			window.removeEventListener('resize', setDefaultViewMode);
 		};
 	});
-
-	function handleEventsViewModeChange(buttonType: 'grid' | 'list') {
-		viewEventsMode = buttonType;
-	}
 
 	$: filteredEvents = showInactive
 		? data.events
@@ -57,103 +48,54 @@
 </script>
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
-	<div class="row-2">
-		<div class="button-wrapper">
-			<Button color="neutral" type="transparent" on:click={toggleInactive}>
-				<p style="color: var(--clr-text-off); fon">
-					{showInactive ? 'Hide Inactive' : 'Show Inactive'}
-				</p>
-			</Button>
-		</div>
-		<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
-
-		<div class={`button-wrapper ${viewEventsMode === 'grid' ? 'selected' : ''} grid`}>
-			<Button type="transparent" on:click={() => handleEventsViewModeChange('grid')}>
-				<Icon icon="tabler:layout-grid" color="var(--clr-heading-main)" />
-			</Button>
-		</div>
-		<div class={`button-wrapper ${viewEventsMode === 'list' ? 'selected' : ''} list`}>
-			<Button type="transparent" on:click={() => handleEventsViewModeChange('list')}>
-				<Icon icon="tabler:list" color="var(--clr-heading-main)" />
-			</Button>
-		</div>
-
-		<Button href="/event-generator"><Icon icon="tabler:circle-plus" />Create New</Button>
+	<EventsTopNavbar bind:viewMode bind:showInactive bind:searchStore />
+	<div class="events-wrapper">
+		{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
+			<p>No results found</p>
+		{:else if viewMode === 'grid'}
+			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
+				{#each $searchStore.filtered as event}
+					<EventCardGrid {event} />
+				{/each}
+			</div>
+		{:else}
+			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
+				{#each $searchStore.filtered as event}
+					<EventCardList {event} />
+				{/each}
+			</div>
+		{/if}
 	</div>
-	{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
-		<p>No results found</p>
-	{:else if viewEventsMode === 'grid'}
-		<div class="events-wrapper" in:fly={{ x: 10, duration: 400 }}>
-			{#each $searchStore.filtered as event}
-				<EventCardGrid {event} />
-			{/each}
-		</div>
-	{:else}
-		<div class="list" in:fly={{ x: 10, duration: 400 }}>
-			{#each $searchStore.filtered as event}
-				<EventCardList {event} />
-			{/each}
-		</div>
-	{/if}
 </div>
 
 <style lang="scss">
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;
-		justify-content: center;
-		gap: var(--space-10);
-		padding: var(--space-6) var(--space-8);
-
-		@include mq(medium) {
-			padding: var(--space-6) var(--space-15) var(--space-6) var(--space-8);
-		}
-
-		.row-2 {
-			display: grid;
-			grid-template-columns: 0.15fr auto 0.05fr 0.15fr;
-			@include mq(small) {
-				grid-template-columns: 0.27fr 1.4fr 0.07fr 0.07fr auto;
-			}
-			.button-wrapper {
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				border-radius: var(--radius-1);
-				background-color: rgba(133, 133, 133, 0.1);
-
-				p {
-					color: var(--clr-text-off);
-					font-size: var(--font-size-1);
-				}
-			}
-
-			.grid,
-			.list {
-				display: none;
-
-				@include mq(small) {
-					display: flex;
-				}
-			}
-
-			.selected {
-				border: 2px solid var(--clr-heading-main);
-			}
-		}
+		overflow: hidden;
 
 		.events-wrapper {
-			display: flex;
-			flex-direction: column;
-			gap: var(--space-10);
+			padding: var(--space-6);
 
 			@include mq(medium) {
+				padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
+				overflow-y: auto;
+			}
+		}
+
+		.events-grid-wrapper {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-6);
+
+			@include mq(medium) {
+				gap: var(--space-10);
 				display: grid;
 				grid-template-columns: repeat(2, 1fr);
 			}
 		}
 
-		.list {
+		.events-list-wrapper {
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-5);
