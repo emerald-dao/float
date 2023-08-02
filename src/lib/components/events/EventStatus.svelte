@@ -1,48 +1,34 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
+	import { Label } from '@emerald-dao/component-library';
 
-	export let actualStatus: {
-		status: string;
-		daysRemaining: number;
-	};
+	export let status: boolean;
+
+	$: text = status ? 'Claimable' : 'Not claimable';
+	$: color = status ? ('primary' as const) : ('alert' as const);
 </script>
 
-{#if actualStatus}
-	<div class="status-wrapper {actualStatus.status === 'InProgress' ? 'active' : 'inactive'}">
-		{#if actualStatus.status === 'NotStarted'}
-			<Icon icon="tabler:circle-filled" color="var(--clr-neutral-300)" width="9" />
-			<p class="xsmall" style="color: var(--clr-neutral-200);">inactive</p>
-		{:else if actualStatus.status === 'InProgress'}
-			<Icon icon="tabler:circle-filled" color="var(--clr-primary-main)" width="9" />
-			<p class="xsmall" style="color: var(--clr-primary-main);">active</p>
-		{:else}
-			<Icon icon="tabler:circle-filled" color="var(--clr-neutral-300)" width="9" />
-			<p class="xsmall" style="color: var(--clr-neutral-200);">inactive</p>
-		{/if}
+<div class="main-wrapper">
+	<span class="title xsmall">Status</span>
+	<div class="state-wrapper" style={`background-color: var(--clr-${color}-badge)`}>
+		<span class="xsmall" style={`color: var(--clr-${color}-main)`}>
+			{text}
+		</span>
 	</div>
-{:else}
-	<div class="status-wrapper active">
-		<Icon icon="tabler:circle-filled" color="var(--clr-primary-main)" width="9" />
-		<p class="xsmall" style="color: var(--clr-primary-main);">active</p>
-	</div>
-{/if}
+</div>
 
 <style lang="scss">
-	.status-wrapper {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: var(--space-1) var(--space-3);
+	.main-wrapper {
+		border: 1px solid var(--clr-border-primary);
 		border-radius: var(--radius-1);
-		text-align: center;
-		gap: var(--space-1);
-	}
+		flex: 1;
 
-	.active {
-		background-color: var(--clr-primary-badge);
-	}
+		.state-wrapper {
+			border-top: 1px solid var(--clr-border-primary);
+		}
 
-	.inactive {
-		background-color: var(--clr-neutral-badge);
+		.title,
+		.state-wrapper {
+			padding: var(--space-1) var(--space-3);
+		}
 	}
 </style>

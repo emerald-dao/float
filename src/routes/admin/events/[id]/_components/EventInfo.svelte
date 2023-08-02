@@ -3,7 +3,7 @@
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from './atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
-	import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject';
+	import { datesToStatusObject } from '$lib/features/verifiers/functions/timelockToStatusObject';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 

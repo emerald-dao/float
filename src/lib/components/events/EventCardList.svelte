@@ -1,5 +1,4 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
@@ -18,7 +17,8 @@
 			</div>
 		</div>
 		<div>
-			<span>{event.totalSupply} FLOATs claimed</span>
+			<span class="w-medium">{event.totalSupply} FLOATs </span>
+			<span class="small">claimed</span>
 		</div>
 	</div>
 	<div class="right-wrapper">
@@ -45,6 +45,7 @@
 		border-radius: var(--radius-2);
 		padding: var(--space-3) var(--space-6);
 		transition: 300ms ease-in-out;
+		background-color: var(--clr-surface-secondary);
 
 		&:hover {
 			background: var(--clr-surface-secondary);
@@ -55,7 +56,7 @@
 			display: grid;
 			grid-template-columns: 1.1fr 1fr;
 			align-items: center;
-			gap: var(--space-7);
+			gap: var(--space-12);
 
 			.details-wrapper {
 				align-items: center;

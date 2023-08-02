@@ -21,4 +21,4 @@ export interface Event {
 	eventType: EventType;
 }
 
-type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
+export type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
