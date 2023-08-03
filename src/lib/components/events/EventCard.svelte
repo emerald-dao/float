@@ -1,65 +1,46 @@
 <script lang="ts">
-	import type { Event } from '$lib/types/event/event.interface';
+	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import { Label } from '@emerald-dao/component-library';
-	import { onMount } from 'svelte';
-	import type { VerifiersStatus } from '$lib/features/verifiers/types/verifiers-status.interface';
-	import { getVerifiersState } from '$lib/features/verifiers/functions/getVerifiersState';
 	import TimelockStateLabel from '$lib/features/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/components/LimitedStateLabel.svelte';
 	import EventStatus from './EventStatus.svelte';
-	import { isClaimable } from '$lib/features/verifiers/functions/isClaimable';
 
-	export let event: Event;
+	export let event: EventWithStatus;
 	export let display: 'grid' | 'list' = 'list';
-
-	export let showUnclaimable = true;
-
-	let claimability: boolean;
-	let verifiersStatus: VerifiersStatus;
-
-	onMount(() => {
-		verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
-	});
-
-	$: if (verifiersStatus) {
-		claimability = !event.claimable ? event.claimable : isClaimable(verifiersStatus);
-	}
 </script>
 
-{#if showUnclaimable || claimability}
-	<a class={`main-wrapper ${display}`} href={`/admin/events/${event.eventId}`}>
-		<div class="general-info-wrapper">
-			<div class="title-wrapper row-3">
-				<img src={event.image} width="55px" height="55px" alt="logo" />
-				<div class="name-wrapper">
-					<p class="w-medium">{event.name}</p>
-					<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
-				</div>
-			</div>
-			<div class="minted-floats-wrapper">
-				<span class="w-medium">
-					{Number(event.totalSupply).toLocaleString()} FLOATs
-				</span>
-				<span class="small"> claimed </span>
+<a class={`main-wrapper ${display}`} href={`/admin/events/${event.eventId}`}>
+	<div class="general-info-wrapper">
+		<div class="title-wrapper row-3">
+			<img src={event.image} width="55px" height="55px" alt="logo" />
+			<div class="name-wrapper">
+				<p class="w-medium">{event.name}</p>
+				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
 			</div>
 		</div>
-		<div class="secondary-wrapper">
-			<div class="status-wrapper column-1">
-				<EventStatus status={claimability} />
-			</div>
-			{#if verifiersStatus && (verifiersStatus.timelockStatus !== null || verifiersStatus.limitedStatus !== null)}
-				<div class="powerups-wrapper">
-					{#if verifiersStatus.timelockStatus}
-						<TimelockStateLabel timelockStatus={verifiersStatus.timelockStatus} />
-					{/if}
-					{#if verifiersStatus.limitedStatus}
-						<LimitedStateLabel limitedStatus={verifiersStatus.limitedStatus} />
-					{/if}
-				</div>
-			{/if}
+		<div class="minted-floats-wrapper">
+			<span class="w-medium">
+				{Number(event.totalSupply).toLocaleString()} FLOATs
+			</span>
+			<span class="small"> claimed </span>
 		</div>
-	</a>
-{/if}
+	</div>
+	<div class="secondary-wrapper">
+		<div class="status-wrapper column-1">
+			<EventStatus status={event.status.generalStatus} />
+		</div>
+		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
+			<div class="powerups-wrapper">
+				{#if event.status.verifiersStatus.timelockStatus}
+					<TimelockStateLabel timelockStatus={event.status.verifiersStatus.timelockStatus} />
+				{/if}
+				{#if event.status.verifiersStatus.limitedStatus}
+					<LimitedStateLabel limitedStatus={event.status.verifiersStatus.limitedStatus} />
+				{/if}
+			</div>
+		{/if}
+	</div>
+</a>
 
 <style lang="scss">
 	.main-wrapper {

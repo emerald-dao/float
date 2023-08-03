@@ -3,7 +3,6 @@
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount } from 'svelte';
 	import EventCard from '$lib/components/events/EventCard.svelte';
-	import type { Event } from '$lib/types/event/event.interface.js';
 	import EventsTopNavbar from './_components/EventsTopNavbar.svelte';
 
 	export let data;
@@ -27,7 +26,11 @@
 		};
 	});
 
-	$: searchEvent = data.events.map((example) => ({
+	$: filteredEvents = showInactive
+		? data.events
+		: data.events.filter((event) => event.status.generalStatus === 'available');
+
+	$: searchEvent = filteredEvents.map((example) => ({
 		...example,
 		searchTerms: `${example.name} ${example.eventId}`
 	}));
@@ -49,13 +52,13 @@
 		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCard {event} display="grid" showUnclaimable={showInactive} />
+					<EventCard {event} display="grid" />
 				{/each}
 			</div>
 		{:else}
 			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCard {event} display="list" showUnclaimable={showInactive} />
+					<EventCard {event} display="list" />
 				{/each}
 			</div>
 		{/if}
@@ -72,7 +75,7 @@
 			padding: var(--space-6);
 
 			@include mq(medium) {
-				padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
+				padding: var(--space-8) var(--space-14) var(--space-8) var(--space-10);
 				overflow-y: auto;
 			}
 		}

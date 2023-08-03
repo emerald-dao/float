@@ -1,15 +1,27 @@
 <script lang="ts">
-	export let status: boolean;
+	import type { EventGeneralStatus } from '$lib/types/event/event.interface';
 
-	$: text = status ? 'Claimable' : 'Not claimable';
-	$: color = status ? ('primary' as const) : ('alert' as const);
+	export let status: EventGeneralStatus;
+
+	const STATUS_COLOR_MAP: {
+		[key in EventGeneralStatus]: 'primary' | 'alert' | 'neutral';
+	} = {
+		available: 'primary',
+		soldout: 'alert',
+		paused: 'alert',
+		expired: 'alert',
+		locked: 'neutral'
+	};
 </script>
 
 <div class="main-wrapper">
 	<span class="title xsmall">Status</span>
-	<div class="state-wrapper" style={`background-color: var(--clr-${color}-badge)`}>
-		<span class="xsmall" style={`color: var(--clr-${color}-main)`}>
-			{text}
+	<div
+		class="state-wrapper"
+		style={`background-color: var(--clr-${STATUS_COLOR_MAP[status]}-badge)`}
+	>
+		<span class="xsmall" style={`color: var(--clr-${STATUS_COLOR_MAP[status]}-main)`}>
+			{status.charAt(0).toUpperCase() + status.slice(1)}
 		</span>
 	</div>
 </div>
