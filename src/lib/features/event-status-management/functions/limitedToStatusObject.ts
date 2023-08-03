@@ -5,7 +5,7 @@ export const limitedToStatusObject = (maxSupply: number, floatsClaimed: number):
 		return null;
 	}
 
-	if (maxSupply - floatsClaimed === 0) {
+	if (maxSupply - floatsClaimed <= 0) {
 		return {
 			status: 'soldout',
 			remainingFloats: 0

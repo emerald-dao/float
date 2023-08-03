@@ -1,8 +1,8 @@
 <script lang="ts">
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import { Label } from '@emerald-dao/component-library';
-	import TimelockStateLabel from '$lib/features/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/components/LimitedStateLabel.svelte';
+	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
+	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from './EventStatus.svelte';
 
 	export let event: EventWithStatus;

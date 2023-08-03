@@ -2,7 +2,7 @@
 import type {
 	LimitedStatus,
 	TimelockStatus
-} from '$lib/features/verifiers/types/verifiers-status.interface';
+} from '$lib/features/event-status-management/types/verifiers-status.interface';
 import type { EventType } from './even-type.type';
 import type { Limited, MinimumBalance, Secret, Timelock } from './verifiers.interface';
 

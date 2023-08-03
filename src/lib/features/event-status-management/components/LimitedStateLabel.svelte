@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { LimitedStatus } from '../verifiers/types/verifiers-status.interface';
+	import type { LimitedStatus } from '../types/verifiers-status.interface';
 	import VerifierStateLabel from './atoms/VerifierStateLabel.svelte';
 
 	export let limitedStatus: LimitedStatus;

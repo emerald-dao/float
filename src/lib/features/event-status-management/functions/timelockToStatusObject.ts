@@ -8,6 +8,7 @@ export const timelockToStatusObject = (dateStart: string, dateEnding: string): T
 	if (currentDate < startDate) {
 		const timeDiff = startDate.getTime() - currentDate.getTime();
 		const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
 		return {
 			status: 'locked',
 			remainingTime: daysRemaining
@@ -15,6 +16,7 @@ export const timelockToStatusObject = (dateStart: string, dateEnding: string): T
 	} else if (currentDate >= startDate && currentDate <= endDate) {
 		const timeDiff = endDate.getTime() - currentDate.getTime();
 		const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
 		return {
 			status: 'unlocked',
 			remainingTime: daysRemaining

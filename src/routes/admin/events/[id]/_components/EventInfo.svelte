@@ -5,8 +5,8 @@
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
-	import TimelockStateLabel from '$lib/features/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/components/LimitedStateLabel.svelte';
+	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
+	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 
 	export let event: EventWithStatus;
 	export let claims;

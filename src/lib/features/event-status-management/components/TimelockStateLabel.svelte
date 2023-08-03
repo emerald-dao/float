@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { TimelockStatus } from '../verifiers/types/verifiers-status.interface';
+	import type { TimelockStatus } from '../types/verifiers-status.interface';
 	import VerifierStateLabel from './atoms/VerifierStateLabel.svelte';
 
 	export let timelockStatus: TimelockStatus;

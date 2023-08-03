@@ -1,7 +1,7 @@
 import claims from '../../_mock-data/floatClaimsMock';
 import { getEvent } from '$flow/actions';
-import { getVerifiersState } from '$lib/features/verifiers/functions/getVerifiersState';
-import { getEventGeneralStatus } from '$lib/features/verifiers/functions/getEventGeneralStatus';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load({ params }) {
