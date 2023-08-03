@@ -1,16 +1,28 @@
-import eventMock from '../../_mock-data/oneEventMock';
 import claims from '../../_mock-data/floatClaimsMock';
 import { getEvent } from '$flow/actions';
-import { get } from 'svelte/store';
-import { user } from '$stores/flow/FlowStore';
-import { getFindProfileFromAddressOrName } from '$flow/utils';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';
+import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load({ params }) {
-	const user = getFindProfileFromAddressOrName('0x99bd48c8036e2876');
 	const event = await getEvent('0x99bd48c8036e2876', params.id);
+
+	const getEventWithStatus = (event: Event): EventWithStatus => {
+		const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
+
+		const eventWithStatus: EventWithStatus = {
+			...event,
+			status: {
+				verifiersStatus: verifiersStatus,
+				generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+			}
+		};
+
+		return eventWithStatus;
+	};
+
 	return {
-		event,
-		user,
+		event: getEventWithStatus(event),
 		eventClaims: claims
 	};
 }

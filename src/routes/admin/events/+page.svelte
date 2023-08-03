@@ -2,9 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount } from 'svelte';
-	import EventCardList from '$lib/components/events/EventCardList.svelte';
-	import EventCardGrid from '$lib/components/events/EventCardGrid.svelte';
-	import type { Event } from '$lib/types/event/event.interface.js';
+	import EventCard from '$lib/components/events/EventCard.svelte';
 	import EventsTopNavbar from './_components/EventsTopNavbar.svelte';
 
 	export let data;
@@ -22,7 +20,6 @@
 
 	onMount(() => {
 		window.addEventListener('resize', setDefaultViewMode);
-		filteredEvents = data.events;
 
 		return () => {
 			window.removeEventListener('resize', setDefaultViewMode);
@@ -31,7 +28,7 @@
 
 	$: filteredEvents = showInactive
 		? data.events
-		: data.events.filter((event: Event) => !event.status || event.status.status === 'InProgress');
+		: data.events.filter((event) => event.status.generalStatus === 'available');
 
 	$: searchEvent = filteredEvents.map((example) => ({
 		...example,
@@ -55,13 +52,13 @@
 		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCardGrid {event} />
+					<EventCard {event} display="grid" />
 				{/each}
 			</div>
 		{:else}
 			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}
-					<EventCardList {event} />
+					<EventCard {event} display="list" />
 				{/each}
 			</div>
 		{/if}
@@ -78,7 +75,7 @@
 			padding: var(--space-6);
 
 			@include mq(medium) {
-				padding: var(--space-8) var(--space-14) var(--space-4) var(--space-10);
+				padding: var(--space-8) var(--space-14) var(--space-8) var(--space-10);
 				overflow-y: auto;
 			}
 		}

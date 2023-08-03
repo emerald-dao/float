@@ -3,6 +3,7 @@ import * as fcl from '@onflow/fcl';
 import './config';
 import { user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
+import type { Event } from '$lib/types/event/event.interface';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -59,17 +60,14 @@ const createEvent = async (floatObject) => {
 	});
 };
 
-export const createEventExecution = (floatObject) => executeTransaction(() => createEvent(floatObject));
+export const createEventExecution = (floatObject) =>
+	executeTransaction(() => createEvent(floatObject));
 
-export const getEvents = async (
-	userAddress: string
-) => {
+export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventsScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address)
-			]
+			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
@@ -77,17 +75,11 @@ export const getEvents = async (
 	}
 };
 
-export const getEvent = async (
-	eventHost: string,
-	eventId: string
-) => {
+export const getEvent = async (eventHost: string, eventId: string) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventScript),
-			args: (arg, t) => [
-				arg(eventHost, t.Address),
-				arg(eventId, t.UInt64)
-			]
+			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
@@ -95,15 +87,11 @@ export const getEvent = async (
 	}
 };
 
-export const getFLOATs = async (
-	userAddress: string
-) => {
+export const getFLOATs = async (userAddress: string) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getFLOATsScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address)
-			]
+			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
 	} catch (e) {
 		console.log('Error in getFLOATs', e);

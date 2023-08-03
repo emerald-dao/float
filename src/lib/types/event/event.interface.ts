@@ -1,4 +1,8 @@
 // FLOATs interfaces and types
+import type {
+	LimitedStatus,
+	TimelockStatus
+} from '$lib/features/event-status-management/types/verifiers-status.interface';
 import type { EventType } from './even-type.type';
 import type { Limited, MinimumBalance, Secret, Timelock } from './verifiers.interface';
 
@@ -10,7 +14,7 @@ export interface Event {
 	extraMetadata: { [key: string]: any };
 	groups: string[];
 	host: string;
-	eventImage: string;
+	image: string;
 	eventLogo: string;
 	name: string;
 	price: string | null;
@@ -21,4 +25,16 @@ export interface Event {
 	eventType: EventType;
 }
 
-type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
+export type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
+
+export interface EventWithStatus extends Event {
+	status: {
+		verifiersStatus: {
+			timelockStatus: TimelockStatus;
+			limitedStatus: LimitedStatus;
+		};
+		generalStatus: EventGeneralStatus;
+	};
+}
+
+export type EventGeneralStatus = 'available' | 'soldout' | 'paused' | 'expired' | 'locked';

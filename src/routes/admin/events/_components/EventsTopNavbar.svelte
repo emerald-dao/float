@@ -32,6 +32,8 @@
 		background-color: var(--clr-background-primary);
 		border-bottom: 0.5px solid var(--clr-border-primary);
 		padding: var(--space-3) var(--space-6);
+		box-shadow: 0px 0px 10px 0px var(--clr-shadow-primary);
+		z-index: 2;
 
 		@include mq(medium) {
 			padding: var(--space-4) var(--space-14) var(--space-4) var(--space-10);

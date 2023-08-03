@@ -1,9 +1,6 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
-
-	const dispatch = createEventDispatcher();
 
 	export let itemsPerPage = 10;
 	export let totalItems: number;
@@ -30,8 +27,8 @@
 	};
 </script>
 
+<slot />
 <div class="wrapper" in:fly={{ x: 10, duration: 400 }}>
-	<slot />
 	{#if numberOfPages > 0}
 		<div class="pagination">
 			<div>
@@ -94,6 +91,7 @@
 		display: flex;
 		justify-content: center;
 		padding-block: var(--space-14) var(--space-10);
+
 		p {
 			color: var(--clr-text-off);
 		}

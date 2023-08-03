@@ -1,21 +1,32 @@
 import { getEvents } from '$flow/actions.js';
-import { datesToStatusObject } from '$lib/utilities/dates/datesToStatusObject.js';
-import { user } from '$stores/flow/FlowStore';
-import eventsMock from '../_mock-data/eventsMock.js';
-import { get } from 'svelte/store';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
+import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load() {
-	const events = await getEvents('0x99bd48c8036e2876');
+	const userEvents = await getEvents('0x99bd48c8036e2876');
 
-	events.forEach((event: Event) => {
-		event.verifiers.forEach((verifier) => {
-			if (verifier.dateStart && verifier.dateEnding) {
-				event.status = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
-			}
-		});
-	});
+	const getEventsWithStatus = (events: Event[]): EventWithStatus[] => {
+		const eventsWithStatus: EventWithStatus[] = [];
+
+		for (const event of events) {
+			const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
+
+			const eventWithStatus: EventWithStatus = {
+				...event,
+				status: {
+					verifiersStatus: verifiersStatus,
+					generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+				}
+			};
+
+			eventsWithStatus.push(eventWithStatus);
+		}
+
+		return eventsWithStatus;
+	};
 
 	return {
-		events
+		events: getEventsWithStatus(userEvents)
 	};
 }
