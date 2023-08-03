@@ -4,8 +4,12 @@
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, onMount, setContext } from 'svelte';
 	import { page } from '$app/stores';
+	import Pagination from '$lib/components/atoms/Pagination.svelte';
 
 	export let data;
+
+	let paginationMax: number;
+	let paginationMin: number;
 
 	setContext('floats', data.floats);
 
@@ -33,15 +37,21 @@
 			</div>
 			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		</div>
-		<div class="bottom-wrapper">
-			{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
-				<p>No results found</p>
-			{:else}
-				{#each $searchStore.filtered as float}
-					<FloatCard {float} />
+		<Pagination
+			itemsPerPage={10}
+			totalItems={$searchStore.filtered.length}
+			noItemsMessage="No results found"
+			bind:paginationMax
+			bind:paginationMin
+		>
+			<div class="bottom-wrapper">
+				{#each $searchStore.filtered as float, i}
+					{#if i < paginationMax && i >= paginationMin}
+						<FloatCard {float} />
+					{/if}
 				{/each}
-			{/if}
-		</div>
+			</div>
+		</Pagination>
 	</div>
 	<div class="right-wrapper">
 		<slot />
