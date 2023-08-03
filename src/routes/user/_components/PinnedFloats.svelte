@@ -9,16 +9,14 @@
 
 <section class="container">
 	<h4>Pinned FLOATs</h4>
-	<div>
-		<Blur color="tertiary" right="22%" top="15%" />
-		<Blur left="22%" bottom="20%" />
-		<div class="floats-wrapper">
-			{#each pinnedFloats as floatId}
-				{#if floats.find((float) => float.id === floatId)}
-					<FloatTicket float={floats.find((float) => float.id === floatId)} />
-				{/if}
-			{/each}
-		</div>
+	<Blur color="tertiary" right="22%" top="15%" />
+	<Blur left="22%" bottom="20%" />
+	<div class="floats-wrapper">
+		{#each pinnedFloats as floatId}
+			{#if floats.find((float) => float.id === floatId)}
+				<FloatTicket float={floats.find((float) => float.id === floatId)} />
+			{/if}
+		{/each}
 	</div>
 </section>
 
@@ -36,7 +34,8 @@
 			flex-direction: column;
 			justify-content: center;
 			align-items: center;
-			gap: var(--space-11);
+			gap: var(--space-14);
+			width: 100%;
 
 			@include mq(medium) {
 				flex-direction: row;

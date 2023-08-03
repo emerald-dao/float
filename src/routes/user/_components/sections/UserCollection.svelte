@@ -196,6 +196,7 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
+				width: 100%;
 
 				@include mq(small) {
 					display: grid;
@@ -220,6 +221,7 @@
 						border-radius: var(--radius-2);
 						padding: var(--space-4);
 						text-align: center;
+						border: 1px solid var(--clr-primary-badge);
 
 						p {
 							color: var(--clr-primary-main);
@@ -228,11 +230,10 @@
 				}
 
 				.tickets {
-					padding: var(--space-6) var(--space-4);
-
-					@include mq(small) {
-						padding: var(--space-12) var(--space-9);
-					}
+					width: 100%;
+					display: flex;
+					flex-direction: column;
+					padding-block: var(--space-10);
 				}
 			}
 		}
