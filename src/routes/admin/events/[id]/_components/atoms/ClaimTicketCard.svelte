@@ -6,25 +6,21 @@
 
 	interface Claim {
 		image: string;
-		walletAddress: string;
-		time: string;
-		date: string;
+		address: string;
+		id: string;
+		serial: string;
 	}
 </script>
 
 <div class="main-wrapper">
 	<div class="left-wrapper">
 		<p class="small">#{i + 1}</p>
-		<UserProfileLabel
-			address={claim.walletAddress}
-			imageSize="30px"
-			fontSize="var(--font-size-0)"
-		/>
+		<UserProfileLabel address={claim.address} imageSize="30px" fontSize="var(--font-size-0)" />
 	</div>
 	<div class="right-wrapper">
 		<div class="row-4">
-			<p class="xsmall">{claim.time}</p>
-			<p class="xsmall">{claim.date}</p>
+			<p class="xsmall">{claim.serial}</p>
+			<p class="xsmall">{claim.id}</p>
 		</div>
 	</div>
 </div>

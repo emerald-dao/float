@@ -12,6 +12,7 @@ import createEventTx from './cadence/transactions/create_event.cdc?raw';
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
 import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
+import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -84,6 +85,18 @@ export const getEvent = async (eventHost: string, eventId: string) => {
 	} catch (e) {
 		console.log('Error in getEvents', e);
 		throw new Error('Error in getEvents');
+	}
+};
+
+export const getEventClaims = async (eventHost: string, eventId: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventClaimsScript),
+			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
+		});
+	} catch (e) {
+		console.log('Error in getEventClaims', e);
+		throw new Error('Error in getEventClaims');
 	}
 };
 

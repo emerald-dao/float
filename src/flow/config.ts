@@ -16,22 +16,25 @@ export const network: 'mainnet' | 'testnet' | 'emulator' = env.PUBLIC_FLOW_NETWO
 	| 'testnet'
 	| 'emulator';
 
-// EMULATOR
-// const accessNode = 'http://127.0.0.1:8888';
-// const discoveryWallet = 'http://localhost:8701/fcl/authn';
-
-// TESTNET
-// const accessNode = 'https://rest-testnet.onflow.org';
-// const discoveryWallet = 'https://fcl-discovery.onflow.org/testnet/authn';
-
-// MAINNET
-// const accessNode = 'https://rest-mainnet.onflow.org';
-// const discoveryWallet = 'https://fcl-discovery.onflow.org/authn';
+const fclConfigInfo = {
+	emulator: {
+		accessNode: 'http://127.0.0.1:8888',
+		discoveryWallet: 'http://localhost:8701/fcl/authn'
+	},
+	testnet: {
+		accessNode: 'https://rest-testnet.onflow.org',
+		discoveryWallet: 'https://fcl-discovery.onflow.org/testnet/authn'
+	},
+	mainnet: {
+		accessNode: 'https://rest-mainnet.onflow.org',
+		discoveryWallet: 'https://fcl-discovery.onflow.org/authn'
+	}
+}
 
 config()
 	.put('app.detail.title', dappInfo.title)
 	.put('app.detail.icon', dappInfo.icon)
 	.put('fcl.accountProof.resolver', resolver)
 	.put('flow.network', network)
-	.put('accessNode.api', env.PUBLIC_FLOW_ACCESS_NODE)
-	.put('discovery.wallet', env.PUBLIC_FLOW_DISCOVERY);
+	.put('accessNode.api', fclConfigInfo[network].accessNode)
+	.put('discovery.wallet', fclConfigInfo[network].discoveryWallet);
