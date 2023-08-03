@@ -83,7 +83,7 @@
 							{:else}
 								<h3 class="w-medium event-name-placeholder">Event Name</h3>
 							{/if}
-							<span class="label">{float.eventType}</span>
+							<span class="label">{float.eventType.eventTypeName}</span>
 						</div>
 					</div>
 					<span>Organized by <span class="w-medium">{float.eventHost}</span></span>
