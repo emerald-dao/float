@@ -2,8 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import FloatCard from './_components/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, onMount, setContext } from 'svelte';
-	import { page } from '$app/stores';
+	import { onDestroy, setContext } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 
 	export let data;
@@ -37,21 +36,21 @@
 			</div>
 			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		</div>
-		<Pagination
-			itemsPerPage={10}
-			totalItems={$searchStore.filtered.length}
-			noItemsMessage="No results found"
-			bind:paginationMax
-			bind:paginationMin
-		>
-			<div class="bottom-wrapper">
+		<div class="bottom-wrapper">
+			<Pagination
+				itemsPerPage={10}
+				totalItems={$searchStore.filtered.length}
+				noItemsMessage="No results found"
+				bind:paginationMax
+				bind:paginationMin
+			>
 				{#each $searchStore.filtered as float, i}
 					{#if i < paginationMax && i >= paginationMin}
 						<FloatCard {float} />
 					{/if}
 				{/each}
-			</div>
-		</Pagination>
+			</Pagination>
+		</div>
 	</div>
 	<div class="right-wrapper">
 		<slot />
@@ -93,6 +92,7 @@
 				padding-bottom: var(--space-5);
 				border-bottom: 0.5px solid var(--clr-border-primary);
 				background-color: var(--clr-background-primary);
+				box-shadow: 0px 0px 10px 0px var(--clr-shadow-primary);
 
 				.title-wrapper {
 					display: flex;
