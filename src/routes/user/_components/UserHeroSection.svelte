@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Blur from '$lib/components/Blur.svelte';
 	import type { User } from '$lib/types/user/user.interface';
 	import Icon from '@iconify/svelte';
 
@@ -7,7 +8,9 @@
 	export let eventsCreated: number;
 </script>
 
-<section class="container-small">
+<section class="container">
+	<Blur color="tertiary" right="22%" top="10%" />
+	<Blur left="22%" top="30%" opacity={0.1} />
 	<img src={userData.image} alt="float" />
 	<h1 class="medium">{userData.name}</h1>
 	<div class="social-media">
@@ -22,11 +25,11 @@
 	</div>
 	<div class="stats-wrapper">
 		<div>
-			<p class="large">{floatsClaimed}</p>
+			<p class="h5 w-medium">{floatsClaimed}</p>
 			<p class="small">Floats Claimed</p>
 		</div>
 		<div>
-			<p class="large">{eventsCreated}</p>
+			<p class="h5 w-medium">{eventsCreated}</p>
 			<p class="small">Events Created</p>
 		</div>
 	</div>
@@ -38,7 +41,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		gap: var(--space-6);
+		gap: var(--space-4);
 		padding-block: 4rem 0;
 		border-bottom: 1px dashed var(--clr-border-primary);
 
@@ -47,9 +50,10 @@
 		}
 
 		img {
-			width: 260px;
-			height: 260px;
+			width: 220px;
+			height: 220px;
 			border-radius: 50%;
+			box-shadow: 0px 6px 15px 10px var(--clr-shadow-primary);
 		}
 
 		.social-media {
@@ -59,15 +63,16 @@
 
 			@include mq(small) {
 				flex-direction: row;
-				gap: var(--space-7);
+				margin-top: var(--space-4);
+				gap: var(--space-6);
 			}
 
 			.media-wrapper {
 				justify-content: center;
 				align-items: center;
-				gap: var(--space-1);
+				gap: var(--space-2);
 				border: 1px solid var(--clr-border-primary);
-				padding: 6px 10px;
+				padding: var(--space-1) var(--space-4);
 				border-radius: var(--radius-3);
 				text-decoration: none;
 				color: var(--clr-text-main);
@@ -76,10 +81,15 @@
 
 		.stats-wrapper {
 			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
+			display: flex;
 			text-align: center;
-			padding: var(--space-5) 0 0 0;
+			justify-content: center;
+			gap: var(--space-12);
+			padding: var(--space-12) 0 0 0;
+
+			p {
+				color: var(--clr-text-main);
+			}
 		}
 	}
 </style>
