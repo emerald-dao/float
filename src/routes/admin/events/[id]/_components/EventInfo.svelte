@@ -3,39 +3,32 @@
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from './atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
-	import { datesToStatusObject } from '$lib/features/verifiers/functions/timelockToStatusObject';
-	import DaysLeft from '$lib/components/events/DaysLeft.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
+	import type { EventWithStatus } from '$lib/types/event/event.interface';
+	import TimelockStateLabel from '$lib/features/components/TimelockStateLabel.svelte';
+	import LimitedStateLabel from '$lib/features/components/LimitedStateLabel.svelte';
 
-	export let event;
+	export let event: EventWithStatus;
 	export let claims;
-
-	let actualStatus: {
-		status: string;
-		daysRemaining: number;
-	};
-
-	event.verifiers.forEach((verifier: any) => {
-		if (verifier.dateStart && verifier.dateEnding) {
-			actualStatus = datesToStatusObject(verifier.dateStart, verifier.dateEnding);
-		}
-	});
 </script>
 
 <div class="main-wrapper">
 	<div class="top-wrapper">
-		<div class="column-wrapper">
-			<EventStatus {actualStatus} />
-		</div>
-		<div class="column-wrapper">
-			<h5>{event.totalSupply}</h5>
+		<div class="column align-center">
+			<h4 class="h5">{event.totalSupply}</h4>
 			<p class="small">FLOATs claimed</p>
 		</div>
-		{#if actualStatus}
-			<div class="column-wrapper">
-				<DaysLeft {actualStatus} />
-			</div>
-		{/if}
+		<div class="row-2">
+			{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
+				{#if event.status.verifiersStatus.timelockStatus}
+					<TimelockStateLabel timelockStatus={event.status.verifiersStatus.timelockStatus} />
+				{/if}
+				{#if event.status.verifiersStatus.limitedStatus}
+					<LimitedStateLabel limitedStatus={event.status.verifiersStatus.limitedStatus} />
+				{/if}
+			{/if}
+			<EventStatus status={event.status.generalStatus} />
+		</div>
 	</div>
 	<div class="ticket-wrapper">
 		<FloatTicket float={transformEventToFloat(event)} />
@@ -76,17 +69,6 @@
 
 			@include mq(medium) {
 				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
-			}
-
-			.column-wrapper {
-				display: flex;
-				flex-direction: column;
-				justify-content: center;
-				align-items: center;
-
-				h5 {
-					margin: 0;
-				}
 			}
 		}
 
