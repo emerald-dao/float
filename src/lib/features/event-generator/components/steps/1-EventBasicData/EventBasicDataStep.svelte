@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import { EVENT_TYPES, EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import { DropZone, InputWrapper } from '@emerald-dao/component-library';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import validationSuite from './validation';
@@ -46,8 +46,8 @@
 		<div class="column-1">
 			<label for="event-type">Event type</label>
 			<select name="event-type" id="event-type" bind:value={$eventGeneratorData.eventType}>
-				{#each EVENT_TYPE_DETAILS as eventType}
-					<option value={eventType.eventTypeName}>{eventType.eventTypeName}</option>
+				{#each EVENT_TYPES as eventType}
+					<option value={eventType}>{EVENT_TYPE_DETAILS[eventType].eventTypeName}</option>
 				{/each}
 			</select>
 		</div>

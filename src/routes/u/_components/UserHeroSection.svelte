@@ -1,28 +1,33 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
-	import type { User } from '$lib/types/user/user.interface';
+	import type { Profile } from '$lib/types/user/profile.interface';
+	import { Label } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 
-	export let userData: User;
+	export let userProfile: Profile;
 	export let floatsClaimed: number;
 	export let eventsCreated: number;
 </script>
 
 <section class="container">
 	<Blur color="tertiary" right="22%" top="10%" />
-	<Blur left="22%" top="30%" opacity={0.1} />
-	<img src={userData.image} alt="float" />
-	<h1 class="medium">{userData.name}</h1>
-	<div class="social-media">
-		{#if userData.socialMedia}
-			{#each Object.entries(userData.socialMedia) as mediaUrl}
+	<Blur left="22%" top="30%" />
+	<img src={userProfile.avatar} alt="float" />
+	<h1>{userProfile.name}</h1>
+	<Label color="transparent" size="small">
+		<Icon icon="tabler:wallet" />
+		{userProfile.address}
+	</Label>
+	<!-- <div class="social-media">
+		{#if userProfile.socialMedia}
+			{#each Object.entries(userProfile.socialMedia) as mediaUrl}
 				<a class="row media-wrapper" href={mediaUrl[1]} target="_blank">
 					<Icon icon="tabler:brand-twitter" />
 					<p>{[mediaUrl[0]]}</p>
 				</a>
 			{/each}
 		{/if}
-	</div>
+	</div> -->
 	<div class="stats-wrapper">
 		<div>
 			<p class="h5 w-medium">{floatsClaimed}</p>
@@ -49,6 +54,10 @@
 			padding-block: 4rem;
 		}
 
+		h1 {
+			margin-bottom: var(--space-2);
+		}
+
 		img {
 			width: 220px;
 			height: 220px;
@@ -56,28 +65,28 @@
 			box-shadow: 0px 6px 15px 10px var(--clr-shadow-primary);
 		}
 
-		.social-media {
-			display: flex;
-			flex-direction: column;
-			gap: var(--space-2);
+		// .social-media {
+		// 	display: flex;
+		// 	flex-direction: column;
+		// 	gap: var(--space-2);
 
-			@include mq(small) {
-				flex-direction: row;
-				margin-top: var(--space-4);
-				gap: var(--space-6);
-			}
+		// 	@include mq(small) {
+		// 		flex-direction: row;
+		// 		margin-top: var(--space-4);
+		// 		gap: var(--space-6);
+		// 	}
 
-			.media-wrapper {
-				justify-content: center;
-				align-items: center;
-				gap: var(--space-2);
-				border: 1px solid var(--clr-border-primary);
-				padding: var(--space-1) var(--space-4);
-				border-radius: var(--radius-3);
-				text-decoration: none;
-				color: var(--clr-text-main);
-			}
-		}
+		// 	.media-wrapper {
+		// 		justify-content: center;
+		// 		align-items: center;
+		// 		gap: var(--space-2);
+		// 		border: 1px solid var(--clr-border-primary);
+		// 		padding: var(--space-1) var(--space-4);
+		// 		border-radius: var(--radius-3);
+		// 		text-decoration: none;
+		// 		color: var(--clr-text-main);
+		// 	}
+		// }
 
 		.stats-wrapper {
 			width: 100%;

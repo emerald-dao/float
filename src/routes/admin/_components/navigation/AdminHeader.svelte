@@ -11,16 +11,16 @@
 	<header>
 		<div class="main-wrapper">
 			<div class="row-4">
-				<a href="/user/{userName}">
+				<a href="/u/{userName}">
 					<img src={userAvatar} alt="float" />
 				</a>
 				{#if $page.params.id}
 					<p>
-						<a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
+						<a href="/u/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
 							.params.id}
 					</p>
 				{:else}
-					<p><a href="/user/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
+					<p><a href="/u/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
 				{/if}
 			</div>
 		</div>
