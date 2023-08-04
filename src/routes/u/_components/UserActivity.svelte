@@ -1,28 +1,28 @@
 <script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
-	import type { User } from '$lib/types/user/user.interface';
+	import type { Profile } from '$lib/types/user/profile.interface';
 	import UserCollection from './sections/UserCollection.svelte';
 
 	export let floats: FLOAT[];
-	export let userData: User;
+	export let userProfile: Profile;
 </script>
 
-<div class="header-wrapper">
-	<div class="container-medium">
-		<div class="row">
-			<img src={userData.image} alt="user avatar" />
-			<p class="large">{userData.name}</p>
-		</div>
-		<div class="title-wrapper">
-			<h4 class="h5">User collection</h4>
-		</div>
-		<div class="right-wrapper">
-			<p class="small">{`${floats.length} FLOATs`}</p>
+<section>
+	<div class="header-wrapper">
+		<div class="container-medium">
+			<div class="row">
+				<img src={userProfile.avatar} alt="user avatar" />
+				<p class="large">{userProfile.name}</p>
+			</div>
+			<div class="title-wrapper">
+				<h4 class="h5">Collection</h4>
+			</div>
+			<div class="right-wrapper">
+				<p class="small">{`${floats.length} FLOATs`}</p>
+			</div>
 		</div>
 	</div>
-</div>
-<section class="container">
-	<div>
+	<div class="container">
 		<UserCollection {floats} />
 	</div>
 </section>
@@ -30,6 +30,7 @@
 <style lang="scss">
 	section {
 		padding-block: 0;
+		background-color: var(--clr-background-primary);
 
 		@include mq(small) {
 			padding-block: 4rem;

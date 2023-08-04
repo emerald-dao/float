@@ -3,7 +3,6 @@
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import type { ProgressStates } from '@emerald-dao/component-library/components/ProgressStep/progress-states.type';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Badges from '../atoms/Badges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../lib/stores/searchBar';
@@ -11,6 +10,7 @@
 	import { createFilters } from '../../_functions/filters';
 	import { filterContent } from '../../_functions/filterContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import IntersectionObserver from 'svelte-intersection-observer';
 
 	export let floats: FLOAT[];
 
@@ -52,11 +52,6 @@
 
 	let badges: BadgesInterface[] = [];
 
-	interface Step {
-		name: string;
-		state: ProgressStates;
-	}
-
 	interface BadgesInterface {
 		icon: string;
 		name: string;
@@ -84,6 +79,14 @@
 			name: 'Discord Geek'
 		}
 	];
+
+	// Infinite scroll feature
+	let intersectionObserverElement: HTMLDivElement;
+	let intersecting: boolean;
+
+	let elementsPerPage = 10;
+
+	$: if (intersecting && elementsPerPage < floats.length) elementsPerPage += 10;
 </script>
 
 <div class="content-wrapper">
@@ -106,27 +109,34 @@
 	<div class="rightside">
 		{#await filteredContent then contents}
 			{#if contents.length > 0}
-				{#each contents as float}
-					<div class="main-wrapper">
-						<div class="timeline">
-							<div class="line" />
-							<div class="date-wrapper">
-								<p class="small">
-									{unixTimestampToFormattedDate(float.dateReceived, 'month')}
-								</p>
-								<p class="large w-medium">
-									{unixTimestampToFormattedDate(float.dateReceived, 'year')}
-								</p>
+				{#each contents as float, i}
+					{#if i < elementsPerPage}
+						<div class="main-wrapper">
+							<div class="timeline">
+								<div class="line" />
+								<div class="date-wrapper">
+									<p class="small">
+										{unixTimestampToFormattedDate(float.dateReceived, 'month')}
+									</p>
+									<p class="large w-medium">
+										{unixTimestampToFormattedDate(float.dateReceived, 'year')}
+									</p>
+								</div>
+								<div class="line" />
 							</div>
-							<div class="line" />
+							<div class="tickets">
+								<FloatTicket {float} />
+							</div>
 						</div>
-						<div class="tickets">
-							<FloatTicket {float} />
-						</div>
-					</div>
+					{/if}
 				{/each}
+				{#if contents.length > elementsPerPage}
+					<IntersectionObserver element={intersectionObserverElement} bind:intersecting>
+						<div bind:this={intersectionObserverElement} class="intersection-element" />
+					</IntersectionObserver>
+				{/if}
 			{:else}
-				<span><em>No content found</em></span>
+				<span><em>No FLOATs found</em></span>
 			{/if}
 		{/await}
 	</div>
@@ -237,5 +247,10 @@
 				}
 			}
 		}
+	}
+
+	.intersection-element {
+		height: 1px;
+		width: 1px;
 	}
 </style>
