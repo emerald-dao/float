@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
 	export let float: FLOAT;
@@ -94,7 +94,9 @@
 							{:else}
 								<h3 class="w-medium event-name-placeholder">Event Name</h3>
 							{/if}
-							<span class="label">{float.eventType.eventTypeName}</span>
+							{#if float.eventType}
+								<span class="label">{EVENT_TYPE_DETAILS[float.eventType].eventTypeName}</span>
+							{/if}
 						</div>
 					</div>
 					<span>Organized by <span class="w-medium">{float.eventHost}</span></span>

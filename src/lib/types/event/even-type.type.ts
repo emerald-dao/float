@@ -4,7 +4,7 @@ export const EVENT_TYPES = [
 	'conference',
 	'productPresentation',
 	'course',
-	'hackaton',
+	'hackathon',
 	'sportCompetition',
 	'gamingCompetition',
 	'other'
@@ -14,66 +14,46 @@ export const CERTIFICATE_TYPES = ['ticket', 'medal', 'certificate'] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 export type CertificateType = (typeof CERTIFICATE_TYPES)[number];
 
-type EventTypeDetail = {
+export const EVENT_TYPE_DETAILS: {
 	[key in EventType]: {
 		certificateType: CertificateType;
 		eventTypeName: string;
 	};
-}[EventType];
-
-export const EVENT_TYPE_DETAILS: EventTypeDetail[] = [
-	{
-		discordMeeting: {
-			certificateType: 'ticket',
-			eventTypeName: 'Discord meeting'
-		}
+} = {
+	discordMeeting: {
+		certificateType: 'ticket',
+		eventTypeName: 'Discord meeting'
 	},
-	{
-		twitterSpace: {
-			certificateType: 'ticket',
-			eventTypeName: 'Twitter space'
-		}
+	twitterSpace: {
+		certificateType: 'ticket',
+		eventTypeName: 'Twitter space'
 	},
-	{
-		conference: {
-			certificateType: 'ticket',
-			eventTypeName: 'Conference'
-		}
+	conference: {
+		certificateType: 'ticket',
+		eventTypeName: 'Conference'
 	},
-	{
-		productPresentation: {
-			certificateType: 'ticket',
-			eventTypeName: 'Product presentation'
-		}
+	productPresentation: {
+		certificateType: 'ticket',
+		eventTypeName: 'Product presentation'
 	},
-	{
-		course: {
-			certificateType: 'certificate',
-			eventTypeName: 'Course'
-		}
+	course: {
+		certificateType: 'certificate',
+		eventTypeName: 'Course'
 	},
-	{
-		hackaton: {
-			certificateType: 'medal',
-			eventTypeName: 'Hackaton'
-		}
+	hackathon: {
+		certificateType: 'medal',
+		eventTypeName: 'Hackathon'
 	},
-	{
-		sportCompetition: {
-			certificateType: 'medal',
-			eventTypeName: 'Sport competition'
-		}
+	sportCompetition: {
+		certificateType: 'medal',
+		eventTypeName: 'Sport competition'
 	},
-	{
-		gamingCompetition: {
-			certificateType: 'medal',
-			eventTypeName: 'Gaming competition'
-		}
+	gamingCompetition: {
+		certificateType: 'medal',
+		eventTypeName: 'Gaming competition'
 	},
-	{
-		other: {
-			certificateType: 'ticket',
-			eventTypeName: 'Other'
-		}
+	other: {
+		certificateType: 'ticket',
+		eventTypeName: 'Other'
 	}
-].map((item) => Object.values(item)[0]);
+};
