@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { user } from './../../../lib/stores/flow/FlowStore.ts';
 	import Blur from '$lib/components/Blur.svelte';
 	import type { Profile } from '$lib/types/user/profile.interface';
 	import { Label } from '@emerald-dao/component-library';
@@ -12,7 +11,7 @@
 
 <section class="container">
 	<Blur color="tertiary" right="22%" top="10%" />
-	<Blur left="22%" top="30%" opacity={0.1} />
+	<Blur left="22%" top="30%" />
 	<img src={userProfile.avatar} alt="float" />
 	<h1>{userProfile.name}</h1>
 	<Label color="transparent" size="small">
