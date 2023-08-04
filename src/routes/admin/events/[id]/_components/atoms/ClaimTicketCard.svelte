@@ -14,13 +14,17 @@
 
 <div class="main-wrapper">
 	<div class="left-wrapper">
-		<p class="small">#{i + 1}</p>
-		<UserProfileLabel address={claim.address} imageSize="30px" fontSize="var(--font-size-0)" />
+		<UserProfileLabel address={claim.address} imageSize="40px" fontSize="var(--font-size-1)" />
 	</div>
 	<div class="right-wrapper">
 		<div class="row-4">
-			<p class="xsmall">{claim.serial}</p>
-			<p class="xsmall">{claim.id}</p>
+			<p class="xsmall serial">
+				<span>Serial</span>
+				<span class="w-medium">
+					{claim.serial}
+				</span>
+			</p>
+			<p class="xsmall id w-medium">#{claim.id}</p>
 		</div>
 	</div>
 </div>
@@ -32,15 +36,14 @@
 		justify-content: center;
 		align-items: center;
 		border: var(--border-width-primary) dashed var(--clr-border-primary);
-		border-radius: var(--radius-4);
+		border-radius: var(--radius-2);
 		padding: var(--space-2) var(--space-4);
 		gap: var(--space-4);
 		min-width: 280px;
 
 		@include mq(small) {
-			display: grid;
+			flex-direction: row;
 			justify-content: space-between;
-			grid-template-columns: 0.9fr 1fr;
 			width: 100%;
 		}
 
@@ -48,6 +51,7 @@
 			display: flex;
 			gap: var(--space-3);
 			align-items: center;
+			width: 100%;
 		}
 
 		.right-wrapper {
@@ -58,6 +62,20 @@
 
 			@include mq(small) {
 				justify-content: flex-end;
+			}
+
+			.serial {
+				display: flex;
+				flex-direction: row;
+				gap: var(--space-1);
+
+				span:first-child {
+					color: var(--clr-text-off);
+				}
+			}
+
+			.id {
+				color: var(--clr-text-off);
 			}
 		}
 	}
