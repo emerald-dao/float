@@ -12,7 +12,7 @@ function transformEventToFloat(event: Event): FLOAT {
 		eventDescription: event.description,
 		eventHost: event.host,
 		eventId: event.eventId,
-		eventImage: event.eventImage,
+		eventImage: event.image,
 		eventLogo: event.eventLogo,
 		eventName: event.name,
 		originalRecipient: 'John Doe',
