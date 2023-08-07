@@ -1,15 +1,8 @@
 <script lang="ts">
+	import type { Claim } from '$lib/types/event/event-claim.interface';
 	import { UserProfileLabel } from '@emerald-dao/component-library';
 
 	export let claim: Claim;
-	export let i: number;
-
-	interface Claim {
-		image: string;
-		address: string;
-		id: string;
-		serial: string;
-	}
 </script>
 
 <div class="main-wrapper">
