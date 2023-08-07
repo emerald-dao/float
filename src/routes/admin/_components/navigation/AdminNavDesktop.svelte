@@ -20,6 +20,10 @@
 		<Icon icon="tabler:ticket" />
 		My collection
 	</a>
+	<a href="/admin/groups" class="sidebar-link" class:active={activePage === 'groups'}>
+		<Icon icon="tabler:packages" />
+		Groups
+	</a>
 </div>
 
 <style lang="scss">
