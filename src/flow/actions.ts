@@ -12,6 +12,7 @@ import createEventTx from './cadence/transactions/create_event.cdc?raw';
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
 import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
+import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
@@ -111,5 +112,20 @@ export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 	} catch (e) {
 		console.log('Error in getFLOATs', e);
 		throw new Error('Error in getFLOATs');
+	}
+};
+
+export const getSpecificFLOATs = async (userAddress: string, ids: string[]) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getSpecificFLOATsScript),
+			args: (arg, t) => [
+				arg(userAddress, t.Address),
+				arg(ids, t.Array(t.UInt64))
+			]
+		});
+	} catch (e) {
+		console.log('Error in getSpecificFLOATs', e);
+		throw new Error('Error in getSpecificFLOATs');
 	}
 };
