@@ -5,6 +5,7 @@
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import GroupCard from './_components/GroupCard.svelte';
 	import { Button } from '@emerald-dao/component-library';
+	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
 
 	export let data;
 
@@ -29,29 +30,34 @@
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
 	<div class="left-wrapper">
-		<div class="top-wrapper">
-			<div class="title-wrapper">
-				<h5>My Groups</h5>
-				<p class="small off">{$searchStore.filtered.length} groups</p>
+		<div>
+			<div class="top-wrapper">
+				<div class="title-wrapper">
+					<h5>My Groups</h5>
+					<p class="small off">{$searchStore.filtered.length} groups</p>
+				</div>
+				<input type="text" placeholder="Search group name or id" bind:value={$searchStore.search} />
 			</div>
-			<input type="text" placeholder="Search group name or id" bind:value={$searchStore.search} />
+			<ItemsListWrapper numberOfItems={$searchStore.filtered.length}>
+				<div class="bottom-wrapper">
+					{#each $searchStore.filtered as group, i}
+						{#if i < paginationMax && i >= paginationMin}
+							<GroupCard group={group.group} />
+						{/if}
+					{/each}
+				</div>
+			</ItemsListWrapper>
 		</div>
-		<div class="bottom-wrapper">
+		<div class="pagination-wrapper row-space-between row-7">
 			<Pagination
 				itemsPerPage={10}
 				totalItems={$searchStore.filtered.length}
 				noItemsMessage="No results found"
 				bind:paginationMax
 				bind:paginationMin
-			>
-				{#each $searchStore.filtered as group, i}
-					{#if i < paginationMax && i >= paginationMin}
-						<GroupCard group={group.group} />
-					{/if}
-				{/each}
-			</Pagination>
+			/>
+			<Button href="/admin/groups/new-group">Create new group</Button>
 		</div>
-		<Button href="/admin/groups/new-group">Create new group</Button>
 	</div>
 	<div class="right-wrapper">
 		<slot />
@@ -75,6 +81,7 @@
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
+			justify-content: space-between;
 
 			@include mq(medium) {
 				flex: 1;
@@ -122,7 +129,8 @@
 			}
 
 			.top-wrapper,
-			.bottom-wrapper {
+			.bottom-wrapper,
+			.pagination-wrapper {
 				padding: var(--space-6) var(--space-6);
 
 				@include mq(small) {
