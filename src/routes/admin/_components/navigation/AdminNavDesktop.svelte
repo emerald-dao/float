@@ -5,7 +5,7 @@
 	let activePage = '';
 
 	$: if ($page.route.id) {
-		const pathRegex = /^\/admin\/(events|my-collection)(\/.*)?$/;
+		const pathRegex = /^\/admin\/(events|my-collection|groups)(\/.*)?$/;
 		const match = $page.route.id.match(pathRegex);
 		activePage = match ? match[1] : '';
 	}

@@ -4,6 +4,7 @@
 	import { onDestroy, setContext } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import GroupCard from './_components/GroupCard.svelte';
+	import { Button } from '@emerald-dao/component-library';
 
 	export let data;
 
@@ -30,10 +31,10 @@
 	<div class="left-wrapper">
 		<div class="top-wrapper">
 			<div class="title-wrapper">
-				<h5>My Collection</h5>
-				<p class="small off">{$searchStore.filtered.length} FLOATs</p>
+				<h5>My Groups</h5>
+				<p class="small off">{$searchStore.filtered.length} groups</p>
 			</div>
-			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
+			<input type="text" placeholder="Search group name or id" bind:value={$searchStore.search} />
 		</div>
 		<div class="bottom-wrapper">
 			<Pagination
@@ -50,6 +51,7 @@
 				{/each}
 			</Pagination>
 		</div>
+		<Button href="/admin/groups/new-group">Create new group</Button>
 	</div>
 	<div class="right-wrapper">
 		<slot />
@@ -135,6 +137,7 @@
 			@include mq(medium) {
 				display: block;
 				background-color: var(--clr-background-secondary);
+				overflow-y: hidden;
 			}
 		}
 	}

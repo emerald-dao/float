@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import FloatCard from './_components/FloatCard.svelte';
+	import FloatCard from './_components/FloatCard/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
 	import { onDestroy, setContext } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
