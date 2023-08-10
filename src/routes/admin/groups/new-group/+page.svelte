@@ -1,9 +1,11 @@
 <script>
 	import { user } from '$stores/flow/FlowStore';
 	import { Button } from '@emerald-dao/component-library';
+	import { enhance } from '$app/forms';
 </script>
 
-<form method="POST" class="column-6">
+<form method="POST" class="column-6" use:enhance>
+	<h4>Create new group</h4>
 	<div class="column-4">
 		<label>
 			Group name
@@ -11,7 +13,7 @@
 		</label>
 		<label>
 			Description
-			<input name="description" type="text" />
+			<textarea name="description" />
 		</label>
 		<input name="user_address" type="hidden" value={$user.addr} />
 	</div>
@@ -19,7 +21,11 @@
 </form>
 
 <style lang="scss">
+	h4 {
+		font-size: var(--font-size-4);
+	}
+
 	form {
-		padding: var(--space-12) var(--space-18);
+		padding: var(--space-10) var(--space-12);
 	}
 </style>

@@ -1,7 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { getContext } from 'svelte';
-	import type { Group } from '../_types/group.interface';
 	import { getSpecificFLOATs } from '$flow/actions';
 	import { supabase } from '$lib/supabase/supabaseClient';
 	import FloatCard from '../../my-collection/_components/FloatCard/FloatCard.svelte';
@@ -9,10 +7,12 @@
 	import Icon from '@iconify/svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
+	import { enhance } from '$app/forms';
+	import LoadingCards from '$lib/components/atoms/LoadingCards.svelte';
 
-	const groups: Group[] = getContext('groups');
+	export let data;
 
-	$: currentGroup = groups.find((g) => g.id === Number($page.params.groupId));
+	$: currentGroup = data.groups.find((g) => g.id === Number($page.params.groupId));
 
 	let paginationMax: number;
 	let paginationMin: number;
@@ -44,7 +44,9 @@
 		</div>
 		{#await fetchGroupFloatsIds($page.params.groupId) then floatIds}
 			{#await getSpecificFLOATs(userAddress, floatIds)}
-				getting floats..
+				<div class="loading-cards-wrapper">
+					<LoadingCards numberOfCards={7} />
+				</div>
 			{:then floats}
 				<div class="column-4 content-wrapper">
 					<ItemsListWrapper
@@ -56,7 +58,7 @@
 								{#if i < paginationMax && i >= paginationMin}
 									<div class="row-3 align-center">
 										<FloatCard {float} />
-										<form method="POST" action="?/deleteFloatFromGroup">
+										<form method="POST" action="?/deleteFloatFromGroup" use:enhance>
 											<input type="hidden" name="groupId" value={$page.params.groupId} />
 											<input type="hidden" name="floatId" value={float.id} />
 											<button>
@@ -70,6 +72,12 @@
 					</ItemsListWrapper>
 				</div>
 				<div class="bottom-wrapper">
+					<div class="delete-group-wrapper">
+						<form method="POST" action="?/deleteGroup" use:enhance>
+							<input type="hidden" name="groupId" value={$page.params.groupId} />
+							<button class="row-1 align-center"><Icon icon="tabler:trash" />Delete group</button>
+						</form>
+					</div>
 					<Pagination
 						itemsPerPage={6}
 						totalItems={floats.length}
@@ -81,8 +89,6 @@
 				</div>
 			{/await}
 		{/await}
-	{:else}
-		Group not found
 	{/if}
 </div>
 
@@ -103,10 +109,14 @@
 			}
 		}
 
+		.loading-cards-wrapper,
+		.content-wrapper {
+			padding: var(--space-6) var(--space-10);
+			height: 100%;
+		}
+
 		.content-wrapper {
 			overflow-y: hidden;
-			height: 100%;
-			padding: var(--space-6) var(--space-10);
 
 			.floats-wrapper {
 				overflow-y: auto;
@@ -129,6 +139,16 @@
 			border-top: 1px solid var(--clr-border-primary);
 			gap: var(--space-8);
 			justify-content: space-between;
+
+			.delete-group-wrapper {
+				button {
+					color: var(--clr-alert-main);
+					font-size: var(--font-size-1);
+					background-color: transparent;
+					border: none;
+					cursor: pointer;
+				}
+			}
 		}
 	}
 </style>

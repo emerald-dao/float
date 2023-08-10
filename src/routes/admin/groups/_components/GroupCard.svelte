@@ -33,6 +33,7 @@
 
 		h4 {
 			font-size: var(--font-size-3);
+			margin-bottom: var(--space-1);
 		}
 	}
 </style>

@@ -119,10 +119,7 @@ export const getSpecificFLOATs = async (userAddress: string, ids: string[]) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getSpecificFLOATsScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address),
-				arg(ids, t.Array(t.UInt64))
-			]
+			args: (arg, t) => [arg(userAddress, t.Address), arg(ids, t.Array(t.UInt64))]
 		});
 	} catch (e) {
 		console.log('Error in getSpecificFLOATs', e);

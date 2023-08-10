@@ -1,16 +1,17 @@
 import { PRIVATE_SUPABASE_SERVICE_ROLE } from '$env/static/private';
 import { PUBLIC_SUPABASE_API_URL } from '$env/static/public';
 import { createClient } from '@supabase/supabase-js';
+import { redirect } from '@sveltejs/kit';
 
 const supabase = createClient(PUBLIC_SUPABASE_API_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
 export const actions = {
 	default: async ({ request }) => {
-		const data = await request.formData();
+		const formData = await request.formData();
 
-		const groupName = data.get('name') as string;
-		const groupDescription = data.get('description') as string | undefined;
-		const userAddress = data.get('user_address') as string;
+		const groupName = formData.get('name') as string;
+		const groupDescription = formData.get('description') as string | undefined;
+		const userAddress = formData.get('user_address') as string;
 
 		const { data: user } = await supabase.from('users').select('id').eq('address', userAddress);
 
@@ -18,9 +19,10 @@ export const actions = {
 			await supabase.from('users').insert({ address: userAddress });
 		}
 
-		const { error } = await supabase
+		const { data, error } = await supabase
 			.from('groups')
-			.insert({ name: groupName, description: groupDescription, user_address: userAddress });
+			.insert({ name: groupName, description: groupDescription, user_address: userAddress })
+			.select();
 
 		if (error) {
 			return {
@@ -29,6 +31,8 @@ export const actions = {
 					error
 				}
 			};
+		} else {
+			throw redirect(302, `/admin/groups/${data[0].id}`);
 		}
 	}
 };

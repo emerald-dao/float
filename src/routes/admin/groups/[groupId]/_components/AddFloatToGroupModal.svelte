@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { enhance } from '$app/forms';
 	import { getFLOATs } from '$flow/actions';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
@@ -34,14 +35,13 @@
 		}
 	};
 
+	const handleAddFloats = () => {
+		getModal(id).close();
+		selectedFloatsIds = [];
+	};
+
 	const handleOpenModal = () => {
 		getModal(id).open();
-
-		setTimeout(() => {
-			const input = document.getElementById('transaction-id') as HTMLInputElement;
-
-			input.focus();
-		}, 100);
 	};
 
 	$: searchEvent = floats.map((example) => ({
@@ -95,16 +95,24 @@
 				bind:paginationMin
 			/>
 		</div>
-		<form method="POST" action="?/addFloatsToGroup" class="column-4 column-space-between align-end">
+		<form
+			method="POST"
+			action="?/addFloatsToGroup"
+			class="column-4 column-space-between align-end"
+			use:enhance
+		>
 			<div class="column-3 float-cards-wrapper">
 				{#if selectedFloatsIds.length > 0}
 					{#each selectedFloatsIds as floatId}
-						<SelectedFloatCard
-							float={floats.find((float) => float.id === floatId)}
-							on:delete={() => {
-								selectedFloatsIds = selectedFloatsIds.filter((id) => id !== floatId);
-							}}
-						/>
+						{@const float = floats.find((float) => float.id === floatId)}
+						{#if float !== undefined}
+							<SelectedFloatCard
+								{float}
+								on:delete={() => {
+									selectedFloatsIds = selectedFloatsIds.filter((id) => id !== floatId);
+								}}
+							/>
+						{/if}
 					{/each}
 				{:else}
 					<div class="empty-state">
@@ -114,8 +122,10 @@
 			</div>
 			<input type="hidden" name="groupId" value={groupId} />
 			<input type="hidden" name="floatIds" value={selectedFloatsIds.join(',')} />
-			<Button size="small" state={selectedFloatsIds.length === 0 ? 'disabled' : 'active'}
-				><Icon icon="tabler:plus" />Add to Group</Button
+			<Button
+				size="small"
+				state={selectedFloatsIds.length === 0 ? 'disabled' : 'active'}
+				on:click={() => handleAddFloats()}><Icon icon="tabler:plus" />Add to Group</Button
 			>
 		</form>
 	</div>

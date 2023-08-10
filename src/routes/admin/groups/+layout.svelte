@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, setContext } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import GroupCard from './_components/GroupCard.svelte';
 	import { Button } from '@emerald-dao/component-library';
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
 
 	export let data;
-
-	setContext('groups', data.groups);
 
 	let paginationMax: number;
 	let paginationMin: number;
@@ -30,7 +28,7 @@
 
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
 	<div class="left-wrapper">
-		<div>
+		<div class="content-wrapper">
 			<div class="top-wrapper">
 				<div class="title-wrapper">
 					<h5>My Groups</h5>
@@ -38,17 +36,22 @@
 				</div>
 				<input type="text" placeholder="Search group name or id" bind:value={$searchStore.search} />
 			</div>
-			<ItemsListWrapper numberOfItems={$searchStore.filtered.length}>
-				<div class="bottom-wrapper">
-					{#each $searchStore.filtered as group, i}
-						{#if i < paginationMax && i >= paginationMin}
-							<GroupCard group={group.group} />
-						{/if}
-					{/each}
-				</div>
-			</ItemsListWrapper>
+			<div class="bottom-wrapper">
+				<ItemsListWrapper
+					numberOfItems={$searchStore.filtered.length}
+					noItemsMessage="You don't have any group yet"
+				>
+					<div class="groups-wrapper">
+						{#each $searchStore.filtered as group, i}
+							{#if i < paginationMax && i >= paginationMin}
+								<GroupCard group={group.group} />
+							{/if}
+						{/each}
+					</div>
+				</ItemsListWrapper>
+			</div>
 		</div>
-		<div class="pagination-wrapper row-space-between row-7">
+		<div class="pagination-wrapper row-space-between row-6">
 			<Pagination
 				itemsPerPage={10}
 				totalItems={$searchStore.filtered.length}
@@ -56,7 +59,9 @@
 				bind:paginationMax
 				bind:paginationMin
 			/>
-			<Button href="/admin/groups/new-group">Create new group</Button>
+			<Button href="/admin/groups/new-group" type="ghost" color="neutral" size="x-small">
+				Add new group
+			</Button>
 		</div>
 	</div>
 	<div class="right-wrapper">
@@ -81,55 +86,64 @@
 		.left-wrapper {
 			display: flex;
 			flex-direction: column;
-			justify-content: space-between;
+			border-right: 0.5px solid var(--clr-border-primary);
+			box-shadow: 20px 0px 15px -22px var(--clr-shadow-primary);
+			z-index: 1;
+			overflow-y: hidden;
 
-			@include mq(medium) {
-				flex: 1;
-				min-height: 100%;
-				max-height: 100%;
-				border-right: 0.5px solid var(--clr-border-primary);
-				box-shadow: 20px 0px 15px -22px var(--clr-shadow-primary);
-				z-index: 1;
-			}
-
-			.top-wrapper {
+			.content-wrapper {
+				overflow-y: hidden;
 				display: flex;
 				flex-direction: column;
-				gap: var(--space-4);
-				justify-content: center;
-				padding-bottom: var(--space-5);
-				border-bottom: 0.5px solid var(--clr-border-primary);
-				background-color: var(--clr-background-primary);
-				box-shadow: 0px 0px 10px 0px var(--clr-shadow-primary);
+				height: 100%;
 
-				.title-wrapper {
+				.top-wrapper {
 					display: flex;
-					justify-content: space-between;
-					align-items: flex-end;
+					flex-direction: column;
+					gap: var(--space-4);
+					justify-content: center;
+					padding-bottom: var(--space-5);
+					border-bottom: 0.5px solid var(--clr-border-primary);
+					background-color: var(--clr-background-primary);
+					box-shadow: 0px 0px 10px 0px var(--clr-shadow-primary);
 
-					h5 {
-						margin: 0;
-						font-size: var(--font-size-4);
+					.title-wrapper {
+						display: flex;
+						justify-content: space-between;
+						align-items: flex-end;
+
+						h5 {
+							margin: 0;
+							font-size: var(--font-size-4);
+						}
+
+						.off {
+							color: var(--clr-text-off);
+						}
 					}
+				}
 
-					.off {
-						color: var(--clr-text-off);
+				.bottom-wrapper {
+					height: 100%;
+					overflow-y: hidden;
+
+					.groups-wrapper {
+						overflow-y: auto;
+						display: flex;
+						flex-direction: column;
+						gap: var(--space-5);
+						height: 100%;
 					}
 				}
 			}
 
-			.bottom-wrapper {
-				display: flex;
-				flex-direction: column;
-				gap: var(--space-5);
-
-				@include mq(small) {
-					overflow-y: auto;
-				}
+			.pagination-wrapper {
+				border-top: 0.5px solid var(--clr-border-primary);
+				height: fit-content;
 			}
 
 			.top-wrapper,
-			.bottom-wrapper,
+			.groups-wrapper,
 			.pagination-wrapper {
 				padding: var(--space-6) var(--space-6);
 
