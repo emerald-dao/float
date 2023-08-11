@@ -11,8 +11,34 @@
 	import { filterContent } from '../../_functions/filterContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import IntersectionObserver from 'svelte-intersection-observer';
+	import type { GroupWithFloatsIds } from '../../../../lib/features/groups/types/group.interface';
+	import GroupsToggles from '../atoms/GroupsToggles.svelte';
 
 	export let floats: FLOAT[];
+	export let groups: GroupWithFloatsIds[];
+
+	let selectedGroupsIds: number[] = [];
+	let activeGroupsFloats: FLOAT[] = [];
+
+	// Filter floats if selectedGroupsIds is not null
+	$: if (selectedGroupsIds.length > 0) {
+		const allActiveFloatsIds = selectedGroupsIds.map((id) => {
+			const group = groups.find((group) => group.id === id);
+
+			if (group) {
+				return group.floatsIds;
+			} else {
+				return [];
+			}
+		});
+
+		activeGroupsFloats = floats.filter((float) => {
+			const floatId = float.id;
+			return allActiveFloatsIds.some((ids) => ids.includes(floatId));
+		});
+	} else {
+		activeGroupsFloats = floats;
+	}
 
 	let filters: Filter[] = [];
 
@@ -43,11 +69,11 @@
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
 		filteredContent = filterContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterContent(filters, floats, activeFilters);
+		filteredContent = filterContent(filters, activeGroupsFloats, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
-		filteredContent = floats;
+		filteredContent = activeGroupsFloats;
 	}
 
 	let badges: BadgesInterface[] = [];
@@ -86,13 +112,13 @@
 
 	let elementsPerPage = 10;
 
-	$: if (intersecting && elementsPerPage < floats.length) elementsPerPage += 10;
+	$: if (intersecting && elementsPerPage < activeGroupsFloats.length) elementsPerPage += 10;
 </script>
 
 <div class="content-wrapper">
 	<div class="leftside">
-		<h5>Search</h5>
-		<div class="input-wrapper">
+		<div class="search-wrapper">
+			<h5>Search</h5>
 			<InputWrapper name="search" errors={[]} isValid={false}>
 				<input type="text" placeholder="Search by title..." bind:value={$searchStore.search} />
 			</InputWrapper>
@@ -100,6 +126,10 @@
 		<div class="filters-wrapper">
 			<h5>Filters</h5>
 			<Filters bind:filters />
+		</div>
+		<div class="groups-wrapper">
+			<h5>Groups</h5>
+			<GroupsToggles {groups} bind:selectedGroupsIds />
 		</div>
 		<div class="badges-wrapper">
 			<h5>Badges</h5>
@@ -151,10 +181,7 @@
 
 		h5 {
 			margin: 0;
-		}
-
-		.input-wrapper {
-			border-bottom: 1px dashed var(--clr-border-primary);
+			font-size: var(--font-size-4);
 		}
 
 		@include mq(medium) {
@@ -172,14 +199,16 @@
 			padding-bottom: var(--space-4);
 
 			@include mq(medium) {
-				gap: var(--space-8);
+				gap: var(--space-7);
 				border-bottom: none;
 				position: sticky;
 				top: 90px;
 			}
 
 			.filters-wrapper,
-			.badges-wrapper {
+			.badges-wrapper,
+			.groups-wrapper,
+			.search-wrapper {
 				display: none;
 				padding-bottom: 2rem;
 				border-bottom: 1px dashed var(--clr-border-primary);
@@ -187,11 +216,11 @@
 				@include mq(small) {
 					display: flex;
 					flex-direction: column;
-					gap: var(--space-4);
+					gap: var(--space-3);
 				}
 
 				@include mq(medium) {
-					gap: var(--space-6);
+					gap: var(--space-4);
 				}
 			}
 		}

@@ -1,10 +1,12 @@
 <script lang="ts">
+	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { Profile } from '$lib/types/user/profile.interface';
 	import UserCollection from './sections/UserCollection.svelte';
 
 	export let floats: FLOAT[];
 	export let userProfile: Profile;
+	export let groups: GroupWithFloatsIds[];
 </script>
 
 <section>
@@ -23,7 +25,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<UserCollection {floats} />
+		<UserCollection {floats} {groups} />
 	</div>
 </section>
 

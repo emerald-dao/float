@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { Group } from '../_types/group.interface';
+	import type { Group } from '../../../../lib/features/groups/types/group.interface';
 
 	export let group: Group;
 
