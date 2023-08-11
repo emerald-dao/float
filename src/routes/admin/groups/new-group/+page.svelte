@@ -9,11 +9,11 @@
 	<div class="column-4">
 		<label>
 			Group name
-			<input name="name" type="text" />
+			<input name="name" type="text" maxlength="40" />
 		</label>
 		<label>
 			Description
-			<textarea name="description" />
+			<textarea name="description" maxlength="100" />
 		</label>
 		<input name="user_address" type="hidden" value={$user.addr} />
 	</div>
