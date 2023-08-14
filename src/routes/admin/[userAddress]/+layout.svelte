@@ -6,11 +6,13 @@
 	import '@emerald-dao/component-library/styles/app.scss';
 	import AdminNavMobile from './_components/navigation/AdminNavMobile.svelte';
 	import AdminNavDesktop from './_components/navigation/AdminNavDesktop.svelte';
-	import { ConnectWalletPage, Header } from '@emerald-dao/component-library';
+	import { ConnectWalletPage } from '@emerald-dao/component-library';
 
 	export let data;
 
 	let route: string | null;
+
+	console.log($page);
 
 	function extractSecondPart(route: string): string | null {
 		const regex = /^\/\w+\/([^\/]+)(?:\/|$)/;

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { user } from '$lib/stores/flow/FlowStore';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { page } from '$app/stores';
 	import FloatCardContent from './FloatCardContent.svelte';
@@ -20,7 +21,7 @@
 	<a
 		class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}"
 		class:selected={float.eventId === $page.params.id}
-		href={`/admin/my-collection/${float.eventId}`}
+		href={`/admin/${$user.addr}/my-collection/${float.eventId}`}
 	>
 		<FloatCardContent {float} {selected} clickable={true} />
 	</a>

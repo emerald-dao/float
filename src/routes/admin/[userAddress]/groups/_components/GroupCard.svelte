@@ -1,13 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import type { Group } from '../../../../lib/features/groups/types/group.interface';
+	import type { Group } from '$lib/features/groups/types/group.interface';
 
 	export let group: Group;
 
 	$: selected = $page.params.groupId === group.id.toString();
 </script>
 
-<a class="card" href={`/admin/groups/${group.id}`} class:selected>
+<a class="card" href={`/admin/${$page.params.userAddress}/groups/${group.id}`} class:selected>
 	<h4 class="w-medium">{group.name}</h4>
 	<p class="small">{group.description}</p>
 </a>

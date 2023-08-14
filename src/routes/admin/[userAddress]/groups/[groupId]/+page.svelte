@@ -2,7 +2,6 @@
 	import { user } from '$stores/flow/FlowStore';
 	import { page } from '$app/stores';
 	import { getSpecificFLOATs } from '$flow/actions';
-	import { supabase } from '$lib/supabase/supabaseClient';
 	import FloatCard from '../../my-collection/_components/FloatCard/FloatCard.svelte';
 	import AddFloatToGroupModal from './_components/AddFloatToGroupModal.svelte';
 	import Icon from '@iconify/svelte';
@@ -10,32 +9,24 @@
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
 	import { enhance } from '$app/forms';
 	import LoadingCards from '$lib/components/atoms/LoadingCards.svelte';
-	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
-	import { onMount } from 'svelte';
 
-	let group: GroupWithFloatsIds;
+	export let data;
 
 	const userAddress = '0x99bd48c8036e2876';
-
-	onMount(async () => {
-		group = await fetch(
-			`/api/groups/${$user.addr}/${$page.params.groupId}?withFloatsIds=true`
-		).then((res) => res.json());
-	});
 
 	let paginationMax: number;
 	let paginationMin: number;
 </script>
 
 <div class="main-wrapper">
-	{#if group}
+	{#if data.group}
 		<div class="title-wrapper">
-			<h4>{group.name}</h4>
-			{#if group.description}
-				<p class="small">{group.description}</p>
+			<h4>{data.group.name}</h4>
+			{#if data.group.description}
+				<p class="small">{data.group.description}</p>
 			{/if}
 		</div>
-		{#await getSpecificFLOATs(userAddress, group.floatsIds)}
+		{#await getSpecificFLOATs(userAddress, data.group.floatsIds)}
 			<div class="loading-cards-wrapper">
 				<LoadingCards numberOfCards={7} />
 			</div>

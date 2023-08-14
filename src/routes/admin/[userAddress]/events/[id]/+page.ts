@@ -1,4 +1,3 @@
-import claims from '../../_mock-data/floatClaimsMock';
 import { getEvent, getEventClaims } from '$flow/actions';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';

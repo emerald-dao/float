@@ -1,9 +1,11 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import { fly } from 'svelte/transition';
 	import FloatCard from './_components/FloatCard/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, setContext } from 'svelte';
+	import { onDestroy, onMount, setContext } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
 
@@ -11,6 +13,12 @@
 	let paginationMin: number;
 
 	setContext('floats', data.floats);
+
+	onMount(() => {
+		if (data.floats[0].eventId) {
+			goto(`/admin/${$page.params.userAddress}/my-collection/${data.floats[0].eventId}`);
+		}
+	});
 
 	$: searchEvent = data.floats.map((example) => ({
 		...example,

@@ -6,7 +6,7 @@ import { redirect } from '@sveltejs/kit';
 const supabase = createClient(PUBLIC_SUPABASE_API_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
 export const actions = {
-	default: async ({ request }) => {
+	default: async ({ request, params }) => {
 		const formData = await request.formData();
 
 		const groupName = formData.get('name') as string;
@@ -32,7 +32,7 @@ export const actions = {
 				}
 			};
 		} else {
-			throw redirect(302, `/admin/groups/${data[0].id}`);
+			throw redirect(302, `/admin/${params.userAddress}/groups/${data[0].id}`);
 		}
 	}
 };

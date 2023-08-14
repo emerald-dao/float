@@ -1,24 +1,19 @@
 <script lang="ts">
-	import { user } from '$stores/flow/FlowStore';
+	import { page } from '$app/stores';
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import GroupCard from './_components/GroupCard.svelte';
 	import { Button } from '@emerald-dao/component-library';
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
-	import type { Group } from '$lib/features/groups/types/group.interface';
 
-	let groups: Group[] = [];
-
-	onMount(async () => {
-		groups = await fetch(`/api/groups/${$user.addr}`).then((res) => res.json());
-	});
+	export let data;
 
 	let paginationMax: number;
 	let paginationMin: number;
 
-	$: searchEvent = groups.map((example) => ({
+	$: searchEvent = data.groups.map((example) => ({
 		group: example,
 		searchTerms: `${example.name} ${example.id}`
 	}));
@@ -65,7 +60,12 @@
 				bind:paginationMax
 				bind:paginationMin
 			/>
-			<Button href="/admin/groups/new-group" type="ghost" color="neutral" size="x-small">
+			<Button
+				href={`/admin/${$page.params.userAddress}/groups/new-group`}
+				type="ghost"
+				color="neutral"
+				size="x-small"
+			>
 				Add new group
 			</Button>
 		</div>

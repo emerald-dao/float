@@ -1,26 +1,30 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
-
-	let activePage = '';
-
-	$: if ($page.route.id) {
-		const pathRegex = /^\/admin\/(events|my-collection|groups)(\/.*)?$/;
-		const match = $page.route.id.match(pathRegex);
-		activePage = match ? match[1] : '';
-	}
 </script>
 
 <div class="container-large">
-	<a href="/admin/events" class="sidebar-link" class:active={activePage === 'events'}>
+	<a
+		href={`/admin/${$page.params.userAddress}/events`}
+		class="sidebar-link"
+		class:active={$page.url.pathname.includes('/events')}
+	>
 		<Icon icon="tabler:calendar-event" />
 		Events
 	</a>
-	<a href="/admin/my-collection" class="sidebar-link" class:active={activePage === 'my-collection'}>
+	<a
+		href={`/admin/${$page.params.userAddress}/my-collection`}
+		class="sidebar-link"
+		class:active={$page.url.pathname.includes('/my-collection')}
+	>
 		<Icon icon="tabler:ticket" />
 		My collection
 	</a>
-	<a href="/admin/groups" class="sidebar-link" class:active={activePage === 'groups'}>
+	<a
+		href={`/admin/${$page.params.userAddress}/groups`}
+		class="sidebar-link"
+		class:active={$page.url.pathname.includes('/groups')}
+	>
 		<Icon icon="tabler:packages" />
 		Groups
 	</a>

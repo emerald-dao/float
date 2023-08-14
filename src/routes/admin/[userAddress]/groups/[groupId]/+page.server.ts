@@ -32,7 +32,7 @@ export const actions = {
 		}
 	},
 
-	deleteGroup: async ({ request }) => {
+	deleteGroup: async ({ request, params }) => {
 		const data = await request.formData();
 
 		const groupId = data.get('groupId') as string;
@@ -43,7 +43,7 @@ export const actions = {
 			console.log(error);
 		}
 
-		throw redirect(302, '/admin/groups');
+		throw redirect(302, `/admin/${params.userAddress}/groups`);
 	},
 
 	deleteFloatFromGroup: async ({ request }) => {
