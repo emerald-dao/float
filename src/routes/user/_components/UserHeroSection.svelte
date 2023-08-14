@@ -1,14 +1,52 @@
 <script lang="ts">
 	import type { User } from '$lib/types/user/user.interface';
 	import Icon from '@iconify/svelte';
+	import { getUserOverallLevel } from '../_features/badges/functions/getUserBadges';
+	import UserBadge from '../_features/badges/components/atoms/UserBadge.svelte';
+	import { USER_OVERALL_BADGE } from '../_features/badges/userBadges';
 
 	export let userData: User;
 	export let floatsClaimed: number;
 	export let eventsCreated: number;
+
+	let flip: boolean = false;
+
+	const userOverallLevel = getUserOverallLevel(floatsClaimed, eventsCreated);
 </script>
 
 <section class="container-small">
-	<img src={userData.image} alt="float" />
+	<div
+		class="secondary-wrapper"
+		role="button"
+		tabindex="0"
+		on:click={() => (flip = !flip)}
+		on:keydown
+		class:flip
+		class:inverse-flip={flip}
+	>
+		<div class="image-front">
+			<img src={userData.image} alt="float" />
+		</div>
+		<div class="image-back">
+			{#if userOverallLevel === 0}
+				<UserBadge
+					badgeLevel={USER_OVERALL_BADGE[0].levels[0]}
+					noLevel={true}
+					levelNumber={userOverallLevel}
+					userOverallBadge={true}
+				/>
+			{:else}
+				<UserBadge
+					badgeLevel={USER_OVERALL_BADGE[0].levels[userOverallLevel - 1]}
+					levelNumber={userOverallLevel}
+					nextLevelGoal={USER_OVERALL_BADGE[0].levels[userOverallLevel]
+						? USER_OVERALL_BADGE[0].levels[userOverallLevel].goal
+						: undefined}
+					userOverallBadge={true}
+				/>
+			{/if}
+		</div>
+	</div>
 	<h1 class="medium">{userData.name}</h1>
 	<div class="social-media">
 		{#if userData.socialMedia}
@@ -46,6 +84,26 @@
 			padding-block: 4rem;
 		}
 
+		.secondary-wrapper {
+			position: relative;
+			width: 260px;
+			height: 260px;
+			perspective: 1000px;
+			cursor: pointer;
+
+			.image-front,
+			.image-back {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				-webkit-backface-visibility: hidden; /* Safari */
+				backface-visibility: hidden;
+				transition: transform 0.5s ease;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+		}
 		img {
 			width: 260px;
 			height: 260px;
@@ -80,6 +138,22 @@
 			grid-template-columns: repeat(2, 1fr);
 			text-align: center;
 			padding: var(--space-5) 0 0 0;
+		}
+
+		.image-front {
+			transform: rotateY(0deg);
+		}
+
+		.image-back {
+			transform: rotateY(180deg);
+		}
+
+		.inverse-flip .image-front {
+			transform: rotateY(180deg);
+		}
+
+		.inverse-flip .image-back {
+			transform: rotateY(0deg);
 		}
 	}
 </style>

@@ -3,16 +3,17 @@
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import type { ProgressStates } from '@emerald-dao/component-library/components/ProgressStep/progress-states.type';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import Badges from '../atoms/Badges.svelte';
+	import UserBadges from '../../_features/badges/components/UserBadges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
 	import { filterContent } from '../../_functions/filterContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
+	export let events: Event[];
 
 	let filters: Filter[] = [];
 
@@ -49,41 +50,6 @@
 	} else {
 		filteredContent = floats;
 	}
-
-	let badges: BadgesInterface[] = [];
-
-	interface Step {
-		name: string;
-		state: ProgressStates;
-	}
-
-	interface BadgesInterface {
-		icon: string;
-		name: string;
-	}
-
-	badges = [
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		},
-		{
-			icon: 'tabler:brand-twitter',
-			name: 'Twitter Worm'
-		},
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		},
-		{
-			icon: 'tabler:brand-twitter',
-			name: 'Twitter Worm'
-		},
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		}
-	];
 </script>
 
 <div class="content-wrapper">
@@ -98,10 +64,7 @@
 			<h5>Filters</h5>
 			<Filters bind:filters />
 		</div>
-		<div class="badges-wrapper">
-			<h5>Badges</h5>
-			<Badges {badges} />
-		</div>
+		<UserBadges userFloats={floats} userEvents={events} />
 	</div>
 	<div class="rightside">
 		{#await filteredContent then contents}
@@ -167,9 +130,7 @@
 				position: sticky;
 				top: 90px;
 			}
-
-			.filters-wrapper,
-			.badges-wrapper {
+			.filters-wrapper {
 				display: none;
 				padding-bottom: 2rem;
 				border-bottom: 1px dashed var(--clr-border-primary);
