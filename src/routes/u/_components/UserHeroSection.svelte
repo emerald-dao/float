@@ -3,16 +3,54 @@
 	import type { Profile } from '$lib/types/user/profile.interface';
 	import { Label } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
+	import { getUserOverallLevel } from '../_features/badges/functions/getUserBadges';
+	import UserBadge from '../_features/badges/components/atoms/UserBadge.svelte';
+	import { USER_OVERALL_BADGE } from '../_features/badges/userBadges';
 
 	export let userProfile: Profile;
 	export let floatsClaimed: number;
 	export let eventsCreated: number;
+
+	let flip: boolean = false;
+
+	const userOverallLevel = getUserOverallLevel(floatsClaimed, eventsCreated);
 </script>
 
 <section class="container">
 	<Blur color="tertiary" right="22%" top="10%" />
 	<Blur left="22%" top="30%" />
-	<img src={userProfile.avatar} alt="float" />
+	<div
+		class="secondary-wrapper"
+		role="button"
+		tabindex="0"
+		on:click={() => (flip = !flip)}
+		on:keydown
+		class:flip
+		class:inverse-flip={flip}
+	>
+		<div class="image-front">
+			<img src={userProfile.avatar} alt="float" />
+		</div>
+		<div class="image-back">
+			{#if userOverallLevel === 0}
+				<UserBadge
+					badgeLevel={USER_OVERALL_BADGE[0].levels[0]}
+					noLevel={true}
+					levelNumber={userOverallLevel}
+					userOverallBadge={true}
+				/>
+			{:else}
+				<UserBadge
+					badgeLevel={USER_OVERALL_BADGE[0].levels[userOverallLevel - 1]}
+					levelNumber={userOverallLevel}
+					nextLevelGoal={USER_OVERALL_BADGE[0].levels[userOverallLevel]
+						? USER_OVERALL_BADGE[0].levels[userOverallLevel].goal
+						: undefined}
+					userOverallBadge={true}
+				/>
+			{/if}
+		</div>
+	</div>
 	<h1>{userProfile.name}</h1>
 	<Label color="transparent" size="small">
 		<Icon icon="tabler:wallet" />
@@ -52,6 +90,27 @@
 
 		@include mq(small) {
 			padding-block: 4rem;
+		}
+
+		.secondary-wrapper {
+			position: relative;
+			width: 260px;
+			height: 260px;
+			perspective: 1000px;
+			cursor: pointer;
+
+			.image-front,
+			.image-back {
+				position: absolute;
+				width: 100%;
+				height: 100%;
+				-webkit-backface-visibility: hidden; /* Safari */
+				backface-visibility: hidden;
+				transition: transform 0.5s ease;
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
 		}
 
 		h1 {
@@ -99,6 +158,22 @@
 			p {
 				color: var(--clr-text-main);
 			}
+		}
+
+		.image-front {
+			transform: rotateY(0deg);
+		}
+
+		.image-back {
+			transform: rotateY(180deg);
+		}
+
+		.inverse-flip .image-front {
+			transform: rotateY(180deg);
+		}
+
+		.inverse-flip .image-back {
+			transform: rotateY(0deg);
 		}
 	}
 </style>

@@ -31,7 +31,7 @@
 		<PinnedFloats pinnedFloats={data.pinnedFloats} floats={data.floats} />
 	</div>
 {/if}
-<UserActivity floats={data.floats} userProfile={data.userProfile} />
+<UserActivity floats={data.floats} userProfile={data.userProfile} events={data.events} />
 
 <style lang="scss">
 	div {

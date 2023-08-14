@@ -2,8 +2,10 @@
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { Profile } from '$lib/types/user/profile.interface';
 	import UserCollection from './sections/UserCollection.svelte';
+	import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
+	export let events: Event[];
 	export let userProfile: Profile;
 </script>
 
@@ -23,7 +25,7 @@
 		</div>
 	</div>
 	<div class="container">
-		<UserCollection {floats} />
+		<UserCollection {floats} {events} />
 	</div>
 </section>
 
