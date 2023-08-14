@@ -1,11 +1,13 @@
 <script lang="ts">
-	import type { User } from '$lib/types/user/user.interface';
+	import Blur from '$lib/components/Blur.svelte';
+	import type { Profile } from '$lib/types/user/profile.interface';
+	import { Label } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { getUserOverallLevel } from '../_features/badges/functions/getUserBadges';
 	import UserBadge from '../_features/badges/components/atoms/UserBadge.svelte';
 	import { USER_OVERALL_BADGE } from '../_features/badges/userBadges';
 
-	export let userData: User;
+	export let userProfile: Profile;
 	export let floatsClaimed: number;
 	export let eventsCreated: number;
 
@@ -14,7 +16,9 @@
 	const userOverallLevel = getUserOverallLevel(floatsClaimed, eventsCreated);
 </script>
 
-<section class="container-small">
+<section class="container">
+	<Blur color="tertiary" right="22%" top="10%" />
+	<Blur left="22%" top="30%" />
 	<div
 		class="secondary-wrapper"
 		role="button"
@@ -25,7 +29,7 @@
 		class:inverse-flip={flip}
 	>
 		<div class="image-front">
-			<img src={userData.image} alt="float" />
+			<img src={userProfile.avatar} alt="float" />
 		</div>
 		<div class="image-back">
 			{#if userOverallLevel === 0}
@@ -47,24 +51,28 @@
 			{/if}
 		</div>
 	</div>
-	<h1 class="medium">{userData.name}</h1>
-	<div class="social-media">
-		{#if userData.socialMedia}
-			{#each Object.entries(userData.socialMedia) as mediaUrl}
+	<h1>{userProfile.name}</h1>
+	<Label color="transparent" size="small">
+		<Icon icon="tabler:wallet" />
+		{userProfile.address}
+	</Label>
+	<!-- <div class="social-media">
+		{#if userProfile.socialMedia}
+			{#each Object.entries(userProfile.socialMedia) as mediaUrl}
 				<a class="row media-wrapper" href={mediaUrl[1]} target="_blank">
 					<Icon icon="tabler:brand-twitter" />
 					<p>{[mediaUrl[0]]}</p>
 				</a>
 			{/each}
 		{/if}
-	</div>
+	</div> -->
 	<div class="stats-wrapper">
 		<div>
-			<p class="large">{floatsClaimed}</p>
+			<p class="h5 w-medium">{floatsClaimed}</p>
 			<p class="small">Floats Claimed</p>
 		</div>
 		<div>
-			<p class="large">{eventsCreated}</p>
+			<p class="h5 w-medium">{eventsCreated}</p>
 			<p class="small">Events Created</p>
 		</div>
 	</div>
@@ -76,7 +84,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: center;
-		gap: var(--space-6);
+		gap: var(--space-4);
 		padding-block: 4rem 0;
 		border-bottom: 1px dashed var(--clr-border-primary);
 
@@ -104,40 +112,52 @@
 				align-items: center;
 			}
 		}
+
+		h1 {
+			margin-bottom: var(--space-2);
+		}
+
 		img {
-			width: 260px;
-			height: 260px;
+			width: 220px;
+			height: 220px;
 			border-radius: 50%;
+			box-shadow: 0px 6px 15px 10px var(--clr-shadow-primary);
 		}
 
-		.social-media {
-			display: flex;
-			flex-direction: column;
-			gap: var(--space-2);
+		// .social-media {
+		// 	display: flex;
+		// 	flex-direction: column;
+		// 	gap: var(--space-2);
 
-			@include mq(small) {
-				flex-direction: row;
-				gap: var(--space-7);
-			}
+		// 	@include mq(small) {
+		// 		flex-direction: row;
+		// 		margin-top: var(--space-4);
+		// 		gap: var(--space-6);
+		// 	}
 
-			.media-wrapper {
-				justify-content: center;
-				align-items: center;
-				gap: var(--space-1);
-				border: 1px solid var(--clr-border-primary);
-				padding: 6px 10px;
-				border-radius: var(--radius-3);
-				text-decoration: none;
-				color: var(--clr-text-main);
-			}
-		}
+		// 	.media-wrapper {
+		// 		justify-content: center;
+		// 		align-items: center;
+		// 		gap: var(--space-2);
+		// 		border: 1px solid var(--clr-border-primary);
+		// 		padding: var(--space-1) var(--space-4);
+		// 		border-radius: var(--radius-3);
+		// 		text-decoration: none;
+		// 		color: var(--clr-text-main);
+		// 	}
+		// }
 
 		.stats-wrapper {
 			width: 100%;
-			display: grid;
-			grid-template-columns: repeat(2, 1fr);
+			display: flex;
 			text-align: center;
-			padding: var(--space-5) 0 0 0;
+			justify-content: center;
+			gap: var(--space-12);
+			padding: var(--space-12) 0 0 0;
+
+			p {
+				color: var(--clr-text-main);
+			}
 		}
 
 		.image-front {

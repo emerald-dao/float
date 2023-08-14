@@ -7,9 +7,10 @@
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
+	import type { Claim } from '$lib/types/event/event-claim.interface';
 
 	export let event: EventWithStatus;
-	export let claims;
+	export let claims: Claim[] = [];
 </script>
 
 <div class="main-wrapper">
@@ -39,8 +40,8 @@
 			<p>LATEST CLAIMS</p>
 		</div>
 		<div class="claim-tickets">
-			{#each claims as claim, i}
-				<ClaimTicketCard {claim} {i} />
+			{#each claims as claim}
+				<ClaimTicketCard {claim} />
 			{/each}
 		</div>
 	</div>

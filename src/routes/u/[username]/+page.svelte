@@ -1,22 +1,37 @@
-<script>
+<script lang="ts">
+	import type { FLOAT } from '$lib/types/float/float.interface';
 	import PinnedFloats from '../_components/PinnedFloats.svelte';
 	import UserActivity from '../_components/UserActivity.svelte';
 	import UserHeroSection from '../_components/UserHeroSection.svelte';
 
 	export let data;
+
+	$: hasPinnedFloats = data.pinnedFloats.length > 0 && checkPinnedFloats();
+
+	const checkPinnedFloats = () => {
+		let pinnedFloatExists = false;
+
+		for (let i = 0; i < data.pinnedFloats.length; i++) {
+			if (data.floats.find((float: FLOAT) => float.id === data.pinnedFloats[i])) {
+				pinnedFloatExists = true;
+			}
+		}
+
+		return pinnedFloatExists;
+	};
 </script>
 
 <UserHeroSection
-	userData={data.user}
+	userProfile={data.userProfile}
 	floatsClaimed={data.floats.length}
 	eventsCreated={data.events.length}
 />
-{#if data.user.pinnedFloats.length > 0}
+{#if hasPinnedFloats}
 	<div>
-		<PinnedFloats pinnedFloats={data.user.pinnedFloats} floats={data.floats} />
+		<PinnedFloats pinnedFloats={data.pinnedFloats} floats={data.floats} />
 	</div>
 {/if}
-<UserActivity floats={data.floats} userData={data.user} events={data.events} />
+<UserActivity floats={data.floats} userProfile={data.userProfile} events={data.events} />
 
 <style lang="scss">
 	div {

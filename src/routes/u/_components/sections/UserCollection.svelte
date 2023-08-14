@@ -10,6 +10,7 @@
 	import { createFilters } from '../../_functions/filters';
 	import { filterContent } from '../../_functions/filterContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
@@ -50,6 +51,13 @@
 	} else {
 		filteredContent = floats;
 	}
+	// Infinite scroll feature
+	let intersectionObserverElement: HTMLDivElement;
+	let intersecting: boolean;
+
+	let elementsPerPage = 10;
+
+	$: if (intersecting && elementsPerPage < floats.length) elementsPerPage += 10;
 </script>
 
 <div class="content-wrapper">
@@ -69,27 +77,34 @@
 	<div class="rightside">
 		{#await filteredContent then contents}
 			{#if contents.length > 0}
-				{#each contents as float}
-					<div class="main-wrapper">
-						<div class="timeline">
-							<div class="line" />
-							<div class="date-wrapper">
-								<p class="small">
-									{unixTimestampToFormattedDate(float.dateReceived, 'month')}
-								</p>
-								<p class="large w-medium">
-									{unixTimestampToFormattedDate(float.dateReceived, 'year')}
-								</p>
+				{#each contents as float, i}
+					{#if i < elementsPerPage}
+						<div class="main-wrapper">
+							<div class="timeline">
+								<div class="line" />
+								<div class="date-wrapper">
+									<p class="small">
+										{unixTimestampToFormattedDate(float.dateReceived, 'month')}
+									</p>
+									<p class="large w-medium">
+										{unixTimestampToFormattedDate(float.dateReceived, 'year')}
+									</p>
+								</div>
+								<div class="line" />
 							</div>
-							<div class="line" />
+							<div class="tickets">
+								<FloatTicket {float} />
+							</div>
 						</div>
-						<div class="tickets">
-							<FloatTicket {float} />
-						</div>
-					</div>
+					{/if}
 				{/each}
+				{#if contents.length > elementsPerPage}
+					<IntersectionObserver element={intersectionObserverElement} bind:intersecting>
+						<div bind:this={intersectionObserverElement} class="intersection-element" />
+					</IntersectionObserver>
+				{/if}
 			{:else}
-				<span><em>No content found</em></span>
+				<span><em>No FLOATs found</em></span>
 			{/if}
 		{/await}
 	</div>
@@ -157,6 +172,7 @@
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
+				width: 100%;
 
 				@include mq(small) {
 					display: grid;
@@ -181,6 +197,7 @@
 						border-radius: var(--radius-2);
 						padding: var(--space-4);
 						text-align: center;
+						border: 1px solid var(--clr-primary-badge);
 
 						p {
 							color: var(--clr-primary-main);
@@ -189,13 +206,17 @@
 				}
 
 				.tickets {
-					padding: var(--space-6) var(--space-4);
-
-					@include mq(small) {
-						padding: var(--space-12) var(--space-9);
-					}
+					width: 100%;
+					display: flex;
+					flex-direction: column;
+					padding-block: var(--space-10);
 				}
 			}
 		}
+	}
+
+	.intersection-element {
+		height: 1px;
+		width: 1px;
 	}
 </style>

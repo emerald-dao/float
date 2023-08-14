@@ -34,7 +34,7 @@
 	});
 </script>
 
-{#if route !== 'admin'}
+{#if route !== 'admin' || !($user && $user.addr)}
 	<Header {logIn} {unauthenticate} {getFindProfile} user={$user} {navElements} />
 {:else}
 	<div />

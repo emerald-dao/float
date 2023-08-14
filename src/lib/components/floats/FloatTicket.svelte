@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
 	export let float: FLOAT;
@@ -14,35 +14,46 @@
 	// The reactive statement bellow, checks if the image is a File and then transforms it into a base 64 format.
 	// Then, it displays the image as a background in the floatBack div.
 	$: if (
-		typeof float.eventImage !== 'string' &&
-		float.eventImage?.type &&
-		float.eventImage?.type.startsWith('image/') &&
-		browser
+		(typeof float.eventImage === 'string' ||
+			(float.eventImage?.type && float.eventImage?.type.startsWith('image/'))) &&
+		floatBack
 	) {
-		displayImage(float.eventImage as File, floatBack);
+		displayImage(float.eventImage, floatBack);
 	}
 
 	$: if (
 		typeof float.eventLogo !== 'string' &&
 		float.eventLogo?.type &&
 		float.eventLogo?.type.startsWith('image/') &&
-		browser
+		floatLogo
 	) {
 		displayImage(float.eventLogo as File, floatLogo);
+	}
+
+	// Old FLOATs don't have an eventLogo property, they just have the eventImage property.
+	// In this cases, we are going to use the eventImage as the eventLogo.
+	$: if (typeof float.eventImage === 'string' && !float.eventLogo) {
+		float.eventLogo = float.eventImage;
 	}
 
 	let floatBack: HTMLDivElement;
 	let floatLogo: HTMLDivElement;
 
-	const displayImage = (file: File, element: HTMLDivElement) => {
-		const reader = new FileReader();
-		reader.readAsDataURL(file); // base 64 format
-
-		reader.onload = () => {
-			element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+	const displayImage = (file: File | string, element: HTMLDivElement) => {
+		if (typeof file === 'string') {
+			element.style.backgroundImage = `url('${file}')`;
 			element.style.backgroundSize = 'cover';
 			element.style.backgroundPosition = 'center';
-		};
+		} else {
+			const reader = new FileReader();
+			reader.readAsDataURL(file); // base 64 format
+
+			reader.onload = () => {
+				element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+				element.style.backgroundSize = 'cover';
+				element.style.backgroundPosition = 'center';
+			};
+		}
 	};
 </script>
 
@@ -83,7 +94,9 @@
 							{:else}
 								<h3 class="w-medium event-name-placeholder">Event Name</h3>
 							{/if}
-							<span class="label">{float.eventType.eventTypeName}</span>
+							{#if float.eventType}
+								<span class="label">{EVENT_TYPE_DETAILS[float.eventType].eventTypeName}</span>
+							{/if}
 						</div>
 					</div>
 					<span>Organized by <span class="w-medium">{float.eventHost}</span></span>
@@ -100,9 +113,7 @@
 			bind:this={floatBack}
 			id={isForScreenshot ? 'element-to-exclude' : ''}
 		>
-			{#if float.eventImage && typeof float.eventImage === 'string'}
-				<img src={float.eventImage} alt="float" />
-			{:else if float.eventImage === undefined}
+			{#if float.eventImage === undefined}
 				<div class="content">
 					<p>Insert an image</p>
 				</div>
@@ -181,6 +192,14 @@
 				padding: 5% 7%;
 				width: 100%;
 				height: 100%;
+
+				img {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					object-position: center;
+					border-radius: 1.3em;
+				}
 
 				.content {
 					border: 1px dashed var(--clr-border-primary);
