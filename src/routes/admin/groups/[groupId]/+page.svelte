@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { user } from '$stores/flow/FlowStore';
 	import { page } from '$app/stores';
 	import { getSpecificFLOATs } from '$flow/actions';
 	import { supabase } from '$lib/supabase/supabaseClient';
@@ -9,85 +10,75 @@
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
 	import { enhance } from '$app/forms';
 	import LoadingCards from '$lib/components/atoms/LoadingCards.svelte';
+	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
+	import { onMount } from 'svelte';
 
-	export let data;
+	let group: GroupWithFloatsIds;
 
-	$: currentGroup = data.groups.find((g) => g.id === Number($page.params.groupId));
+	const userAddress = '0x99bd48c8036e2876';
+
+	onMount(async () => {
+		group = await fetch(
+			`/api/groups/${$user.addr}/${$page.params.groupId}?withFloatsIds=true`
+		).then((res) => res.json());
+	});
 
 	let paginationMax: number;
 	let paginationMin: number;
-
-	const fetchGroupFloatsIds = async (groupId: string): Promise<string[]> => {
-		const { data, error } = await supabase
-			.from('floats_groups')
-			.select('float_id')
-			.eq('group_id', groupId);
-
-		if (error) {
-			console.error(error);
-			return [];
-		}
-
-		return data.map((float) => float.float_id);
-	};
-
-	const userAddress = '0x99bd48c8036e2876';
 </script>
 
 <div class="main-wrapper">
-	{#if currentGroup}
+	{#if group}
 		<div class="title-wrapper">
-			<h4>{currentGroup.name}</h4>
-			{#if currentGroup.description}
-				<p class="small">{currentGroup.description}</p>
+			<h4>{group.name}</h4>
+			{#if group.description}
+				<p class="small">{group.description}</p>
 			{/if}
 		</div>
-		{#await fetchGroupFloatsIds($page.params.groupId) then floatIds}
-			{#await getSpecificFLOATs(userAddress, floatIds)}
-				<div class="loading-cards-wrapper">
-					<LoadingCards numberOfCards={7} />
-				</div>
-			{:then floats}
-				<div class="column-4 content-wrapper">
-					<ItemsListWrapper
-						numberOfItems={floats.length}
-						noItemsMessage="This groups has no FLOATs yet"
-					>
-						<div class="floats-wrapper">
-							{#each floats as float, i}
-								{#if i < paginationMax && i >= paginationMin}
-									<div class="row-3 align-center">
-										<FloatCard {float} />
-										<form method="POST" action="?/deleteFloatFromGroup" use:enhance>
-											<input type="hidden" name="groupId" value={$page.params.groupId} />
-											<input type="hidden" name="floatId" value={float.id} />
-											<button>
-												<Icon icon="tabler:x" />
-											</button>
-										</form>
-									</div>
-								{/if}
-							{/each}
-						</div>
-					</ItemsListWrapper>
-				</div>
-				<div class="bottom-wrapper">
-					<div class="delete-group-wrapper">
-						<form method="POST" action="?/deleteGroup" use:enhance>
-							<input type="hidden" name="groupId" value={$page.params.groupId} />
-							<button class="row-1 align-center"><Icon icon="tabler:trash" />Delete group</button>
-						</form>
+		{#await getSpecificFLOATs(userAddress, group.floatsIds)}
+			<div class="loading-cards-wrapper">
+				<LoadingCards numberOfCards={7} />
+			</div>
+		{:then floats}
+			<div class="column-4 content-wrapper">
+				<ItemsListWrapper
+					numberOfItems={floats.length}
+					noItemsMessage="This groups has no FLOATs yet"
+				>
+					<div class="floats-wrapper">
+						{#each floats as float, i}
+							{#if i < paginationMax && i >= paginationMin}
+								<div class="row-3 align-center">
+									<FloatCard {float} />
+									<form method="POST" action="?/deleteFloatFromGroup" use:enhance>
+										<input type="hidden" name="groupId" value={$page.params.groupId} />
+										<input type="hidden" name="floatId" value={float.id} />
+										<button>
+											<Icon icon="tabler:x" />
+										</button>
+									</form>
+								</div>
+							{/if}
+						{/each}
 					</div>
-					<Pagination
-						itemsPerPage={6}
-						totalItems={floats.length}
-						noItemsMessage="No results found"
-						bind:paginationMax
-						bind:paginationMin
-					/>
-					<AddFloatToGroupModal groupId={$page.params.groupId} />
+				</ItemsListWrapper>
+			</div>
+			<div class="bottom-wrapper">
+				<div class="delete-group-wrapper">
+					<form method="POST" action="?/deleteGroup" use:enhance>
+						<input type="hidden" name="groupId" value={$page.params.groupId} />
+						<button class="row-1 align-center"><Icon icon="tabler:trash" />Delete group</button>
+					</form>
 				</div>
-			{/await}
+				<Pagination
+					itemsPerPage={6}
+					totalItems={floats.length}
+					noItemsMessage="No results found"
+					bind:paginationMax
+					bind:paginationMin
+				/>
+				<AddFloatToGroupModal groupId={$page.params.groupId} />
+			</div>
 		{/await}
 	{/if}
 </div>

@@ -1,18 +1,24 @@
 <script lang="ts">
+	import { user } from '$stores/flow/FlowStore';
 	import { fly } from 'svelte/transition';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
 	import GroupCard from './_components/GroupCard.svelte';
 	import { Button } from '@emerald-dao/component-library';
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
+	import type { Group } from '$lib/features/groups/types/group.interface';
 
-	export let data;
+	let groups: Group[] = [];
+
+	onMount(async () => {
+		groups = await fetch(`/api/groups/${$user.addr}`).then((res) => res.json());
+	});
 
 	let paginationMax: number;
 	let paginationMin: number;
 
-	$: searchEvent = data.groups.map((example) => ({
+	$: searchEvent = groups.map((example) => ({
 		group: example,
 		searchTerms: `${example.name} ${example.id}`
 	}));
