@@ -1,10 +1,9 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
-	import Link from './Link.svelte';
+	import DomainLink from './DomainLink.svelte';
 
 	export let event: Event;
-	export let user: {};
 </script>
 
 <div class="domains-wrapper">
@@ -12,8 +11,8 @@
 		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
 		<p>EVENT URLs</p>
 	</div>
-	<Link id={event.eventId} eventPage={true} {user} />
-	<Link id={event.eventId} qr={true} {user} />
+	<DomainLink id={event.eventId} linkType="eventPage" />
+	<DomainLink id={event.eventId} linkType="qr" />
 </div>
 
 <style lang="scss">

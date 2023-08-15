@@ -1,21 +1,21 @@
 <script lang="ts">
+	import { user } from '$lib/stores/flow/FlowStore';
 	import { page } from '$app/stores';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { writable } from 'svelte/store';
 
 	export let id: string;
-	export let qr: boolean = false;
-	export let eventPage: boolean = false;
-	export let user: {};
+	export let linkType: 'qr' | 'eventPage';
 
 	const tooltipText = writable('Copy to clipboard');
 
 	function copyToClipboard() {
 		// Determine which URL to copy based on the `{#if}` conditions
-		const urlToCopy = eventPage
-			? `${$page.url.origin}/event/${user.name}/${id}`
-			: `${$page.url.origin}/event/${user.name}/${id}/qr`;
+		const urlToCopy =
+			linkType === 'eventPage'
+				? `${$page.url.origin}/event/${$user.addr}/${id}`
+				: `${$page.url.origin}/event/${$user.addr}/${id}/qr`;
 
 		const tempInput = document.createElement('textarea');
 		tempInput.value = urlToCopy;
@@ -38,12 +38,12 @@
 
 <div class="main-wrapper">
 	<div class="row-1">
-		{#if eventPage}
+		{#if linkType === 'eventPage'}
 			<p class="small row-1 align-center">
 				<Icon icon="tabler:browser" />
 				Claiming page
 			</p>
-		{:else if qr}
+		{:else if linkType === 'qr'}
 			<p class="small row-1 align-center">
 				<Icon icon="tabler:qrcode" />
 				QR Code
@@ -51,10 +51,10 @@
 		{/if}
 	</div>
 	<div class="row-3 link-wrapper">
-		{#if eventPage}
-			<span class="link">{$page.url.origin}/event/{user.name}/{id}</span>
-		{:else if qr}
-			<span class="link">{$page.url.origin}/event/{user.name}/{id}/qr</span>
+		{#if linkType === 'eventPage'}
+			<span class="link">{$page.url.origin}/event/{$user.addr}/{id}</span>
+		{:else if linkType === 'qr'}
+			<span class="link">{$page.url.origin}/event/{$user.addr}/{id}/qr</span>
 		{/if}
 		<div class="row-3">
 			<div class="button-wrapper" data-tooltip={$tooltipText}>
@@ -66,9 +66,9 @@
 				<Button
 					type="transparent"
 					target="_blank"
-					href={eventPage
-						? `${$page.url.origin}/event/${user.name}/${id}`
-						: `${$page.url.origin}/event/${user.name}/${id}/qr`}
+					href={linkType === 'eventPage'
+						? `${$page.url.origin}/event/${$user.addr}/${id}`
+						: `${$page.url.origin}/event/${$user.addr}/${id}/qr`}
 				>
 					<Icon icon="tabler:external-link" color="var(--clr-text-main)" />
 				</Button>
