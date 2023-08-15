@@ -21,6 +21,8 @@ import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?r
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
+import type { EventType } from '$lib/types/event/even-type.type';
+import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -35,32 +37,46 @@ export const signUp = () => fcl.signUp();
 
 /****************************** SETTERS ******************************/
 
-const createEvent = async (floatObject) => {
+const createEvent = async (
+	name: string,
+	description: string,
+	url: string,
+	logo: string,
+	backImage: string,
+	transferrable: boolean,
+	claimable: boolean,
+	eventType: EventType,
+	timelock: Timelock | null,
+	secret: string | null,
+	limited: number | null,
+	payment: number | null,
+	minimumBalance: number | null
+) => {
+	const startDate = timelock != null ? Number(timelock.dateStart) : 0
+	const timePeriod = timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0
+
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
 		args: (arg, t) => [
-			arg(floatObject.claimable, t.Bool),
-			arg(floatObject.name, t.String),
-			arg(floatObject.description, t.String),
-			arg(floatObject.image, t.String),
-			arg(floatObject.url, t.String),
-			arg(floatObject.transferrable, t.Bool),
-			arg(floatObject.timelock, t.Bool),
-			arg(floatObject.dateStart.toFixed(1), t.UFix64),
-			arg(floatObject.timePeriod.toFixed(1), t.UFix64),
-			arg(floatObject.secret, t.Bool),
-			arg(floatObject.secretPK, t.String),
-			arg(floatObject.limited, t.Bool),
-			arg(floatObject.capacity, t.UInt64),
-			arg(floatObject.initialGroups, t.Array(t.String)),
-			arg(floatObject.flowTokenPurchase, t.Bool),
-			arg(floatObject.flowTokenCost, t.UFix64),
-			arg(floatObject.minimumBalanceToggle, t.Bool),
-			arg(floatObject.minimumBalance, t.UFix64),
-			arg(floatObject.challengeCertificate, t.Bool),
-			arg(floatObject.challengeHost, t.Optional(t.Address)),
-			arg(floatObject.challengeId, t.Optional(t.UInt64)),
-			arg(floatObject.challengeAchievementThreshold, t.Optional(t.UInt64))
+			arg(name, t.String),
+			arg(description, t.String),
+			arg(url, t.String),
+			arg(logo, t.String),
+			arg(backImage, t.String),
+			arg(transferrable, t.Bool),
+			arg(claimable, t.Bool),
+			arg(eventType, t.String),
+			arg(timelock != null, t.Bool),
+			arg(startDate.toFixed(1), t.UFix64),
+			arg(timePeriod.toFixed(1), t.UFix64),
+			arg(secret != null, t.Bool),
+			arg(secret != null ? secret : '', t.String),
+			arg(limited != null, t.Bool),
+			arg(limited != null ? limited : '0', t.UInt64),
+			arg(payment != null, t.Bool),
+			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
+			arg(minimumBalance != null, t.Bool),
+			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64)
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -69,8 +85,23 @@ const createEvent = async (floatObject) => {
 	});
 };
 
-export const createEventExecution = (floatObject) =>
-	executeTransaction(() => createEvent(floatObject));
+export const createEventExecution = (
+	name: string,
+	description: string,
+	url: string,
+	logo: string,
+	backImage: string,
+	transferrable: boolean,
+	claimable: boolean,
+	eventType: EventType,
+	timelock: Timelock | null,
+	secret: string | null,
+	limited: number | null,
+	payment: number | null,
+	minimumBalance: number | null
+) => executeTransaction(() => createEvent(
+	name, description, url, logo, backImage, transferrable, claimable, eventType, timelock, secret, limited, payment, minimumBalance
+));
 
 const burnFLOAT = async (floatId: string) => {
 	return await fcl.mutate({

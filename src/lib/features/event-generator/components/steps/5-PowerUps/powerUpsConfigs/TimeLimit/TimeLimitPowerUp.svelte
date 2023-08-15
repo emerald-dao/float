@@ -29,27 +29,27 @@
 	let endDate: string;
 
 	onMount(() => {
-		if ($eventGeneratorData.powerups.timelock.data.startDate.length > 0) {
-			startDate = new Date(Number($eventGeneratorData.powerups.timelock.data.startDate) * 1000)
+		if ($eventGeneratorData.powerups.timelock.data.dateStart.length > 0) {
+			startDate = new Date(Number($eventGeneratorData.powerups.timelock.data.dateStart) * 1000)
 				.toISOString()
 				.split('T', 1)[0];
 		}
 
-		if ($eventGeneratorData.powerups.timelock.data.endDate.length > 0) {
-			endDate = new Date(Number($eventGeneratorData.powerups.timelock.data.endDate) * 1000)
+		if ($eventGeneratorData.powerups.timelock.data.dateEnding.length > 0) {
+			endDate = new Date(Number($eventGeneratorData.powerups.timelock.data.dateEnding) * 1000)
 				.toISOString()
 				.split('T', 1)[0];
 		}
 	});
 
 	$: if (startDate) {
-		$eventGeneratorData.powerups.timelock.data.startDate = Math.floor(
+		$eventGeneratorData.powerups.timelock.data.dateStart = Math.floor(
 			new Date(startDate).getTime() / 1000
 		).toString();
 	}
 
 	$: if (endDate) {
-		$eventGeneratorData.powerups.timelock.data.endDate = Math.floor(
+		$eventGeneratorData.powerups.timelock.data.dateEnding = Math.floor(
 			new Date(endDate).getTime() / 1000
 		).toString();
 	}

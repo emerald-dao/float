@@ -4,28 +4,25 @@ import NonFungibleToken from "../utility/NonFungibleToken.cdc"
 import MetadataViews from "../utility/MetadataViews.cdc"
 
 transaction(
-  claimable: Bool, 
   name: String, 
   description: String, 
-  image: String, 
   url: String, 
+  logo: String,
+  backImage: String,
   transferrable: Bool, 
-  timelock: Bool, 
+  claimable: Bool, 
+  eventType: String,
+  timelockToggle: Bool, 
   dateStart: UFix64, 
   timePeriod: UFix64, 
-  secret: Bool, 
+  secretToggle: Bool, 
   secretPK: String, 
-  limited: Bool, 
+  limitedToggle: Bool, 
   capacity: UInt64, 
-  initialGroups: [String], 
-  flowTokenPurchase: Bool, 
+  flowTokenPurchaseToggle: Bool, 
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
-  minimumBalance: UFix64,
-  challengeCertificate: Bool,
-  challengeHost: Address?,
-  challengeId: UInt64?,
-  challengeAchievementThreshold: UInt64?
+  minimumBalance: UFix64
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -56,15 +53,15 @@ transaction(
     var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
 
     var verifiers: [{FLOAT.IVerifier}] = []
-    if timelock {
+    if timelockToggle {
       Timelock = FLOATVerifiers.Timelock(_dateStart: dateStart, _timePeriod: timePeriod)
       verifiers.append(Timelock!)
     }
-    if secret {
+    if secretToggle {
       SecretV2 = FLOATVerifiers.SecretV2(_publicKey: secretPK)
       verifiers.append(SecretV2!)
     }
-    if limited {
+    if limitedToggle {
       Limited = FLOATVerifiers.Limited(_capacity: capacity)
       verifiers.append(Limited!)
     }
@@ -74,11 +71,13 @@ transaction(
     }
 
     let extraMetadata: {String: AnyStruct} = {}
-    if flowTokenPurchase {
+    if flowTokenPurchaseToggle {
       let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
       extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
     }
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: image, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: initialGroups)
+    extraMetadata["backImage"] = backImage
+    extraMetadata["eventType"] = eventType
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
     log("Started a new event for host.")
   }
 }
