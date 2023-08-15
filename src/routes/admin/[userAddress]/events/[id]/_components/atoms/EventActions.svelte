@@ -1,5 +1,4 @@
 <script>
-	import archiveEvent from '../../../../_actions/event-actions/archiveEvent';
 	import deleteEvent from '../../../../_actions/event-actions/deleteEvent';
 	import toggleClaiming from '../../../../_actions/event-actions/toggleClaiming';
 	import toggleTransfering from '../../../../_actions/event-actions/toggleTransfering';

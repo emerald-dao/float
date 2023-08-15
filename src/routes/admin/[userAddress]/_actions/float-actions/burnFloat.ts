@@ -1,7 +1,7 @@
-const burnFloat = () => {
-	// TODO: Burn float
+import { burnFLOATExecution } from "$flow/actions";
 
-	alert('I should burn this FLOAT');
+const burnFloat = async (floatId: string) => {
+	return await burnFLOATExecution(floatId);
 };
 
 export default burnFloat;

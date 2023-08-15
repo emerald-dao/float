@@ -7,6 +7,11 @@ import type { Event } from '$lib/types/event/event.interface';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
+import burnFLOATTx from './cadence/transactions/burn_float.cdc?raw';
+import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
+import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
+import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
+import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
@@ -66,6 +71,90 @@ const createEvent = async (floatObject) => {
 
 export const createEventExecution = (floatObject) =>
 	executeTransaction(() => createEvent(floatObject));
+
+const burnFLOAT = async (floatId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(burnFLOATTx),
+		args: (arg, t) => [
+			arg(floatId, t.UInt64)
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const burnFLOATExecution = (floatId: string) =>
+	executeTransaction(() => burnFLOAT(floatId));
+
+const claimFLOAT = async (eventId: string, eventCreator: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(claimFLOATTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64),
+			arg(eventCreator, t.Address)
+			arg(null, t.Optional(t.String))
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const claimFLOATExecution = (eventId: string, eventCreator: string) =>
+	executeTransaction(() => claimFLOAT(eventId, eventCreator));
+
+const deleteEvent = async (eventId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(deleteEventTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64)
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const deleteEventExecution = (eventId: string) =>
+	executeTransaction(() => deleteEvent(eventId));
+
+const toggleClaiming = async (eventId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(toggleClaimingTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64)
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const toggleClaimingExecution = (eventId: string) =>
+	executeTransaction(() => toggleClaiming(eventId));
+
+const toggleTransferring = async (eventId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(toggleTransferringTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64)
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const toggleTransferringExecution = (eventId: string) =>
+	executeTransaction(() => toggleTransferring(eventId));
+
+// Scripts
 
 export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	try {
