@@ -8,6 +8,8 @@
 	export let maxWidth = '600px';
 	export let isForScreenshot: boolean = false;
 
+	let isTicket = EVENT_TYPE_DETAILS[float.eventType].certificateType === 'ticket';
+
 	let flip: boolean = false;
 
 	// When the FLOAT ticket is rendered in the Event Generator, we receive the image as a File, not a URL.
@@ -67,13 +69,13 @@
 		class:flip={flip || showBack}
 		class:inverse-flip={showBack && flip}
 	>
-		<div class="float-front">
+		<div class="float-front" class:float-circles={isTicket}>
 			<div class="content">
 				<div class="header-wrapper">
 					<span class="large">FLOAT</span>
 					<span class="label">{`#${float.id}`}</span>
 				</div>
-				<div class="body-wrapper">
+				<div class="body-wrapper" class:no-float-style={!isTicket}>
 					<!-- <span><span class="w-medium">{"float.originalRecipient"}</span> has attended</span> -->
 					<div class="logo-wrapper row-4">
 						{#if float.eventLogo && typeof float.eventLogo === 'string'}
@@ -99,7 +101,9 @@
 							{/if}
 						</div>
 					</div>
-					<span>Organized by <span class="w-medium">{float.eventHost}</span></span>
+					<span class="organized-by-placeholder"
+						>Organized by <span class="w-medium">{float.eventHost}</span></span
+					>
 				</div>
 				<div class="footer-wrapper">
 					<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"
@@ -110,6 +114,7 @@
 		</div>
 		<div
 			class="float-back center"
+			class:float-circles={isTicket}
 			bind:this={floatBack}
 			id={isForScreenshot ? 'element-to-exclude' : ''}
 		>
@@ -161,6 +166,36 @@
 				backface-visibility: hidden;
 				top: 0;
 				border-radius: 2em;
+				background: var(--clr-surface-secondary);
+				padding: 5% 7%;
+				width: 100%;
+				height: 100%;
+
+				img {
+					width: 100%;
+					height: 100%;
+					object-fit: cover;
+					object-position: center;
+					border-radius: 1.3em;
+				}
+
+				.content {
+					border: 1px dashed var(--clr-border-primary);
+					border-radius: 1.3em;
+					width: 100%;
+					height: 100%;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					overflow: hidden;
+
+					p {
+						color: var(--clr-text-off);
+					}
+				}
+			}
+
+			.float-circles {
 				background: radial-gradient(
 						circle at left center,
 						transparent 4%,
@@ -189,32 +224,6 @@
 						var(--clr-surface-secondary) 80%,
 						transparent 0
 					);
-				padding: 5% 7%;
-				width: 100%;
-				height: 100%;
-
-				img {
-					width: 100%;
-					height: 100%;
-					object-fit: cover;
-					object-position: center;
-					border-radius: 1.3em;
-				}
-
-				.content {
-					border: 1px dashed var(--clr-border-primary);
-					border-radius: 1.3em;
-					width: 100%;
-					height: 100%;
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					overflow: hidden;
-
-					p {
-						color: var(--clr-text-off);
-					}
-				}
 			}
 
 			.float-front {
@@ -307,6 +316,26 @@
 									}
 								}
 							}
+						}
+					}
+
+					.no-float-style {
+						.logo-wrapper {
+							justify-content: center;
+							img {
+								display: none;
+							}
+
+							.image-placeholder {
+								display: none;
+							}
+
+							.heading-wrapper {
+								align-items: center;
+							}
+						}
+						.organized-by-placeholder {
+							text-align: center;
 						}
 					}
 				}
