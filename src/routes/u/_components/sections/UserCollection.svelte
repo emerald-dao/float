@@ -13,11 +13,11 @@
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { GroupWithFloatsIds } from '../../../../lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
-  import type { Event } from '$lib/types/event/event.interface';
+	import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
-  export let events: Event[];
+	export let events: Event[];
 
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
@@ -101,10 +101,6 @@
 		<div class="groups-wrapper">
 			<h5>Groups</h5>
 			<GroupsToggles {groups} bind:selectedGroupsIds />
-		</div>
-		<div class="badges-wrapper">
-			<h5>Badges</h5>
-			<Badges {badges} />
 		</div>
 		<UserBadges userFloats={floats} userEvents={events} />
 	</div>
