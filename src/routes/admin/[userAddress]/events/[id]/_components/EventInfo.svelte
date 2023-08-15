@@ -1,7 +1,7 @@
 <script lang="ts">
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Icon from '@iconify/svelte';
-	import ClaimTicketCard from './atoms/ClaimTicketCard.svelte';
+	import ClaimTicketCard from '../../atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';

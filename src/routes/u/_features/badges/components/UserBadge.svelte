@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import type { Level } from '../../badges.interface';
+	import type { Level } from '../badges.interface';
 	import Icon from '@iconify/svelte';
 
 	export let badgeLevel: Level;
-	export let noLevel: boolean = false;
-	export let levelNumber: number;
+	export let level: number;
 	export let nextLevelGoal: string | undefined = undefined;
-	export let userOverallBadge: boolean = false;
+	export let imageWidth = '65px';
 
 	let hover = false;
 </script>
@@ -16,28 +15,28 @@
 	<div class="column-2 align-center">
 		<img
 			src={badgeLevel.image}
-			class:off={noLevel}
-			class:userLevel={userOverallBadge}
+			class:off={level === 0}
 			alt="Badge"
+			width={imageWidth}
+			height={imageWidth}
 			on:mouseenter={() => (hover = true)}
 			on:mouseleave={() => (hover = false)}
+			class="shadow-medium"
 		/>
-		{#if !noLevel}
-			<span class="level xsmall">Level {levelNumber}</span>
-		{/if}
+		<span class="level xsmall">Level {level}</span>
 	</div>
 	{#if hover}
-		<div class="description-wrapper" transition:fly|local={{ y: 10, duration: 400 }}>
+		<div class="description-wrapper shadow-large" transition:fly|local={{ y: 10, duration: 400 }}>
 			<span class="title">{badgeLevel.name}</span>
-			<span class="goal xsmall" class:off={noLevel}>
-				{#if noLevel}
+			<span class="goal xsmall" class:off={level === 0}>
+				{#if level === 0}
 					User has to {badgeLevel.goal.toLowerCase()} to unlock this badge.
 				{:else}
 					<Icon icon="tabler:circle-check" />
 					{badgeLevel.goal}
 				{/if}
 			</span>
-			{#if !noLevel}
+			{#if !(level === 0)}
 				<span class="description">{badgeLevel.description}</span>
 			{/if}
 			{#if nextLevelGoal}
@@ -55,17 +54,10 @@
 		display: inline-block;
 
 		img {
-			width: 75px;
-			height: 75px;
 			border-radius: 50%;
 
 			&.off {
 				opacity: 0.2;
-			}
-
-			&.userLevel {
-				width: 260px;
-				height: 260px;
 			}
 		}
 
@@ -80,7 +72,7 @@
 			bottom: 100%;
 			left: 24px;
 			width: 0;
-			border-bottom: 5px var(--clr-neutral-900) solid;
+			border-bottom: 5px var(--clr-surface-primary) solid;
 			border-right: 5px solid transparent;
 			border-left: 5px solid transparent;
 			content: ' ';
@@ -90,14 +82,14 @@
 
 		.description-wrapper {
 			position: absolute;
-			background-color: var(--clr-neutral-900);
+			background-color: var(--clr-surface-primary);
 			padding: var(--space-4);
 			border-radius: var(--radius-1);
 			width: 300px;
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-2);
-			z-index: 10;
+			z-index: 9999;
 			margin-top: 10px;
 
 			.title {

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
-	import EventDomains from './_components/atoms/EventDomains.svelte';
-	import EventActions from './_components/atoms/EventActions.svelte';
+	import EventDomains from '../atoms/EventDomains.svelte';
+	import EventActions from '../atoms/EventActions.svelte';
 	import EventInfo from './_components/EventInfo.svelte';
 	import { Label } from '@emerald-dao/component-library';
 

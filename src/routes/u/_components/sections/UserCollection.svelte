@@ -4,20 +4,17 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import UserBadges from '../../_features/badges/components/UserBadges.svelte';
-	import { createSearchStore, searchHandler } from '../../../../lib/stores/searchBar';
+	import { createSearchStore, searchHandler } from '$lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
 	import { filterContent } from '../../_functions/filterContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import IntersectionObserver from 'svelte-intersection-observer';
-	import type { GroupWithFloatsIds } from '../../../../lib/features/groups/types/group.interface';
+	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
-	import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
-	export let events: Event[];
 
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
@@ -102,7 +99,6 @@
 			<h5>Groups</h5>
 			<GroupsToggles {groups} bind:selectedGroupsIds />
 		</div>
-		<UserBadges userFloats={floats} userEvents={events} />
 	</div>
 	<div class="rightside">
 		{#await filteredContent then contents}
@@ -170,11 +166,10 @@
 				gap: var(--space-7);
 				border-bottom: none;
 				position: sticky;
-				top: 90px;
+				top: 140px;
 			}
 
 			.filters-wrapper,
-			.badges-wrapper,
 			.groups-wrapper,
 			.search-wrapper {
 				display: none;
