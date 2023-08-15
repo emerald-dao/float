@@ -1,8 +1,8 @@
 import FLOAT from "../FLOAT.cdc"
 import FLOATVerifiers from "../FLOATVerifiers.cdc"
-import NonFungibleToken from "../../utility/NonFungibleToken.cdc"
-import MetadataViews from "../../utility/MetadataViews.cdc"
-import FlowToken from "../../utility/FlowToken.cdc"
+import NonFungibleToken from "../utility/NonFungibleToken.cdc"
+import MetadataViews from "../utility/MetadataViews.cdc"
+import FlowToken from "../utility/FlowToken.cdc"
 
 transaction(eventId: UInt64, host: Address, secret: String?) {
  

@@ -195,7 +195,7 @@ export const getEvents = async (userAddress: string): Promise<Event[]> => {
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
-		throw new Error('Error in getEvents');
+		return [];
 	}
 };
 
@@ -231,7 +231,7 @@ export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 		});
 	} catch (e) {
 		console.log('Error in getFLOATs', e);
-		throw new Error('Error in getFLOATs');
+		return [];
 	}
 };
 
