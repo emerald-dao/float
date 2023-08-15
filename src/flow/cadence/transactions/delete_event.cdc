@@ -1,7 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../../utility/NonFungibleToken.cdc"
 import MetadataViews from "../../utility/MetadataViews.cdc"
-import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
 
 transaction(eventId: UInt64) {
 

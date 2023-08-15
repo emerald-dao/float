@@ -1,9 +1,12 @@
-<script>
+<script lang="ts">
 	import deleteEvent from '../../../../_actions/event-actions/deleteEvent';
 	import toggleClaiming from '../../../../_actions/event-actions/toggleClaiming';
 	import toggleTransfering from '../../../../_actions/event-actions/toggleTransfering';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
+	import type { Event } from '$lib/types/event/event.interface';
+
+	export let event: Event;
 </script>
 
 <div class="main-wrapper">
@@ -14,7 +17,12 @@
 	<div class="column-3">
 		<div class="row-3">
 			<label for="claiming" class="switch">
-				<input type="checkbox" name="claiming" id="claiming" on:change={() => toggleClaiming()} />
+				<input
+					type="checkbox"
+					name="claiming"
+					id="claiming"
+					on:change={() => toggleClaiming(event.eventId)}
+				/>
 				<span class="slider" />
 			</label>
 			<p class="small">Claiming ative</p>
@@ -25,23 +33,19 @@
 					type="checkbox"
 					name="transfering"
 					id="transfering"
-					on:change={() => toggleTransfering()}
+					on:change={() => toggleTransfering(event.eventId)}
 				/>
 				<span class="slider" />
 			</label>
 			<p class="small">User transfering</p>
 		</div>
 	</div>
-	<!-- <div class="event-actions">
-		<Button type="transparent" on:click={() => deleteEvent()}>
+	<div class="event-actions">
+		<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
 			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
 			<p style="color: var(--clr-alert-main);">Delete Event</p>
 		</Button>
-		<Button type="transparent" on:click={() => archiveEvent()}>
-			<Icon icon="ph:archive-bold" color="var(--clr-text-main)" />
-			<p style="color: var(--clr-text-main);">Archive Event</p>
-		</Button>
-	</div> -->
+	</div>
 </div>
 
 <style lang="scss">
@@ -68,10 +72,10 @@
 		}
 	}
 
-	// .event-actions {
-	// 	display: flex;
-	// 	align-items: center;
-	// 	justify-content: flex-start;
-	// 	gap: var(--space-5);
-	// }
+	.event-actions {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: var(--space-5);
+	}
 </style>
