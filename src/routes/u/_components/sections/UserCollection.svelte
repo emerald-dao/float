@@ -4,7 +4,7 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import Badges from '../atoms/Badges.svelte';
+	import UserBadges from '../../_features/badges/components/UserBadges.svelte';
 	import { createSearchStore, searchHandler } from '../../../../lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
@@ -13,9 +13,11 @@
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { GroupWithFloatsIds } from '../../../../lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
+  import type { Event } from '$lib/types/event/event.interface';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
+  export let events: Event[];
 
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
@@ -75,37 +77,6 @@
 	} else {
 		filteredContent = activeGroupsFloats;
 	}
-
-	let badges: BadgesInterface[] = [];
-
-	interface BadgesInterface {
-		icon: string;
-		name: string;
-	}
-
-	badges = [
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		},
-		{
-			icon: 'tabler:brand-twitter',
-			name: 'Twitter Worm'
-		},
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		},
-		{
-			icon: 'tabler:brand-twitter',
-			name: 'Twitter Worm'
-		},
-		{
-			icon: 'tabler:brand-discord',
-			name: 'Discord Geek'
-		}
-	];
-
 	// Infinite scroll feature
 	let intersectionObserverElement: HTMLDivElement;
 	let intersecting: boolean;
@@ -135,6 +106,7 @@
 			<h5>Badges</h5>
 			<Badges {badges} />
 		</div>
+		<UserBadges userFloats={floats} userEvents={events} />
 	</div>
 	<div class="rightside">
 		{#await filteredContent then contents}
