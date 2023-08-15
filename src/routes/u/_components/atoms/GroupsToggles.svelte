@@ -2,7 +2,7 @@
 	import TagToggle from '$lib/components/atoms/TagToggle.svelte';
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 
-	export let groups: GroupWithFloatsIds[];
+	export let groups: GroupWithFloatsIds[] = [];
 	export let selectedGroupsIds: number[] = [];
 </script>
 

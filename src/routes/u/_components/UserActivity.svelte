@@ -5,10 +5,10 @@
 	import UserCollection from './sections/UserCollection.svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 
-	export let floats: FLOAT[];
-	export let events: Event[];
+	export let floats: FLOAT[] = [];
+	export let events: Event[] = [];
 	export let userProfile: Profile;
-	export let groups: GroupWithFloatsIds[];
+	export let groups: GroupWithFloatsIds[] = [];
 </script>
 
 <section>

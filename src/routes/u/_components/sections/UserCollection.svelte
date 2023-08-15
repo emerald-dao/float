@@ -15,9 +15,9 @@
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 
-	export let floats: FLOAT[];
-	export let groups: GroupWithFloatsIds[];
-	export let events: Event[];
+	export let floats: FLOAT[] = [];
+	export let groups: GroupWithFloatsIds[] = [];
+	export let events: Event[] = [];
 
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
