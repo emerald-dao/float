@@ -34,18 +34,6 @@ export interface Database {
   }
   public: {
     Tables: {
-      floats: {
-        Row: {
-          id: string
-        }
-        Insert: {
-          id: string
-        }
-        Update: {
-          id?: string
-        }
-        Relationships: []
-      }
       floats_groups: {
         Row: {
           float_id: string
@@ -61,12 +49,6 @@ export interface Database {
         }
         Relationships: [
           {
-            foreignKeyName: "floats_groups_float_id_fkey"
-            columns: ["float_id"]
-            referencedRelation: "floats"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "floats_groups_group_id_fkey"
             columns: ["group_id"]
             referencedRelation: "groups"
@@ -76,44 +58,25 @@ export interface Database {
       }
       groups: {
         Row: {
+          created_at: string
           description: string | null
           id: number
           name: string
           user_address: string
         }
         Insert: {
+          created_at?: string
           description?: string | null
           id?: number
           name: string
           user_address: string
         }
         Update: {
+          created_at?: string
           description?: string | null
           id?: number
           name?: string
           user_address?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "groups_user_address_fkey"
-            columns: ["user_address"]
-            referencedRelation: "users"
-            referencedColumns: ["address"]
-          }
-        ]
-      }
-      users: {
-        Row: {
-          address: string
-          created_at: string | null
-        }
-        Insert: {
-          address: string
-          created_at?: string | null
-        }
-        Update: {
-          address?: string
-          created_at?: string | null
         }
         Relationships: []
       }
