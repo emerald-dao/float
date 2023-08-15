@@ -93,7 +93,7 @@ const claimFLOAT = async (eventId: string, eventCreator: string) => {
 		cadence: replaceWithProperValues(claimFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
-			arg(eventCreator, t.Address)
+			arg(eventCreator, t.Address),
 			arg(null, t.Optional(t.String))
 		],
 		proposer: fcl.authz,
