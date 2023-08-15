@@ -47,8 +47,8 @@
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
 	<EventsTopNavbar bind:viewMode bind:showInactive bind:searchStore />
 	<div class="events-wrapper">
-		{#if $searchStore.search.length > 0 && $searchStore.filtered.length === 0}
-			<p>No results found</p>
+		{#if ($searchStore.search.length > 0 && $searchStore.filtered.length === 0) || data.events.length === 0}
+			<em>No events found</em>
 		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
 				{#each $searchStore.filtered as event}

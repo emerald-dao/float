@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { fly } from 'svelte/transition';
 
 	export let itemsPerPage = 10;
 	export let totalItems: number;
-	export let noItemsMessage = 'No items found';
 	export let paginationMin: number;
 	export let paginationMax: number;
 

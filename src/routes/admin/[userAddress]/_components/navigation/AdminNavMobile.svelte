@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
-
-	console.log($page);
 </script>
 
 <div class="container-large">

@@ -12,8 +12,6 @@
 
 	export let data;
 
-	const userAddress = '0x99bd48c8036e2876';
-
 	let paginationMax: number;
 	let paginationMin: number;
 </script>
@@ -26,7 +24,7 @@
 				<p class="small">{data.group.description}</p>
 			{/if}
 		</div>
-		{#await getSpecificFLOATs(userAddress, data.group.floatsIds)}
+		{#await getSpecificFLOATs($user.addr, data.group.floatsIds)}
 			<div class="loading-cards-wrapper">
 				<LoadingCards numberOfCards={7} />
 			</div>
@@ -64,7 +62,6 @@
 				<Pagination
 					itemsPerPage={6}
 					totalItems={floats.length}
-					noItemsMessage="No results found"
 					bind:paginationMax
 					bind:paginationMin
 				/>

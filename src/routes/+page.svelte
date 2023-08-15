@@ -8,14 +8,6 @@
 		MintAFloatSection,
 		TechnicalDetailsSection
 	} from './_components/sections';
-	import { supabase } from '$lib/supabase/supabaseClient';
-
-	supabase
-		.from('users')
-		.select()
-		.then((res) => {
-			console.log(res.data);
-		});
 </script>
 
 <HeroSection />

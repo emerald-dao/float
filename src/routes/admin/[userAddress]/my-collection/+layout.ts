@@ -1,7 +1,7 @@
 import { getFLOATs } from '$flow/actions.js';
 
-export async function load() {
-	const floats = await getFLOATs('0x99bd48c8036e2876');
+export async function load({ params }) {
+	const floats = await getFLOATs(params.userAddress);
 
 	return {
 		floats

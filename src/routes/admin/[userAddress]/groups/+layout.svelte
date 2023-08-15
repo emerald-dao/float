@@ -56,7 +56,6 @@
 			<Pagination
 				itemsPerPage={10}
 				totalItems={$searchStore.filtered.length}
-				noItemsMessage="No results found"
 				bind:paginationMax
 				bind:paginationMin
 			/>

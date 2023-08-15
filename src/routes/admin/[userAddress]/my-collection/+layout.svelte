@@ -15,7 +15,7 @@
 	setContext('floats', data.floats);
 
 	onMount(() => {
-		if (data.floats[0].eventId) {
+		if (data.floats[0] && data.floats[0].eventId) {
 			goto(`/admin/${$page.params.userAddress}/my-collection/${data.floats[0].eventId}`);
 		}
 	});
@@ -45,20 +45,28 @@
 			<input type="text" placeholder="Search event name or id" bind:value={$searchStore.search} />
 		</div>
 		<div class="bottom-wrapper">
-			<Pagination
-				itemsPerPage={10}
-				totalItems={$searchStore.filtered.length}
-				noItemsMessage="No results found"
-				bind:paginationMax
-				bind:paginationMin
-			>
+			{#if $searchStore.filtered.length === 0}
+				<div class="center">
+					<em>No FLOATs found</em>
+				</div>
+			{:else}
 				{#each $searchStore.filtered as float, i}
 					{#if i < paginationMax && i >= paginationMin}
 						<FloatCard {float} />
 					{/if}
 				{/each}
-			</Pagination>
+			{/if}
 		</div>
+		{#if $searchStore.filtered.length !== 0}
+			<div class="pagination">
+				<Pagination
+					itemsPerPage={10}
+					totalItems={$searchStore.filtered.length}
+					bind:paginationMax
+					bind:paginationMin
+				/>
+			</div>
+		{/if}
 	</div>
 	<div class="right-wrapper">
 		<slot />
@@ -128,8 +136,13 @@
 				}
 			}
 
+			.pagination {
+				border-top: 0.5px solid var(--clr-border-primary);
+			}
+
 			.top-wrapper,
-			.bottom-wrapper {
+			.bottom-wrapper,
+			.pagination {
 				padding: var(--space-6) var(--space-6);
 
 				@include mq(small) {

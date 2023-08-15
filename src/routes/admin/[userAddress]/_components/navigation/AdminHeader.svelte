@@ -1,36 +1,56 @@
 <script lang="ts">
+	import BreadcrumbElement from './breadcrumbs/BreadcrumbElement.svelte';
+	import { profile } from '$lib/stores/flow/FlowStore';
 	import { page } from '$app/stores';
 	import Icon from '@iconify/svelte';
 
-	export let route: string | null;
-	export let userName: string;
-	export let userAvatar: string;
+	const createBreadcrumbs = (pathname: string) => {
+		const path = pathname.split('/');
+		const pathWithoutAdmin = path.slice(2);
+		const pathWithoutAdminLength = pathWithoutAdmin.length;
+
+		const breadcrumbs = [];
+
+		for (let i = 0; i < pathWithoutAdminLength; i++) {
+			const name = i === 0 ? $profile?.name ?? pathWithoutAdmin[i] : pathWithoutAdmin[i];
+			const link = `/admin/${pathWithoutAdmin.slice(0, i + 1).join('/')}`;
+
+			breadcrumbs.push({
+				name,
+				link
+			});
+		}
+
+		return breadcrumbs;
+	};
+
+	$: breadcrumbs = createBreadcrumbs($page.url.pathname);
 </script>
 
-<div class="header-wrapper">
-	<header>
-		<div class="main-wrapper">
-			<div class="row-4">
-				<a href="/u/{userName}">
-					<img src={userAvatar} alt="float" />
-				</a>
-				{#if $page.params.id}
-					<p>
-						<a href="/u/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a> / #{$page
-							.params.id}
-					</p>
-				{:else}
-					<p><a href="/u/{userName}">{userName} </a> / <a href="/admin/{route}">{route}</a></p>
-				{/if}
+<header>
+	<div class="main-wrapper">
+		<div class="row-4 align-center">
+			<a href="/u/{$profile?.address}">
+				<img src={$profile?.avatar} alt="float" />
+			</a>
+			<div class="row-2">
+				{#each breadcrumbs as breadcrumb, i}
+					{@const last = i == breadcrumbs.length - 1}
+					{@const first = i == 0}
+					<BreadcrumbElement name={breadcrumb.name} link={breadcrumb.link} noLink={last || first} />
+					{#if !last}
+						<span>/</span>
+					{/if}
+				{/each}
 			</div>
 		</div>
-		<div class="icon-wrapper">
-			<a href="/" class="header-link">
-				<Icon icon="tabler:home" width="25" />
-			</a>
-		</div>
-	</header>
-</div>
+	</div>
+	<div class="icon-wrapper">
+		<a href="/" class="header-link">
+			<Icon icon="tabler:home" width="25" />
+		</a>
+	</div>
+</header>
 
 <style lang="scss">
 	header {
@@ -50,24 +70,10 @@
 		.main-wrapper {
 			padding: var(--space-3) 0;
 
-			.row-4 {
-				align-items: center;
-
-				img {
-					width: 56px;
-					height: 56px;
-					border-radius: 50%;
-				}
-
-				p {
-					color: var(--clr-heading-main);
-				}
-
-				a {
-					display: inline;
-					text-decoration: none;
-					color: var(--clr-heading-main);
-				}
+			img {
+				width: 56px;
+				height: 56px;
+				border-radius: 50%;
 			}
 		}
 

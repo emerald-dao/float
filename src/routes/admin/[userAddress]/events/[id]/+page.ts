@@ -4,8 +4,8 @@ import { getEventGeneralStatus } from '$lib/features/event-status-management/fun
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load({ params }) {
-	const event = await getEvent('0x99bd48c8036e2876', params.id);
-	const eventClaims = await getEventClaims('0x99bd48c8036e2876', params.id);
+	const event = await getEvent(params.userAddress, params.id);
+	const eventClaims = await getEventClaims(params.userAddress, params.id);
 	const latestClaims = Object.values(eventClaims)
 		.sort((a, b) => Number(b.serial) - Number(a.serial))
 		.slice(0, 20);

@@ -1,34 +1,23 @@
 <script lang="ts">
-	import { user } from '$stores/flow/FlowStore';
 	import { page } from '$app/stores';
+	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import AdminHeader from './_components/navigation/AdminHeader.svelte';
 	import '@emerald-dao/component-library/styles/app.scss';
 	import AdminNavMobile from './_components/navigation/AdminNavMobile.svelte';
 	import AdminNavDesktop from './_components/navigation/AdminNavDesktop.svelte';
 	import { ConnectWalletPage } from '@emerald-dao/component-library';
+	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 
-	export let data;
-
-	let route: string | null;
-
-	console.log($page);
-
-	function extractSecondPart(route: string): string | null {
-		const regex = /^\/\w+\/([^\/]+)(?:\/|$)/;
-		const matches = route.match(regex);
-		if (matches && matches.length === 2) {
-			return matches[1];
-		}
-		return null;
+	$: if ($page.params.userAddress !== $user?.addr && browser) {
+		goto($page.url.pathname.replace($page.params.userAddress, $user?.addr));
 	}
-
-	$: route = typeof $page.route.id === 'string' ? extractSecondPart($page.route.id) : null;
 </script>
 
 {#if $user && $user.addr}
 	<div class="main-wrapper">
-		<AdminHeader {route} userName={data.user.name} userAvatar={data.user.avatar} />
+		<AdminHeader />
 		<div class="secondary-wrapper">
 			<AdminNavMobile />
 			<AdminNavDesktop />

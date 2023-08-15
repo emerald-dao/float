@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { user } from '$lib/stores/flow/FlowStore';
 	import { enhance } from '$app/forms';
 	import { getFLOATs } from '$flow/actions';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
@@ -23,7 +24,7 @@
 	let selectedFloatsIds: string[] = [];
 
 	onMount(async () => {
-		floats = await getFLOATs('0x99bd48c8036e2876');
+		floats = await getFLOATs($user.addr);
 	});
 
 	const handleSelectFloat = (floatId: string) => {
@@ -90,7 +91,6 @@
 			<Pagination
 				itemsPerPage={4}
 				totalItems={$searchStore.filtered.length}
-				noItemsMessage="No results found"
 				bind:paginationMax
 				bind:paginationMin
 			/>
