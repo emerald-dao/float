@@ -15,6 +15,7 @@ import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
+import type { FLOAT } from '$lib/types/float/float.interface';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -102,7 +103,7 @@ export const getEventClaims = async (eventHost: string, eventId: string): Promis
 	}
 };
 
-export const getFLOATs = async (userAddress: string) => {
+export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getFLOATsScript),
@@ -118,10 +119,7 @@ export const getSpecificFLOATs = async (userAddress: string, ids: string[]) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getSpecificFLOATsScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address),
-				arg(ids, t.Array(t.UInt64))
-			]
+			args: (arg, t) => [arg(userAddress, t.Address), arg(ids, t.Array(t.UInt64))]
 		});
 	} catch (e) {
 		console.log('Error in getSpecificFLOATs', e);

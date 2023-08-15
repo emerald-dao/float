@@ -1,7 +1,8 @@
-import { writable } from 'svelte/store';
+import { writable, type Writable } from 'svelte/store';
 import { network } from '$flow/config';
 import { env } from '$env/dynamic/public';
 import type { CurrentUserObject } from '@onflow/fcl';
+import type { Profile } from '../../types/user/profile.interface';
 
 const contractData = {
 	NonFungibleToken: {
@@ -65,7 +66,7 @@ export const user = writable<CurrentUserObject | { loggedIn: false; addr: null }
 	loggedIn: false,
 	addr: null
 });
-export const profile = writable(null);
+export const profile: Writable<Profile | null> = writable(null);
 // export const transactionStatus = writable({});
 // export const transactionInProgress = writable(false);
 export const addresses: {
