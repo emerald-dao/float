@@ -20,6 +20,7 @@ import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
+import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
@@ -253,6 +254,20 @@ export const getStats = async () => {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getStatsScript),
 			args: (arg, t) => []
+		})
+	} catch (e) {
+		console.log(e);
+		return {};
+	}
+}
+
+export const getMainPageFLOATs = async (floats: { key: string, value: string[] }[]) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getMainPageFLOATsScript),
+			args: (arg, t) => [
+				arg(floats, t.Dictionary({ key: t.Address, value: t.Array(t.UInt64) }))
+			]
 		})
 	} catch (e) {
 		console.log(e);

@@ -12,12 +12,12 @@
 <div class="main-wrapper">
 	<div class="top-wrapper">
 		<div>
-			<p class="large">{`#${float.eventId}`}</p>
-			<p class="small">Event ID</p>
+			<p class="large">{`#${float.id}`}</p>
+			<p class="small">FLOAT ID</p>
 		</div>
 		<div>
-			<p class="large">{float.totalSupply}</p>
-			<p class="small">FLOATs claimed</p>
+			<p class="large">{float.serial}</p>
+			<p class="small">Serial</p>
 		</div>
 	</div>
 	<div class="ticket-wrapper">
@@ -25,13 +25,13 @@
 	</div>
 	<div class="details-wrapper">
 		<div>
-			<p class="large">{startDate}</p>
-			<p class="small">Start Date</p>
+			<p class="large">{new Date(Number(float.dateReceived) * 1000)}</p>
+			<p class="small">Date Minted</p>
 		</div>
 		<div class="price">
 			<!-- This is temporary, whe should change the hardcoded price-->
-			<p class="large">Free(temporary)</p>
-			<p class="small">Price</p>
+			<p class="large">Original Recipient</p>
+			<p class="small">{float.originalRecipient}</p>
 		</div>
 	</div>
 </div>

@@ -1,21 +1,24 @@
 import FLOAT from "../FLOAT.cdc"
-pub fun main(account: Address, ids: [UInt64]): [FLOATMetadata] {
-  let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
+
+pub fun main(floats: {Address: [UInt64]}): [FLOATMetadata] {
+    var returnVal: [FLOATMetadata] = []
+    for address in floats.keys {
+        let ids: [UInt64] = floats[address]!
+        let floatCollection = getAccount(address).getCapability(FLOAT.FLOATCollectionPublicPath)
                         .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
                         ?? panic("Could not borrow the Collection from the account.")
+        for id in ids {
+            let nft: &FLOAT.NFT = floatCollection.borrowFLOAT(id: id)!
+            let eventId = nft.eventId
+            let eventHost = nft.eventHost
 
-  var returnVal: [FLOATMetadata] = []
-  for id in ids {
-    let nft: &FLOAT.NFT = floatCollection.borrowFLOAT(id: id)!
-    let eventId = nft.eventId
-    let eventHost = nft.eventHost
-
-    if let event = nft.getEventMetadata() {
-      returnVal.append(FLOATMetadata(nft, event))
+            if let event = nft.getEventMetadata() {
+                returnVal.append(FLOATMetadata(nft, event))
+            }
+        }
     }
-  }
 
-  return returnVal
+    return returnVal
 }
 
 pub struct FLOATMetadata {
@@ -41,9 +44,9 @@ pub struct FLOATMetadata {
     self.eventName = event.name
     self.transferrable = event.transferrable
     self.totalSupply = event.totalSupply
-    self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
     self.originalRecipient = float.originalRecipient
     self.id = float.id
     self.serial = float.serial
+    self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
   }
 }
