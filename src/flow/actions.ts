@@ -19,6 +19,7 @@ import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
+import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
@@ -246,3 +247,15 @@ export const getSpecificFLOATs = async (userAddress: string, ids: string[]) => {
 		throw new Error('Error in getSpecificFLOATs');
 	}
 };
+
+export const getStats = async () => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getStatsScript),
+			args: (arg, t) => []
+		})
+	} catch (e) {
+		console.log(e);
+		return {};
+	}
+}
