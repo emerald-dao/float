@@ -1,138 +1,33 @@
 <script lang="ts">
+	import { getMainPageFLOATs } from '$flow/actions';
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { multiplyArray } from '$lib/utilities/multiplyArray';
 	import SectionHeading from './atoms/SectionHeading.svelte';
 
-	const FLOATS: FLOAT[] = [
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		},
-		{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		}
-	];
+	async function fetchFLOATs(): Promise<FLOAT[]> {
+		const floats = [
+			{
+				key: '0x99bd48c8036e2876',
+				value: [
+					'187900113',
+					'187900113',
+					'405872636',
+					'228913853',
+					'234035601',
+					'241506344',
+					'228534369',
+					'269981325',
+					'193020626',
+					'185940653',
+					'584134932',
+					'287540237'
+				]
+			}
+		];
+		return await getMainPageFLOATs(floats);
+	}
 </script>
 
 <section class="column-11">
@@ -142,13 +37,15 @@
 		title="Life is about experiences. Collect them!"
 		description="Create your personal collection of all the events you assisted."
 	/>
-	<div class="floats-wrapper">
-		{#each multiplyArray(FLOATS, 30) as float, i}
-			<div class="float-{i}">
-				<FloatTicket {float} minWidth="400px" />
-			</div>
-		{/each}
-	</div>
+	{#await fetchFLOATs() then FLOATS}
+		<div class="floats-wrapper">
+			{#each multiplyArray(FLOATS, 30) as float, i}
+				<div class="float-{i}">
+					<FloatTicket {float} minWidth="400px" />
+				</div>
+			{/each}
+		</div>
+	{/await}
 </section>
 
 <style lang="scss">

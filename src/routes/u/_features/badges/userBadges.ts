@@ -1,7 +1,8 @@
 import type { Badge } from './badges.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
+import type { EventType } from '$lib/types/event/even-type.type';
 
-const eventTypeBadgesRule = (floatsList: FLOAT[], eventType: string) => {
+const eventTypeBadgesRule = (floatsList: FLOAT[], eventType: EventType) => {
 	const eachEventTypeFloatsCount = floatsList.filter(
 		(float) => float.eventType === eventType
 	).length;
@@ -13,53 +14,54 @@ const eventTypeBadgesRule = (floatsList: FLOAT[], eventType: string) => {
 	return 0;
 };
 
-export const USER_FLOAT_BADGES: Badge[] = [
-	{
-		name: 'Float Tycoon',
-		levels: [
-			{
-				name: '🌱 Emerging Tycoon',
-				image: '/badges/float-tycoon/level-1.png',
-				description:
-					"Your holdings are starting to grow. You're on your way to becoming a Float tycoon.",
-				goal: 'Hold 5 total FLOATs'
-			},
-			{
-				name: '💼 Flourishing Tycoon',
-				image: '/badges/float-tycoon/level-2.png',
-				description: 'Your portfolio is expanding! You`re well on your way to Float tycoon status.',
-				goal: 'Hold 20 total FLOATs'
-			},
-			{
-				name: '🏦 Prosperous Tycoon',
-				image: '/badges/float-tycoon/level-3.png',
-				description: 'Your Float empire is thriving! Your holdings are impressive.',
-				goal: 'Hold 50 total FLOATs'
-			},
-			{
-				name: '🏅 Wealthy Mogul',
-				image: '/badges/float-tycoon/level-4.png',
-				description: "You've reached mogul status! Holding 100 total FLOATs is a remarkable feat.",
-				goal: 'Hold 100 total FLOATs'
-			},
-			{
-				name: '🌟 Float Magnate',
-				image: '/badges/float-tycoon/level-5.png',
-				description:
-					"You're a true Float magnate! Your holdings of 500 total FLOATs are awe-inspiring.",
-				goal: 'Hold 500 total FLOATs'
-			}
-		],
-		rule: (floats) => {
-			const totalAmountCount = floats.length;
-			if (totalAmountCount >= 500) return 5;
-			if (totalAmountCount >= 100) return 4;
-			if (totalAmountCount >= 50) return 3;
-			if (totalAmountCount >= 20) return 2;
-			if (totalAmountCount >= 5) return 1;
-			return 0;
+export const TOTAL_FLOATS_BADGE: Badge = {
+	name: 'Float Tycoon',
+	levels: [
+		{
+			name: '🌱 Emerging Tycoon',
+			image: '/badges/float-tycoon/level-1.png',
+			description:
+				"Your holdings are starting to grow. You're on your way to becoming a Float tycoon.",
+			goal: 'Hold 5 total FLOATs'
+		},
+		{
+			name: '💼 Flourishing Tycoon',
+			image: '/badges/float-tycoon/level-2.png',
+			description: 'Your portfolio is expanding! You`re well on your way to Float tycoon status.',
+			goal: 'Hold 20 total FLOATs'
+		},
+		{
+			name: '🏦 Prosperous Tycoon',
+			image: '/badges/float-tycoon/level-3.png',
+			description: 'Your Float empire is thriving! Your holdings are impressive.',
+			goal: 'Hold 50 total FLOATs'
+		},
+		{
+			name: '🏅 Wealthy Mogul',
+			image: '/badges/float-tycoon/level-4.png',
+			description: "You've reached mogul status! Holding 100 total FLOATs is a remarkable feat.",
+			goal: 'Hold 100 total FLOATs'
+		},
+		{
+			name: '🌟 Float Magnate',
+			image: '/badges/float-tycoon/level-5.png',
+			description:
+				"You're a true Float magnate! Your holdings of 500 total FLOATs are awe-inspiring.",
+			goal: 'Hold 500 total FLOATs'
 		}
-	},
+	],
+	rule: (floats) => {
+		const totalAmountCount = floats.length;
+		if (totalAmountCount >= 500) return 5;
+		if (totalAmountCount >= 100) return 4;
+		if (totalAmountCount >= 50) return 3;
+		if (totalAmountCount >= 20) return 2;
+		if (totalAmountCount >= 5) return 1;
+		return 0;
+	}
+};
+
+export const USER_FLOAT_BADGES: Badge[] = [
 	{
 		name: 'Other Enthusiast',
 		levels: [
@@ -92,7 +94,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of "Other" type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'other')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'other')
 	},
 	{
 		name: 'Discord Dynamo',
@@ -126,7 +128,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Discord meeting type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'hackathon')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'discordMeeting')
 	},
 	{
 		name: 'Twitter Titan',
@@ -159,7 +161,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Twitter space type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'twitterSpace')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'twitterSpace')
 	},
 	{
 		name: 'Conference Captain',
@@ -193,7 +195,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Conference type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'conference')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'conference')
 	},
 	{
 		name: 'Product Presentation Pro',
@@ -226,7 +228,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Product presentation type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'productPresentation')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'productPresentation')
 	},
 	{
 		name: 'Course Conqueror',
@@ -260,7 +262,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Course type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'course')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'course')
 	},
 	{
 		name: 'Hackathon Hero',
@@ -292,7 +294,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Hackaton type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'hackaton')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'hackathon')
 	},
 	{
 		name: 'Sport Superstar',
@@ -326,7 +328,7 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Sport competition type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'sportCompetition')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'sportCompetition')
 	},
 	{
 		name: 'Gaming Gladiator',
@@ -358,102 +360,97 @@ export const USER_FLOAT_BADGES: Badge[] = [
 				goal: 'Hold 50 FLOATs of Gaming competition type'
 			}
 		],
-		rule: (floats) => eventTypeBadgesRule(floats, 'gamingCompetition')
+		rule: (floats) => eventTypeBadgesRule(floats as FLOAT[], 'gamingCompetition')
 	}
 ];
 
-export const USER_EVENT_BADGES: Badge[] = [
-	{
-		name: 'Event Maestro',
-		levels: [
-			{
-				name: '🌱 Novice Organizer',
-				image: '/badges/event-maestro/level-1.png',
-				description:
-					"You've successfully created your first event on FLOAT. Keep the momentum going!",
-				goal: 'Create 1 event on FLOAT.'
-			},
-			{
-				name: '🔧 Skillful Coordinator',
-				image: '/badges/event-maestro/level-2.png',
-				description:
-					'Your event-organizing skills are evident. Three successful events under your belt!',
-				goal: 'Create 3 event on FLOAT.'
-			},
-			{
-				name: '🚀 Event Virtuoso',
-				image: '/badges/event-maestro/level-3.png',
-				description:
-					'You`re a virtuoso in event creation! Double-digit events showcase your talent.',
-				goal: 'Create 10 event on FLOAT.'
-			},
-			{
-				name: '🎇 Master Orchestrator',
-				image: '/badges/event-maestro/level-4.png',
-				description: "Your event prowess is unmatched. You've orchestrated 20 successful events!",
-				goal: 'Create 20 event on FLOAT.'
-			}
-		],
-		rule: (events) => {
-			const eventsCreatedCount = events.length;
-			if (eventsCreatedCount >= 20) return 4;
-			if (eventsCreatedCount >= 10) return 3;
-			if (eventsCreatedCount >= 3) return 2;
-			if (eventsCreatedCount >= 1) return 1;
+export const USER_EVENT_BADGE: Badge = {
+	name: 'Event Maestro',
+	levels: [
+		{
+			name: '🌱 Novice Organizer',
+			image: '/badges/event-maestro/level-1.png',
+			description:
+				"You've successfully created your first event on FLOAT. Keep the momentum going!",
+			goal: 'Create 1 event on FLOAT.'
+		},
+		{
+			name: '🔧 Skillful Coordinator',
+			image: '/badges/event-maestro/level-2.png',
+			description:
+				'Your event-organizing skills are evident. Three successful events under your belt!',
+			goal: 'Create 3 event on FLOAT.'
+		},
+		{
+			name: '🚀 Event Virtuoso',
+			image: '/badges/event-maestro/level-3.png',
+			description: 'You`re a virtuoso in event creation! Double-digit events showcase your talent.',
+			goal: 'Create 10 event on FLOAT.'
+		},
+		{
+			name: '🎇 Master Orchestrator',
+			image: '/badges/event-maestro/level-4.png',
+			description: "Your event prowess is unmatched. You've orchestrated 20 successful events!",
+			goal: 'Create 20 event on FLOAT.'
+		}
+	],
+	rule: (events) => {
+		const eventsCreatedCount = events.length;
+		if (eventsCreatedCount >= 20) return 4;
+		if (eventsCreatedCount >= 10) return 3;
+		if (eventsCreatedCount >= 3) return 2;
+		if (eventsCreatedCount >= 1) return 1;
+		return 0;
+	}
+};
+
+export const USER_OVERALL_BADGE: Badge = {
+	name: 'Achievement Ace',
+	levels: [
+		{
+			name: '🌟 Apprentice',
+			image: '/badges/overall/level-1.png',
+			description: "You're an aspiring achiever. Your journey to greatness has begun!",
+			goal: 'Add 6 between the amount of FLOATs and Events'
+		},
+		{
+			name: '🔥 Progressing Pro',
+			image: '/badges/overall/level-2.png',
+			description: 'Your achievements are gaining momentum. Your hard work is paying off.',
+			goal: 'Add 23 between the amount of FLOATs and Events'
+		},
+		{
+			name: '🚀 Rising Star',
+			image: '/badges/overall/level-3.png',
+			description:
+				"You're shining brightly in the realm of accomplishments. Your dedication is admirable.",
+			goal: 'Add 60 between the amount of FLOATs and Events'
+		},
+		{
+			name: '💫 Distinguished Expert',
+			image: '/badges/overall/level-4.png',
+			description: 'Your excellence is recognized by all. Your achievements are extraordinary.',
+			goal: 'Add 120 between the amount of FLOATs and Events'
+		},
+		{
+			name: '🌟 Achievement Ace',
+			image: '/badges/overall/level-5.png',
+			description:
+				"You're the epitome of achievement! Your contributions have left an indelible mark.",
+			goal: 'Add 550 between the amount of FLOATs and Events'
+		}
+	],
+	rule: (floats, events) => {
+		if (typeof floats === 'number' && typeof events === 'number') {
+			const totalFloatsAndEvents = floats + events;
+			if (totalFloatsAndEvents >= 550) return 5;
+			if (totalFloatsAndEvents >= 120) return 4;
+			if (totalFloatsAndEvents >= 60) return 3;
+			if (totalFloatsAndEvents >= 23) return 2;
+			if (totalFloatsAndEvents >= 6) return 1;
+			return 0;
+		} else {
 			return 0;
 		}
 	}
-];
-
-export const USER_OVERALL_BADGE: Badge[] = [
-	{
-		name: 'Achievement Ace',
-		levels: [
-			{
-				name: '🌟 Apprentice',
-				image: '/badges/overall/level-1.png',
-				description: "You're an aspiring achiever. Your journey to greatness has begun!",
-				goal: 'Add 6 between the amount of FLOATs and Events'
-			},
-			{
-				name: '🔥 Progressing Pro',
-				image: '/badges/overall/level-2.png',
-				description: 'Your achievements are gaining momentum. Your hard work is paying off.',
-				goal: 'Add 23 between the amount of FLOATs and Events'
-			},
-			{
-				name: '🚀 Rising Star',
-				image: '/badges/overall/level-3.png',
-				description:
-					"You're shining brightly in the realm of accomplishments. Your dedication is admirable.",
-				goal: 'Add 60 between the amount of FLOATs and Events'
-			},
-			{
-				name: '💫 Distinguished Expert',
-				image: '/badges/overall/level-4.png',
-				description: 'Your excellence is recognized by all. Your achievements are extraordinary.',
-				goal: 'Add 120 between the amount of FLOATs and Events'
-			},
-			{
-				name: '🌟 Achievement Ace',
-				image: '/badges/overall/level-5.png',
-				description:
-					"You're the epitome of achievement! Your contributions have left an indelible mark.",
-				goal: 'Add 550 between the amount of FLOATs and Events'
-			}
-		],
-		rule: (floats, events) => {
-			if (typeof floats === 'number' && typeof events === 'number') {
-				const totalFloatsAndEvents = floats + events;
-				if (totalFloatsAndEvents >= 550) return 5;
-				if (totalFloatsAndEvents >= 120) return 4;
-				if (totalFloatsAndEvents >= 60) return 3;
-				if (totalFloatsAndEvents >= 23) return 2;
-				if (totalFloatsAndEvents >= 6) return 1;
-				return 0;
-			} else {
-				return 0;
-			}
-		}
-	}
-];
+};

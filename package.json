@@ -20,6 +20,7 @@
 		"@emerald-dao/design-system": "^2.1.0",
 		"@iconify/svelte": "^3.1.3",
 		"@onflow/fcl": "1.4.0",
+		"@supabase/supabase-js": "^2.32.0",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "^1.20.0",
 		"@typescript-eslint/eslint-plugin": "^5.27.0",
@@ -51,7 +52,8 @@
 		"tslib": "^2.3.1",
 		"typescript": "^4.7.4",
 		"vest": "^4.6.11",
-		"vite": "^4.0.0"
+		"vite": "^4.0.0",
+		"nft.storage": "^7.0.0"
 	},
 	"type": "module"
 }

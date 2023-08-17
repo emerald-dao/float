@@ -1,7 +1,7 @@
-const claimFloat = () => {
-	// TODO: Claim float
+import { claimFLOATExecution } from "$flow/actions";
 
-	alert('I should claim a FLOAT for the connected user');
+const claimFloat = async (eventId: string, eventCreator: string) => {
+	return await claimFLOATExecution(eventId, eventCreator)
 };
 
 export default claimFloat;

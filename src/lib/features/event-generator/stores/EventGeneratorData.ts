@@ -9,6 +9,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	logo: [],
 	image: [],
 	name: '',
+	url: '',
 	totalSupply: '',
 	transferrable: false,
 	claimable: false,
@@ -21,8 +22,8 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 		timelock: {
 			active: false,
 			data: {
-				startDate: '',
-				endDate: ''
+				dateStart: '',
+				dateEnding: ''
 			}
 		},
 		secretCode: {
