@@ -228,15 +228,14 @@ export const getEventClaims = async (eventHost: string, eventId: string): Promis
 
 export const getLatestEventClaims = async (eventHost: string, eventId: string, amount: number): Promise<Claim[]> => {
 	try {
-		let thing = await fcl.query({
+		const result = await fcl.query({
 			cadence: replaceWithProperValues(getLatestEventClaimsScript),
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64), arg(amount.toString(), t.UInt64)]
 		});
-		console.log(thing)
-		return thing.sort((a, b) => Number(b.serial) - Number(a.serial))
+		return result.sort((a, b) => Number(b.serial) - Number(a.serial))
 	} catch (e) {
-		console.log('Error in getEventClaims', e);
-		throw new Error('Error in getEventClaims');
+		console.log('Error in getLatestEventClaims', e);
+		throw new Error('Error in getLatestEventClaims');
 	}
 };
 
