@@ -54,8 +54,9 @@ const createEvent = async (
 	payment: number | null,
 	minimumBalance: number | null
 ) => {
-	const startDate = timelock != null ? Number(timelock.dateStart) : 0
-	const timePeriod = timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0
+	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
+	const timePeriod =
+		timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0;
 
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
@@ -101,16 +102,29 @@ export const createEventExecution = (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null
-) => executeTransaction(() => createEvent(
-	name, description, url, logo, backImage, transferrable, claimable, eventType, timelock, secret, limited, payment, minimumBalance
-));
+) =>
+	executeTransaction(() =>
+		createEvent(
+			name,
+			description,
+			url,
+			logo,
+			backImage,
+			transferrable,
+			claimable,
+			eventType,
+			timelock,
+			secret,
+			limited,
+			payment,
+			minimumBalance
+		)
+	);
 
 const burnFLOAT = async (floatId: string) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(burnFLOATTx),
-		args: (arg, t) => [
-			arg(floatId, t.UInt64)
-		],
+		args: (arg, t) => [arg(floatId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
 		authorizations: [fcl.authz],
@@ -118,8 +132,7 @@ const burnFLOAT = async (floatId: string) => {
 	});
 };
 
-export const burnFLOATExecution = (floatId: string) =>
-	executeTransaction(() => burnFLOAT(floatId));
+export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
 
 const claimFLOAT = async (eventId: string, eventCreator: string) => {
 	return await fcl.mutate({
@@ -142,9 +155,7 @@ export const claimFLOATExecution = (eventId: string, eventCreator: string) =>
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(deleteEventTx),
-		args: (arg, t) => [
-			arg(eventId, t.UInt64)
-		],
+		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
 		authorizations: [fcl.authz],
@@ -158,9 +169,7 @@ export const deleteEventExecution = (eventId: string) =>
 const toggleClaiming = async (eventId: string) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(toggleClaimingTx),
-		args: (arg, t) => [
-			arg(eventId, t.UInt64)
-		],
+		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
 		authorizations: [fcl.authz],
@@ -174,9 +183,7 @@ export const toggleClaimingExecution = (eventId: string) =>
 const toggleTransferring = async (eventId: string) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(toggleTransferringTx),
-		args: (arg, t) => [
-			arg(eventId, t.UInt64)
-		],
+		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
 		authorizations: [fcl.authz],
@@ -201,7 +208,7 @@ export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	}
 };
 
-export const getEvent = async (eventHost: string, eventId: string) => {
+export const getEvent = async (eventHost: string, eventId: string): Promise<Event> => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventScript),
@@ -254,23 +261,21 @@ export const getStats = async () => {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getStatsScript),
 			args: (arg, t) => []
-		})
+		});
 	} catch (e) {
 		console.log(e);
 		return {};
 	}
-}
+};
 
-export const getMainPageFLOATs = async (floats: { key: string, value: string[] }[]) => {
+export const getMainPageFLOATs = async (floats: { key: string; value: string[] }[]) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(getMainPageFLOATsScript),
-			args: (arg, t) => [
-				arg(floats, t.Dictionary({ key: t.Address, value: t.Array(t.UInt64) }))
-			]
-		})
+			args: (arg, t) => [arg(floats, t.Dictionary({ key: t.Address, value: t.Array(t.UInt64) }))]
+		});
 	} catch (e) {
 		console.log(e);
 		return {};
 	}
-}
+};

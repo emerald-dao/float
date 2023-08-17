@@ -1,17 +1,26 @@
-import { getEvent } from '$flow/actions';
+import { getEvent, getEventClaims } from '$flow/actions';
 import { getFindProfileFromAddressOrName } from '$flow/utils';
-import type { Event } from '$lib/types/event/event.interface.js';
 
 export const load = async ({ params }) => {
 	const findProfile = await getFindProfileFromAddressOrName(params.username);
-	console.log(findProfile)
 
 	let walletAddress = params.username;
+
 	if (findProfile) {
 		walletAddress = findProfile.address;
 	}
-	const event = await getEvent(walletAddress, params.eventId)
+
+	const getLatestClaims = async (address: string, eventId: string) => {
+		const eventClaims = await getEventClaims(address, eventId);
+		const latestClaims = Object.values(eventClaims)
+			.sort((a, b) => Number(b.serial) - Number(a.serial))
+			.slice(0, 20);
+
+		return latestClaims;
+	};
+
 	return {
-		overview: event
-	}
+		overview: await getEvent(walletAddress, params.eventId),
+		claims: await getLatestClaims(walletAddress, params.eventId)
+	};
 };

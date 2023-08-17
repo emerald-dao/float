@@ -2,25 +2,28 @@
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { Button, Currency } from '@emerald-dao/component-library';
-	import { onMount } from 'svelte';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import type { Timelock } from '$lib/types/event/verifiers.interface';
+	import Icon from '@iconify/svelte';
+	import ClaimTicketCard from '../../../admin/[userAddress]/events/atoms/ClaimTicketCard.svelte';
 
 	export let data;
-	console.log(data);
 
-	let noDates = false;
 	let starDate: string;
 	let endDate: string;
-	let dates = {};
+	let dates = {
+		dateStart: '',
+		dateEnding: ''
+	};
 
 	data.overview.verifiers.forEach((verifier) => {
-		if (verifier.dateStart) {
-			dates.dateStart = verifier.dateStart;
+		if (verifier.hasOwnProperty('dateStart')) {
+			dates.dateStart = (verifier as Timelock).dateStart;
 		}
-		if (verifier.dateEnding) {
-			dates.dateEnding = verifier.dateEnding;
+		if ((verifier as Timelock).dateEnding) {
+			dates.dateEnding = (verifier as Timelock).dateEnding;
 		}
 	});
 
@@ -30,31 +33,25 @@
 	} else {
 		starDate = unixTimestampToFormattedDate(data.overview.dateCreated);
 	}
-
-	onMount(() => {
-		noDates = data.overview.verifiers.every(
-			(verifier) => !('dateStart' in verifier && 'dateEnding' in verifier)
-		);
-	});
 </script>
 
-<section class="container">
+<section class="container-medium">
 	<div class="main-wrapper">
-		<div class="side-wrapper">
+		<div class="side-wrapper event-id">
 			<h4>{`# ${data.overview.eventId}`}</h4>
 			<p class="small">Event ID</p>
 		</div>
-		<div class="event-wrapper">
+		<div class="float-ticket-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
 			<FloatTicket float={transformEventToFloat(data.overview)} />
 		</div>
-		<div class="side-wrapper">
+		<div class="side-wrapper floats-minted">
 			<h4>{`${data.overview.totalSupply}`}</h4>
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
-	<div class="container-small details-wrapper {noDates ? 'two-columns' : ''}">
+	<div class="details-wrapper">
 		{#if starDate && endDate}
 			<div>
 				<p class="large">{starDate}</p>
@@ -85,73 +82,134 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<div>
+	<div class="button-wrapper">
 		<Button
-			size="medium"
-			width="extended"
+			size="large"
+			width="full-width"
 			on:click={() => claimFloat(data.overview.eventId, data.overview.host)}
 		>
 			<p>Claim FLOAT</p>
 		</Button>
 	</div>
 </section>
+<section class="container-small claims-wrapper">
+	<div class="row-1 claims-title-wrapper align-center">
+		<Icon icon="tabler:news" color="var(--clr-neutral-600)" />
+		<p>LATEST CLAIMS</p>
+	</div>
+	<div class="column-3 claims-cards-wrapper">
+		{#each data.claims as claim}
+			<ClaimTicketCard {claim} />
+		{/each}
+	</div>
+</section>
 
 <style lang="scss">
-	section {
+	section:first-of-type {
 		position: relative;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		justify-content: center;
 		gap: var(--space-13);
+		flex: 1;
+		border-bottom: 1px dashed var(--clr-border-primary);
+
+		@include mq(medium) {
+			min-height: 80vh;
+		}
 
 		.main-wrapper {
-			@media (min-width: 890px) {
-				display: grid;
-				grid-template-columns: repeat(3, 1fr);
+			display: grid;
+			grid-auto-columns: 1fr;
+			grid-template-columns: 1fr 1fr;
+			grid-template-rows: auto 1fr;
+			gap: var(--space-12) var(--space-6);
+			width: 100%;
+			grid-template-areas:
+				'event-id floats-minted'
+				'float-ticket float-ticket';
+
+			.event-id {
+				grid-area: event-id;
+			}
+			.floats-minted {
+				grid-area: floats-minted;
+			}
+
+			@include mq(medium) {
+				grid-template-columns: 2fr 7fr 2fr;
+				grid-template-rows: 1fr;
 				justify-content: center;
 				align-items: center;
 				text-align: center;
 				gap: var(--space-16);
+				grid-template-areas: 'event-id float-ticket floats-minted';
 			}
 
 			.side-wrapper {
-				display: none;
+				display: flex;
+				flex-direction: column;
+				align-items: center;
 
-				@media (min-width: 890px) {
-					display: block;
-					h4 {
-						color: var(--clr-text-main);
-					}
+				h4 {
+					color: var(--clr-text-main);
+					font-size: var(--font-size-5);
+				}
 
-					p {
-						color: var(--clr-text-off);
-					}
+				p {
+					color: var(--clr-text-off);
 				}
 			}
 
-			.event-wrapper {
+			.float-ticket-wrapper {
+				grid-area: float-ticket;
 				display: flex;
-				flex-direction: column;
-				justify-content: center;
 				align-items: center;
+				justify-content: center;
+				width: 100%;
 			}
 		}
 
 		.details-wrapper {
-			display: grid;
-			grid-template-columns: repeat(3, 1fr);
+			display: flex;
+			flex-direction: row;
+			gap: var(--space-18);
+			justify-content: center;
+			border-block: 1px dashed var(--clr-border-primary);
+			padding: var(--space-5) var(--space-12);
 			text-align: center;
-			border-top: 1px dashed var(--clr-border-primary);
-			border-bottom: 1px dashed var(--clr-border-primary);
-			padding: var(--space-5) 0 var(--space-5) 0;
-
-			&.two-columns {
-				grid-template-columns: repeat(2, 1fr);
-			}
 
 			.small {
 				color: var(--clr-text-off);
 			}
+		}
+
+		.button-wrapper {
+			position: fixed;
+			bottom: 0;
+			width: 100%;
+			z-index: 30;
+			background-color: var(--clr-primary-main);
+			border-top-left-radius: var(--radius-4);
+			border-top-right-radius: var(--radius-4);
+
+			@include mq(small) {
+				position: relative;
+				width: 230px;
+				background-color: transparent;
+			}
+		}
+	}
+
+	.claims-wrapper {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-5);
+		align-items: flex-start;
+
+		.claims-cards-wrapper {
+			width: 100%;
 		}
 	}
 </style>
