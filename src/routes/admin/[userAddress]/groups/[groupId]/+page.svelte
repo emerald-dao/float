@@ -65,7 +65,7 @@
 					bind:paginationMax
 					bind:paginationMin
 				/>
-				<AddFloatToGroupModal groupId={$page.params.groupId} />
+				<AddFloatToGroupModal groupId={$page.params.groupId} idsOnTheGroup={data.group.floatsIds} />
 			</div>
 		{/await}
 	{/if}

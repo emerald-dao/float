@@ -13,6 +13,7 @@
 	import ItemsListWrapper from '$lib/components/atoms/ItemsListWrapper.svelte';
 
 	export let groupId: string;
+	export let idsOnTheGroup: string[];
 
 	$: id = `add-float-to-group-${groupId}`;
 
@@ -24,7 +25,9 @@
 	let selectedFloatsIds: string[] = [];
 
 	onMount(async () => {
-		floats = await getFLOATs($user.addr);
+		let allFloats = await getFLOATs($user.addr);
+
+		floats = allFloats.filter((float) => !idsOnTheGroup.includes(float.id));
 	});
 
 	const handleSelectFloat = (floatId: string) => {
