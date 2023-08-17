@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getMainPageFLOATs } from '$flow/actions';
+	import { network } from '$flow/config';
 	import Blur from '$lib/components/Blur.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
@@ -7,25 +8,28 @@
 	import SectionHeading from './atoms/SectionHeading.svelte';
 
 	async function fetchFLOATs(): Promise<FLOAT[]> {
-		const floats = [
-			{
-				key: '0x99bd48c8036e2876',
-				value: [
-					'187900113',
-					'187900113',
-					'405872636',
-					'228913853',
-					'234035601',
-					'241506344',
-					'228534369',
-					'269981325',
-					'193020626',
-					'185940653',
-					'584134932',
-					'287540237'
-				]
-			}
-		];
+		const floats =
+			network === 'mainnet'
+				? [
+						{
+							key: '0x99bd48c8036e2876',
+							value: [
+								'187900113',
+								'187900113',
+								'405872636',
+								'228913853',
+								'234035601',
+								'241506344',
+								'228534369',
+								'269981325',
+								'193020626',
+								'185940653',
+								'584134932',
+								'287540237'
+							]
+						}
+				  ]
+				: [];
 		return await getMainPageFLOATs(floats);
 	}
 </script>
