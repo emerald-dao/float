@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { transactionStore } from './../lib/stores/flow/TransactionStore.ts';
 	import { profile } from '$lib/stores/flow/FlowStore';
 	import '../app.postcss';
 	import '@emerald-dao/design-system/build/variables-dark.css';
 	import '@emerald-dao/design-system/build/variables-light.css';
 	import '@emerald-dao/design-system/build/variables.css';
 	import '@emerald-dao/component-library/styles/app.scss';
-	import { Header, Footer } from '@emerald-dao/component-library';
+	import { Header, Footer, TransactionModal } from '@emerald-dao/component-library';
 	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
@@ -46,6 +47,11 @@
 	}
 </script>
 
+<TransactionModal
+	transactionInProgress={$transactionStore.progress}
+	transactionStatus={$transactionStore.transaction}
+	on:close={() => transactionStore.resetTransaction()}
+/>
 {#if route !== 'admin' || !($user && $user.addr)}
 	<Header {logIn} {unauthenticate} {getFindProfile} user={$user} {navElements} />
 {:else}
