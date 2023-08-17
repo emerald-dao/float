@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { user } from '$stores/flow/FlowStore';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import { Label } from '@emerald-dao/component-library';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
@@ -9,7 +10,7 @@
 	export let display: 'grid' | 'list' = 'list';
 </script>
 
-<a class={`main-wrapper ${display}`} href={`/admin/events/${event.eventId}`}>
+<a class={`main-wrapper ${display}`} href={`/admin/${$user.addr}/events/${event.eventId}`}>
 	<div class="general-info-wrapper">
 		<div class="title-wrapper row-3">
 			<img src={event.image} width="55px" height="55px" alt="logo" />

@@ -19,7 +19,7 @@
 			id: '123456789',
 			originalRecipient: 'John Doe',
 			eventName: 'Emerald City',
-			eventType: 'hackathon',
+			eventType: 'conference',
 			eventHost: 'Emerald DAO'
 		}}
 	/>

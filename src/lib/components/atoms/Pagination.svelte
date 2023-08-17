@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
-	import { fly } from 'svelte/transition';
 
 	export let itemsPerPage = 10;
 	export let totalItems: number;
-	export let noItemsMessage = 'No items found';
 	export let paginationMin: number;
 	export let paginationMax: number;
 
@@ -28,7 +26,7 @@
 </script>
 
 <slot />
-<div class="wrapper" in:fly={{ x: 10, duration: 400 }}>
+<div>
 	{#if numberOfPages > 0}
 		<div class="pagination">
 			<div>
@@ -54,10 +52,6 @@
 				</div>
 			</div>
 		</div>
-	{:else if totalItems === 0}
-		<div class="no-items-wrapper">
-			<p><em>{noItemsMessage}</em></p>
-		</div>
 	{/if}
 </div>
 
@@ -65,7 +59,7 @@
 	.pagination {
 		display: grid;
 		grid-template-columns: 1fr 3fr 1fr;
-		padding-top: var(--space-4);
+		gap: var(--space-3);
 
 		.off {
 			color: var(--clr-text-off);
@@ -85,15 +79,6 @@
 		.disabled {
 			pointer-events: none;
 			opacity: 0.3;
-		}
-	}
-	.no-items-wrapper {
-		display: flex;
-		justify-content: center;
-		padding-block: var(--space-14) var(--space-10);
-
-		p {
-			color: var(--clr-text-off);
 		}
 	}
 </style>

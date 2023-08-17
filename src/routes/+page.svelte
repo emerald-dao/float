@@ -8,10 +8,19 @@
 		MintAFloatSection,
 		TechnicalDetailsSection
 	} from './_components/sections';
+	import { getStats } from '$flow/actions';
 </script>
 
 <HeroSection />
-<StatsSection bordersColor="var(--clr-border-primary)" />
+{#await getStats() then stats}
+	<StatsSection
+		bordersColor="var(--clr-border-primary)"
+		data={{
+			data1: { title: 'students', stat: parseInt(stats.floatTotalSupply).toLocaleString() },
+			data2: { title: 'hours of content', stat: parseInt(stats.eventsCreated).toLocaleString() }
+		}}
+	/>
+{/await}
 <EventTypesSection />
 <ExperiencesSection />
 <HowItWorksSection />

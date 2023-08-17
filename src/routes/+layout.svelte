@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { profile } from '$lib/stores/flow/FlowStore';
 	import '../app.postcss';
 	import '@emerald-dao/design-system/build/variables-dark.css';
 	import '@emerald-dao/design-system/build/variables-light.css';
@@ -11,6 +12,7 @@
 	import { getFindProfile } from '$flow/utils';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
+	import getProfile from '$lib/utilities/profiles/getProfile';
 
 	let route: string | null;
 
@@ -32,6 +34,16 @@
 			html.setAttribute('data-theme', 'light');
 		}
 	});
+
+	const connectProfileToStore = async (address: string) => {
+		$profile = await getProfile(address);
+	};
+
+	$: if ($user.addr) {
+		connectProfileToStore($user.addr);
+	} else {
+		$profile = null;
+	}
 </script>
 
 {#if route !== 'admin' || !($user && $user.addr)}

@@ -8,6 +8,7 @@
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let data;
+	console.log(data);
 
 	let noDates = false;
 	let starDate: string;
@@ -85,7 +86,13 @@
 		</div>
 	</div>
 	<div>
-		<Button size="medium" width="extended" on:click={() => claimFloat()}><p>Claim FLOAT</p></Button>
+		<Button
+			size="medium"
+			width="extended"
+			on:click={() => claimFloat(data.overview.eventId, data.overview.host)}
+		>
+			<p>Claim FLOAT</p>
+		</Button>
 	</div>
 </section>
 

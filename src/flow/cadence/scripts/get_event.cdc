@@ -64,7 +64,7 @@ pub struct FLOATEventMetadata {
           self.verifiers.append(limited[0])
         }
       }
-      self.eventType = "other"
+      self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
 
       if let prices = event.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
