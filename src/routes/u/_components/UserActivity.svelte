@@ -2,32 +2,32 @@
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { Profile } from '$lib/types/user/profile.interface';
+	import CardAndTicketToggle from './atoms/CardAndTicketToggle.svelte';
 	import UserCollection from './sections/UserCollection.svelte';
-	import type { Event } from '$lib/types/event/event.interface';
 
-	export let floats: FLOAT[] = [];
-	export let events: Event[] = [];
+	export let floats: FLOAT[];
 	export let userProfile: Profile;
-	export let groups: GroupWithFloatsIds[] = [];
+	export let groups: GroupWithFloatsIds[];
+
+	let viewMode: 'cards' | 'tickets' = 'tickets';
 </script>
 
 <section>
 	<div class="header-wrapper">
 		<div class="container-medium">
-			<div class="row">
+			<div class="profile-wrapper">
 				<img src={userProfile.avatar} alt="user avatar" />
 				<p class="large">{userProfile.name}</p>
 			</div>
-			<div class="title-wrapper">
-				<h4 class="h5">Collection</h4>
-			</div>
-			<div class="right-wrapper">
+			<h4 class="h5">Collection</h4>
+			<div class="right-wrapper row-4">
 				<p class="small">{`${floats.length} FLOATs`}</p>
+				<CardAndTicketToggle bind:viewMode />
 			</div>
 		</div>
 	</div>
 	<div class="container">
-		<UserCollection {floats} {groups} {events} />
+		<UserCollection {floats} {groups} bind:viewMode />
 	</div>
 </section>
 
@@ -48,7 +48,7 @@
 			display: flex;
 			position: sticky;
 			top: 0;
-			z-index: 1000;
+			z-index: 999;
 			margin-top: var(--space-6);
 			background-color: var(--clr-background-primary);
 		}
@@ -62,7 +62,9 @@
 			padding: var(--space-3) 0;
 		}
 
-		.row {
+		.profile-wrapper {
+			display: flex;
+			flex-direction: row;
 			align-items: center;
 			gap: var(--space-4);
 
@@ -77,12 +79,11 @@
 			}
 		}
 
-		.title-wrapper {
-			text-align: center;
-		}
-
 		.right-wrapper {
 			text-align: right;
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
 		}
 	}
 </style>

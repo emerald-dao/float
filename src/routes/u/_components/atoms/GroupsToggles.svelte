@@ -6,18 +6,21 @@
 	export let selectedGroupsIds: number[] = [];
 </script>
 
-<div class="tags-wrapper">
-	{#each groups as group}
-		<TagToggle
-			icon=""
-			name={group.name}
-			on:selected={() => (selectedGroupsIds = [...selectedGroupsIds, group.id])}
-			on:unselected={() => (selectedGroupsIds = selectedGroupsIds.filter((id) => id !== group.id))}
-		>
-			{group.name}
-		</TagToggle>
-	{/each}
-</div>
+{#if groups}
+	<div class="tags-wrapper">
+		{#each groups as group}
+			<TagToggle
+				icon=""
+				name={group.name}
+				on:selected={() => (selectedGroupsIds = [...selectedGroupsIds, group.id])}
+				on:unselected={() =>
+					(selectedGroupsIds = selectedGroupsIds.filter((id) => id !== group.id))}
+			>
+				{group.name}
+			</TagToggle>
+		{/each}
+	</div>
+{/if}
 
 <style lang="scss">
 	.tags-wrapper {

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import deleteEvent from '../../../../_actions/event-actions/deleteEvent';
-	import toggleClaiming from '../../../../_actions/event-actions/toggleClaiming';
-	import toggleTransfering from '../../../../_actions/event-actions/toggleTransfering';
+	import deleteEvent from '../../_actions/event-actions/deleteEvent';
+	import toggleClaiming from '../../_actions/event-actions/toggleClaiming';
+	import toggleTransfering from '../../_actions/event-actions/toggleTransfering';
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
@@ -21,6 +21,7 @@
 					type="checkbox"
 					name="claiming"
 					id="claiming"
+					checked={event.claimable}
 					on:change={() => toggleClaiming(event.eventId)}
 				/>
 				<span class="slider" />
@@ -33,6 +34,7 @@
 					type="checkbox"
 					name="transfering"
 					id="transfering"
+					checked={event.transferrable}
 					on:change={() => toggleTransfering(event.eventId)}
 				/>
 				<span class="slider" />
