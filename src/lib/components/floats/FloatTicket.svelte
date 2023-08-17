@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import { profile } from '$stores/flow/FlowStore';
 
 	export let float: FLOAT;
 	export let showBack = false;
@@ -101,6 +102,11 @@
 							{/if}
 						</div>
 					</div>
+					{#if !isTicket}
+						{#if $profile?.name}
+							<span class="w-medium profile-name-placeholder">{$profile?.name}</span>
+						{/if}
+					{/if}
 					<span class="organized-by-placeholder"
 						>Organized by <span class="w-medium">{float.eventHost}</span></span
 					>
@@ -333,6 +339,11 @@
 							.heading-wrapper {
 								align-items: center;
 							}
+						}
+						.profile-name-placeholder {
+							text-align: center;
+							color: var(--clr-heading-main);
+							font-size: var(--font-size-5);
 						}
 						.organized-by-placeholder {
 							text-align: center;
