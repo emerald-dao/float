@@ -12,9 +12,11 @@
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
+	import FloatCard from '../../../admin/[userAddress]/my-collection/_components/FloatCard/FloatCard.svelte';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
+	export let viewMode: 'cards' | 'tickets';
 
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
@@ -105,22 +107,30 @@
 			{#if contents.length > 0}
 				{#each contents as float, i}
 					{#if i < elementsPerPage}
-						<div class="main-wrapper">
-							<div class="timeline">
-								<div class="line" />
-								<div class="date-wrapper">
-									<p class="small">
-										{unixTimestampToFormattedDate(float.dateReceived, 'month')}
-									</p>
-									<p class="large w-medium">
-										{unixTimestampToFormattedDate(float.dateReceived, 'year')}
-									</p>
+						<div class="float-wrapper" class:grid={viewMode === 'tickets'}>
+							{#if viewMode === 'tickets'}
+								<div class="timeline">
+									<div class="line" />
+									<div class="date-wrapper">
+										<p class="small">
+											{unixTimestampToFormattedDate(float.dateReceived, 'month')}
+										</p>
+										<p class="large w-medium">
+											{unixTimestampToFormattedDate(float.dateReceived, 'year')}
+										</p>
+									</div>
+									<div class="line" />
 								</div>
-								<div class="line" />
-							</div>
-							<div class="tickets">
-								<FloatTicket {float} />
-							</div>
+							{/if}
+							{#if viewMode === 'tickets'}
+								<div class="ticket-wrapper">
+									<FloatTicket {float} />
+								</div>
+							{:else if viewMode === 'cards'}
+								<div class="card-wrapper">
+									<FloatCard {float} hasLink={false} />
+								</div>
+							{/if}
 						</div>
 					{/if}
 				{/each}
@@ -191,18 +201,20 @@
 		.rightside {
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
+			justify-content: flex-start;
 			align-items: center;
 
-			.main-wrapper {
+			.float-wrapper {
 				display: flex;
 				flex-direction: column;
 				justify-content: center;
 				width: 100%;
 
-				@include mq(small) {
-					display: grid;
-					grid-template-columns: 1fr 3fr;
+				&.grid {
+					@include mq(small) {
+						display: grid;
+						grid-template-columns: 1fr 3fr;
+					}
 				}
 
 				.timeline {
@@ -231,11 +243,16 @@
 					}
 				}
 
-				.tickets {
+				.ticket-wrapper {
 					width: 100%;
 					display: flex;
-					flex-direction: column;
 					padding-block: var(--space-10);
+				}
+
+				.card-wrapper {
+					width: 100%;
+					padding-block: var(--space-3);
+					padding-left: var(--space-14);
 				}
 			}
 		}
