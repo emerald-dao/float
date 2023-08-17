@@ -5,51 +5,58 @@
 
 	const EVENT_TYPES = [
 		{
-			name: 'Online Event',
-			description: 'Host an online event with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Discord Meeting',
+			description:
+				'Connect and collaborate with your community in a Discord meeting with voice and text chat.',
+			imageUrl: '/event-images/discord-meeting.png',
+			icon: 'tabler:headphones'
 		},
 		{
-			name: 'In-person Event',
-			description: 'Host an in-person event with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Twitter Space',
+			description:
+				'Host an interactive audio conversation on Twitter with your followers using Twitter Spaces.',
+			imageUrl: '/event-images/twitter-space.png',
+			icon: 'tabler:brand-twitter'
 		},
 		{
-			name: 'Hybrid Event',
-			description: 'Host a hybrid event with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Gaming Competition',
+			description:
+				'Organize an exciting gaming competition where players compete against each other for victory.',
+			imageUrl: '/event-images/gaming-competition.png',
+			icon: 'tabler:device-gamepad'
 		},
 		{
-			name: 'Virtual Event',
-			description: 'Host a virtual event with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Product Presentation',
+			description:
+				'Showcase your latest product to a global audience with a captivating and informative presentation.',
+			imageUrl: '/event-images/product-presentation.png',
+			icon: 'tabler:package'
 		},
 		{
-			name: 'Webinar',
-			description: 'Host a webinar with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Course',
+			description:
+				'Offer an educational course to share your expertise and knowledge with eager learners.',
+			imageUrl: '/event-images/course.png',
+			icon: 'tabler:book'
 		},
 		{
-			name: 'Workshop',
-			description: 'Host a workshop with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Hackathon',
+			description:
+				'Host a hackathon event where programmers collaborate intensively on software projects.',
+			imageUrl: '/event-images/hackathon.png',
+			icon: 'tabler:code'
 		},
 		{
-			name: 'Meetup',
-			description: 'Host a meetup with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
-			icon: 'tabler:home'
+			name: 'Sport Competition',
+			description:
+				'Organize a sports competition that brings athletes together to showcase their skills and sportsmanship.',
+			imageUrl: '/event-images/sport-competition.png',
+			icon: 'tabler:play-football'
 		},
 		{
 			name: 'Conference',
 			description: 'Host a conference with live video and chat.',
-			imageUrl: '/event-images/conference-event.jpg',
+			imageUrl: '/event-images/conference-event.png',
 			icon: 'tabler:home'
 		}
 	];
