@@ -1,14 +1,11 @@
-import { getEvent, getEventClaims } from '$flow/actions';
+import { getEvent, getEventClaims, getLatestEventClaims } from '$flow/actions';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load({ params }) {
 	const event = await getEvent(params.userAddress, params.id);
-	const eventClaims = await getEventClaims(params.userAddress, params.id);
-	const latestClaims = Object.values(eventClaims)
-		.sort((a, b) => Number(b.serial) - Number(a.serial))
-		.slice(0, 20);
+	const eventClaims = await getLatestEventClaims(params.userAddress, params.id, 20);
 
 	const getEventWithStatus = (event: Event): EventWithStatus => {
 		const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
@@ -26,6 +23,6 @@ export async function load({ params }) {
 
 	return {
 		event: getEventWithStatus(event),
-		eventClaims: latestClaims
+		eventClaims
 	};
 }

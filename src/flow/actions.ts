@@ -19,6 +19,7 @@ import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
+import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import type { Claim } from '$lib/types/event/event-claim.interface';
@@ -219,6 +220,20 @@ export const getEventClaims = async (eventHost: string, eventId: string): Promis
 			cadence: replaceWithProperValues(getEventClaimsScript),
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
 		});
+	} catch (e) {
+		console.log('Error in getEventClaims', e);
+		throw new Error('Error in getEventClaims');
+	}
+};
+
+export const getLatestEventClaims = async (eventHost: string, eventId: string, amount: number): Promise<Claim[]> => {
+	try {
+		let thing = await fcl.query({
+			cadence: replaceWithProperValues(getLatestEventClaimsScript),
+			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64), arg(amount.toString(), t.UInt64)]
+		});
+		console.log(thing)
+		return thing.sort((a, b) => Number(b.serial) - Number(a.serial))
 	} catch (e) {
 		console.log('Error in getEventClaims', e);
 		throw new Error('Error in getEventClaims');
