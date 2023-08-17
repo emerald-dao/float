@@ -57,7 +57,7 @@ const contractData = {
 	},
 	FLOAT: {
 		emulator: '0xf8d6e0586b0a20c7',
-		testnet: env.PUBLIC_FLOAT_CONTRACT_ADDRESS,
+		testnet: '',
 		mainnet: '0x2d4c3caffbeab845'
 	}
 };

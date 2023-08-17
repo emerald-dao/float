@@ -1,7 +1,7 @@
-const toggleClaiming = () => {
-	// TODO: Toggle claiming
+import { toggleClaimingExecution } from "$flow/actions";
 
-	alert('I should toggle claiming');
+const toggleClaiming = async (eventId: string) => {
+	return await toggleClaimingExecution(eventId)
 };
 
 export default toggleClaiming;

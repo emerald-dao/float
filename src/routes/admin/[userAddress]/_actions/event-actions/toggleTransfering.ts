@@ -1,7 +1,7 @@
-const toggleTransfering = () => {
-	// TODO: Toggle transfering
+import { toggleTransferringExecution } from "$flow/actions";
 
-	alert('I should toggle transfering');
+const toggleTransfering = async (eventId: string) => {
+	return await toggleTransferringExecution(eventId);
 };
 
 export default toggleTransfering;

@@ -13,19 +13,19 @@
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon}>
 	<div class="row-7">
-		{#if powerUpData.data.startDate}
+		{#if powerUpData.data.dateStart}
 			<div class="column">
 				<span class="off small"> Start date </span>
 				<span class="small">
-					{unixTimestampToFormattedDate(powerUpData.data.endDate)}
+					{unixTimestampToFormattedDate(powerUpData.data.dateEnding)}
 				</span>
 			</div>
 		{/if}
-		{#if powerUpData.data.endDate}
+		{#if powerUpData.data.dateEnding}
 			<div class="column">
 				<span class="off small"> End date </span>
 				<span class="small">
-					{unixTimestampToFormattedDate(powerUpData.data.endDate)}
+					{unixTimestampToFormattedDate(powerUpData.data.dateEnding)}
 				</span>
 			</div>
 		{/if}

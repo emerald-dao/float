@@ -10,6 +10,8 @@
 
 	export let data;
 
+	console.log(data);
+
 	let paginationMax: number;
 	let paginationMin: number;
 

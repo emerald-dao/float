@@ -1,7 +1,7 @@
-const deleteEvent = () => {
-	// TODO: Delete event
+import { deleteEventExecution } from "$flow/actions";
 
-	alert('I should delete an event');
+const deleteEvent = async (eventId: string) => {
+	return await deleteEventExecution(eventId);
 };
 
 export default deleteEvent;

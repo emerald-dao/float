@@ -20,7 +20,7 @@
 			</div>
 		</div>
 		<EventDomains event={data.event} user={data.user} />
-		<EventActions />
+		<EventActions event={data.event} />
 	</div>
 	<div class="right-wrapper hide-on-small">
 		<EventInfo claims={data.eventClaims} event={data.event} />

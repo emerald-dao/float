@@ -6,6 +6,7 @@ export interface EventGeneratorData {
 	eventType: EventType;
 	description: string;
 	host: string;
+	url: string;
 	logo: [File] | [];
 	image: [File] | [];
 	totalSupply: string;
@@ -31,8 +32,8 @@ export type PowerUpType = (typeof POWER_UPS_TYPES)[number];
 
 type PaymentPowerUpData = number;
 type TimeLockPowerUpData = {
-	startDate: string; // unix timestamp
-	endDate: string; // unix timestamp
+	dateStart: string; // unix timestamp
+	dateEnding: string; // unix timestamp
 };
 type SecretCodePowerUpData = string;
 type LimitedPowerUpData = number;

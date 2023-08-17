@@ -41,7 +41,7 @@ pub struct FLOATMetadata {
     self.eventName = event.name
     self.transferrable = event.transferrable
     self.totalSupply = event.totalSupply
-    self.eventType = "other"
+    self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
     self.originalRecipient = float.originalRecipient
     self.id = float.id
     self.serial = float.serial

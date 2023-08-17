@@ -1,7 +1,6 @@
 import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../../utility/NonFungibleToken.cdc"
 import MetadataViews from "../../utility/MetadataViews.cdc"
-import GrantedAccountAccess from "../../sharedaccount/GrantedAccountAccess.cdc"
 
 transaction {
 
@@ -18,13 +17,6 @@ transaction {
       acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
       acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
-    }
-
-    // SETUP SHARED MINTING
-    if acct.borrow<&GrantedAccountAccess.Info>(from: GrantedAccountAccess.InfoStoragePath) == nil {
-        acct.save(<- GrantedAccountAccess.createInfo(), to: GrantedAccountAccess.InfoStoragePath)
-        acct.link<&GrantedAccountAccess.Info{GrantedAccountAccess.InfoPublic}>
-                (GrantedAccountAccess.InfoPublicPath, target: GrantedAccountAccess.InfoStoragePath)
     }
   }
 

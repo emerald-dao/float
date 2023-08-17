@@ -880,8 +880,7 @@ pub contract FLOAT: NonFungibleToken {
             transferrable: Bool,
             url: String,
             verifiers: [{IVerifier}],
-            _ extraMetadata: {String: AnyStruct},
-            initialGroups: [String]
+            _ extraMetadata: {String: AnyStruct}
         ): UInt64 {
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
@@ -906,10 +905,7 @@ pub contract FLOAT: NonFungibleToken {
             )
             let eventId = FLOATEvent.eventId
             self.events[eventId] <-! FLOATEvent
-
-            for groupName in initialGroups {
-                self.addEventToGroup(groupName: groupName, eventId: eventId)
-            }
+            
             return eventId
         }
 
