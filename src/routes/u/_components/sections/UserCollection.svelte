@@ -109,7 +109,7 @@
 					{#if i < elementsPerPage}
 						<div class="float-wrapper" class:grid={viewMode === 'tickets'}>
 							{#if viewMode === 'tickets'}
-								<div class="timeline">
+								<div class="timeline" class:last={contents.length - 1 === i} class:first={i === 0}>
 									<div class="line" />
 									<div class="date-wrapper">
 										<p class="small">
@@ -222,11 +222,22 @@
 					flex-direction: column;
 					align-items: center;
 
+					&.first {
+						.line:first-child {
+							border-image: linear-gradient(transparent, var(--clr-primary-badge)) 30;
+						}
+					}
+
+					&.last {
+						.line:last-child {
+							border-image: linear-gradient(var(--clr-primary-badge), transparent) 30;
+						}
+					}
+
 					.line {
 						@include mq(small) {
 							flex: 1;
-							border: 1px dashed rgba(56, 232, 198, 0.1);
-							width: 2px;
+							border: 1.5px solid var(--clr-primary-badge);
 						}
 					}
 
