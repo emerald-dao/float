@@ -21,6 +21,7 @@
 					type="checkbox"
 					name="claiming"
 					id="claiming"
+					checked={event.claimable}
 					on:change={() => toggleClaiming(event.eventId)}
 				/>
 				<span class="slider" />
@@ -33,6 +34,7 @@
 					type="checkbox"
 					name="transfering"
 					id="transfering"
+					checked={event.transferrable}
 					on:change={() => toggleTransfering(event.eventId)}
 				/>
 				<span class="slider" />
