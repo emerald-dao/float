@@ -47,6 +47,7 @@
 			element.style.backgroundImage = `url('${file}')`;
 			element.style.backgroundSize = 'cover';
 			element.style.backgroundPosition = 'center';
+			element.style.backgroundColor = 'var(--clr-surface-secondary)';
 		} else {
 			const reader = new FileReader();
 			reader.readAsDataURL(file); // base 64 format
@@ -55,6 +56,7 @@
 				element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
 				element.style.backgroundSize = 'cover';
 				element.style.backgroundPosition = 'center';
+				element.style.backgroundColor = 'var(--clr-surface-secondary)';
 			};
 		}
 	};
