@@ -8,6 +8,10 @@ pub fun main(account: Address, eventId: UInt64, amount: UInt64): [FLOAT.TokenIde
   let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)!
   let claims: [FLOAT.TokenIdentifier] = event.getClaimed().values
 
+  if event.totalSupply == 0 {
+    return []
+  }
+
   let latestSerial: UInt64 = event.totalSupply - 1
   for claim in claims {
     if claim.serial + amount > latestSerial {
