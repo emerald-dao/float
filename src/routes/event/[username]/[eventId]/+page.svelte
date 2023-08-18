@@ -8,6 +8,9 @@
 	import type { Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from '../../../admin/[userAddress]/events/atoms/ClaimTicketCard.svelte';
+	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
+	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
+	import EventStatus from '$lib/components/events/EventStatus.svelte';
 
 	export let data;
 
@@ -18,7 +21,7 @@
 		dateEnding: ''
 	};
 
-	data.overview.verifiers.forEach((verifier) => {
+	data.event.verifiers.forEach((verifier) => {
 		if (verifier.hasOwnProperty('dateStart')) {
 			dates.dateStart = (verifier as Timelock).dateStart;
 		}
@@ -31,27 +34,38 @@
 		starDate = unixTimestampToFormattedDate(dates.dateStart);
 		endDate = unixTimestampToFormattedDate(dates.dateEnding);
 	} else {
-		starDate = unixTimestampToFormattedDate(data.overview.dateCreated);
+		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
 	}
 </script>
 
 <section class="container-medium">
 	<div class="main-wrapper">
 		<div class="side-wrapper event-id">
-			<h4>{`# ${data.overview.eventId}`}</h4>
+			<h4>{`# ${data.event.eventId}`}</h4>
 			<p class="small">Event ID</p>
 		</div>
 		<div class="float-ticket-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<FloatTicket float={transformEventToFloat(data.overview)} />
+			<FloatTicket float={transformEventToFloat(data.event)} />
 		</div>
 		<div class="side-wrapper floats-minted">
-			<h4>{`${data.overview.totalSupply}`}</h4>
+			<h4>{`${data.event.totalSupply}`}</h4>
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
 	<div class="details-wrapper">
+		<div class="row-2 align-center">
+			{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
+				{#if data.event.status.verifiersStatus.timelockStatus}
+					<TimelockStateLabel timelockStatus={data.event.status.verifiersStatus.timelockStatus} />
+				{/if}
+				{#if data.event.status.verifiersStatus.limitedStatus}
+					<LimitedStateLabel limitedStatus={data.event.status.verifiersStatus.limitedStatus} />
+				{/if}
+			{/if}
+			<EventStatus status={data.event.status.generalStatus} />
+		</div>
 		{#if starDate && endDate}
 			<div>
 				<p class="large">{starDate}</p>
@@ -68,11 +82,11 @@
 			</div>
 		{/if}
 		<div>
-			{#if !data.overview.price}
+			{#if !data.event.price}
 				<p class="large">Free</p>
 			{:else}
 				<Currency
-					amount={data.overview.price}
+					amount={data.event.price}
 					currency={'FLOW'}
 					fontSize={'18px'}
 					decimalNumbers={2}
@@ -86,7 +100,7 @@
 		<Button
 			size="large"
 			width="full-width"
-			on:click={() => claimFloat(data.overview.eventId, data.overview.host)}
+			on:click={() => claimFloat(data.event.eventId, data.event.host)}
 		>
 			<p>Claim FLOAT</p>
 		</Button>
@@ -98,9 +112,13 @@
 		<p>LATEST CLAIMS</p>
 	</div>
 	<div class="column-3 claims-cards-wrapper">
-		{#each data.claims as claim}
-			<ClaimTicketCard {claim} />
-		{/each}
+		{#if data.claims.length === 0}
+			<p>No claims yet</p>
+		{:else}
+			{#each data.claims as claim}
+				<ClaimTicketCard {claim} />
+			{/each}
+		{/if}
 	</div>
 </section>
 
@@ -176,6 +194,7 @@
 			flex-direction: row;
 			gap: var(--space-18);
 			justify-content: center;
+			align-items: center;
 			border-block: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) var(--space-12);
 			text-align: center;
