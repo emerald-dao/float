@@ -7,6 +7,8 @@
 	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
 	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
 
 	const hasPowerUps = () => {
 		for (const key in $eventGeneratorData.powerups) {
@@ -21,14 +23,26 @@
 <StepComponentWrapper alignCenter={true}>
 	<div class="main-wrapper">
 		<div in:fly|local={{ x: -500, duration: 700 }} class="float-wrapper">
-			<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+			{#if EVENT_TYPE_DETAILS[$generatedNft.eventType].certificateType !== 'ticket'}
+				<FloatCertificate float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+			{:else}
+				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+			{/if}
 			<div class="target">
 				<div id="target-element">
-					<FloatTicket
-						float={$generatedNft}
-						showBack={$eventGeneratorActiveStep === 1}
-						isForScreenshot={true}
-					/>
+					{#if EVENT_TYPE_DETAILS[$generatedNft.eventType].certificateType !== 'ticket'}
+						<FloatCertificate
+							float={$generatedNft}
+							showBack={$eventGeneratorActiveStep === 1}
+							isForScreenshot={true}
+						/>
+					{:else}
+						<FloatTicket
+							float={$generatedNft}
+							showBack={$eventGeneratorActiveStep === 1}
+							isForScreenshot={true}
+						/>
+					{/if}
 				</div>
 			</div>
 		</div>

@@ -251,11 +251,13 @@
 							.img-container {
 								align-items: center;
 								justify-content: center;
+								width: 100%;
 
 								.float-logo,
 								img,
 								.image-placeholder {
-									max-width: 8%;
+									max-width: 10%;
+									min-width: 10%;
 									height: auto;
 									aspect-ratio: 1 / 1;
 									border-radius: var(--radius-1);

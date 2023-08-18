@@ -4,7 +4,7 @@ const homeFloatTicket: FLOAT = {
 	id: '123456789',
 	originalRecipient: '0x99dd9933jj99k0',
 	eventName: 'Emerald City',
-	eventType: 'hackathon',
+	eventType: 'conference',
 	eventHost: 'Emerald DAO',
 	dateReceived: '1649886952.00000000',
 	eventDescription: 'Hackathon dictated by Emerald City',

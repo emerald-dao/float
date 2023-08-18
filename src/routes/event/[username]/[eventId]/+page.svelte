@@ -6,9 +6,10 @@
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 
 	export let data;
-	console.log(data);
 
 	let noDates = false;
 	let starDate: string;
@@ -47,7 +48,11 @@
 		<div class="event-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<FloatTicket float={transformEventToFloat(data.overview)} />
+			{#if EVENT_TYPE_DETAILS[data.overview.eventType].certificateType !== 'ticket'}
+				<FloatCertificate float={transformEventToFloat(data.overview)} />
+			{:else}
+				<FloatTicket float={transformEventToFloat(data.overview)} />
+			{/if}
 		</div>
 		<div class="side-wrapper">
 			<h4>{`${data.overview.totalSupply}`}</h4>

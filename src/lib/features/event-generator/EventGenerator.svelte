@@ -12,6 +12,8 @@
 	import Icon from '@iconify/svelte';
 	import getProfile from '$lib/utilities/profiles/getProfile';
 	import type { Profile } from '$lib/types/user/profile.interface';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -82,7 +84,11 @@
 			</div>
 		{:else}
 			<div class="column align-center ticket-wrapper" in:fly|local={{ x: 500, duration: 700 }}>
-				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				{#if EVENT_TYPE_DETAILS[$generatedNft.eventType].certificateType !== 'ticket'}
+					<FloatCertificate float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				{:else}
+					<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				{/if}
 			</div>
 			<span class="small click-to-flip row-2 align-center">
 				<Icon icon="tabler:360" width="1.3rem" />

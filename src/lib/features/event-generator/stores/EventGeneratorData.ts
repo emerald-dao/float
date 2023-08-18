@@ -13,7 +13,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	totalSupply: '',
 	transferrable: false,
 	claimable: false,
-	eventType: 'hackathon',
+	eventType: 'conference',
 	powerups: {
 		payment: {
 			active: false,

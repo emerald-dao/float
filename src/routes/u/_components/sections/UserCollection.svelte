@@ -13,6 +13,8 @@
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
 	import FloatCard from '../../../admin/[userAddress]/my-collection/_components/FloatCard/FloatCard.svelte';
+	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
@@ -124,7 +126,11 @@
 							{/if}
 							{#if viewMode === 'tickets'}
 								<div class="ticket-wrapper">
-									<FloatTicket {float} />
+									{#if EVENT_TYPE_DETAILS[float.eventType].certificateType !== 'ticket'}
+										<FloatCertificate {float} />
+									{:else}
+										<FloatTicket {float} />
+									{/if}
 								</div>
 							{:else if viewMode === 'cards'}
 								<div class="card-wrapper">

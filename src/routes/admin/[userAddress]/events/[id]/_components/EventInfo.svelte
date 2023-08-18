@@ -8,6 +8,8 @@
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
+	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 
 	export let event: EventWithStatus;
 	export let claims: Claim[] = [];
@@ -32,7 +34,11 @@
 		</div>
 	</div>
 	<div class="ticket-wrapper">
-		<FloatTicket float={transformEventToFloat(event)} />
+		{#if EVENT_TYPE_DETAILS[event.eventType].certificateType !== 'ticket'}
+			<FloatCertificate float={transformEventToFloat(event)} />
+		{:else}
+			<FloatTicket float={transformEventToFloat(event)} />
+		{/if}
 	</div>
 	<div class="claims-wrapper">
 		<div class="row-1 claims-title-wrapper">
