@@ -16,8 +16,8 @@
 	<StatsSection
 		bordersColor="var(--clr-border-primary)"
 		data={{
-			data1: { title: 'students', stat: parseInt(stats.floatTotalSupply).toLocaleString() },
-			data2: { title: 'hours of content', stat: parseInt(stats.eventsCreated).toLocaleString() }
+			data1: { title: 'FLOATs Claimed', stat: parseInt(stats.floatTotalSupply).toLocaleString() },
+			data2: { title: 'Events Created', stat: parseInt(stats.eventsCreated).toLocaleString() }
 		}}
 	/>
 {/await}
