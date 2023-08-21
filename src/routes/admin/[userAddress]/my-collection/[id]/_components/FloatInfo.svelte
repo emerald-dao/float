@@ -1,7 +1,5 @@
 <script lang="ts">
-	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
@@ -23,11 +21,7 @@
 		</div>
 	</div>
 	<div class="ticket-wrapper">
-		{#if EVENT_TYPE_DETAILS[float.eventType].certificateType !== 'ticket'}
-			<FloatCertificate {float} />
-		{:else}
-			<FloatTicket {float} />
-		{/if}
+		<Float {float} />
 	</div>
 	<div class="details-wrapper">
 		<div>

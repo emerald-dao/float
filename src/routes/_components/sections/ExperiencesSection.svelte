@@ -2,9 +2,7 @@
 	import { getMainPageFLOATs } from '$flow/actions';
 	import { network } from '$flow/config';
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { multiplyArray } from '$lib/utilities/multiplyArray';
 	import SectionHeading from './atoms/SectionHeading.svelte';
@@ -47,11 +45,7 @@
 		<div class="floats-wrapper">
 			{#each multiplyArray(FLOATS, 30) as float, i}
 				<div class="float-{i}">
-					{#if EVENT_TYPE_DETAILS[float.eventType].certificateType !== 'ticket'}
-						<FloatCertificate {float} minWidth="400px" />
-					{:else}
-						<FloatTicket {float} minWidth="400px" />
-					{/if}
+					<Float {float} minWidth="400px" />
 				</div>
 			{/each}
 		</div>

@@ -1,8 +1,6 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatCertificate from '$lib/components/floats/FloatCertificate.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
-	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
 	export let pinnedFloats: string[];
@@ -16,11 +14,7 @@
 	<div class="floats-wrapper">
 		{#each pinnedFloats as floatId}
 			{#if floats.find((float) => float.id === floatId)}
-				{#if EVENT_TYPE_DETAILS[floats.find((float) => float.id === floatId).eventType].certificateType !== 'ticket'}
-					<FloatCertificate float={floats.find((float) => float.id === floatId)} />
-				{:else}
-					<FloatTicket float={floats.find((float) => float.id === floatId)} />
-				{/if}
+				<Float float={floats.find((float) => float.id === floatId)} />
 			{/if}
 		{/each}
 	</div>
