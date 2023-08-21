@@ -1,6 +1,7 @@
 <script>
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
+	import homeFloatTicket from '$lib/config/homeFloatTicket';
 	import { Button } from '@emerald-dao/component-library';
 </script>
 
@@ -14,15 +15,8 @@
 			trust for event creators.
 		</p>
 	</div>
-	<FloatTicket
-		float={{
-			id: '123456789',
-			originalRecipient: 'John Doe',
-			eventName: 'Emerald City',
-			eventType: 'hackathon',
-			eventHost: 'Emerald DAO'
-		}}
-	/>
+
+	<Float float={homeFloatTicket} />
 	<div class="column-2 center">
 		<Button color="primary" size="large" width="extended" href="/event-generator"
 			>Create an Event - it's free!</Button

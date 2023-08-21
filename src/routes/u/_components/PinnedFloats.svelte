@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 
 	export let pinnedFloats: string[];
@@ -14,7 +14,7 @@
 	<div class="floats-wrapper">
 		{#each pinnedFloats as floatId}
 			{#if floats.find((float) => float.id === floatId)}
-				<FloatTicket float={floats.find((float) => float.id === floatId)} />
+				<Float float={floats.find((float) => float.id === floatId)} />
 			{/if}
 		{/each}
 	</div>

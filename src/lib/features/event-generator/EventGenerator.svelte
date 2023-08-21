@@ -5,13 +5,13 @@
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { onMount, setContext } from 'svelte';
 	import StepButtons from './components/atoms/StepButtons.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import getProfile from '$lib/utilities/profiles/getProfile';
 	import type { Profile } from '$lib/types/user/profile.interface';
+	import Float from '$lib/components/floats/Float.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -82,7 +82,7 @@
 			</div>
 		{:else}
 			<div class="column align-center ticket-wrapper" in:fly|local={{ x: 500, duration: 700 }}>
-				<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			</div>
 			<span class="small click-to-flip row-2 align-center">
 				<Icon icon="tabler:360" width="1.3rem" />

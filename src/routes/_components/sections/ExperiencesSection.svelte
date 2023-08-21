@@ -2,7 +2,7 @@
 	import { getMainPageFLOATs } from '$flow/actions';
 	import { network } from '$flow/config';
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { multiplyArray } from '$lib/utilities/multiplyArray';
 	import SectionHeading from './atoms/SectionHeading.svelte';
@@ -45,7 +45,7 @@
 		<div class="floats-wrapper">
 			{#each multiplyArray(FLOATS, 30) as float, i}
 				<div class="float-{i}">
-					<FloatTicket {float} minWidth="400px" />
+					<Float {float} minWidth="400px" />
 				</div>
 			{/each}
 		</div>

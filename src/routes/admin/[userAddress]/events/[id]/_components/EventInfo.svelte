@@ -1,5 +1,4 @@
 <script lang="ts">
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from '../../atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
@@ -8,6 +7,7 @@
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
+	import Float from '$lib/components/floats/Float.svelte';
 
 	export let event: EventWithStatus;
 	export let claims: Claim[] = [];
@@ -32,7 +32,7 @@
 		</div>
 	</div>
 	<div class="ticket-wrapper">
-		<FloatTicket float={transformEventToFloat(event)} />
+		<Float float={transformEventToFloat(event)} />
 	</div>
 	<div class="claims-wrapper">
 		<div class="row-1 claims-title-wrapper">

@@ -3,7 +3,6 @@
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { createSearchStore, searchHandler } from '$lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
@@ -13,6 +12,7 @@
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
 	import FloatCard from '../../../admin/[userAddress]/my-collection/_components/FloatCard/FloatCard.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
 
 	export let floats: FLOAT[];
 	export let groups: GroupWithFloatsIds[];
@@ -124,7 +124,7 @@
 							{/if}
 							{#if viewMode === 'tickets'}
 								<div class="ticket-wrapper">
-									<FloatTicket {float} />
+									<Float {float} />
 								</div>
 							{:else if viewMode === 'cards'}
 								<div class="card-wrapper">

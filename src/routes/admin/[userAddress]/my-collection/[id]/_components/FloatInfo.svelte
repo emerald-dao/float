@@ -1,5 +1,5 @@
 <script lang="ts">
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
@@ -21,7 +21,7 @@
 		</div>
 	</div>
 	<div class="ticket-wrapper">
-		<FloatTicket {float} />
+		<Float {float} />
 	</div>
 	<div class="details-wrapper">
 		<div>

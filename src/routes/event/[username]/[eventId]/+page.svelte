@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import { Button, Currency } from '@emerald-dao/component-library';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
@@ -11,6 +10,7 @@
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
+	import Float from '$lib/components/floats/Float.svelte';
 
 	export let data;
 
@@ -47,7 +47,7 @@
 		<div class="float-ticket-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<FloatTicket float={transformEventToFloat(data.event)} />
+			<Float float={transformEventToFloat(data.overview)} />
 		</div>
 		<div class="side-wrapper floats-minted">
 			<h4>{`${data.event.totalSupply}`}</h4>

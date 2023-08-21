@@ -5,8 +5,8 @@
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
-	import FloatTicket from '$lib/components/floats/FloatTicket.svelte';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
+	import Float from '$lib/components/floats/Float.svelte';
 
 	const hasPowerUps = () => {
 		for (const key in $eventGeneratorData.powerups) {
@@ -21,10 +21,10 @@
 <StepComponentWrapper alignCenter={true}>
 	<div class="main-wrapper">
 		<div in:fly|local={{ x: -500, duration: 700 }} class="float-wrapper">
-			<FloatTicket float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+			<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			<div class="target">
 				<div id="target-element">
-					<FloatTicket
+					<Float
 						float={$generatedNft}
 						showBack={$eventGeneratorActiveStep === 1}
 						isForScreenshot={true}
