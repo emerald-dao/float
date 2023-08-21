@@ -19,7 +19,7 @@
 				</div>
 			</div>
 		</div>
-		<EventDomains event={data.event} user={data.user} />
+		<EventDomains event={data.event} />
 		<EventActions event={data.event} />
 	</div>
 	<div class="right-wrapper hide-on-small">

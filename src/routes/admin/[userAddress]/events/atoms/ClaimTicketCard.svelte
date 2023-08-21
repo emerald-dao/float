@@ -27,17 +27,17 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
-		align-items: center;
+		align-items: flex-start;
 		border: var(--border-width-primary) dashed var(--clr-border-primary);
 		border-radius: var(--radius-2);
 		padding: var(--space-2) var(--space-4);
 		gap: var(--space-4);
-		min-width: 280px;
 
 		@include mq(small) {
 			flex-direction: row;
 			justify-content: space-between;
 			width: 100%;
+			align-items: center;
 		}
 
 		.left-wrapper {

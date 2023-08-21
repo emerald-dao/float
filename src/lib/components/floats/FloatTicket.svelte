@@ -1,6 +1,10 @@
 <script lang="ts">
 	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import type { Profile } from '$lib/types/user/profile.interface';
+	import getProfile from '$lib/utilities/profiles/getProfile';
+	import Icon from '@iconify/svelte';
+	import { onMount } from 'svelte';
 
 	export let float: FLOAT;
 	export let showBack = false;
@@ -9,6 +13,12 @@
 	export let isForScreenshot: boolean = false;
 
 	let flip: boolean = false;
+
+	let creatorProfile: Profile;
+
+	onMount(async () => {
+		creatorProfile = await getProfile(float.eventHost);
+	});
 
 	// When the FLOAT ticket is rendered in the Event Generator, we receive the image as a File, not a URL.
 	// The reactive statement bellow, checks if the image is a File and then transforms it into a base 64 format.
@@ -101,9 +111,14 @@
 							{/if}
 						</div>
 					</div>
-					<span class="organized-by-placeholder"
-						>Organized by <span class="w-medium">{float.eventHost}</span></span
-					>
+					<span
+						>Organized by
+						<span class="w-medium"
+							>{creatorProfile && creatorProfile.type === 'find'
+								? creatorProfile.name
+								: float.eventHost}
+						</span>
+					</span>
 				</div>
 				<div class="footer-wrapper">
 					<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"

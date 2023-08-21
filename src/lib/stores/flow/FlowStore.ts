@@ -59,6 +59,11 @@ const contractData = {
 		emulator: '0xf8d6e0586b0a20c7',
 		testnet: '',
 		mainnet: '0x2d4c3caffbeab845'
+	},
+	ArrayUtils: {
+		emulator: '0xf8d6e0586b0a20c7',
+		testnet: '',
+		mainnet: '0xe52522745adf5c34'
 	}
 };
 
@@ -82,5 +87,6 @@ export const addresses: {
 	FLOAT: contractData.FLOAT[network],
 	FIND: contractData.FIND[network],
 	FiatToken: contractData.FiatToken[network],
-	NFTCatalog: contractData.NFTCatalog[network]
+	NFTCatalog: contractData.NFTCatalog[network],
+	ArrayUtils: contractData.ArrayUtils[network]
 };

@@ -75,6 +75,13 @@
         "testnet": "0x35717efbbce11c74",
         "mainnet": "0x097bafa4e0b48eef"
       }
+    },
+    "ArrayUtils": {
+      "source": "./src/flow/cadence/utility/ArrayUtils.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7",
+        "mainnet": "0xe52522745adf5c34"
+      }
     }
   },
   "networks": {
@@ -91,6 +98,7 @@
   "deployments": {
     "emulator": {
       "emulator-account": [
+        "ArrayUtils",
         "FindViews",
         "FIND",
         "FLOAT",
