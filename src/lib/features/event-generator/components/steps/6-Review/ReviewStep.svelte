@@ -7,6 +7,11 @@
 	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Float from '$lib/components/floats/Float.svelte';
+	import captureFloatTicket from '$lib/features/event-generator/actions/captureFloatTicket';
+	import Blur from '$lib/components/Blur.svelte';
+	import { onMount } from 'svelte';
+
+	export let stepDataValid: boolean;
 
 	const hasPowerUps = () => {
 		for (const key in $eventGeneratorData.powerups) {
@@ -16,18 +21,31 @@
 		}
 		return false;
 	};
+
+	let target: HTMLElement;
+
+	onMount(async () => {
+		// make timeout to make sure the float image rendered
+		await new Promise((resolve) => setTimeout(resolve, 500));
+
+		$eventGeneratorData.ticketImage = await captureFloatTicket(target);
+	});
+
+	$: stepDataValid = $eventGeneratorData.ticketImage !== null;
 </script>
 
 <StepComponentWrapper alignCenter={true}>
 	<div class="main-wrapper">
 		<div in:fly|local={{ x: -500, duration: 700 }} class="float-wrapper">
 			<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
-			<div class="target">
-				<div id="target-element">
+			<div class="screenshot-float-target-wrapper">
+				<div id="screenshot-target" bind:this={target}>
+					<Blur color="tertiary" right="0" top="30%" />
+					<Blur left="0" bottom="20%" />
 					<Float
 						float={$generatedNft}
 						showBack={$eventGeneratorActiveStep === 1}
-						isForScreenshot={true}
+						minWidth="600px"
 					/>
 				</div>
 			</div>
@@ -109,9 +127,15 @@
 			}
 		}
 
-		.target {
+		.screenshot-float-target-wrapper {
 			position: absolute;
 			right: -99999px;
+
+			#screenshot-target {
+				padding: var(--space-12);
+				background-color: var(--clr-background-primary);
+				position: relative;
+			}
 		}
 	}
 </style>

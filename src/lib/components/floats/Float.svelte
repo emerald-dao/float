@@ -9,10 +9,9 @@
 	export let showBack = false;
 	export let minWidth = '300px';
 	export let maxWidth = '600px';
-	export let isForScreenshot: boolean = false;
 </script>
 
-<BaseFloat {float} {showBack} {minWidth} {maxWidth} {isForScreenshot}>
+<BaseFloat {float} {showBack} {minWidth} {maxWidth}>
 	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType !== 'ticket'}
 		<FloatCertificate {float} />
 	{:else}

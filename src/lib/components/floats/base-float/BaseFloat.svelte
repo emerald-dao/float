@@ -6,7 +6,6 @@
 	export let showBack = false;
 	export let minWidth = '300px';
 	export let maxWidth = '600px';
-	export let isForScreenshot: boolean = false;
 
 	let flip: boolean = false;
 
@@ -57,12 +56,7 @@
 		class:inverse-flip={showBack && flip}
 	>
 		<slot />
-		<div
-			class="float-back center"
-			class:ticket={isTicket}
-			bind:this={floatBack}
-			id={isForScreenshot ? 'element-to-exclude' : ''}
-		>
+		<div id="float-back" class="center" class:ticket={isTicket} bind:this={floatBack}>
 			{#if float.eventImage === undefined}
 				<div class="content">
 					<p>Insert an image</p>
@@ -102,7 +96,7 @@
 			transform-style: preserve-3d;
 			aspect-ratio: 5 / 3;
 
-			.float-back {
+			#float-back {
 				transform: rotateY(180deg);
 				overflow: hidden;
 				position: absolute;

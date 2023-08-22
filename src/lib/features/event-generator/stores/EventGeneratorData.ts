@@ -8,6 +8,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	host: '',
 	logo: [],
 	image: [],
+	ticketImage: null,
 	name: '',
 	url: '',
 	totalSupply: '',

@@ -6,7 +6,6 @@
 	import { onMount } from 'svelte';
 
 	export let float: FLOAT;
-	export let isForScreenshot: boolean = false;
 
 	let creatorProfile: Profile;
 
@@ -68,7 +67,7 @@
 						<p>Insert an image</p>
 					</div>
 				{/if}
-				<div id={isForScreenshot ? 'title-style' : ''} class="column-space-between heading-wrapper">
+				<div class="column-space-between heading-wrapper">
 					{#if float.eventName.length > 0}
 						<h3 class="w-medium">{float.eventName}</h3>
 					{:else}
@@ -89,9 +88,7 @@
 			</span>
 		</div>
 		<div class="footer-wrapper">
-			<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"
-				>Powered by the Flow Blockchain</span
-			>
+			<span class="small">Powered by the Flow Blockchain</span>
 		</div>
 	</div>
 </div>
@@ -187,6 +184,12 @@
 			.footer-wrapper {
 				padding: 1.5% 7%;
 				justify-content: flex-end;
+				width: 100%;
+
+				span {
+					width: 100%;
+					text-align: right;
+				}
 			}
 
 			.body-wrapper {

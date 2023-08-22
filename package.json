@@ -36,6 +36,7 @@
 		"eslint-plugin-svelte": "^2.31.0",
 		"flow-native-token-registry": "latest",
 		"isomorphic-fetch": "^3.0.0",
+		"nft.storage": "^7.0.0",
 		"postcss": "^8.4.14",
 		"postcss-load-config": "^4.0.1",
 		"prettier": "^2.6.2",
@@ -53,7 +54,7 @@
 		"typescript": "^4.7.4",
 		"vest": "^4.6.11",
 		"vite": "^4.0.0",
-		"nft.storage": "^7.0.0"
+		"@types/dom-to-image": "^2.6.4"
 	},
 	"type": "module"
 }
