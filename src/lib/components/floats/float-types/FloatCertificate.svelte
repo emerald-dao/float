@@ -4,7 +4,6 @@
 	import { profile } from '$stores/flow/FlowStore';
 
 	export let float: FLOAT;
-	export let isForScreenshot: boolean = false;
 
 	$: if (
 		typeof float.eventLogo !== 'string' &&
@@ -67,7 +66,7 @@
 						<h3 class="w-medium event-name-placeholder">Event Name</h3>
 					{/if}
 				</div>
-				<div id={isForScreenshot ? 'title-style' : ''} class="column-space-between heading-wrapper">
+				<div class="column-space-between heading-wrapper">
 					{#if float.eventType}
 						<span class="label">{EVENT_TYPE_DETAILS[float.eventType].eventTypeName}</span>
 					{/if}
@@ -81,9 +80,7 @@
 			>
 		</div>
 		<div class="footer-wrapper">
-			<span id={isForScreenshot ? 'powered-by-style' : ''} class="small"
-				>Powered by the Flow Blockchain</span
-			>
+			<span class="small">Powered by the Flow Blockchain</span>
 		</div>
 	</div>
 </div>
@@ -152,6 +149,12 @@
 			.footer-wrapper {
 				padding: 1.5% 7%;
 				justify-content: flex-end;
+				width: 100%;
+
+				span {
+					width: 100%;
+					text-align: right;
+				}
 			}
 
 			.body-wrapper {

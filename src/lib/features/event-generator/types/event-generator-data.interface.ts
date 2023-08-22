@@ -9,6 +9,7 @@ export interface EventGeneratorData {
 	url: string;
 	logo: [File] | [];
 	image: [File] | [];
+	ticketImage: File | null;
 	totalSupply: string;
 	transferrable: boolean;
 	claimable: boolean;

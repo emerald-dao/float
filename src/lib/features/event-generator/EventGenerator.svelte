@@ -69,11 +69,14 @@
 		<Blur left="0" bottom="20%" />
 		{#if reviewStep}
 			<div class="review-step-wrapper">
-				<svelte:component this={$eventGeneratorSteps[$eventGeneratorActiveStep].component} />
+				<svelte:component
+					this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
+					bind:stepDataValid
+				/>
 				<StepButtons
 					stepsStore={eventGeneratorSteps}
 					activeStepStore={eventGeneratorActiveStep}
-					stepDataValid={true}
+					bind:stepDataValid
 				/>
 			</div>
 		{:else if powerUpsStep}
