@@ -4,13 +4,14 @@
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
-	import type { Timelock } from '$lib/types/event/verifiers.interface';
+	import type { Secret, Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from '../../../admin/[userAddress]/events/atoms/ClaimTicketCard.svelte';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
+	import validateSecretCode from '../../_actions/validateSecretCode';
 
 	export let data;
 
@@ -20,6 +21,9 @@
 		dateStart: '',
 		dateEnding: ''
 	};
+	let secretCode: string;
+	let inputValue: string;
+	let secretCodeValidation: boolean;
 
 	data.event.verifiers.forEach((verifier) => {
 		if (verifier.hasOwnProperty('dateStart')) {
@@ -27,6 +31,9 @@
 		}
 		if ((verifier as Timelock).dateEnding) {
 			dates.dateEnding = (verifier as Timelock).dateEnding;
+		}
+		if (verifier.hasOwnProperty('publicKey')) {
+			secretCode = (verifier as Secret).publicKey;
 		}
 	});
 
@@ -36,6 +43,10 @@
 	} else {
 		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
 	}
+
+	const handleChange = () => {
+		secretCodeValidation = validateSecretCode();
+	};
 </script>
 
 <section class="container-medium">
@@ -47,7 +58,7 @@
 		<div class="float-ticket-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<Float float={transformEventToFloat(data.overview)} />
+			<Float float={transformEventToFloat(data.event)} />
 		</div>
 		<div class="side-wrapper floats-minted">
 			<h4>{`${data.event.totalSupply}`}</h4>
@@ -97,13 +108,38 @@
 		</div>
 	</div>
 	<div class="button-wrapper">
-		<Button
-			size="large"
-			width="full-width"
-			on:click={() => claimFloat(data.event.eventId, data.event.host)}
-		>
-			<p>Claim FLOAT</p>
-		</Button>
+		{#if secretCode}
+			<div class="input-wrapper">
+				<input type="text" placeholder="Insert secret code" bind:value={inputValue} />
+				<button class="input-button" on:click={handleChange}>Send</button>
+			</div>
+			{#if secretCodeValidation === false}
+				<div class="input-alert-message row-1">
+					<Icon icon="tabler:alert-circle" color="var(--clr-alert-main)" />
+					<span class="">Codes do not match</span>
+				</div>
+			{/if}
+		{/if}
+		<div class="button-background">
+			{#if secretCode}
+				<Button
+					size="large"
+					width="full-width"
+					state={secretCodeValidation ? 'active' : 'disabled'}
+					on:click={() => claimFloat(data.event.eventId, data.event.host)}
+				>
+					<p>Claim FLOAT</p>
+				</Button>
+			{:else}
+				<Button
+					size="large"
+					width="full-width"
+					on:click={() => claimFloat(data.event.eventId, data.event.host)}
+				>
+					<p>Claim FLOAT</p>
+				</Button>
+			{/if}
+		</div>
 	</div>
 </section>
 <section class="container-small claims-wrapper">
@@ -209,14 +245,59 @@
 			bottom: 0;
 			width: 100%;
 			z-index: 30;
-			background-color: var(--clr-primary-main);
 			border-top-left-radius: var(--radius-4);
 			border-top-right-radius: var(--radius-4);
 
 			@include mq(small) {
+				display: flex;
+				flex-direction: column;
 				position: relative;
 				width: 230px;
 				background-color: transparent;
+				gap: var(--space-3);
+			}
+
+			.input-wrapper {
+				position: relative;
+
+				input {
+					border-radius: 0%;
+					background: var(--clr-surface-primary);
+					z-index: 30;
+
+					@include mq(small) {
+						border-radius: var(--radius-1);
+						padding-right: var(--space-13);
+						box-sizing: border-box;
+					}
+				}
+
+				.input-button {
+					position: absolute;
+					right: 2px;
+					top: 50%;
+					transform: translateY(-50%);
+					background: none;
+					border: none;
+					cursor: pointer;
+					z-index: 1;
+				}
+			}
+
+			.input-alert-message {
+				justify-content: center;
+				align-items: center;
+				color: var(--clr-alert-main);
+				font-size: var(--font-size-1);
+				padding-left: var(--space-2);
+			}
+
+			.button-background {
+				background-color: var(--clr-primary-main);
+
+				@include mq(small) {
+					background: none;
+				}
 			}
 		}
 	}
