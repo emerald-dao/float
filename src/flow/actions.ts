@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import * as fcl from '@onflow/fcl';
 import './config';
-import { user } from '$stores/flow/FlowStore';
+import { addresses, user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
 
@@ -22,10 +22,13 @@ import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw
 import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
+import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
+
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
 import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
+import { signWithClaimCode } from './sign';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -291,5 +294,25 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 	} catch (e) {
 		console.log(e);
 		return {};
+	}
+};
+
+export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string, secretSalt: string) => {
+	try {
+		const secretSig = signWithClaimCode(secretCode, secretSalt, claimeeAddress);
+		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript)
+		cadence = cadence.replaceAll("${verifiersIdentifier}", `A.${addresses.FLOAT.substring(2)}`)
+		return await fcl.query({
+			cadence,
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(eventHost, t.Address),
+				arg(secretSig, t.String),
+				arg(claimeeAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
 	}
 };

@@ -12,6 +12,9 @@
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 	import validateSecretCode from '../../_actions/validateSecretCode';
+	import { get } from 'svelte/store';
+	import { user } from '$stores/flow/FlowStore';
+	import { logIn } from '$flow/actions';
 
 	export let data;
 
@@ -44,8 +47,16 @@
 		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
 	}
 
-	const handleChange = () => {
-		secretCodeValidation = validateSecretCode();
+	const handleChange = async () => {
+		if (!$user.loggedIn) {
+			await logIn();
+		}
+		secretCodeValidation = await validateSecretCode(
+			data.event.eventId,
+			data.event.host,
+			inputValue,
+			get(user).addr
+		);
 	};
 </script>
 
