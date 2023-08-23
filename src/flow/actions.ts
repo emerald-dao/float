@@ -29,6 +29,7 @@ import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
 import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 import { signWithClaimCode } from './sign';
+import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -62,6 +63,12 @@ const createEvent = async (
 	const timePeriod =
 		timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0;
 
+	let secretPK = '';
+	if (secret) {
+		const { publicKey } = await fetchKeysFromClaimCode(secret);
+		secretPK = publicKey;
+	}
+
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
 		args: (arg, t) => [
@@ -77,7 +84,7 @@ const createEvent = async (
 			arg(startDate.toFixed(1), t.UFix64),
 			arg(timePeriod.toFixed(1), t.UFix64),
 			arg(secret != null, t.Bool),
-			arg(secret != null ? secret : '', t.String),
+			arg(secret != null ? secretPK : '', t.String),
 			arg(limited != null, t.Bool),
 			arg(limited != null ? limited : '0', t.UInt64),
 			arg(payment != null, t.Bool),
@@ -297,9 +304,9 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 	}
 };
 
-export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string, secretSalt: string) => {
+export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string) => {
 	try {
-		const secretSig = signWithClaimCode(secretCode, secretSalt, claimeeAddress);
+		const secretSig = await signWithClaimCode(secretCode, claimeeAddress);
 		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript)
 		cadence = cadence.replaceAll("${verifiersIdentifier}", `A.${addresses.FLOAT.substring(2)}`)
 		return await fcl.query({
