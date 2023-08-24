@@ -145,13 +145,14 @@ const burnFLOAT = async (floatId: string) => {
 
 export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
 
-const claimFLOAT = async (eventId: string, eventCreator: string) => {
+// only provide claimCode and claimeeAddress if the FLOAT has a password on it
+const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(claimFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
-			arg(null, t.Optional(t.String))
+			arg(secretSig, t.Optional(t.String))
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -160,8 +161,8 @@ const claimFLOAT = async (eventId: string, eventCreator: string) => {
 	});
 };
 
-export const claimFLOATExecution = (eventId: string, eventCreator: string) =>
-	executeTransaction(() => claimFLOAT(eventId, eventCreator));
+export const claimFLOATExecution = (eventId: string, eventCreator: string, secretSig: string | null) =>
+	executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig));
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({

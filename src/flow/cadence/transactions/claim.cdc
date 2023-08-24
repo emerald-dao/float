@@ -3,6 +3,7 @@ import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../utility/NonFungibleToken.cdc"
 import MetadataViews from "../utility/MetadataViews.cdc"
 import FlowToken from "../utility/FlowToken.cdc"
+import FungibleToken from "../utility/FungibleToken.cdc"
 
 transaction(eventId: UInt64, host: Address, secret: String?) {
  
@@ -25,7 +26,7 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
     }
 
-    let FLOATEvents = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
+    let FLOATEvents: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic} = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
                         .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                         ?? panic("Could not borrow the public FLOATEvents from the host.")
     self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist.")
@@ -42,12 +43,12 @@ transaction(eventId: UInt64, host: Address, secret: String?) {
 
     // If the FLOAT has a secret phrase on it
     if let unwrappedSecret = secret {
-      params["secretPhrase"] = unwrappedSecret
+      params["secretSig"] = unwrappedSecret
     }
  
     // If the FLOAT costs something
-    if let prices = self.FLOATEvent.getPrices() {
-      let payment <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
+    if let prices: {String: FLOAT.TokenInfo} = self.FLOATEvent.getPrices() {
+      let payment: @FungibleToken.Vault <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
       self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
       log("Purchased the FLOAT.")
     }

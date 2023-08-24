@@ -137,7 +137,7 @@
 					size="large"
 					width="full-width"
 					state={secretCodeValidation ? 'active' : 'disabled'}
-					on:click={() => claimFloat(data.event.eventId, data.event.host)}
+					on:click={() => claimFloat(data.event.eventId, data.event.host, inputValue)}
 				>
 					<p>Claim FLOAT</p>
 				</Button>
@@ -145,7 +145,7 @@
 				<Button
 					size="large"
 					width="full-width"
-					on:click={() => claimFloat(data.event.eventId, data.event.host)}
+					on:click={() => claimFloat(data.event.eventId, data.event.host, undefined)}
 				>
 					<p>Claim FLOAT</p>
 				</Button>
