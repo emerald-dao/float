@@ -16,6 +16,7 @@ import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
+import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw'
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
@@ -195,6 +196,23 @@ const toggleTransferring = async (eventId: string) => {
 
 export const toggleTransferringExecution = (eventId: string) =>
 	executeTransaction(() => toggleTransferring(eventId));
+
+const distributeFLOATs = async (eventId: string, addresses: string[]) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(distributeFLOATsTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64),
+			arg(addresses, t.Array(t.Address))
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const distributeFLOATsExecution = (eventId: string, addresses: string[]) =>
+	executeTransaction(() => distributeFLOATs(eventId, addresses));
 
 // Scripts
 

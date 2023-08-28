@@ -4,6 +4,7 @@
 	import DistributionForms from './sections/DistributionForms.svelte';
 	import { Button, Modal, getModal } from '@emerald-dao/component-library';
 	import { fly } from 'svelte/transition';
+	import { distributeFloats } from '../functions/distributeFloats';
 
 	let distStaging: string[] = [];
 
@@ -26,7 +27,7 @@
 	};
 
 	const handleDistributeFloats = () => {
-		distributeFloats(distStaging);
+		distributeFloats($page.params.id, distStaging);
 	};
 </script>
 
