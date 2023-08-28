@@ -1,8 +1,5 @@
+import { hasFLOATCollectionSetUp } from '$flow/actions';
 import { create, enforce, test, skipWhen } from 'vest';
-
-const isValidAddress = async (address: string) => {
-	return true;
-};
 
 const validationSuite = create((data: string) => {
 	test('address', 'Address should have 18 chars', () => {
@@ -16,7 +13,7 @@ const validationSuite = create((data: string) => {
 	skipWhen(validationSuite.get().hasErrors('address'), () => {
 		test.memo(
 			'address',
-			"Address doesn't exist on the blockchain",
+			"Address doesn't have a FLOAT Collection set up.",
 			async () => {
 				return (await checkAddress(data)) as string;
 			},
@@ -28,7 +25,7 @@ const validationSuite = create((data: string) => {
 const checkAddress = async (address: string) => {
 	return new Promise((resolve, reject) => {
 		setTimeout(async () => {
-			const success = await isValidAddress(address);
+			const success = await hasFLOATCollectionSetUp(address);
 			if (success) {
 				resolve(true);
 			} else {

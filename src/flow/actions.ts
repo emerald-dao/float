@@ -4,6 +4,10 @@ import './config';
 import { user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
+import type { Claim } from '$lib/types/event/event-claim.interface';
+import type { FLOAT } from '$lib/types/float/float.interface';
+import type { EventType } from '$lib/types/event/even-type.type';
+import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -22,10 +26,7 @@ import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw
 import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
-import type { Claim } from '$lib/types/event/event-claim.interface';
-import type { FLOAT } from '$lib/types/float/float.interface';
-import type { EventType } from '$lib/types/event/even-type.type';
-import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
+import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -291,5 +292,17 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 	} catch (e) {
 		console.log(e);
 		return {};
+	}
+};
+
+export const hasFLOATCollectionSetUp = async (address: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
+			args: (arg, t) => [arg(address, t.Address)]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
 	}
 };
