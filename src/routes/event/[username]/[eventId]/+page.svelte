@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import Blur from '$lib/components/Blur.svelte';
 	import { Button, Currency } from '@emerald-dao/component-library';
 	import claimFloat from '../../../../routes/event/_actions/claimFloat';
@@ -25,7 +26,7 @@
 		dateEnding: ''
 	};
 	let secretCode: string;
-	let inputValue: string;
+	let inputValue = '';
 	let secretCodeValidation: boolean;
 
 	data.event.verifiers.forEach((verifier) => {
@@ -120,16 +121,39 @@
 	</div>
 	<div class="button-wrapper">
 		{#if secretCode}
-			<div class="input-wrapper">
-				<input type="text" placeholder="Insert secret code" bind:value={inputValue} />
-				<button class="input-button" on:click={handleChange}>Send</button>
+			<div
+				class="secret-code-message"
+				class:success={secretCodeValidation === true}
+				class:alert={!secretCodeValidation}
+			>
+				{#if secretCodeValidation === false}
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:lock" />
+						<span>Code is incorrect</span>
+					</div>
+				{:else if secretCodeValidation === true}
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:lock-open" />
+						<span>Unlocked</span>
+					</div>
+				{:else}
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:lock" />
+						<span>Locked by a secret code</span>
+					</div>
+				{/if}
 			</div>
-			{#if secretCodeValidation === false}
-				<div class="input-alert-message row-1">
-					<Icon icon="tabler:alert-circle" color="var(--clr-alert-main)" />
-					<span class="">Codes do not match</span>
-				</div>
-			{/if}
+			<div class="input-wrapper">
+				<input type="password" placeholder="Insert secret code" max="60" bind:value={inputValue} />
+				<button
+					class="input-button row-1 align-center"
+					on:click={handleChange}
+					disabled={inputValue.length < 1}
+				>
+					Send
+					<Icon icon="tabler:arrow-right" />
+				</button>
+			</div>
 		{/if}
 		<div class="button-background">
 			{#if secretCode}
@@ -139,7 +163,7 @@
 					state={secretCodeValidation ? 'active' : 'disabled'}
 					on:click={() => claimFloat(data.event.eventId, data.event.host, inputValue)}
 				>
-					<p>Claim FLOAT</p>
+					Claim FLOAT
 				</Button>
 			{:else}
 				<Button
@@ -147,7 +171,7 @@
 					width="full-width"
 					on:click={() => claimFloat(data.event.eventId, data.event.host, undefined)}
 				>
-					<p>Claim FLOAT</p>
+					Claim FLOAT
 				</Button>
 			{/if}
 		</div>
@@ -292,15 +316,23 @@
 					border: none;
 					cursor: pointer;
 					z-index: 1;
+					font-size: var(--font-size-1);
 				}
 			}
 
-			.input-alert-message {
+			.secret-code-message {
 				justify-content: center;
 				align-items: center;
-				color: var(--clr-alert-main);
 				font-size: var(--font-size-1);
 				padding-left: var(--space-2);
+
+				&.alert {
+					color: var(--clr-alert-main);
+				}
+
+				&.success {
+					color: var(--clr-primary-main);
+				}
 			}
 
 			.button-background {
