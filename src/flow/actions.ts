@@ -16,7 +16,7 @@ import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
-import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw'
+import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw';
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
@@ -200,10 +200,7 @@ export const toggleTransferringExecution = (eventId: string) =>
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(distributeFLOATsTx),
-		args: (arg, t) => [
-			arg(eventId, t.UInt64),
-			arg(addresses, t.Array(t.Address))
-		],
+		args: (arg, t) => [arg(eventId, t.UInt64), arg(addresses, t.Array(t.Address))],
 		proposer: fcl.authz,
 		payer: fcl.authz,
 		authorizations: [fcl.authz],
@@ -252,13 +249,21 @@ export const getEventClaims = async (eventHost: string, eventId: string): Promis
 	}
 };
 
-export const getLatestEventClaims = async (eventHost: string, eventId: string, amount: number): Promise<Claim[]> => {
+export const getLatestEventClaims = async (
+	eventHost: string,
+	eventId: string,
+	amount: number
+): Promise<Claim[]> => {
 	try {
 		const result = await fcl.query({
 			cadence: replaceWithProperValues(getLatestEventClaimsScript),
-			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64), arg(amount.toString(), t.UInt64)]
+			args: (arg, t) => [
+				arg(eventHost, t.Address),
+				arg(eventId, t.UInt64),
+				arg(amount.toString(), t.UInt64)
+			]
 		});
-		return result.sort((a, b) => Number(b.serial) - Number(a.serial))
+		return result.sort((a, b) => Number(b.serial) - Number(a.serial));
 	} catch (e) {
 		console.log('Error in getLatestEventClaims', e);
 		throw new Error('Error in getLatestEventClaims');
@@ -315,10 +320,10 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 
 export const hasFLOATCollectionSetUp = async (address: string) => {
 	try {
-		return await fcl.query({
+		return (await fcl.query({
 			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
 			args: (arg, t) => [arg(address, t.Address)]
-		});
+		})) as boolean;
 	} catch (e) {
 		console.log(e);
 		return false;

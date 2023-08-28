@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Currency, UserProfileLabel } from '@emerald-dao/component-library';
+	import { UserProfileLabel } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -13,7 +13,7 @@
 	export let forAccount: string;
 </script>
 
-<div transition:fly|local={{ x: 10, duration: 700 }}>
+<div transition:fly|local={{ x: 10, duration: 300 }}>
 	<div class="main-wrapper row-4 align-center">
 		<div class="card-primary row-space-between align-center">
 			<UserProfileLabel address={forAccount} />

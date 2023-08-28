@@ -15,23 +15,22 @@ const validationSuite = create((data: string) => {
 			'address',
 			"Address doesn't have a FLOAT Collection set up.",
 			async () => {
-				return (await checkAddress(data)) as string;
+				return await checkAddress(data);
 			},
 			[data]
 		);
 	});
 });
 
-const checkAddress = async (address: string) => {
-	return new Promise((resolve, reject) => {
-		setTimeout(async () => {
-			const success = await hasFLOATCollectionSetUp(address);
-			if (success) {
-				resolve(true);
-			} else {
-				reject();
-			}
-		}, 1000);
+const checkAddress = async (address: string): Promise<string> => {
+	return new Promise(async (resolve, reject) => {
+		const success = await hasFLOATCollectionSetUp(address);
+
+		if (success) {
+			resolve(`Address has a FLOAT Collection set up.`);
+		} else {
+			reject(`Address doesn't have a FLOAT Collection set up.`);
+		}
 	});
 };
 

@@ -6,52 +6,82 @@
 	import { InputWrapper, Tabs, Tab, TabList, TabPanel } from '@emerald-dao/component-library';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+	import { hasFLOATCollectionSetUp } from '$flow/actions';
 
 	export let addressInputValue: string;
 	export let csvDist: string[];
 	export let addToStaging: (validForm: boolean) => void;
 
 	let csvFiles: File[] = [];
-	let validCsv = false;
+	let validCsv: boolean | 'loading' | undefined;
+	let invalidCsvMessage: string;
 
 	interface ParsedCsvRow {
 		address: string;
 	}
 
 	const parseAndSaveCsv = () => {
+		validCsv = 'loading';
 		if (csvFiles.length > 0) {
 			let parsedCSV = Papa.parse(csvFiles[0], {
 				download: true,
 				header: true, // gives us an array of objects
 				dynamicTyping: true,
-				complete: ({ data }) => {
-					if (checkValidCsv(data)) {
+				complete: async ({ data }) => {
+					if (await checkValidCsv(data)) {
+						validCsv = true;
 						csvDist = data.map((row) => (row as ParsedCsvRow).address) as string[];
 					} else {
-						alert('CSV is not valid');
+						validCsv = false;
 						csvFiles = [];
 					}
 				}
 			});
 		}
 
-		// Check if CSV is valid
-		const checkValidCsv = (csvData: unknown[]): boolean => {
-			// Check if al elements in the array have an address property
-			return csvData.every((obj) => {
-				if (typeof obj === 'object') {
-					if (obj?.hasOwnProperty('address')) {
-						// check that all addresses have 18 chars of length and start with a 0x
-						return (
-							(obj as ParsedCsvRow).address.length === 18 &&
-							(obj as ParsedCsvRow).address.startsWith('0x')
-						);
-					}
-				}
+		const checkValidCsv = async (csvData: unknown[]): Promise<boolean> => {
+			for (let i = 0; i < csvData.length; i++) {
+				let addressIsValid = await checkValidAddress(csvData[i]);
 
-				return false;
-			});
+				if (!addressIsValid) {
+					return false;
+				}
+			}
+
+			return true;
 		};
+	};
+
+	const checkValidAddress = async (obj: unknown): Promise<boolean> => {
+		if (typeof obj === 'object') {
+			if (obj?.hasOwnProperty('address')) {
+				if (
+					(obj as ParsedCsvRow).address.length === 18 &&
+					(obj as ParsedCsvRow).address.startsWith('0x')
+				) {
+					let hasFloatCollection = await hasFLOATCollectionSetUp((obj as ParsedCsvRow).address);
+
+					if (hasFloatCollection) {
+						invalidCsvMessage = '';
+						return true;
+					} else {
+						invalidCsvMessage = `Address ${
+							(obj as ParsedCsvRow).address
+						} doesn't have a FLOAT collection set up`;
+					}
+				} else {
+					invalidCsvMessage = `Address ${
+						(obj as ParsedCsvRow).address
+					} doesn't have the correct format`;
+				}
+			} else {
+				invalidCsvMessage = 'Wrong CSV format';
+			}
+		} else {
+			invalidCsvMessage = 'Wrong CSV format';
+		}
+
+		return false;
 	};
 
 	const emptyCsv = () => {
@@ -138,13 +168,29 @@
 						bind:bindValue={csvFiles}
 						maxAmountOfFiles={1}
 					/>
+					{#if validCsv === true && csvFiles.length > 0}
+						<p class="csv-state-message success xsmall row-1 align-center">
+							<Icon icon="tabler:check" />
+							CSV is valid
+						</p>
+					{:else if validCsv === false}
+						<p class="csv-state-message alert xsmall align-center">
+							<Icon icon="tabler:x" />
+							{invalidCsvMessage ?? 'CSV is invalid'}
+						</p>
+					{:else if validCsv === 'loading'}
+						<p class="csv-state-message loading xsmall align-center">
+							<Icon icon="svg-spinners:180-ring" />
+							Analyzing CSV validity
+						</p>
+					{/if}
 				</div>
 				<Button
 					form="dist-form"
 					type="ghost"
 					color="neutral"
 					width="full-width"
-					state={csvDist.length > 0 ? 'active' : 'disabled'}
+					state={csvDist.length > 0 && validCsv ? 'active' : 'disabled'}
 					>Add <Icon icon="tabler:arrow-narrow-right" /></Button
 				>
 			</form>
@@ -160,6 +206,23 @@
 	.wrapper,
 	form {
 		margin-block: var(--space-4);
+	}
+
+	.csv-state-message {
+		margin-top: var(--space-1);
+		max-width: 280px;
+
+		&.success {
+			color: var(--clr-primary-main);
+		}
+
+		&.alert {
+			color: var(--clr-alert-main);
+		}
+
+		&.loading {
+			color: var(--clr-tertiary-main);
+		}
 	}
 
 	span {

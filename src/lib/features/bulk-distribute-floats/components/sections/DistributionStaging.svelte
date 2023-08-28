@@ -2,23 +2,23 @@
 	import DistStagingElement from '../atoms/DistStagingElement.svelte';
 	import { fly } from 'svelte/transition';
 
+	export let distStaging: string[];
+
 	const deleteFromStaging = (i: number) => {
 		distStaging.splice(i, 1);
 		distStaging = distStaging;
 	};
-
-	export let distStaging: string[];
 </script>
 
 <div class="main-wrapper">
 	<div class="dist-elements-wrapper">
 		{#if distStaging.length > 0}
-			{#each distStaging as dist, i}
+			{#each distStaging as dist, i (`${dist}-${i}`)}
 				<DistStagingElement forAccount={dist} on:deleteDist={() => deleteFromStaging(i)} />
 			{/each}
 		{:else}
 			<div class="request-wrapper">
-				<span class="small" in:fly|local={{ y: 10, duration: 500, delay: 1000 }}>
+				<span class="small" in:fly|local={{ y: 10, duration: 500, delay: 500 }}>
 					Add the addresses you want to distribute FLOATs to.
 				</span>
 			</div>
