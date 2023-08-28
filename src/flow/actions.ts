@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
 import * as fcl from '@onflow/fcl';
 import './config';
-import { user } from '$stores/flow/FlowStore';
+import { addresses, user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
 import type { Claim } from '$lib/types/event/event-claim.interface';
@@ -28,6 +28,13 @@ import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
+import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
+import type { Claim } from '$lib/types/event/event-claim.interface';
+import type { FLOAT } from '$lib/types/float/float.interface';
+import type { EventType } from '$lib/types/event/even-type.type';
+import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
+import { signWithClaimCode } from './sign';
+import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -61,6 +68,12 @@ const createEvent = async (
 	const timePeriod =
 		timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0;
 
+	let secretPK = '';
+	if (secret) {
+		const { publicKey } = await fetchKeysFromClaimCode(secret);
+		secretPK = publicKey;
+	}
+
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
 		args: (arg, t) => [
@@ -76,7 +89,7 @@ const createEvent = async (
 			arg(startDate.toFixed(1), t.UFix64),
 			arg(timePeriod.toFixed(1), t.UFix64),
 			arg(secret != null, t.Bool),
-			arg(secret != null ? secret : '', t.String),
+			arg(secret != null ? secretPK : '', t.String),
 			arg(limited != null, t.Bool),
 			arg(limited != null ? limited : '0', t.UInt64),
 			arg(payment != null, t.Bool),
@@ -137,13 +150,14 @@ const burnFLOAT = async (floatId: string) => {
 
 export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
 
-const claimFLOAT = async (eventId: string, eventCreator: string) => {
+// only provide claimCode and claimeeAddress if the FLOAT has a password on it
+const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(claimFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
-			arg(null, t.Optional(t.String))
+			arg(secretSig, t.Optional(t.String))
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -152,8 +166,8 @@ const claimFLOAT = async (eventId: string, eventCreator: string) => {
 	});
 };
 
-export const claimFLOATExecution = (eventId: string, eventCreator: string) =>
-	executeTransaction(() => claimFLOAT(eventId, eventCreator));
+export const claimFLOATExecution = (eventId: string, eventCreator: string, secretSig: string | null) =>
+	executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig));
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
@@ -324,8 +338,29 @@ export const hasFLOATCollectionSetUp = async (address: string) => {
 			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
 			args: (arg, t) => [arg(address, t.Address)]
 		})) as boolean;
+  } catch (e) {
+    console.log(e)
+		return false;
+	}
+};
+
+export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string) => {
+	try {
+		const secretSig = await signWithClaimCode(secretCode, claimeeAddress);
+		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript)
+		cadence = cadence.replaceAll("${verifiersIdentifier}", `A.${addresses.FLOAT.substring(2)}`)
+		return await fcl.query({
+			cadence,
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(eventHost, t.Address),
+				arg(secretSig, t.String),
+				arg(claimeeAddress, t.Address)
+			]
+		});
 	} catch (e) {
 		console.log(e);
 		return false;
 	}
 };
+
