@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Currency } from '@emerald-dao/component-library';
+	import { Currency, UserProfileLabel } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { fly } from 'svelte/transition';
@@ -16,8 +16,7 @@
 <div transition:fly|local={{ x: 10, duration: 700 }}>
 	<div class="main-wrapper row-4 align-center">
 		<div class="card-primary row-space-between align-center">
-			<Icon icon="tabler:arrow-narrow-right" />
-			<span>{forAccount}</span>
+			<UserProfileLabel address={forAccount} />
 		</div>
 		<div class="clickable" on:click={deleteDist} on:keydown>
 			<Icon icon="tabler:trash" />
@@ -31,11 +30,8 @@
 
 		.card-primary {
 			width: 100%;
-			padding: var(--space-4) var(--space-6);
-
-			span {
-				font-size: var(--font-size-0);
-			}
+			padding: var(--space-3) var(--space-4);
+			border-radius: var(--radius-2);
 		}
 
 		.clickable {

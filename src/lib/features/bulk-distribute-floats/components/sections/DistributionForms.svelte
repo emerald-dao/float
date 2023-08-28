@@ -3,7 +3,6 @@
 	import Papa from 'papaparse';
 	import { Button, DropZone } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
-	import { getContext } from 'svelte';
 	import { InputWrapper, Tabs, Tab, TabList, TabPanel } from '@emerald-dao/component-library';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
@@ -12,50 +11,73 @@
 	export let csvDist: string[];
 	export let addToStaging: (validForm: boolean) => void;
 
-	let csvFile: File[] = [];
+	let csvFiles: File[] = [];
+	let validCsv = false;
+
+	interface ParsedCsvRow {
+		address: string;
+	}
 
 	const parseAndSaveCsv = () => {
-		if (csvFile.length > 0) {
-			let parsedCSV = Papa.parse(csvFile[0], {
+		if (csvFiles.length > 0) {
+			let parsedCSV = Papa.parse(csvFiles[0], {
 				download: true,
 				header: true, // gives us an array of objects
 				dynamicTyping: true,
-				complete: ({ data }) => (csvDist = data as string[])
+				complete: ({ data }) => {
+					if (checkValidCsv(data)) {
+						csvDist = data.map((row) => (row as ParsedCsvRow).address) as string[];
+					} else {
+						alert('CSV is not valid');
+						csvFiles = [];
+					}
+				}
 			});
 		}
+
+		// Check if CSV is valid
+		const checkValidCsv = (csvData: unknown[]): boolean => {
+			// Check if al elements in the array have an address property
+			return csvData.every((obj) => {
+				if (typeof obj === 'object') {
+					if (obj?.hasOwnProperty('address')) {
+						// check that all addresses have 18 chars of length and start with a 0x
+						return (
+							(obj as ParsedCsvRow).address.length === 18 &&
+							(obj as ParsedCsvRow).address.startsWith('0x')
+						);
+					}
+				}
+
+				return false;
+			});
+		};
 	};
 
 	const emptyCsv = () => {
 		csvDist = [];
 	};
 
-	$: if (csvFile.length > 0) parseAndSaveCsv();
-	$: if (csvFile.length === 0) emptyCsv();
+	$: if (csvFiles.length > 0) parseAndSaveCsv();
+	$: if (csvFiles.length === 0) emptyCsv();
 
 	let res = validationSuite.get();
 	let addressPending: boolean;
 	let addressPendingMessage = ['Checking if address exists in the blockchain'];
 
-	// const handleChange = (input: Event) => {
-	// 	const target = input.target as HTMLInputElement;
-	// 	res = validationSuite(
-	// 		formDist,
-	// 		target.name,
-	// 		availableBalance,
-	// 		projectOwner,
-	// 		projectId,
-	// 		currencyToDistribute
-	// 	);
+	const handleChange = (input: Event) => {
+		const target = input.target as HTMLInputElement;
+		res = validationSuite(target.value);
 
-	// 	if (target.name === 'address') {
-	// 		addressPending = true;
-	// 	}
+		if (target.name === 'address') {
+			addressPending = true;
+		}
 
-	// 	(res as SuiteRunResult).done((result) => {
-	// 		res = result;
-	// 		addressPending = false;
-	// 	});
-	// };
+		(res as SuiteRunResult).done((result) => {
+			res = result;
+			addressPending = false;
+		});
+	};
 </script>
 
 <div transition:fly|local={{ duration: 200, y: 30 }}>
@@ -81,14 +103,20 @@
 					errors={res.getErrors('address')}
 					isValid={res.isValid('address')}
 				>
-					<input name="address" type="text" maxlength="18" bind:value={addressInputValue} />
+					<input
+						name="address"
+						type="text"
+						maxlength="18"
+						on:input={handleChange}
+						bind:value={addressInputValue}
+					/>
 				</InputWrapper>
 				<Button
 					form="dist-form"
 					type="ghost"
 					color="neutral"
 					width="full-width"
-					state={res.isValid() ? 'active' : 'active'}
+					state={res.isValid() ? 'active' : 'disabled'}
 					>Add <Icon icon="tabler:arrow-narrow-right" /></Button
 				>
 			</form>
@@ -101,13 +129,13 @@
 				class="wrapper"
 			>
 				<p class="xsmall margin-top">
-					For an example CSV file, download <a href="/example-toucans-upload.csv">this</a>.
+					For an example CSV file, download <a href="/example-bulk-distribution.csv">this</a>.
 				</p>
 				<div class="wrapper">
 					<DropZone
 						name="distribution-csv"
 						accept={['text/csv']}
-						bind:bindValue={csvFile}
+						bind:bindValue={csvFiles}
 						maxAmountOfFiles={1}
 					/>
 				</div>

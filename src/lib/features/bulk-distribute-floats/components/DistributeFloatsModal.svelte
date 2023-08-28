@@ -4,7 +4,6 @@
 	import DistributionForms from './sections/DistributionForms.svelte';
 	import { Button, Modal, getModal } from '@emerald-dao/component-library';
 	import { fly } from 'svelte/transition';
-	import Icon from '@iconify/svelte';
 
 	let distStaging: string[] = [];
 
@@ -14,11 +13,11 @@
 	$: id = `distribute-floats-${$page.params.id}`;
 
 	const addToStaging = (validForm: boolean) => {
-		// if (validForm) {
-		distStaging = [...distStaging, addressInputValue, ...csvDist];
-		// } else {
-		// 	distStaging = [...distStaging, ...csvDist];
-		// }
+		if (validForm) {
+			distStaging = [...distStaging, addressInputValue, ...csvDist];
+		} else {
+			distStaging = [...distStaging, ...csvDist];
+		}
 		addressInputValue = '';
 	};
 
