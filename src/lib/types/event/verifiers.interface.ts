@@ -1,16 +1,16 @@
 export interface Timelock {
-  dateStart: string;
-  dateEnding: string;
+	dateStart: string;
+	dateEnding: string;
 }
 
 export interface Limited {
-  capacity: string;
+	capacity: string;
 }
 
 export interface Secret {
-
+	publicKey: string;
 }
 
 export interface MinimumBalance {
-  amount: string;
+	amount: string;
 }

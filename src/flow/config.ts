@@ -31,10 +31,11 @@ const fclConfigInfo = {
 	}
 }
 
-config()
-	.put('app.detail.title', dappInfo.title)
-	.put('app.detail.icon', dappInfo.icon)
-	.put('fcl.accountProof.resolver', resolver)
-	.put('flow.network', network)
-	.put('accessNode.api', fclConfigInfo[network].accessNode)
-	.put('discovery.wallet', fclConfigInfo[network].discoveryWallet);
+config({
+	'app.detail.title': dappInfo.title,
+	'app.detail.icon': dappInfo.icon,
+	'fcl.accountProof.resolver': resolver,
+	'flow.network': network,
+	'accessNode.api': fclConfigInfo[network].accessNode,
+	'discovery.wallet': fclConfigInfo[network].discoveryWallet
+});

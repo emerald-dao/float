@@ -15,7 +15,7 @@ function transformEventToFloat(event: Event): FLOAT {
 		eventImage: event.image,
 		eventLogo: event.eventLogo,
 		eventName: event.name,
-		originalRecipient: 'John Doe',
+		originalRecipient: 'Jacob Tucker',
 		serial: '0001',
 		totalSupply: event.totalSupply,
 		transferrable: event.transferrable,
