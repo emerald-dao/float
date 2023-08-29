@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { eventGenerationInProgress } from './../../stores/EventGenerationInProgress.ts';
+	import { eventGenerationInProgress } from './../../stores/EventGenerationInProgress';
 	import { Button } from '@emerald-dao/component-library';
 	import type { createActiveStep } from '$stores/custom/steps/ActiveStep';
 	import type { createSteps } from '$stores/custom/steps/Steps';
@@ -29,11 +29,11 @@
 		{#if $eventGenerationInProgress}
 			Generating event
 		{:else if $stepsStore[$activeStepStore].button}
-			{$stepsStore[$activeStepStore].button.text}
-			<Icon icon={$stepsStore[$activeStepStore].button.icon ?? 'tabler:arrow-right'} />
+			{$stepsStore[$activeStepStore].button?.text}
+			<Icon icon={$stepsStore[$activeStepStore].button?.icon ?? 'tabler:arrow-right'} />
 		{:else}
 			Next
-			<Icon icon={$stepsStore[$activeStepStore].button.icon ?? 'tabler:arrow-right'} />
+			<Icon icon={$stepsStore[$activeStepStore].button?.icon ?? 'tabler:arrow-right'} />
 		{/if}
 	</Button>
 </div>
