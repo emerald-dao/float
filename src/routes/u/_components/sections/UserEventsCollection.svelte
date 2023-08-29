@@ -108,7 +108,7 @@
 					</IntersectionObserver>
 				{/if}
 			{:else}
-				<span><em>No FLOATs found</em></span>
+				<span><em>No events found</em></span>
 			{/if}
 		{/await}
 	</div>
@@ -171,10 +171,6 @@
 			justify-content: flex-start;
 			align-items: center;
 
-			&.list {
-				gap: var(--space-10);
-			}
-
 			.float-wrapper {
 				display: flex;
 				flex-direction: column;
@@ -233,7 +229,7 @@
 
 				.card-wrapper {
 					width: 100%;
-					padding-block: var(--space-3);
+					padding-block: var(--space-6);
 				}
 			}
 		}
