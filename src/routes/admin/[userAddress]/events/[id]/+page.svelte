@@ -36,8 +36,7 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 2fr 2fr;
-			justify-content: center;
+			grid-template-columns: 1fr 1fr;
 		}
 
 		.left-wrapper {

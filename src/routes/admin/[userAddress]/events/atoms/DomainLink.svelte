@@ -52,9 +52,13 @@
 	</div>
 	<div class="row-3 link-wrapper">
 		{#if linkType === 'eventPage'}
-			<span class="link">{$page.url.origin}/event/{$user.addr}/{id}</span>
+			<input class="link" disabled={true} value={`${$page.url.origin}/event/${$user.addr}/${id}`} />
 		{:else if linkType === 'qr'}
-			<span class="link">{$page.url.origin}/event/{$user.addr}/{id}/qr</span>
+			<input
+				class="link"
+				disabled={true}
+				value={`${$page.url.origin}/event/${$user.addr}/${id}/qr`}
+			/>
 		{/if}
 		<div class="row-3">
 			<div class="button-wrapper" data-tooltip={$tooltipText}>
@@ -105,7 +109,7 @@
 				padding: var(--space-1) var(--space-3);
 				overflow: hidden;
 				font-size: var(--font-size-1);
-				width: 100%;
+				color: var(--clr-text-primary);
 			}
 
 			.row-3 {

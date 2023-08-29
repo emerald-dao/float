@@ -130,6 +130,7 @@
 				display: flex;
 				flex-direction: column;
 				gap: var(--space-5);
+				height: 100%;
 
 				@include mq(small) {
 					overflow-y: auto;
