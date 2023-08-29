@@ -53,7 +53,15 @@
 	on:close={() => transactionStore.resetTransaction()}
 />
 {#if route !== 'admin' || !($user && $user.addr)}
-	<Header {logIn} {unauthenticate} {getFindProfile} user={$user} {navElements} />
+	<Header
+		{logIn}
+		{unauthenticate}
+		{getFindProfile}
+		user={$user}
+		{navElements}
+		logoText="FLOAT"
+		logo
+	/>
 {:else}
 	<div />
 {/if}
