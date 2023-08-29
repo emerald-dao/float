@@ -13,7 +13,12 @@
 <div class="main-wrapper row-space-between">
 	{#if $activeStepStore > 0}
 		<div>
-			<Button on:click={() => activeStepStore.decrement()} color="neutral" type="transparent">
+			<Button
+				on:click={() => activeStepStore.decrement()}
+				color="neutral"
+				type="transparent"
+				state={$eventGenerationInProgress ? 'disabled' : 'active'}
+			>
 				<Icon icon="tabler:arrow-left" />
 				<span class="hide-on-mobile"> Back </span>
 			</Button>
