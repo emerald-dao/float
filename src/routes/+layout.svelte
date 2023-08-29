@@ -60,7 +60,8 @@
 		user={$user}
 		{navElements}
 		logoText="FLOAT"
-		logo
+		userAvatar={$profile?.avatar}
+		userName={$profile?.name}
 	/>
 {:else}
 	<div />
