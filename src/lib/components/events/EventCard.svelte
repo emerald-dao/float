@@ -27,7 +27,10 @@
 				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
 			</div>
 		</div>
-		<div class="minted-floats-wrapper" class:noSupply={display === 'list' && !displayedInAdmin}>
+		<div
+			class="minted-floats-wrapper"
+			class:no-extra-info={display === 'list' && !displayedInAdmin}
+		>
 			<span class="w-medium">
 				{Number(event.totalSupply).toLocaleString()} FLOATs
 			</span>
@@ -39,7 +42,7 @@
 			<EventStatus status={event.status.generalStatus} />
 		</div>
 		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
-			<div class="powerups-wrapper" class:noSupply={display === 'list' && !displayedInAdmin}>
+			<div class="powerups-wrapper" class:no-extra-info={display === 'list' && !displayedInAdmin}>
 				{#if event.status.verifiersStatus.timelockStatus}
 					<TimelockStateLabel timelockStatus={event.status.verifiersStatus.timelockStatus} />
 				{/if}
@@ -100,10 +103,6 @@
 					}
 				}
 			}
-
-			.noSupply {
-				display: none;
-			}
 		}
 
 		.secondary-wrapper {
@@ -125,15 +124,15 @@
 			.powerups-wrapper {
 				padding: var(--space-5);
 			}
-
-			.noSupply {
-				display: none;
-			}
 		}
 
 		&.list {
 			flex-direction: row;
 			padding: var(--space-1) var(--space-6);
+
+			.no-extra-info {
+				display: none;
+			}
 
 			.general-info-wrapper {
 				padding: 0;
