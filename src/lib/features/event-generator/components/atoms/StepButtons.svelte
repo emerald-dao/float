@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { eventGenerationInProgress } from './../../stores/EventGenerationInProgress.ts';
 	import { Button } from '@emerald-dao/component-library';
 	import type { createActiveStep } from '$stores/custom/steps/ActiveStep';
 	import type { createSteps } from '$stores/custom/steps/Steps';
@@ -23,14 +24,17 @@
 	<Button
 		on:click={() => activeStepStore.increment()}
 		size="large"
-		state={stepDataValid ? 'active' : 'disabled'}
+		state={$eventGenerationInProgress ? 'loading' : stepDataValid ? 'active' : 'disabled'}
 	>
-		{#if $stepsStore[$activeStepStore].button}
+		{#if $eventGenerationInProgress}
+			Generating event
+		{:else if $stepsStore[$activeStepStore].button}
 			{$stepsStore[$activeStepStore].button.text}
+			<Icon icon={$stepsStore[$activeStepStore].button.icon ?? 'tabler:arrow-right'} />
 		{:else}
 			Next
+			<Icon icon={$stepsStore[$activeStepStore].button.icon ?? 'tabler:arrow-right'} />
 		{/if}
-		<Icon icon={$stepsStore[$activeStepStore].button.icon ?? 'tabler:arrow-right'} />
 	</Button>
 </div>
 

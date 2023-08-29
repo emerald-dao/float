@@ -3,8 +3,11 @@ import { get } from 'svelte/store';
 import { eventGeneratorData } from '../stores/EventGeneratorData';
 import { createEventExecution } from '$flow/actions';
 import uploadToIPFS from '$lib/utilities/uploadToIPFS';
+import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
 
 export const createEvent = async (): Promise<ActionExecutionResult> => {
+	eventGenerationInProgress.set(true);
+
 	let event = get(eventGeneratorData);
 
 	if (event.logo.length == 0 || event.image.length == 0 || event.ticketImage == null) {
@@ -33,6 +36,8 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.powerups.payment.active ? event.powerups.payment.data : null,
 		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null
 	);
+
+	eventGenerationInProgress.set(false);
 
 	// Return an appropriate ActionExecutionResult object
 	return {
