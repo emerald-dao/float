@@ -97,10 +97,12 @@
 			<h5>Filters</h5>
 			<Filters bind:filters />
 		</div>
-		<div class="groups-wrapper">
-			<h5>Groups</h5>
-			<GroupsToggles {groups} bind:selectedGroupsIds />
-		</div>
+		{#if groups.length > 0}
+			<div class="groups-wrapper">
+				<h5>Groups</h5>
+				<GroupsToggles {groups} bind:selectedGroupsIds />
+			</div>
+		{/if}
 	</div>
 	<div class="rightside">
 		{#await filteredContent then contents}
@@ -140,7 +142,7 @@
 					</IntersectionObserver>
 				{/if}
 			{:else}
-				<span><em>No FLOATs found</em></span>
+				<span class="no-floats-message"><em>No FLOATs found</em></span>
 			{/if}
 		{/await}
 	</div>
@@ -204,6 +206,10 @@
 			justify-content: flex-start;
 			align-items: center;
 
+			@include mq('medium') {
+				min-height: 80vh;
+			}
+
 			.float-wrapper {
 				display: flex;
 				flex-direction: column;
@@ -265,6 +271,11 @@
 					padding-block: var(--space-3);
 					padding-left: var(--space-14);
 				}
+			}
+
+			.no-floats-message {
+				margin-top: var(--space-20);
+				color: var(--clr-text-off);
 			}
 		}
 	}
