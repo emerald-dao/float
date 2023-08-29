@@ -1,6 +1,5 @@
 import { writable, type Writable } from 'svelte/store';
 import { network } from '$flow/config';
-import { env } from '$env/dynamic/public';
 import type { CurrentUserObject } from '@onflow/fcl';
 import type { Profile } from '../../types/user/profile.interface';
 

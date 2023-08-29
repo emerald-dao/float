@@ -77,7 +77,9 @@ transaction(
     }
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
+
+    let tempIG: [String] = []
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: tempIG)
     log("Started a new event for host.")
   }
 }
