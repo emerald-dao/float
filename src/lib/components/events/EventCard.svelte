@@ -8,9 +8,17 @@
 
 	export let event: EventWithStatus;
 	export let display: 'grid' | 'list' = 'list';
+	export let displayedInAdmin = true;
+
+	let link: string;
+	if (displayedInAdmin) {
+		link = `/admin/${$user.addr}/events/${event.eventId}`;
+	} else {
+		link = `/event/${event.host}/${event.eventId}`;
+	}
 </script>
 
-<a class={`main-wrapper ${display}`} href={`/admin/${$user.addr}/events/${event.eventId}`}>
+<a class={`main-wrapper ${display}`} href={link}>
 	<div class="general-info-wrapper">
 		<div class="title-wrapper row-3">
 			<img src={event.image} width="55px" height="55px" alt="logo" />
@@ -19,7 +27,10 @@
 				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
 			</div>
 		</div>
-		<div class="minted-floats-wrapper">
+		<div
+			class="minted-floats-wrapper"
+			class:no-extra-info={display === 'list' && !displayedInAdmin}
+		>
 			<span class="w-medium">
 				{Number(event.totalSupply).toLocaleString()} FLOATs
 			</span>
@@ -31,7 +42,7 @@
 			<EventStatus status={event.status.generalStatus} />
 		</div>
 		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
-			<div class="powerups-wrapper">
+			<div class="powerups-wrapper" class:no-extra-info={display === 'list' && !displayedInAdmin}>
 				{#if event.status.verifiersStatus.timelockStatus}
 					<TimelockStateLabel timelockStatus={event.status.verifiersStatus.timelockStatus} />
 				{/if}
@@ -55,6 +66,7 @@
 		border-radius: var(--radius-2);
 		transition: 300ms ease-in-out;
 		background-color: var(--clr-surface-primary);
+		width: 100%;
 
 		&:hover {
 			background: var(--clr-surface-secondary);
@@ -117,6 +129,10 @@
 		&.list {
 			flex-direction: row;
 			padding: var(--space-1) var(--space-6);
+
+			.no-extra-info {
+				display: none;
+			}
 
 			.general-info-wrapper {
 				padding: 0;

@@ -6,7 +6,7 @@
 	import { createSearchStore, searchHandler } from '$lib/stores/searchBar';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
-	import { filterContent } from '../../_functions/filterContent';
+	import { filterFloatsContent } from '../../_functions/filterFloatsContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
@@ -68,14 +68,15 @@
 	let filteredContent: Promise<FLOAT[]> | FLOAT[];
 
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
-		filteredContent = filterContent(filters, $searchStore.filtered, activeFilters);
+		filteredContent = filterFloatsContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterContent(filters, activeGroupsFloats, activeFilters);
+		filteredContent = filterFloatsContent(filters, activeGroupsFloats, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
 		filteredContent = activeGroupsFloats;
 	}
+
 	// Infinite scroll feature
 	let intersectionObserverElement: HTMLDivElement;
 	let intersecting: boolean;
