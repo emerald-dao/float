@@ -32,10 +32,10 @@
 		}
 
 		img {
-			height: 12rem;
+			height: 14rem;
 			width: 100%;
 			object-fit: cover;
-			border-radius: var(--radius-2);
+			border-radius: var(--radius-2) 0 0 var(--radius-2);
 		}
 
 		.body {
