@@ -37,10 +37,13 @@
 				{#each breadcrumbs as breadcrumb, i}
 					{@const last = i == breadcrumbs.length - 1}
 					{@const first = i == 0}
-					<BreadcrumbElement name={breadcrumb.name} link={breadcrumb.link} noLink={last || first} />
-					{#if !last}
-						<span>/</span>
-					{/if}
+					<BreadcrumbElement
+						name={breadcrumb.name}
+						link={breadcrumb.link}
+						noLink={last || first}
+						isFirst={first}
+						hideOnMobile={!first}
+					/>
 				{/each}
 			</div>
 		</div>
