@@ -70,12 +70,16 @@
 		description="Create a unique and valuable experience for event attendees, while increasing engagement and
 			trust for event creators."
 	/>
-	<EventTypeCard
-		imageUrl={selectedEvent.imageUrl}
-		title={selectedEvent.name}
-		description={selectedEvent.description}
-		icon={selectedEvent.icon}
-	/>
+	{#each EVENT_TYPES as event}
+		{#if event.name === selectedEvent.name}
+			<EventTypeCard
+				imageUrl={event.imageUrl}
+				title={event.name}
+				description={event.description}
+				icon={event.icon}
+			/>
+		{/if}
+	{/each}
 	<div class="labels-wrapper">
 		{#each EVENT_TYPES as event}
 			<div on:click={() => (selectedEvent = event)} class="label-button-wrapper">

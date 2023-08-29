@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import Icon from '@iconify/svelte';
 
 	export let imageUrl: string;
@@ -7,7 +8,7 @@
 	export let icon: string;
 </script>
 
-<div class="card-primary">
+<div class="card-primary" in:fly={{ duration: 500, y: -20 }}>
 	<img src={imageUrl} alt={`${title} event`} />
 	<div class="column-2 body">
 		<div class="row-2 align-center">

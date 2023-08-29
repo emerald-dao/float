@@ -2,12 +2,17 @@
 	export let name: string;
 	export let link: string;
 	export let noLink = false;
+	export let hideOnMobile = false;
+	export let isFirst: boolean;
 </script>
 
+{#if !isFirst}
+	<span class:hide-on-mobile={hideOnMobile}>/</span>
+{/if}
 {#if !noLink}
-	<a href={link} class="header-link">{name}</a>
+	<a href={link} class="header-link" class:hide-on-mobile={hideOnMobile}>{name}</a>
 {:else}
-	<span>{name}</span>
+	<span class:hide-on-mobile={hideOnMobile}>{name}</span>
 {/if}
 
 <style lang="scss">

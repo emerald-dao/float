@@ -4,6 +4,10 @@ import './config';
 import { addresses, user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
+import type { Claim } from '$lib/types/event/event-claim.interface';
+import type { FLOAT } from '$lib/types/float/float.interface';
+import type { EventType } from '$lib/types/event/even-type.type';
+import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -12,6 +16,7 @@ import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
+import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw';
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
@@ -22,8 +27,8 @@ import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw
 import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
+import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
-
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
@@ -206,6 +211,20 @@ const toggleTransferring = async (eventId: string) => {
 export const toggleTransferringExecution = (eventId: string) =>
 	executeTransaction(() => toggleTransferring(eventId));
 
+const distributeFLOATs = async (eventId: string, addresses: string[]) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(distributeFLOATsTx),
+		args: (arg, t) => [arg(eventId, t.UInt64), arg(addresses, t.Array(t.Address))],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const distributeFLOATsExecution = (eventId: string, addresses: string[]) =>
+	executeTransaction(() => distributeFLOATs(eventId, addresses));
+
 // Scripts
 
 export const getEvents = async (userAddress: string): Promise<Event[]> => {
@@ -244,13 +263,21 @@ export const getEventClaims = async (eventHost: string, eventId: string): Promis
 	}
 };
 
-export const getLatestEventClaims = async (eventHost: string, eventId: string, amount: number): Promise<Claim[]> => {
+export const getLatestEventClaims = async (
+	eventHost: string,
+	eventId: string,
+	amount: number
+): Promise<Claim[]> => {
 	try {
 		const result = await fcl.query({
 			cadence: replaceWithProperValues(getLatestEventClaimsScript),
-			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64), arg(amount.toString(), t.UInt64)]
+			args: (arg, t) => [
+				arg(eventHost, t.Address),
+				arg(eventId, t.UInt64),
+				arg(amount.toString(), t.UInt64)
+			]
 		});
-		return result.sort((a, b) => Number(b.serial) - Number(a.serial))
+		return result.sort((a, b) => Number(b.serial) - Number(a.serial));
 	} catch (e) {
 		console.log('Error in getLatestEventClaims', e);
 		throw new Error('Error in getLatestEventClaims');
@@ -305,6 +332,18 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 	}
 };
 
+export const hasFLOATCollectionSetUp = async (address: string) => {
+	try {
+		return (await fcl.query({
+			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
+			args: (arg, t) => [arg(address, t.Address)]
+		})) as boolean;
+  } catch (e) {
+    console.log(e)
+		return false;
+	}
+};
+
 export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string) => {
 	try {
 		const secretSig = await signWithClaimCode(secretCode, claimeeAddress);
@@ -324,3 +363,4 @@ export const validateSecretCodeForClaim = async (eventId: string, eventHost: str
 		return false;
 	}
 };
+

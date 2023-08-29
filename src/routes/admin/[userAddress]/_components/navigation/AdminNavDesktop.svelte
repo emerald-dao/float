@@ -56,7 +56,7 @@
 		@include mq(medium) {
 			border-right: 0.5px solid var(--clr-border-primary);
 			display: flex;
-			padding: var(--space-12) var(--space-14);
+			padding: var(--space-7) var(--space-14);
 			border-bottom: 0.5px solid var(--clr-border-primary);
 			gap: var(--space-10);
 		}

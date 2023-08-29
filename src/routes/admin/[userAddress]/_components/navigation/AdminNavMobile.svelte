@@ -21,14 +21,6 @@
 		<Icon icon="tabler:ticket" width="19px" />
 		My Collection
 	</a>
-	<a
-		href={`/admin/${$page.params.userAddress}/groups`}
-		class="sidebar-link"
-		class:active={$page.url.pathname.includes('/groups')}
-	>
-		<Icon icon="tabler:packages" />
-		Groups
-	</a>
 </div>
 
 <style lang="scss">

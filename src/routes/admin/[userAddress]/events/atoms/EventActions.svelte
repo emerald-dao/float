@@ -5,6 +5,7 @@
 	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
+	import DistributeFloatsModal from '$lib/features/bulk-distribute-floats/components/DistributeFloatsModal.svelte';
 
 	export let event: Event;
 </script>
@@ -41,6 +42,7 @@
 			</label>
 			<p class="small">User transfering</p>
 		</div>
+		<DistributeFloatsModal />
 	</div>
 	<div class="event-actions">
 		<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
