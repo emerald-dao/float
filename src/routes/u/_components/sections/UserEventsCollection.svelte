@@ -4,42 +4,15 @@
 	import { onDestroy, onMount } from 'svelte';
 	import type { Filter } from '$lib/types/content/filters/filter.interface';
 	import { createSearchStore, searchHandler } from '$lib/stores/searchBar';
-	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { createFilters } from '../../_functions/filters';
-	import { filterContent } from '../../_functions/filterContent';
+	import { filterEventsContent } from '../../_functions/filterEventsContent';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import IntersectionObserver from 'svelte-intersection-observer';
-	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
-	import GroupsToggles from '../atoms/GroupsToggles.svelte';
-	import FloatCard from '../../../admin/[userAddress]/my-collection/_components/FloatCard/FloatCard.svelte';
-	import Float from '$lib/components/floats/Float.svelte';
+	import type { EventWithStatus } from '$lib/types/event/event.interface';
+	import EventCard from '$lib/components/events/EventCard.svelte';
 
-	export let floats: FLOAT[];
-	export let groups: GroupWithFloatsIds[];
+	export let events: EventWithStatus[];
 	export let viewMode: 'cards' | 'tickets';
-
-	let selectedGroupsIds: number[] = [];
-	let activeGroupsFloats: FLOAT[] = [];
-
-	// Filter floats if selectedGroupsIds is not null
-	$: if (selectedGroupsIds.length > 0) {
-		const allActiveFloatsIds = selectedGroupsIds.map((id) => {
-			const group = groups.find((group) => group.id === id);
-
-			if (group) {
-				return group.floatsIds;
-			} else {
-				return [];
-			}
-		});
-
-		activeGroupsFloats = floats.filter((float) => {
-			const floatId = float.id;
-			return allActiveFloatsIds.some((ids) => ids.includes(floatId));
-		});
-	} else {
-		activeGroupsFloats = floats;
-	}
 
 	let filters: Filter[] = [];
 
@@ -51,10 +24,10 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchFloat = floats.map((float) => ({
+	$: searchFloat = events.map((float) => ({
 		...float,
 
-		searchTerms: `${float.eventName}`
+		searchTerms: `${float.name}`
 	}));
 
 	$: searchStore = createSearchStore(searchFloat);
@@ -65,24 +38,25 @@
 		unsubscribe();
 	});
 
-	let filteredContent: Promise<FLOAT[]> | FLOAT[];
+	let filteredContent: Promise<EventWithStatus[]> | EventWithStatus[];
 
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
-		filteredContent = filterContent(filters, $searchStore.filtered, activeFilters);
+		filteredContent = filterEventsContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterContent(filters, activeGroupsFloats, activeFilters);
+		filteredContent = filterEventsContent(filters, events, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
-		filteredContent = activeGroupsFloats;
+		filteredContent = events;
 	}
+
 	// Infinite scroll feature
 	let intersectionObserverElement: HTMLDivElement;
 	let intersecting: boolean;
 
 	let elementsPerPage = 10;
 
-	$: if (intersecting && elementsPerPage < activeGroupsFloats.length) elementsPerPage += 10;
+	$: if (intersecting && elementsPerPage < events.length) elementsPerPage += 10;
 </script>
 
 <div class="content-wrapper">
@@ -97,38 +71,32 @@
 			<h5>Filters</h5>
 			<Filters bind:filters />
 		</div>
-		<div class="groups-wrapper">
-			<h5>Groups</h5>
-			<GroupsToggles {groups} bind:selectedGroupsIds />
-		</div>
 	</div>
-	<div class="rightside">
+	<div class="rightside" class:list={viewMode === 'cards'}>
 		{#await filteredContent then contents}
 			{#if contents.length > 0}
-				{#each contents as float, i}
+				{#each contents as event, i}
 					{#if i < elementsPerPage}
-						<div class="float-wrapper" class:grid={viewMode === 'tickets'}>
-							{#if viewMode === 'tickets'}
-								<div class="timeline" class:last={contents.length - 1 === i} class:first={i === 0}>
-									<div class="line" />
-									<div class="date-wrapper">
-										<p class="small">
-											{unixTimestampToFormattedDate(float.dateReceived, 'month')}
-										</p>
-										<p class="large w-medium">
-											{unixTimestampToFormattedDate(float.dateReceived, 'year')}
-										</p>
-									</div>
-									<div class="line" />
+						<div class="float-wrapper grid">
+							<div class="timeline" class:last={contents.length - 1 === i} class:first={i === 0}>
+								<div class="line" />
+								<div class="date-wrapper">
+									<p class="small">
+										{unixTimestampToFormattedDate(event.dateCreated, 'month')}
+									</p>
+									<p class="large w-medium">
+										{unixTimestampToFormattedDate(event.dateCreated, 'year')}
+									</p>
 								</div>
-							{/if}
+								<div class="line" />
+							</div>
 							{#if viewMode === 'tickets'}
 								<div class="ticket-wrapper">
-									<Float {float} />
+									<EventCard {event} display="grid" displayedInAdmin={false} />
 								</div>
 							{:else if viewMode === 'cards'}
 								<div class="card-wrapper">
-									<FloatCard {float} hasLink={false} />
+									<EventCard {event} display="list" displayedInAdmin={false} />
 								</div>
 							{/if}
 						</div>
@@ -180,7 +148,6 @@
 			}
 
 			.filters-wrapper,
-			.groups-wrapper,
 			.search-wrapper {
 				display: none;
 				padding-bottom: 2rem;
@@ -203,6 +170,10 @@
 			flex-direction: column;
 			justify-content: flex-start;
 			align-items: center;
+
+			&.list {
+				gap: var(--space-10);
+			}
 
 			.float-wrapper {
 				display: flex;
@@ -263,7 +234,6 @@
 				.card-wrapper {
 					width: 100%;
 					padding-block: var(--space-3);
-					padding-left: var(--space-14);
 				}
 			}
 		}

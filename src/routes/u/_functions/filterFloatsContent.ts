@@ -1,7 +1,7 @@
 import type { Filter } from '$lib/types/content/filters/filter.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 
-export const filterContent = async (
+export const filterFloatsContent = async (
 	_filters: Filter[],
 	contents: FLOAT[],
 	activeFilters: {

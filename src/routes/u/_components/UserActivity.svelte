@@ -1,14 +1,15 @@
 <script lang="ts">
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
-	import type { Event } from '$lib/types/event/event.interface';
+	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import type { Profile } from '$lib/types/user/profile.interface';
 	import CardAndTicketToggle from './atoms/CardAndTicketToggle.svelte';
 	import FloatsAndEventsToggle from './atoms/FloatsAndEventsToggle.svelte';
-	import UserCollection from './sections/UserCollection.svelte';
+	import UserEventsCollection from './sections/UserEventsCollection.svelte';
+	import UserFloatsCollection from './sections/UserFloatsCollection.svelte';
 
 	export let floats: FLOAT[];
-	export let events: Event[];
+	export let events: EventWithStatus[];
 	export let userProfile: Profile;
 	export let groups: GroupWithFloatsIds[];
 
@@ -27,16 +28,20 @@
 				<FloatsAndEventsToggle bind:floatsOrEventsView />
 			</div>
 			<div class="right-wrapper row-4">
-				<p class="small">{`${floats.length} FLOATs`}</p>
+				{#if floatsOrEventsView === 'floats'}
+					<p class="small">{`${floats.length} FLOATs`}</p>
+				{:else if floatsOrEventsView === 'events'}
+					<p class="small">{`${events.length} Events`}</p>
+				{/if}
 				<CardAndTicketToggle bind:viewMode />
 			</div>
 		</div>
 	</div>
 	<div class="container">
 		{#if floatsOrEventsView === 'floats'}
-			<UserCollection {floats} {groups} bind:viewMode />
+			<UserFloatsCollection {floats} {groups} bind:viewMode />
 		{:else if floatsOrEventsView === 'events'}
-			<UserCollection floats={events} bind:viewMode />
+			<UserEventsCollection {events} bind:viewMode />
 		{/if}
 	</div>
 </section>
