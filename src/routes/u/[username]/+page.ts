@@ -15,7 +15,7 @@ export async function load({ params, fetch }) {
 		userProfile: profile,
 		floats: await getFLOATs(profile.address),
 		events: await getEvents(profile.address),
-		groups: await getGroups(profile.address),
-		pinnedFloats: ['187900113', '196985252']
+		groups: await getGroups(profile.address)
+		// pinnedFloats: ['187900113', '196985252']
 	};
 }
