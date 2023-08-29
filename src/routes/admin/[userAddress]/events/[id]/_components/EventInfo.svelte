@@ -40,6 +40,9 @@
 			<p>LATEST CLAIMS</p>
 		</div>
 		<div class="claim-tickets">
+			{#if claims.length === 0}
+				<p class="small"><em>No claims yet</em></p>
+			{/if}
 			{#each claims as claim}
 				<ClaimTicketCard {claim} />
 			{/each}
@@ -106,6 +109,10 @@
 				gap: var(--space-3);
 				overflow-y: auto;
 				padding-top: var(--space-3);
+			}
+
+			em {
+				color: var(--clr-text-off);
 			}
 		}
 	}

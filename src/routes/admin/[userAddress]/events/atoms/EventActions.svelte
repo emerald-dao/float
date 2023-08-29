@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import deleteEvent from '../../_actions/event-actions/deleteEvent';
 	import toggleClaiming from '../../_actions/event-actions/toggleClaiming';
 	import toggleTransfering from '../../_actions/event-actions/toggleTransfering';
@@ -6,8 +7,30 @@
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import DistributeFloatsModal from '$lib/features/bulk-distribute-floats/components/DistributeFloatsModal.svelte';
+	import { invalidate } from '$app/navigation';
 
 	export let event: Event;
+
+	let claimingState = event.claimable;
+	let transferingState = event.transferrable;
+
+	const handleToggleClaiming = async () => {
+		await toggleClaiming(event.eventId);
+
+		setTimeout(async () => {
+			await invalidate('admin:specificEvent');
+			claimingState = event.claimable;
+		}, 4000);
+	};
+
+	const handleToggleTransfering = async () => {
+		await toggleTransfering(event.eventId);
+
+		setTimeout(async () => {
+			await invalidate('admin:specificEvent');
+			transferingState = event.transferrable;
+		}, 4000);
+	};
 </script>
 
 <div class="main-wrapper">
@@ -22,8 +45,8 @@
 					type="checkbox"
 					name="claiming"
 					id="claiming"
-					checked={event.claimable}
-					on:change={() => toggleClaiming(event.eventId)}
+					bind:checked={claimingState}
+					on:change={handleToggleClaiming}
 				/>
 				<span class="slider" />
 			</label>
@@ -35,8 +58,8 @@
 					type="checkbox"
 					name="transfering"
 					id="transfering"
-					checked={event.transferrable}
-					on:change={() => toggleTransfering(event.eventId)}
+					bind:checked={transferingState}
+					on:change={handleToggleTransfering}
 				/>
 				<span class="slider" />
 			</label>
