@@ -27,6 +27,7 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.url,
 		logoIpfsCid,
 		backImageIpfsCid,
+		floatTicketIpfsCid,
 		event.transferrable,
 		event.claimable,
 		event.eventType,

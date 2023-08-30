@@ -7,7 +7,9 @@ import type { Event } from '$lib/types/event/event.interface';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
-import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
+import type { Timelock } from '$lib/types/event/verifiers.interface';
+import { signWithClaimCode } from './sign';
+import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -31,13 +33,6 @@ import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collectio
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
 import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
 
-import type { Claim } from '$lib/types/event/event-claim.interface';
-import type { FLOAT } from '$lib/types/float/float.interface';
-import type { EventType } from '$lib/types/event/even-type.type';
-import type { Limited, Secret, Timelock } from '$lib/types/event/verifiers.interface';
-import { signWithClaimCode } from './sign';
-import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
-
 if (browser) {
 	// set Svelte $user store to currentUser,
 	// so other components can access it
@@ -57,6 +52,7 @@ const createEvent = async (
 	url: string,
 	logo: string,
 	backImage: string,
+	floatImage: string,
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
@@ -84,6 +80,7 @@ const createEvent = async (
 			arg(url, t.String),
 			arg(logo, t.String),
 			arg(backImage, t.String),
+			arg(floatImage, t.String),
 			arg(transferrable, t.Bool),
 			arg(claimable, t.Bool),
 			arg(eventType, t.String),
@@ -112,6 +109,7 @@ export const createEventExecution = (
 	url: string,
 	logo: string,
 	backImage: string,
+	floatImage: string,
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
@@ -128,6 +126,7 @@ export const createEventExecution = (
 			url,
 			logo,
 			backImage,
+			floatImage,
 			transferrable,
 			claimable,
 			eventType,

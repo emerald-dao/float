@@ -9,6 +9,7 @@ transaction(
   url: String, 
   logo: String,
   backImage: String,
+  floatImage: String,
   transferrable: Bool, 
   claimable: Bool, 
   eventType: String,
@@ -77,6 +78,7 @@ transaction(
     }
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
+    extraMetadata["floatImage"] = floatImage
 
     let tempIG: [String] = []
     self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: tempIG)
