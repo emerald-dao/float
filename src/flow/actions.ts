@@ -29,6 +29,8 @@ import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
+import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
+
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import type { EventType } from '$lib/types/event/even-type.type';
@@ -338,8 +340,8 @@ export const hasFLOATCollectionSetUp = async (address: string) => {
 			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
 			args: (arg, t) => [arg(address, t.Address)]
 		})) as boolean;
-  } catch (e) {
-    console.log(e)
+	} catch (e) {
+		console.log(e)
 		return false;
 	}
 };
@@ -364,3 +366,18 @@ export const validateSecretCodeForClaim = async (eventId: string, eventHost: str
 	}
 };
 
+export const userHasClaimedEvent = async (eventId: string, eventHost: string, userAddress: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(userHasClaimedEventScript),
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(eventHost, t.Address),
+				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
