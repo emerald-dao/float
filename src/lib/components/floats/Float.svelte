@@ -12,7 +12,7 @@
 </script>
 
 <BaseFloat {float} {showBack} {minWidth} {maxWidth}>
-	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType !== 'ticket'}
+	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
 		<FloatCertificate {float} />
 	{:else}
 		<FloatTicket {float} />

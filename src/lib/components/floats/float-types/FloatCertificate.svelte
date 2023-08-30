@@ -76,7 +76,7 @@
 				<span class="w-medium profile-name-placeholder">{$profile?.name}</span>
 			{/if}
 			<span class="organized-by-placeholder"
-				>Organized by <span class="w-medium">{float.eventHost}</span></span
+				>Authored by <span class="w-medium">{float.eventHost}</span></span
 			>
 		</div>
 		<div class="footer-wrapper">
