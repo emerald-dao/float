@@ -1,4 +1,4 @@
-import type { EventType } from '$lib/types/event/even-type.type';
+import type { EventType } from '$lib/types/event/event-type.type';
 
 export interface Filter {
 	title: string;

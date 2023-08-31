@@ -5,21 +5,30 @@
 	import FloatSerialLabel from '../atoms/FloatSerialLabel.svelte';
 	import PoweredBy from '../atoms/PoweredBy.svelte';
 	import FloatHeading from '../atoms/FloatHeading.svelte';
-	import FloatName from '../atoms/FloatName.svelte';
 	import EventData from '../atoms/EventData.svelte';
 	import DateReceived from '../atoms/DateReceived.svelte';
+	import FloatContent from '../atoms/FloatFront/FloatFrontContent.svelte';
+	import FloatLogo from '../atoms/FloatLogo.svelte';
+	import FloatName from '../atoms/FloatName.svelte';
+	import FloatEventType from '../atoms/FloatEventType.svelte';
 
 	export let float: FLOAT;
 </script>
 
 <div class="float-front">
-	<div class="content">
-		<div class="header-wrapper">
-			<FloatHeading />
+	<FloatContent let:F>
+		<F.Header>
+			<FloatHeading certificateType="ticket" />
 			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} />
-		</div>
-		<div class="body-wrapper">
-			<FloatName {float} />
+		</F.Header>
+		<F.Body>
+			<div class="logo-and-name-wrapper">
+				<FloatLogo {float} />
+				<div class="name-wrapper">
+					<FloatName {float} />
+					<FloatEventType eventType={float.eventType} />
+				</div>
+			</div>
 			<div class="row-space-between">
 				{#await getProfile(float.eventHost) then profile}
 					<EventData title="Organizer">
@@ -32,12 +41,12 @@
 					</EventData>
 				{/await}
 			</div>
-		</div>
-		<div class="footer-wrapper">
+		</F.Body>
+		<F.Footer>
 			<DateReceived dateReceived={float.dateReceived} />
 			<PoweredBy />
-		</div>
-	</div>
+		</F.Footer>
+	</FloatContent>
 </div>
 
 <style lang="scss">
@@ -80,58 +89,14 @@
 		padding: 5% 5.5%;
 		width: 100%;
 		height: 100%;
-
-		.content {
-			border: 2px solid var(--clr-neutral-badge);
-			border-radius: 1.3em;
-			width: 100%;
-			height: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			overflow: hidden;
-		}
-	}
-
-	.float-front {
 		position: relative;
 		transition: transform 1.4s;
 		transform-style: preserve-3d;
 
-		.content {
-			border-style: solid;
-			display: grid;
-			grid-template-rows: auto 1fr auto;
-			grid-template-columns: 100%;
-
-			.header-wrapper,
-			.footer-wrapper {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-			}
-
-			.header-wrapper {
-				padding: 2.4% 5.5%;
-				justify-content: space-between;
-			}
-
-			.footer-wrapper {
-				padding: 1.8% 5.5%;
-				justify-content: space-between;
-				width: 100%;
-			}
-
-			.body-wrapper {
-				padding: 4% 5.5%;
-				display: flex;
-				flex-direction: column;
-				justify-content: space-between;
-				gap: 0.8em;
-				border-block: 2px dashed var(--clr-neutral-badge);
-				height: 100%;
-				text-align: left;
-			}
+		.logo-and-name-wrapper {
+			display: flex;
+			align-items: center;
+			gap: 0.8em;
 		}
 	}
 </style>

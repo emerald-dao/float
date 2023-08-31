@@ -1,7 +1,13 @@
+<script lang="ts">
+	import type { CertificateType } from '$lib/types/event/event-type.type';
+
+	export let certificateType: CertificateType;
+</script>
+
 <div class="main-wrapper">
 	<!-- <img src="/ec-logo.png" alt="FLOAT logo" /> -->
 	<span class="heading w-medium">FLOAT</span>
-	<span class="off">ticket</span>
+	<span class="off">{certificateType}</span>
 </div>
 
 <style lang="scss">

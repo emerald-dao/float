@@ -1,6 +1,6 @@
 import type { Badge } from './badges.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
-import type { EventType } from '$lib/types/event/even-type.type';
+import type { EventType } from '$lib/types/event/event-type.type';
 
 const eventTypeBadgesRule = (floatsList: FLOAT[], eventType: EventType) => {
 	const eachEventTypeFloatsCount = floatsList.filter(

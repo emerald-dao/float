@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
+	import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import BaseFloat from './base-float/BaseFloat.svelte';
 	import FloatCertificate from './float-types/FloatCertificate.svelte';
