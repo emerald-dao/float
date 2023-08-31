@@ -1,4 +1,8 @@
-<div class="body-wrapper">
+<script>
+	export let isMedal = false;
+</script>
+
+<div class="body-wrapper" class:medal={isMedal}>
 	<slot />
 </div>
 
@@ -12,5 +16,9 @@
 		border-block: 2px dashed var(--clr-neutral-badge);
 		height: 100%;
 		text-align: left;
+
+		&.medal {
+			border-color: rgba(218, 165, 32, 0.2);
+		}
 	}
 </style>

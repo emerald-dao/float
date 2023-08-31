@@ -16,12 +16,16 @@
 </script>
 
 <div class="float-front">
-	<FloatContent let:F>
+	<FloatContent let:F isMedal={true}>
 		<F.Header>
-			<FloatHeading certificateType="certificate" />
-			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} />
+			<FloatHeading certificateType="medal" />
+			<FloatSerialLabel
+				eventId={float.eventId}
+				floatSerial={float.serial}
+				certificateType="medal"
+			/>
 		</F.Header>
-		<F.Body>
+		<F.Body isMedal={true}>
 			<div class="body-wrapper">
 				<div class="column align-center">
 					<div class="name-and-logo-wrapper">
@@ -60,16 +64,25 @@
 		backface-visibility: hidden;
 		top: 0;
 		border-radius: 2em;
-		background: var(--clr-surface-secondary);
 		padding: 5% 7%;
 		width: 100%;
 		height: 100%;
+		background: linear-gradient(
+			150deg,
+			rgb(253, 241, 204) 0%,
+			rgb(255, 250, 232) 20%,
+			rgb(255, 246, 221) 30%,
+			rgb(255, 249, 227) 60%,
+			rgb(255, 244, 217) 70%,
+			rgb(253, 241, 204) 100%
+		);
 
 		.body-wrapper {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
 			flex: 1;
+
 			.name-and-logo-wrapper {
 				display: flex;
 				flex-direction: row;

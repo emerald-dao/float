@@ -3,6 +3,8 @@
 	import Footer from './FloatFrontFooter.svelte';
 	import Header from './FloatFrontHeader.svelte';
 
+	export let isMedal = false;
+
 	const F = {
 		Body,
 		Footer,
@@ -10,7 +12,7 @@
 	};
 </script>
 
-<div class="float-content">
+<div class="float-content" class:medal={isMedal}>
 	<slot {F} />
 </div>
 
@@ -27,5 +29,9 @@
 		display: grid;
 		grid-template-rows: auto 1fr auto;
 		grid-template-columns: 100%;
+
+		&.medal {
+			border-color: rgba(218, 165, 32, 0.2);
+		}
 	}
 </style>

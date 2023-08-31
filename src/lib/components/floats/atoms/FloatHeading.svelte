@@ -7,7 +7,7 @@
 <div class="main-wrapper">
 	<!-- <img src="/ec-logo.png" alt="FLOAT logo" /> -->
 	<span class="heading w-medium">FLOAT</span>
-	<span class="off">{certificateType}</span>
+	<span class="off" class:medal={certificateType === 'medal'}>{certificateType}</span>
 </div>
 
 <style lang="scss">
@@ -35,6 +35,10 @@
 			opacity: 0.7;
 			font-family: var(--font-text);
 			font-size: 1em;
+		}
+
+		.medal {
+			color: goldenrod;
 		}
 	}
 </style>
