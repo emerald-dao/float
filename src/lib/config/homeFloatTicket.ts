@@ -2,10 +2,10 @@ import type { FLOAT } from '$lib/types/float/float.interface';
 
 const homeFloatTicket: FLOAT = {
 	id: '123456789',
-	originalRecipient: '0x99dd9933jj99k0',
-	eventName: 'Emerald City',
-	eventType: 'conference',
-	eventHost: 'Emerald DAO',
+	originalRecipient: '0x11ca36743554b4b0',
+	eventName: 'Emerald City Hackathon',
+	eventType: 'hackathon',
+	eventHost: '0x99bd48c8036e2876',
 	dateReceived: '1649886952.00000000',
 	eventDescription: 'Hackathon dictated by Emerald City',
 	eventId: '941533131',

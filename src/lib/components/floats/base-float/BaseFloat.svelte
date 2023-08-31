@@ -47,7 +47,7 @@
 
 <div
 	class="main-wrapper"
-	style={`min-width: ${minWidth}; max-width: ${maxWidth}`}
+	style={`min-width: ${minWidth}; max-width: ${maxWidth};`}
 	on:click={() => (flip = !flip)}
 >
 	<div
@@ -70,6 +70,7 @@
 	.main-wrapper {
 		perspective: 1400px;
 		width: 100%;
+		aspect-ratio: 5 / 3;
 		container-type: inline-size;
 		container-name: ticket;
 		cursor: pointer;
