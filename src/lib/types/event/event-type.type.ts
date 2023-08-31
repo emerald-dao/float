@@ -18,42 +18,52 @@ export const EVENT_TYPE_DETAILS: {
 	[key in EventType]: {
 		certificateType: CertificateType;
 		eventTypeName: string;
+		icon: string;
 	};
 } = {
 	discordMeeting: {
 		certificateType: 'ticket',
-		eventTypeName: 'Discord meeting'
+		eventTypeName: 'Discord meeting',
+		icon: 'tabler:brand-discord'
 	},
 	twitterSpace: {
 		certificateType: 'ticket',
-		eventTypeName: 'Twitter space'
+		eventTypeName: 'Twitter space',
+		icon: 'tabler:brand-twitter'
 	},
 	conference: {
 		certificateType: 'ticket',
-		eventTypeName: 'Conference'
+		eventTypeName: 'Conference',
+		icon: 'tabler:microphone-2'
 	},
 	productPresentation: {
 		certificateType: 'ticket',
-		eventTypeName: 'Product presentation'
+		eventTypeName: 'Product presentation',
+		icon: 'tabler:presentation'
 	},
 	course: {
 		certificateType: 'certificate',
-		eventTypeName: 'Course'
+		eventTypeName: 'Course',
+		icon: 'tabler:book'
 	},
 	hackathon: {
 		certificateType: 'medal',
-		eventTypeName: 'Hackathon'
+		eventTypeName: 'Hackathon',
+		icon: 'tabler:code'
 	},
 	sportCompetition: {
 		certificateType: 'medal',
-		eventTypeName: 'Sport competition'
+		eventTypeName: 'Sport competition',
+		icon: 'tabler:ball-football'
 	},
 	gamingCompetition: {
 		certificateType: 'medal',
-		eventTypeName: 'Gaming competition'
+		eventTypeName: 'Gaming competition',
+		icon: 'tabler:device-gamepad'
 	},
 	other: {
 		certificateType: 'ticket',
-		eventTypeName: 'Other'
+		eventTypeName: 'Other',
+		icon: 'tabler:ticket'
 	}
 };

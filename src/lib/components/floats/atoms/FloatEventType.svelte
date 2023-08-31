@@ -6,7 +6,7 @@
 </script>
 
 <div class="main-wrapper">
-	<Icon icon="tabler:code" width="1.1em" color="var(--clr-text-off)" />
+	<Icon icon={EVENT_TYPE_DETAILS[eventType].icon} width="1.1em" color="var(--clr-text-off)" />
 	<span class="event-type">{EVENT_TYPE_DETAILS[eventType].eventTypeName}</span>
 </div>
 

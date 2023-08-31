@@ -3,6 +3,7 @@
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import BaseFloat from './base-float/BaseFloat.svelte';
 	import FloatCertificate from './float-types/FloatCertificate.svelte';
+	import FloatMedal from './float-types/FloatMedal.svelte';
 	import FloatTicket from './float-types/FloatTicket.svelte';
 
 	export let float: FLOAT;
@@ -14,6 +15,8 @@
 <BaseFloat {float} {showBack} {minWidth} {maxWidth}>
 	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
 		<FloatCertificate {float} />
+	{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
+		<FloatMedal {float} />
 	{:else}
 		<FloatTicket {float} />
 	{/if}
