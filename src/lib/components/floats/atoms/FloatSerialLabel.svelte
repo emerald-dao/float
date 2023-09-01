@@ -17,7 +17,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: row;
-		// border: 0.5px solid var(--clr-primary-main);
+		border: 1px solid var(--clr-primary-main);
 
 		span {
 			font-size: 0.67em;
@@ -37,8 +37,10 @@
 		}
 
 		&.medal {
+			border-color: goldenrod;
+
 			span {
-				background-color: rgba(218, 165, 32, 0.13);
+				background-color: rgba(218, 165, 32, 0.095);
 				color: goldenrod;
 
 				&:last-child {

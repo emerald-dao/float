@@ -7,7 +7,7 @@
 		display: flex;
 		flex-direction: row;
 		align-items: center;
-		padding: 2.4% 5.5%;
+		padding: 1.8% 5.5%;
 		justify-content: space-between;
 	}
 </style>

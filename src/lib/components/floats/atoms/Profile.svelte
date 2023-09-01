@@ -4,6 +4,7 @@
 
 	export let profile: Profile;
 	export let inverse = false;
+	export let isMedal = false;
 </script>
 
 <div class="main-wrapper row align-center" class:inverse>
@@ -14,7 +15,11 @@
 				{profile.name}
 			</span>
 			{#if profile.type === 'find'}
-				<Icon icon="tabler:discount-check-filled" width="0.78em" color="var(--clr-primary-main)" />
+				<Icon
+					icon="tabler:discount-check-filled"
+					width="0.78em"
+					color={isMedal ? 'goldenrod' : 'var(--clr-primary-main)'}
+				/>
 			{/if}
 		</div>
 		<span class="wallet-address w-regular off">

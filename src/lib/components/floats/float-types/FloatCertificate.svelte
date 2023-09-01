@@ -16,10 +16,18 @@
 </script>
 
 <div class="float-front">
+	<div class="top-right-triangle" />
+	<div class="top-left-triangle" />
+	<div class="bottom-right-triangle" />
+	<div class="bottom-left-triangle" />
 	<FloatContent let:F>
 		<F.Header>
 			<FloatHeading certificateType="certificate" />
-			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} />
+			<FloatSerialLabel
+				eventId={float.eventId}
+				floatSerial={float.serial}
+				certificateType="certificate"
+			/>
 		</F.Header>
 		<F.Body>
 			<div class="body-wrapper">
@@ -29,6 +37,9 @@
 						<FloatName {float} />
 					</div>
 					<FloatEventType eventType={float.eventType} />
+					{#await getProfile(float.originalRecipient) then profile}
+						<span class="certificate-recipient">{profile.name}</span>
+					{/await}
 				</div>
 				<div class="row-space-between">
 					{#await getProfile(float.eventHost) then profile}
@@ -64,12 +75,21 @@
 		padding: 5% 7%;
 		width: 100%;
 		height: 100%;
+		overflow: hidden;
 
 		.body-wrapper {
 			display: flex;
 			flex-direction: column;
 			justify-content: space-between;
 			flex: 1;
+
+			.certificate-recipient {
+				font-size: 1.3em;
+				// --font-weight: var(--font-weight-medium);
+				color: var(--clr-text-off);
+				margin-top: 3%;
+			}
+
 			.name-and-logo-wrapper {
 				display: flex;
 				flex-direction: row;
@@ -78,5 +98,44 @@
 				gap: 0.5em;
 			}
 		}
+	}
+
+	.bottom-right-triangle,
+	.bottom-left-triangle,
+	.top-right-triangle,
+	.top-left-triangle {
+		content: '';
+		position: absolute;
+		border-color: transparent;
+		border-style: solid;
+		border-width: 1.95em;
+	}
+
+	.bottom-right-triangle {
+		bottom: 0;
+		right: 0;
+		border-right-color: var(--clr-background-primary);
+		border-bottom-color: var(--clr-background-primary);
+	}
+
+	.bottom-left-triangle {
+		bottom: 0;
+		left: 0;
+		border-left-color: var(--clr-background-primary);
+		border-bottom-color: var(--clr-background-primary);
+	}
+
+	.top-right-triangle {
+		top: 0;
+		right: 0;
+		border-right-color: var(--clr-background-primary);
+		border-top-color: var(--clr-background-primary);
+	}
+
+	.top-left-triangle {
+		top: 0;
+		left: 0;
+		border-left-color: var(--clr-background-primary);
+		border-top-color: var(--clr-background-primary);
 	}
 </style>

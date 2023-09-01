@@ -61,7 +61,7 @@
 	.float-logo,
 	img,
 	.image-placeholder {
-		width: 18%;
+		max-width: 15.5%;
 		// max-width: 18%;
 		aspect-ratio: 1 / 1;
 		border-radius: var(--radius-1);

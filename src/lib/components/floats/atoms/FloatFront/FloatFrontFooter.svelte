@@ -4,7 +4,7 @@
 
 <style lang="scss">
 	.footer-wrapper {
-		padding: 1.8% 5.5%;
+		padding: 1.2% 5.5%;
 		justify-content: space-between;
 		width: 100%;
 		display: flex;

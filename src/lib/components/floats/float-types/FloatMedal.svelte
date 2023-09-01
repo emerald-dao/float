@@ -37,12 +37,12 @@
 				<div class="row-space-between">
 					{#await getProfile(float.eventHost) then profile}
 						<EventData title="Organizer">
-							<Profile {profile} />
+							<Profile {profile} isMedal={true} />
 						</EventData>
 					{/await}
 					{#await getProfile(float.originalRecipient) then profile}
 						<EventData title="Recipient" align="right">
-							<Profile {profile} inverse={true} />
+							<Profile {profile} isMedal={true} inverse={true} />
 						</EventData>
 					{/await}
 				</div>
@@ -74,7 +74,9 @@
 			rgb(255, 246, 221) 30%,
 			rgb(255, 249, 227) 60%,
 			rgb(255, 244, 217) 70%,
-			rgb(253, 241, 204) 100%
+			rgb(255, 251, 234) 85%,
+			rgb(255, 245, 216) 90%,
+			rgb(255, 246, 217) 100%
 		);
 
 		.body-wrapper {

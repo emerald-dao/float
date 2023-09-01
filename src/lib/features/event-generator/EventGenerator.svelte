@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { user } from './../../stores/flow/FlowStore';
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
@@ -9,8 +8,6 @@
 	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
-	import getProfile from '$lib/utilities/profiles/getProfile';
-	import type { Profile } from '$lib/types/user/profile.interface';
 	import Float from '$lib/components/floats/Float.svelte';
 
 	setContext('steps', eventGeneratorSteps);
@@ -22,18 +19,6 @@
 	let stepDataValid: boolean;
 
 	setContext('activePowerUp', activePowerUp);
-
-	const getProfileAsync = async (userAddress: string) => {
-		const userProfile = (await getProfile(userAddress)) as Profile;
-
-		$eventGeneratorData.host = userProfile.name;
-	};
-
-	onMount(() => {
-		if ($user.addr) {
-			getProfileAsync($user.addr);
-		}
-	});
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 4;
 	$: reviewStep = $eventGeneratorActiveStep === 5;

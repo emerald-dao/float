@@ -4,21 +4,15 @@
 </script>
 
 <div class={`main-wrapper column ${align} w-medium`}>
-	<span class="organized-by off"> {title.toUpperCase()} </span>
+	<span class="title off"> {title.toUpperCase()} </span>
 	<slot />
 </div>
 
 <style lang="scss">
 	.main-wrapper {
-		// background-color: var(--clr-background-secondary);
-		// border: 1px solid var(--clr-neutral-badge);
-		// padding: 2% 3%;
-		// border-radius: 0.5em;
-		// width: 100%;
-
-		.organized-by {
-			font-size: 0.6em;
-			margin-bottom: 1.5%;
+		.title {
+			font-size: 0.55em;
+			margin-bottom: 0.9%;
 			letter-spacing: 0.1em;
 		}
 
