@@ -31,6 +31,7 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.transferrable,
 		event.claimable,
 		event.eventType,
+		event.certificateType,
 		event.powerups.timelock.active ? event.powerups.timelock.data : null,
 		event.powerups.secretCode.active ? event.powerups.secretCode.data : null,
 		event.powerups.limited.active ? event.powerups.limited.data : null,

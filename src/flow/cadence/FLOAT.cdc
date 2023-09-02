@@ -124,6 +124,25 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
 
+        pub fun getExtraMetadata(): {String: AnyStruct} {
+            if let event = self.getEventMetadata() {
+                return event.getExtraFloatMetadata(serial: self.serial)
+            }
+            return {}
+        }
+
+        pub fun getImage(): String {
+            let extraFloatMetadata: {String: AnyStruct} = self.getExtraMetadata()
+            if let certificateType: String = extraFloatMetadata["certificateType"] as! String? {
+                if certificateType == "medal" {
+                    // put extra metadata about colors
+                    return (extraFloatMetadata["certificateImage"] as! String?)!
+                }
+                return (extraFloatMetadata["certificateImage"] as! String?)!
+            }
+            return self.eventImage
+        }
+
         // This is for the MetdataStandard
         pub fun getViews(): [Type] {
             let supportedViews = [
@@ -150,7 +169,7 @@ pub contract FLOAT: NonFungibleToken {
                     return MetadataViews.Display(
                         name: self.eventName, 
                         description: self.eventDescription, 
-                        thumbnail: MetadataViews.HTTPFile(url: "https://nftstorage.link/ipfs/".concat(self.eventImage))
+                        thumbnail: MetadataViews.HTTPFile(url: "https://nftstorage.link/ipfs/".concat(self.getImage()))
                     )
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
@@ -448,9 +467,9 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier?
         pub fun getExtraMetadata(): {String: AnyStruct}
         pub fun getVerifiers(): {String: [{IVerifier}]}
-        pub fun getGroups(): [String]
         pub fun getPrices(): {String: TokenInfo}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
+        pub fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
 
         access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?)
     }
@@ -473,8 +492,7 @@ pub contract FLOAT: NonFungibleToken {
         // This is equal to this resource's uuid
         pub let eventId: UInt64
         access(account) var extraMetadata: {String: AnyStruct}
-        // The groups that this FLOAT Event belongs to (groups
-        // are within the FLOATEvents resource)
+        // DEPRECATED
         access(account) var groups: {String: Bool}
         // Who created this FLOAT Event
         pub let host: Address
@@ -511,16 +529,6 @@ pub contract FLOAT: NonFungibleToken {
             return self.transferrable
         }
 
-        // Updates the metadata in case you want
-        // to add something. 
-        pub fun updateMetadata(newExtraMetadata: {String: AnyStruct}) {
-            for key in newExtraMetadata.keys {
-                if !self.extraMetadata.containsKey(key) {
-                    self.extraMetadata[key] = newExtraMetadata[key]
-                }
-            }
-        }
-
         /***************** Setters for the Contract Only *****************/
 
         // Called if a user moves their FLOAT to another location.
@@ -538,17 +546,24 @@ pub contract FLOAT: NonFungibleToken {
             emit FLOATTransferred(id: id, eventHost: self.host, eventId: self.eventId, newOwner: owner, serial: serial)
         }
 
-        // Adds this FLOAT Event to a group
-        access(account) fun addToGroup(groupName: String) {
-            self.groups[groupName] = true
-        }
-
-        // Removes this FLOAT Event to a group
-        access(account) fun removeFromGroup(groupName: String) {
-            self.groups.remove(key: groupName)
+        access(self) fun setExtraFloatMetadata(serial: UInt64, metadata: {String: AnyStruct}) {
+            if self.extraMetadata["extraFloatMetadatas"] == nil {
+                let extraFloatMetadatas: {UInt64: AnyStruct} = {}
+                self.extraMetadata["extraFloatMetadatas"] = extraFloatMetadatas
+            }
+            let e = (&self.extraMetadata["extraFloatMetadatas"] as auth &AnyStruct?)!
+            let extraFloatMetadatas = e as! &{UInt64: AnyStruct}
+            extraFloatMetadatas[serial] = metadata
         }
 
         /***************** Getters (all exposed to the public) *****************/
+
+        pub fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct} {
+            if let e = self.extraMetadata["extraFloatMetadatas"] as! {UInt64: AnyStruct}? {
+                return e[serial] as! {String: AnyStruct}
+            }
+            return {}
+        }
 
         // Returns info about the FLOAT that this account claimed
         // (if any)
@@ -595,10 +610,6 @@ pub contract FLOAT: NonFungibleToken {
         // for claiming
         pub fun getVerifiers(): {String: [{IVerifier}]} {
             return self.verifiers
-        }
-
-        pub fun getGroups(): [String] {
-            return self.groups.keys
         }
 
         pub fun getViews(): [Type] {
@@ -801,7 +812,6 @@ pub contract FLOAT: NonFungibleToken {
             self.description = _description
             self.eventId = self.uuid
             self.extraMetadata = _extraMetadata
-            self.groups = {}
             self.host = _host
             self.image = _image
             self.name = _name
@@ -809,6 +819,7 @@ pub contract FLOAT: NonFungibleToken {
             self.totalSupply = 0
             self.url = _url
             self.verifiers = _verifiers
+            self.groups = {}
 
             FLOAT.totalFLOATEvents = FLOAT.totalFLOATEvents + 1
             emit FLOATEventCreated(eventId: self.eventId, description: self.description, host: self.host, image: self.image, name: self.name, url: self.url)
@@ -819,29 +830,22 @@ pub contract FLOAT: NonFungibleToken {
         }
     }
 
-    // A container of FLOAT Events (maybe because they're similar to
-    // one another, or an event host wants to list all their AMAs together, etc).
+    // DEPRECATED
     pub resource Group {
         pub let id: UInt64
         pub let name: String
         pub let image: String
         pub let description: String
-        // All the FLOAT Events that belong
-        // to this group.
         access(account) var events: {UInt64: Bool}
-
         access(account) fun addEvent(eventId: UInt64) {
             self.events[eventId] = true
         }
-
         access(account) fun removeEvent(eventId: UInt64) {
             self.events.remove(key: eventId)
         }
-
         pub fun getEvents(): [UInt64] {
             return self.events.keys
         }
-
         init(_name: String, _image: String, _description: String) {
             self.id = self.uuid
             self.name = _name
@@ -859,15 +863,13 @@ pub contract FLOAT: NonFungibleToken {
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}?
         pub fun getAllEvents(): {UInt64: String}
         pub fun getIDs(): [UInt64]
-        pub fun getGroup(groupName: String): &Group?
-        pub fun getGroups(): [String]
     }
 
     // A "Collection" of FLOAT Events
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
         // All the FLOAT Events this collection stores
         access(account) var events: @{UInt64: FLOATEvent}
-        // All the Groups this collection stores
+        // DEPRECATED
         access(account) var groups: @{String: Group}
 
         // Creates a new FLOAT Event by passing in some basic parameters
@@ -905,73 +907,14 @@ pub contract FLOAT: NonFungibleToken {
             )
             let eventId = FLOATEvent.eventId
             self.events[eventId] <-! FLOATEvent
-            
+
             return eventId
         }
 
-        // Deletes an event. Also makes sure to remove
-        // the event from all the groups its in.
+        // Deletes an event.
         pub fun deleteEvent(eventId: UInt64) {
             let eventRef = self.borrowEventRef(eventId: eventId) ?? panic("This FLOAT does not exist.")
-            for groupName in eventRef.getGroups() {
-                let groupRef = (&self.groups[groupName] as &Group?)!
-                groupRef.removeEvent(eventId: eventId)
-            }
             destroy self.events.remove(key: eventId)
-        }
-
-        pub fun createGroup(groupName: String, image: String, description: String) {
-            pre {
-                self.groups[groupName] == nil: "A group with this name already exists."
-            }
-            self.groups[groupName] <-! create Group(_name: groupName, _image: image, _description: description)
-        }
-
-        // Deletes a group. Also makes sure to remove
-        // the group from all the events that use it.
-        pub fun deleteGroup(groupName: String) {
-            let eventsInGroup = self.groups[groupName]?.getEvents() 
-                                ?? panic("This Group does not exist.")
-            for eventId in eventsInGroup {
-                let ref = (&self.events[eventId] as &FLOATEvent?)!
-                ref.removeFromGroup(groupName: groupName)
-            }
-            destroy self.groups.remove(key: groupName)
-        }
-
-        // Adds an event to a group. Also adds the group
-        // to the event.
-        pub fun addEventToGroup(groupName: String, eventId: UInt64) {
-            pre {
-                self.groups[groupName] != nil: "This group does not exist."
-                self.events[eventId] != nil: "This event does not exist."
-            }
-            let groupRef = (&self.groups[groupName] as &Group?)!
-            groupRef.addEvent(eventId: eventId)
-
-            let eventRef = self.borrowEventRef(eventId: eventId)!
-            eventRef.addToGroup(groupName: groupName)
-        }
-
-        // Simply takes the event away from the group
-        pub fun removeEventFromGroup(groupName: String, eventId: UInt64) {
-            pre {
-                self.groups[groupName] != nil: "This group does not exist."
-                self.events[eventId] != nil: "This event does not exist."
-            }
-            let groupRef = (&self.groups[groupName] as &Group?)!
-            groupRef.removeEvent(eventId: eventId)
-
-            let eventRef = self.borrowEventRef(eventId: eventId)!
-            eventRef.removeFromGroup(groupName: groupName)
-        }
-
-        pub fun getGroup(groupName: String): &Group? {
-            return &self.groups[groupName] as &Group?
-        }
-        
-        pub fun getGroups(): [String] {
-            return self.groups.keys
         }
 
         pub fun borrowEventRef(eventId: UInt64): &FLOATEvent? {

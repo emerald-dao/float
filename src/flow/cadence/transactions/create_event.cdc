@@ -9,10 +9,11 @@ transaction(
   url: String, 
   logo: String,
   backImage: String,
-  floatImage: String,
-  transferrable: Bool, 
+  certificateImage: String,
+  transferrable: Bool,
   claimable: Bool, 
   eventType: String,
+  certificateType: String,
   timelockToggle: Bool, 
   dateStart: UFix64, 
   timePeriod: UFix64, 
@@ -78,10 +79,10 @@ transaction(
     }
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
-    extraMetadata["floatImage"] = floatImage
+    extraMetadata["certificateType"] = certificateType
+    extraMetadata["certificateImage"] = certificateImage
 
-    let tempIG: [String] = []
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata, initialGroups: tempIG)
+    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
     log("Started a new event for host.")
   }
 }

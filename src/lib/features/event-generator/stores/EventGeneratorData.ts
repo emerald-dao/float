@@ -15,6 +15,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	transferrable: false,
 	claimable: false,
 	eventType: 'conference',
+	certificateType: 'ticket',
 	powerups: {
 		payment: {
 			active: false,

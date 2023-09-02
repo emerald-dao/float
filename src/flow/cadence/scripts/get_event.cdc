@@ -17,9 +17,8 @@ pub struct FLOATEventMetadata {
   pub let dateCreated: UFix64
   pub let description: String 
   pub let eventId: UInt64
-  pub let extraMetadata: {String: AnyStruct}
-  pub let groups: [String]
   pub let host: Address
+  pub let backImage: String?
   pub let image: String 
   pub let name: String
   pub let totalSupply: UInt64
@@ -34,9 +33,13 @@ pub struct FLOATEventMetadata {
       self.dateCreated = event.dateCreated
       self.description = event.description
       self.eventId = event.eventId
-      self.extraMetadata = event.getExtraMetadata()
-      self.groups = event.getGroups()
+      let extraMetadata = event.getExtraMetadata()
       self.host = event.host
+      if let backImage = extraMetadata["backImage"] as! String? {
+        self.backImage = "https://nftstorage.link/ipfs/".concat(backImage)
+      } else {
+        self.backImage = nil
+      }
       self.image = "https://nftstorage.link/ipfs/".concat(event.image)
       self.name = event.name
       self.transferrable = event.transferrable
@@ -64,7 +67,7 @@ pub struct FLOATEventMetadata {
           self.verifiers.append(limited[0])
         }
       }
-      self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
+      self.eventType = (extraMetadata["eventType"] as! String?) ?? "other"
 
       if let prices = event.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
