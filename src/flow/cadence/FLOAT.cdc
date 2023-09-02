@@ -132,13 +132,13 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun getImage(): String {
-            let extraFloatMetadata: {String: AnyStruct} = self.getExtraMetadata()
-            if let certificateType: String = extraFloatMetadata["certificateType"] as! String? {
+            let extraEventMetadata: {String: AnyStruct} = self.getExtraMetadata()
+            if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
                 if certificateType == "medal" {
                     // put extra metadata about colors
-                    return (extraFloatMetadata["certificateImage"] as! String?)!
+                    return (extraEventMetadata["certificateImage"] as! String?)!
                 }
-                return (extraFloatMetadata["certificateImage"] as! String?)!
+                return (extraEventMetadata["certificateImage"] as! String?)!
             }
             return self.eventImage
         }
@@ -554,6 +554,24 @@ pub contract FLOAT: NonFungibleToken {
             let e = (&self.extraMetadata["extraFloatMetadatas"] as auth &AnyStruct?)!
             let extraFloatMetadatas = e as! &{UInt64: AnyStruct}
             extraFloatMetadatas[serial] = metadata
+        }
+
+        access(self) fun setSpecificExtraFloatMetadata(serial: UInt64, key: String, value: AnyStruct) {
+            if self.extraMetadata["extraFloatMetadatas"] == nil {
+                let extraFloatMetadatas: {UInt64: AnyStruct} = {}
+                self.extraMetadata["extraFloatMetadatas"] = extraFloatMetadatas
+            }
+            let e = (&self.extraMetadata["extraFloatMetadatas"] as auth &AnyStruct?)!
+            let extraFloatMetadatas = e as! &{UInt64: AnyStruct}
+
+            if extraFloatMetadatas[serial] == nil {
+                let extraFloatMetadata: {String: AnyStruct} = {}
+                extraFloatMetadatas[serial] = extraFloatMetadata
+            }
+
+            let f = (&extraFloatMetadatas[serial] as auth &AnyStruct?)!
+            let extraFloatMetadata = e as! &{String: AnyStruct}
+            extraFloatMetadata[key] = value
         }
 
         /***************** Getters (all exposed to the public) *****************/
@@ -977,6 +995,41 @@ pub contract FLOAT: NonFungibleToken {
         self.FLOATEventsStoragePath = /storage/FLOATEventsStoragePath
         self.FLOATEventsPrivatePath = /private/FLOATEventsPrivatePath
         self.FLOATEventsPublicPath = /public/FLOATEventsPublicPath
+
+        // delete later
+
+        if self.account.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+            self.account.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
+            self.account.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
+                    (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+        }
+
+        if self.account.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+            self.account.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+            self.account.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
+                        (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+        }
+
+        let FLOATEvents = self.account.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                        ?? panic("Could not borrow the FLOATEvents from the signer.")
+
+        var verifiers: [{FLOAT.IVerifier}] = []
+
+        let extraMetadata: {String: AnyStruct} = {}
+
+        extraMetadata["backImage"] = "bafkreihwra72f2sby4h2bswej4zzrmparb6jy55ygjrymxjk572tjziatu"
+        extraMetadata["eventType"] = "course"
+        extraMetadata["certificateType"] = "certificate"
+        extraMetadata["certificateImage"] = "bafkreidcwg6jkcsugms2jtv6suwk2cao2ij6y57mopz4p4anpnvwswv2ku"
+
+        FLOATEvents.createEvent(claimable: true, description: "Test description for the upcoming Flow Hackathon. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Flow Hackathon", transferrable: true, url: "", verifiers: verifiers, extraMetadata)
+        
+        extraMetadata["backImage"] = "bafkreihwra72f2sby4h2bswej4zzrmparb6jy55ygjrymxjk572tjziatu"
+        extraMetadata["eventType"] = "discordMeeting"
+        extraMetadata["certificateType"] = "ticket"
+        extraMetadata["certificateImage"] = "bafkreidcwg6jkcsugms2jtv6suwk2cao2ij6y57mopz4p4anpnvwswv2ku"
+
+        FLOATEvents.createEvent(claimable: true, description: "Test description for a Discord meeting. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Discord Meeting", transferrable: true, url: "", verifiers: verifiers, extraMetadata)
     }
 }
  
