@@ -132,13 +132,14 @@ pub contract FLOAT: NonFungibleToken {
         }
 
         pub fun getImage(): String {
-            let extraEventMetadata: {String: AnyStruct} = self.getExtraMetadata()
-            if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
-                if certificateType == "medal" {
-                    // put extra metadata about colors
-                    return (extraEventMetadata["certificateImage"] as! String?)!
+            if let extraEventMetadata: {String: AnyStruct} = self.getEventMetadata()?.getExtraMetadata() {
+                if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
+                    if certificateType == "medal" {
+                        // put extra metadata about colors
+                        return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
+                    }
+                    return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
                 }
-                return (extraEventMetadata["certificateImage"] as! String?)!
             }
             return self.eventImage
         }
