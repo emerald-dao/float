@@ -6,7 +6,7 @@ import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
-import type { CertificateType, EventType } from '$lib/types/event/even-type.type';
+import type { CertificateType, EventType } from '$lib/types/event/event-type.type';
 import type { Timelock } from '$lib/types/event/verifiers.interface';
 import { signWithClaimCode } from './sign';
 import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';

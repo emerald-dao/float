@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import {
-		EVENT_TYPES,
-		EVENT_TYPE_DETAILS,
-		type CertificateType,
-		type EventType
-	} from '$lib/types/event/even-type.type';
 	import { DropZone, InputWrapper } from '@emerald-dao/component-library';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+	import {
+		EVENT_TYPES,
+		EVENT_TYPE_DETAILS,
+		type EventType
+	} from '$lib/types/event/event-type.type';
 
 	export let stepDataValid: boolean;
 

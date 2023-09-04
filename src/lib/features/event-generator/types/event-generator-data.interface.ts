@@ -1,4 +1,4 @@
-import type { CertificateType, EventType } from '$lib/types/event/even-type.type';
+import type { CertificateType, EventType } from '$lib/types/event/event-type.type';
 
 export interface EventGeneratorData {
 	name: string;
