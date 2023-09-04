@@ -19,11 +19,7 @@
 	<FloatContent let:F>
 		<F.Header>
 			<FloatHeading certificateType="ticket" />
-			<FloatSerialLabel
-				eventId={float.eventId}
-				floatSerial={float.serial}
-				certificateType="ticket"
-			/>
+			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} />
 		</F.Header>
 		<F.Body>
 			<div class="logo-and-name-wrapper">

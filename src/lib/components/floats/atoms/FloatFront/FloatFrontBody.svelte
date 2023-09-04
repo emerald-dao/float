@@ -1,8 +1,8 @@
-<script>
-	export let isMedal = false;
+<script lang="ts">
+	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
 </script>
 
-<div class="body-wrapper" class:medal={isMedal}>
+<div class={`body-wrapper ${color}`}>
 	<slot />
 </div>
 
@@ -17,8 +17,16 @@
 		height: 100%;
 		text-align: left;
 
-		&.medal {
+		&.gold {
 			border-color: rgba(218, 165, 32, 0.2);
+		}
+
+		&.silver {
+			border-color: rgba(192, 192, 192, 0.4);
+		}
+
+		&.bronze {
+			border-color: rgba(232, 208, 184, 0.7);
 		}
 	}
 </style>

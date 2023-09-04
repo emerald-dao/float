@@ -2,12 +2,16 @@
 	import type { CertificateType } from '$lib/types/event/event-type.type';
 
 	export let certificateType: CertificateType;
+	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
 </script>
 
 <div class="main-wrapper">
 	<!-- <img src="/ec-logo.png" alt="FLOAT logo" /> -->
 	<span class="heading w-medium">FLOAT</span>
-	<span class="off" class:medal={certificateType === 'medal'}>{certificateType}</span>
+	{#if certificateType === 'medal'}
+		<span class={`${color}`}>{color}</span>
+	{/if}
+	<span class={`off ${color}`}>{certificateType}</span>
 </div>
 
 <style lang="scss">
@@ -32,13 +36,21 @@
 
 		.off {
 			color: var(--clr-text-off);
-			opacity: 0.7;
+			opacity: 0.6;
 			font-family: var(--font-text);
 			font-size: 1em;
 		}
 
-		.medal {
+		.gold {
 			color: goldenrod;
+		}
+
+		.silver {
+			color: silver;
+		}
+
+		.bronze {
+			color: rgb(205, 127, 50);
 		}
 	}
 </style>

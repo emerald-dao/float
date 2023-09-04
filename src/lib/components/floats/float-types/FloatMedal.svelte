@@ -1,58 +1,14 @@
 <script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
-	import getProfile from '$lib/utilities/profiles/getProfile';
-	import DateReceived from '../atoms/DateReceived.svelte';
-	import EventData from '../atoms/EventData.svelte';
-	import FloatEventType from '../atoms/FloatEventType.svelte';
-	import FloatContent from '../atoms/FloatFront/FloatFrontContent.svelte';
-	import FloatHeading from '../atoms/FloatHeading.svelte';
-	import FloatLogo from '../atoms/FloatLogo.svelte';
-	import FloatName from '../atoms/FloatName.svelte';
-	import FloatSerialLabel from '../atoms/FloatSerialLabel.svelte';
-	import PoweredBy from '../atoms/PoweredBy.svelte';
-	import Profile from '../atoms/Profile.svelte';
+	import FloatMedalAndCertificateFront from './atoms/FloatMedalAndCertificateFront.svelte';
 
 	export let float: FLOAT;
+
+	let level: 'gold' | 'silver' | 'bronze' = 'bronze';
 </script>
 
-<div class="float-front">
-	<FloatContent let:F isMedal={true}>
-		<F.Header>
-			<FloatHeading certificateType="medal" />
-			<FloatSerialLabel
-				eventId={float.eventId}
-				floatSerial={float.serial}
-				certificateType="medal"
-			/>
-		</F.Header>
-		<F.Body isMedal={true}>
-			<div class="body-wrapper">
-				<div class="column align-center">
-					<div class="name-and-logo-wrapper">
-						<FloatLogo {float} width="8%" />
-						<FloatName {float} />
-					</div>
-					<FloatEventType eventType={float.eventType} />
-				</div>
-				<div class="row-space-between">
-					{#await getProfile(float.eventHost) then profile}
-						<EventData title="Organizer">
-							<Profile {profile} isMedal={true} />
-						</EventData>
-					{/await}
-					{#await getProfile(float.originalRecipient) then profile}
-						<EventData title="Recipient" align="right">
-							<Profile {profile} isMedal={true} inverse={true} />
-						</EventData>
-					{/await}
-				</div>
-			</div>
-		</F.Body>
-		<F.Footer>
-			<DateReceived dateReceived={float.dateReceived} />
-			<PoweredBy />
-		</F.Footer>
-	</FloatContent>
+<div class={`float-front ${level}`}>
+	<FloatMedalAndCertificateFront {float} labelColor={level} />
 </div>
 
 <style lang="scss">
@@ -67,31 +23,47 @@
 		padding: 5% 7%;
 		width: 100%;
 		height: 100%;
-		background: linear-gradient(
-			150deg,
-			rgb(253, 241, 204) 0%,
-			rgb(255, 250, 232) 20%,
-			rgb(255, 246, 221) 30%,
-			rgb(255, 249, 227) 60%,
-			rgb(255, 244, 217) 70%,
-			rgb(255, 251, 234) 85%,
-			rgb(255, 245, 216) 90%,
-			rgb(255, 246, 217) 100%
-		);
 
-		.body-wrapper {
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			flex: 1;
+		&.gold {
+			background: linear-gradient(
+				150deg,
+				rgb(253, 241, 204) 0%,
+				rgb(255, 250, 232) 20%,
+				rgb(255, 246, 221) 30%,
+				rgb(255, 249, 227) 60%,
+				rgb(255, 244, 217) 70%,
+				rgb(255, 251, 234) 85%,
+				rgb(255, 245, 216) 90%,
+				rgb(255, 246, 217) 100%
+			);
+		}
 
-			.name-and-logo-wrapper {
-				display: flex;
-				flex-direction: row;
-				align-items: center;
-				justify-content: center;
-				gap: 0.5em;
-			}
+		&.silver {
+			background: linear-gradient(
+				150deg,
+				rgb(227, 227, 227) 0%,
+				rgb(221, 221, 221) 10%,
+				rgb(236, 236, 236) 25%,
+				rgb(212, 212, 212) 50%,
+				rgb(232, 232, 232) 70%,
+				rgb(232, 232, 232) 85%,
+				rgb(236, 236, 236) 90%,
+				rgb(227, 227, 227) 100%
+			);
+		}
+
+		&.bronze {
+			background: linear-gradient(
+				150deg,
+				rgb(243, 226, 209) 0%,
+				rgb(249, 218, 185) 20%,
+				rgb(247, 221, 194) 30%,
+				rgb(248, 232, 216) 60%,
+				rgb(250, 231, 211) 70%,
+				rgb(246, 221, 195) 85%,
+				rgb(255, 228, 205) 90%,
+				rgb(239, 232, 226) 100%
+			);
 		}
 	}
 </style>

@@ -1,12 +1,10 @@
 <script lang="ts">
-	import type { CertificateType } from '$lib/types/event/event-type.type';
-
 	export let eventId: string;
 	export let floatSerial: string;
-	export let certificateType: CertificateType;
+	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
 </script>
 
-<div class:medal={certificateType === 'medal'}>
+<div class={`${color}`}>
 	<span>{`#${eventId}`}</span>
 	<span>{`${floatSerial}`}</span>
 </div>
@@ -17,7 +15,7 @@
 		overflow: hidden;
 		display: flex;
 		flex-direction: row;
-		border: 1px solid var(--clr-primary-main);
+		border: 0.07em solid var(--clr-primary-main);
 
 		span {
 			font-size: 0.67em;
@@ -36,7 +34,7 @@
 			}
 		}
 
-		&.medal {
+		&.gold {
 			border-color: goldenrod;
 
 			span {
@@ -45,6 +43,34 @@
 
 				&:last-child {
 					background-color: goldenrod;
+					color: var(--clr-heading-inverse);
+				}
+			}
+		}
+
+		&.silver {
+			border-color: silver;
+
+			span {
+				background-color: rgba(192, 192, 192, 0.095);
+				color: silver;
+
+				&:last-child {
+					background-color: silver;
+					color: var(--clr-heading-inverse);
+				}
+			}
+		}
+
+		&.bronze {
+			border-color: rgb(205, 127, 50);
+
+			span {
+				background-color: rgba(205, 127, 50, 0.095);
+				color: rgb(205, 127, 50);
+
+				&:last-child {
+					background-color: rgb(205, 127, 50);
 					color: var(--clr-heading-inverse);
 				}
 			}
