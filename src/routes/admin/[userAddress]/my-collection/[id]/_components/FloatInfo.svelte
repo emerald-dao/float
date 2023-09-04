@@ -25,7 +25,7 @@
 	</div>
 	<div class="details-wrapper">
 		<div>
-			<p class="large">{new Date(Number(float.dateReceived) * 1000)}</p>
+			<p class="large">{unixTimestampToFormattedDate(float.dateReceived)}</p>
 			<p class="small">Date Minted</p>
 		</div>
 		<div class="price">
