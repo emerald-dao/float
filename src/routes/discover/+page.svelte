@@ -11,7 +11,7 @@
 	let inputValue: string;
 
 	const handleSubmit = async (value: string) => {
-		userValidation = validateUserExistance(value);
+		userValidation = await validateUserExistance(value);
 
 		if (userValidation) {
 			// Add the user wallet address after the "/"

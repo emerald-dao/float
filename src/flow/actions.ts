@@ -32,6 +32,8 @@ import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
 import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
+import validateAddressExistanceScript from './cadence/scripts/validate_address_existance.cdc?raw';
+import validateFindExistanceScript from './cadence/scripts/validate_find_existance.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -373,6 +375,34 @@ export const userHasClaimedEvent = async (eventId: string, eventHost: string, us
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),
 				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const validateAddressExistance = async (address: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(validateAddressExistanceScript),
+			args: (arg, t) => [
+				arg(address, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const validateFindExistance = async (findName: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(validateFindExistanceScript),
+			args: (arg, t) => [
+				arg(findName, t.String)
 			]
 		});
 	} catch (e) {
