@@ -6,7 +6,7 @@ import { executeTransaction, replaceWithProperValues } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
-import type { EventType } from '$lib/types/event/event-type.type';
+import type { CertificateType, EventType } from '$lib/types/event/even-type.type';
 import type { Timelock } from '$lib/types/event/verifiers.interface';
 import { signWithClaimCode } from './sign';
 import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
@@ -52,10 +52,11 @@ const createEvent = async (
 	url: string,
 	logo: string,
 	backImage: string,
-	floatImage: string,
+	certificateImage: string,
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
+	certificateType: CertificateType,
 	timelock: Timelock | null,
 	secret: string | null,
 	limited: number | null,
@@ -80,10 +81,11 @@ const createEvent = async (
 			arg(url, t.String),
 			arg(logo, t.String),
 			arg(backImage, t.String),
-			arg(floatImage, t.String),
+			arg(certificateImage, t.String),
 			arg(transferrable, t.Bool),
 			arg(claimable, t.Bool),
 			arg(eventType, t.String),
+			arg(certificateType, t.String),
 			arg(timelock != null, t.Bool),
 			arg(startDate.toFixed(1), t.UFix64),
 			arg(timePeriod.toFixed(1), t.UFix64),
@@ -109,10 +111,11 @@ export const createEventExecution = (
 	url: string,
 	logo: string,
 	backImage: string,
-	floatImage: string,
+	certificateImage: string,
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
+	certificateType: CertificateType,
 	timelock: Timelock | null,
 	secret: string | null,
 	limited: number | null,
@@ -126,10 +129,11 @@ export const createEventExecution = (
 			url,
 			logo,
 			backImage,
-			floatImage,
+			certificateImage,
 			transferrable,
 			claimable,
 			eventType,
+			certificateType,
 			timelock,
 			secret,
 			limited,
