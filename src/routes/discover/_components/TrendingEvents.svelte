@@ -6,7 +6,10 @@
 </script>
 
 <div class="main-wrapper">
-	<h2 class="w-bold">Trending Events</h2>
+	<div class="titles-wrapper">
+		<h2 class="w-bold">Trending Events</h2>
+		<p>These events are all the rage right now!</p>
+	</div>
 	<div class="cards-wrapper">
 		{#each events as event}
 			<div class="event-wrapper">
@@ -24,9 +27,13 @@
 		align-items: center;
 		width: 100%;
 
-		h2 {
+		.titles-wrapper {
 			padding-bottom: var(--space-8);
 			text-align: center;
+
+			h2 {
+				padding-bottom: var(--space-2);
+			}
 		}
 
 		.cards-wrapper {
