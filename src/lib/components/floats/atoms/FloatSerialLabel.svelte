@@ -49,14 +49,15 @@
 		}
 
 		&.silver {
-			border-color: silver;
+			border-color: rgb(140, 140, 140);
 
 			span {
 				background-color: rgba(192, 192, 192, 0.095);
-				color: silver;
+				color: rgb(140, 140, 140);
 
 				&:last-child {
-					background-color: silver;
+					background-color: rgb(140, 140, 140);
+
 					color: var(--clr-heading-inverse);
 				}
 			}

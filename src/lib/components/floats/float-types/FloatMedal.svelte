@@ -4,7 +4,7 @@
 
 	export let float: FLOAT;
 
-	let level: 'gold' | 'silver' | 'bronze' = 'bronze';
+	let level: 'gold' | 'silver' | 'bronze' = 'gold';
 </script>
 
 <div class={`float-front ${level}`}>

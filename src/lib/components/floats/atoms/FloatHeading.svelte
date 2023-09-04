@@ -36,7 +36,7 @@
 
 		.off {
 			color: var(--clr-text-off);
-			opacity: 0.6;
+			opacity: 0.7;
 			font-family: var(--font-text);
 			font-size: 1em;
 		}
@@ -46,7 +46,7 @@
 		}
 
 		.silver {
-			color: silver;
+			color: rgb(120, 120, 120);
 		}
 
 		.bronze {
