@@ -1,4 +1,4 @@
-import { EVENT_TYPES } from '$lib/types/event/even-type.type';
+import { EVENT_TYPES } from '$lib/types/event/event-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 
 const usersEventsMock: Event[] = [

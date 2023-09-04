@@ -1,4 +1,4 @@
-import type { EventType } from '../event/even-type.type';
+import type { EventType } from '../event/event-type.type';
 
 export interface FLOAT {
 	id: string;

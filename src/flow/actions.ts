@@ -171,8 +171,11 @@ const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: stri
 	});
 };
 
-export const claimFLOATExecution = (eventId: string, eventCreator: string, secretSig: string | null) =>
-	executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig));
+export const claimFLOATExecution = (
+	eventId: string,
+	eventCreator: string,
+	secretSig: string | null
+) => executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig));
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
@@ -344,16 +347,21 @@ export const hasFLOATCollectionSetUp = async (address: string) => {
 			args: (arg, t) => [arg(address, t.Address)]
 		})) as boolean;
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 		return false;
 	}
 };
 
-export const validateSecretCodeForClaim = async (eventId: string, eventHost: string, secretCode: string, claimeeAddress: string) => {
+export const validateSecretCodeForClaim = async (
+	eventId: string,
+	eventHost: string,
+	secretCode: string,
+	claimeeAddress: string
+) => {
 	try {
 		const secretSig = await signWithClaimCode(secretCode, claimeeAddress);
-		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript)
-		cadence = cadence.replaceAll("${verifiersIdentifier}", `A.${addresses.FLOAT.substring(2)}`)
+		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript);
+		cadence = cadence.replaceAll('${verifiersIdentifier}', `A.${addresses.FLOAT.substring(2)}`);
 		return await fcl.query({
 			cadence,
 			args: (arg, t) => [
@@ -369,7 +377,11 @@ export const validateSecretCodeForClaim = async (eventId: string, eventHost: str
 	}
 };
 
-export const userHasClaimedEvent = async (eventId: string, eventHost: string, userAddress: string) => {
+export const userHasClaimedEvent = async (
+	eventId: string,
+	eventHost: string,
+	userAddress: string
+) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(userHasClaimedEventScript),
