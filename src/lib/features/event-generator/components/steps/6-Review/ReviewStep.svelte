@@ -46,6 +46,7 @@
 						float={$generatedNft}
 						showBack={$eventGeneratorActiveStep === 1}
 						minWidth="600px"
+						isForScreenshot={true}
 					/>
 				</div>
 			</div>

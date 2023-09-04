@@ -2,11 +2,14 @@
 	export let eventId: string;
 	export let floatSerial: string;
 	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
 <div class={`${color}`}>
 	<span>{`#${eventId}`}</span>
-	<span>{`${floatSerial}`}</span>
+	{#if !isForScreenshot}
+		<span class="float-serial">{`${floatSerial}`}</span>
+	{/if}
 </div>
 
 <style lang="scss">
@@ -27,7 +30,7 @@
 			line-height: normal;
 			font-family: var(--font-mono);
 
-			&:last-child {
+			&.float-serial {
 				background-color: var(--clr-primary-main);
 				color: var(--clr-heading-inverse);
 				padding: 0.4em 1em 0.4em 0.8em;

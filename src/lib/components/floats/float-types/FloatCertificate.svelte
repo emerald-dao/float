@@ -3,6 +3,7 @@
 	import FloatMedalAndCertificateFront from './atoms/FloatMedalAndCertificateFront.svelte';
 
 	export let float: FLOAT;
+	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
 <div class="float-front">
@@ -10,7 +11,7 @@
 	<div class="top-left-triangle" />
 	<div class="bottom-right-triangle" />
 	<div class="bottom-left-triangle" />
-	<FloatMedalAndCertificateFront {float} />
+	<FloatMedalAndCertificateFront {float} {isForScreenshot} />
 </div>
 
 <style lang="scss">

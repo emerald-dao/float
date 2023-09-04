@@ -13,13 +13,14 @@
 	import FloatEventType from '../atoms/FloatEventType.svelte';
 
 	export let float: FLOAT;
+	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
 <div class="float-front">
 	<FloatContent let:F>
 		<F.Header>
 			<FloatHeading certificateType="ticket" />
-			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} />
+			<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} {isForScreenshot} />
 		</F.Header>
 		<F.Body>
 			<div class="logo-and-name-wrapper">
@@ -35,15 +36,21 @@
 						<Profile {profile} />
 					</EventData>
 				{/await}
-				{#await getProfile(float.originalRecipient) then profile}
-					<EventData title="Recipient" align="right">
-						<Profile {profile} inverse={true} />
-					</EventData>
-				{/await}
+				{#if !isForScreenshot}
+					{#await getProfile(float.originalRecipient) then profile}
+						<EventData title="Recipient" align="right">
+							<Profile {profile} inverse={true} />
+						</EventData>
+					{/await}
+				{/if}
 			</div>
 		</F.Body>
 		<F.Footer>
-			<DateReceived dateReceived={float.dateReceived} />
+			{#if !isForScreenshot}
+				<DateReceived dateReceived={float.dateReceived} />
+			{:else}
+				<div />
+			{/if}
 			<PoweredBy />
 		</F.Footer>
 	</FloatContent>
@@ -97,6 +104,11 @@
 			display: flex;
 			align-items: center;
 			gap: 0.8em;
+
+			.name-wrapper {
+				width: 100%;
+				overflow: hidden;
+			}
 		}
 	}
 </style>

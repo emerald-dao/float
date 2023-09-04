@@ -15,6 +15,7 @@
 
 	export let float: FLOAT;
 	export let labelColor: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
 <FloatContent let:F color={labelColor}>
@@ -23,7 +24,12 @@
 			certificateType={EVENT_TYPE_DETAILS[float.eventType].certificateType}
 			color={labelColor}
 		/>
-		<FloatSerialLabel eventId={float.eventId} floatSerial={float.serial} color={labelColor} />
+		<FloatSerialLabel
+			eventId={float.eventId}
+			floatSerial={float.serial}
+			color={labelColor}
+			{isForScreenshot}
+		/>
 	</F.Header>
 	<F.Body color={labelColor}>
 		<div class={`body-wrapper ${labelColor}`}>
@@ -43,16 +49,22 @@
 						<Profile {profile} />
 					</EventData>
 				{/await}
-				{#await getProfile(float.originalRecipient) then profile}
-					<EventData title="Recipient" align="right">
-						<Profile {profile} inverse={true} />
-					</EventData>
-				{/await}
+				{#if isForScreenshot}
+					{#await getProfile(float.originalRecipient) then profile}
+						<EventData title="Recipient" align="right">
+							<Profile {profile} inverse={true} />
+						</EventData>
+					{/await}
+				{/if}
 			</div>
 		</div>
 	</F.Body>
 	<F.Footer>
-		<DateReceived dateReceived={float.dateReceived} />
+		{#if !isForScreenshot}
+			<DateReceived dateReceived={float.dateReceived} />
+		{:else}
+			<div />
+		{/if}
 		<PoweredBy />
 	</F.Footer>
 </FloatContent>

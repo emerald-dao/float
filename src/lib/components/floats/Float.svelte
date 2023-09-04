@@ -10,14 +10,15 @@
 	export let showBack = false;
 	export let minWidth = '300px';
 	export let maxWidth = '600px';
+	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
 <BaseFloat {float} {showBack} {minWidth} {maxWidth}>
 	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
-		<FloatCertificate {float} />
+		<FloatCertificate {float} {isForScreenshot} />
 	{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
-		<FloatMedal {float} />
+		<FloatMedal {float} {isForScreenshot} />
 	{:else}
-		<FloatTicket {float} />
+		<FloatTicket {float} {isForScreenshot} />
 	{/if}
 </BaseFloat>
