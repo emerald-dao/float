@@ -4,6 +4,7 @@ import { addresses } from '$stores/flow/FlowStore';
 import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$lib/stores/custom/steps/step.interface';
 import type { User } from '@emerald-dao/component-library/models/user.interface';
+import { network } from './config';
 
 export function replaceWithProperValues(script: string, contractName = '', contractAddress = '') {
 	return (
@@ -204,7 +205,7 @@ export const verifyAccountOwnership = async (userObject: User) => {
 		(services) => services.type === 'account-proof'
 	);
 	const fclCryptoContract = network === 'emulator' ? '0xf8d6e0586b0a20c7' : null;
-	return await fcl.AppUtils.verifyAccountProof('Toucans', accountProofService.data, {
+	return await fcl.AppUtils.verifyAccountProof('FLOAT', accountProofService.data, {
 		fclCryptoContract
 	});
 };

@@ -4,11 +4,23 @@ import { eventGeneratorData } from '../stores/EventGeneratorData';
 import { createEventExecution } from '$flow/actions';
 import uploadToIPFS from '$lib/utilities/uploadToIPFS';
 import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
+import { postEvent } from '../api/postEvent';
+import { user } from '$stores/flow/FlowStore';
 
 export const createEvent = async (): Promise<ActionExecutionResult> => {
 	eventGenerationInProgress.set(true);
 
-	let event = get(eventGeneratorData);
+	const event = get(eventGeneratorData);
+	const userObject = get(user);
+
+	console.log('user', userObject);
+
+	if (userObject.addr == null) {
+		return {
+			state: 'error',
+			errorMessage: 'Error loading user address'
+		};
+	}
 
 	if (event.logo.length == 0 || event.image.length == 0 || event.ticketImage == null) {
 		return {
@@ -38,6 +50,8 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.powerups.payment.active ? event.powerups.payment.data : null,
 		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null
 	);
+
+	await postEvent('12345', userObject);
 
 	eventGenerationInProgress.set(false);
 

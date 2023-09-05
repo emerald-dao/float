@@ -37,21 +37,21 @@ export interface Database {
       claims: {
         Row: {
           created_at: string | null
-          event_id: number | null
-          float_id: number
-          user_address: number
+          event_id: string | null
+          float_id: string
+          user_address: string
         }
         Insert: {
           created_at?: string | null
-          event_id?: number | null
-          float_id?: number
-          user_address: number
+          event_id?: string | null
+          float_id: string
+          user_address: string
         }
         Update: {
           created_at?: string | null
-          event_id?: number | null
-          float_id?: number
-          user_address?: number
+          event_id?: string | null
+          float_id?: string
+          user_address?: string
         }
         Relationships: [
           {
@@ -65,18 +65,18 @@ export interface Database {
       events: {
         Row: {
           created_at: string | null
-          creator_address: number
-          id: number
+          creator_address: string
+          id: string
         }
         Insert: {
           created_at?: string | null
-          creator_address: number
-          id?: number
+          creator_address: string
+          id: string
         }
         Update: {
           created_at?: string | null
-          creator_address?: number
-          id?: number
+          creator_address?: string
+          id?: string
         }
         Relationships: []
       }
