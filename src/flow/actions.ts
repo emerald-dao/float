@@ -178,8 +178,9 @@ const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: stri
 export const claimFLOATExecution = (
 	eventId: string,
 	eventCreator: string,
-	secretSig: string | null
-) => executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig));
+	secretSig: string | null,
+	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
+) => executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
