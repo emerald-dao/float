@@ -10,6 +10,8 @@ import type { CertificateType, EventType } from '$lib/types/event/event-type.typ
 import type { Timelock } from '$lib/types/event/verifiers.interface';
 import { signWithClaimCode } from './sign';
 import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
+import type { TransactionStatusObject } from '@onflow/fcl';
+import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -120,7 +122,8 @@ export const createEventExecution = (
 	secret: string | null,
 	limited: number | null,
 	payment: number | null,
-	minimumBalance: number | null
+	minimumBalance: number | null,
+	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
 	executeTransaction(() =>
 		createEvent(
@@ -139,7 +142,8 @@ export const createEventExecution = (
 			limited,
 			payment,
 			minimumBalance
-		)
+		),
+		actionAfterSucceed
 	);
 
 const burnFLOAT = async (floatId: string) => {

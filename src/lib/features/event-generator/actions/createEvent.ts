@@ -4,6 +4,7 @@ import { eventGeneratorData } from '../stores/EventGeneratorData';
 import { createEventExecution } from '$flow/actions';
 import uploadToIPFS from '$lib/utilities/uploadToIPFS';
 import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
+import type { TransactionStatusObject } from '@onflow/fcl';
 
 export const createEvent = async (): Promise<ActionExecutionResult> => {
 	eventGenerationInProgress.set(true);
@@ -21,6 +22,24 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 	const backImageIpfsCid = await uploadToIPFS(event.image[0]);
 	const floatTicketIpfsCid = await uploadToIPFS(event.ticketImage);
 
+	// After the new event is created, save event to database
+	const actionAfterCreateEvent: (
+		res: TransactionStatusObject
+	) => Promise<ActionExecutionResult> = async (res: TransactionStatusObject) => {
+		const [eventCreated] = res.events.filter((event) =>
+			event.type.includes('FLOAT.FLOATEventCreated')
+		);
+		const eventData = eventCreated.data;
+		const eventId = eventData.eventId;
+
+		console.log({ eventId })
+
+		return {
+			state: 'success',
+			errorMessage: ''
+		};
+	};
+
 	await createEventExecution(
 		event.name,
 		event.description,
@@ -36,7 +55,8 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.powerups.secretCode.active ? event.powerups.secretCode.data : null,
 		event.powerups.limited.active ? event.powerups.limited.data : null,
 		event.powerups.payment.active ? event.powerups.payment.data : null,
-		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null
+		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null,
+		actionAfterCreateEvent
 	);
 
 	eventGenerationInProgress.set(false);
