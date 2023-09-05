@@ -44,17 +44,13 @@
 				{/await}
 			</div>
 			<div class="row-space-between">
-				{#await getProfile(float.eventHost) then profile}
-					<EventData title="Organizer">
-						<Profile {profile} />
-					</EventData>
-				{/await}
+				<EventData title="Organizer">
+					<Profile address={float.eventHost} />
+				</EventData>
 				{#if isForScreenshot}
-					{#await getProfile(float.originalRecipient) then profile}
-						<EventData title="Recipient" align="right">
-							<Profile {profile} inverse={true} />
-						</EventData>
-					{/await}
+					<EventData title="Recipient" align="right">
+						<Profile address={float.originalRecipient} inverse={true} />
+					</EventData>
 				{/if}
 			</div>
 		</div>

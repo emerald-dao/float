@@ -1,32 +1,56 @@
 <script lang="ts">
-	import type { Profile } from '$lib/types/user/profile.interface';
+	import getProfile from '$lib/utilities/profiles/getProfile';
 	import Icon from '@iconify/svelte';
 
-	export let profile: Profile;
+	export let address: string;
 	export let inverse = false;
 	export let isMedal = false;
 </script>
 
-<div class="main-wrapper row align-center" class:inverse>
-	<img class="creator-avatar" src={profile.avatar} alt="Creator avatar" />
-	<div class="profile-wrapper">
-		<div class="profile-name-wrapper">
-			<span class="profile-name">
-				{profile.name}
+{#await getProfile(address)}
+	<div class="main-wrapper row align-center" class:inverse>
+		<div class="creator-avatar" />
+		<div class="profile-wrapper">
+			<div class="line" />
+			<span class="wallet-address w-regular off">
+				{address}
 			</span>
-			{#if profile.type === 'find'}
-				<Icon
-					icon="tabler:discount-check-filled"
-					width="0.78em"
-					color={isMedal ? 'goldenrod' : 'var(--clr-primary-main)'}
-				/>
-			{/if}
 		</div>
-		<span class="wallet-address w-regular off">
-			{profile.address}
-		</span>
 	</div>
-</div>
+{:then profile}
+	<div class="main-wrapper row align-center" class:inverse>
+		<img class="creator-avatar" src={profile.avatar} alt="Creator avatar" />
+		<div class="profile-wrapper">
+			<div class="profile-name-wrapper">
+				<span class="profile-name">
+					{profile.name}
+				</span>
+				{#if profile.type === 'find'}
+					<Icon
+						icon="tabler:discount-check-filled"
+						width="0.78em"
+						color={isMedal ? 'goldenrod' : 'var(--clr-primary-main)'}
+					/>
+				{/if}
+			</div>
+			<span class="wallet-address w-regular off">
+				{profile.address}
+			</span>
+		</div>
+	</div>
+{:catch error}
+	<div class="main-wrapper row align-center" class:inverse>
+		<img class="creator-avatar" src="/new-avatar.png" alt="Creator avatar" />
+		<div class="profile-wrapper">
+			<div class="profile-name-wrapper">
+				<span class="profile-name"> Anonymus User </span>
+			</div>
+			<span class="wallet-address w-regular off">
+				{address}
+			</span>
+		</div>
+	</div>
+{/await}
 
 <style lang="scss">
 	.main-wrapper {
@@ -50,6 +74,10 @@
 			object-position: center;
 		}
 
+		div.creator-avatar {
+			background: var(--clr-background-secondary);
+		}
+
 		.profile-wrapper {
 			display: flex;
 			flex-direction: column;
@@ -66,6 +94,14 @@
 				font-size: 0.85em;
 				color: var(--clr-heading-main);
 				--font-weight: var(--font-weight-medium);
+			}
+
+			.line {
+				width: 85%;
+				height: 0.3em;
+				margin-block: 0.4em;
+				background: var(--clr-background-secondary);
+				border-radius: 0.2em;
 			}
 
 			.wallet-address {
