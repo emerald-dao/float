@@ -3,6 +3,7 @@ import { transactionStore } from '$stores/flow/TransactionStore';
 import { addresses } from '$stores/flow/FlowStore';
 import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$lib/stores/custom/steps/step.interface';
+import type { User } from '@emerald-dao/component-library/models/user.interface';
 
 export function replaceWithProperValues(script: string, contractName = '', contractAddress = '') {
 	return (
@@ -159,8 +160,8 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 					self.avatar = _avatar
 				}
 			}
-			`
-			args = (arg, t) => [arg(input, t.Address)]
+			`;
+			args = (arg, t) => [arg(input, t.Address)];
 		} else {
 			cadence = `
 			import FIND from ${addresses.FIND}
@@ -183,8 +184,8 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 					self.avatar = _avatar
 				}
 			}
-			`
-			args = (arg, t) => [arg(input, t.String)]
+			`;
+			args = (arg, t) => [arg(input, t.String)];
 		}
 		return await fcl.query({
 			cadence,
@@ -193,5 +194,17 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 	} catch (e) {
 		return null;
 	}
-}
+};
 
+export const verifyAccountOwnership = async (userObject: User) => {
+	if (!userObject.loggedIn) {
+		return false;
+	}
+	const accountProofService = userObject.services.find(
+		(services) => services.type === 'account-proof'
+	);
+	const fclCryptoContract = network === 'emulator' ? '0xf8d6e0586b0a20c7' : null;
+	return await fcl.AppUtils.verifyAccountProof('Toucans', accountProofService.data, {
+		fclCryptoContract
+	});
+};
