@@ -46,6 +46,10 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 
 		console.log({ eventId });
 
+		const response = await postEvent(eventId, userObject);
+
+		console.log({ response });
+
 		return {
 			state: 'success',
 			errorMessage: ''
@@ -70,8 +74,6 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null,
 		actionAfterCreateEvent
 	);
-
-	await postEvent('12345', userObject);
 
 	eventGenerationInProgress.set(false);
 
