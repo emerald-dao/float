@@ -47,7 +47,7 @@
 	<div class="float-logo" bind:this={floatLogo} style={`width: ${width}`} />
 {:else}
 	<div class="image-placeholder" style={`width: ${width}`}>
-		<p>Insert an image</p>
+		<p>Logo</p>
 	</div>
 {/if}
 
@@ -61,21 +61,22 @@
 	.float-logo,
 	img,
 	.image-placeholder {
-		max-width: 15.5%;
-		// max-width: 18%;
+		// max-width: 15.5%;
 		aspect-ratio: 1 / 1;
-		border-radius: var(--radius-1);
+		border-radius: 0.3em;
+		height: 100%;
 	}
 
 	.image-placeholder {
-		border: 0.5px dashed var(--clr-border-primary);
+		border: 1px dashed var(--clr-border-primary);
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		padding: 1em;
+		min-width: fit-content;
+		padding: 0.2em;
 
 		p {
-			font-size: 0.6em;
+			font-size: 0.5em;
 			line-height: 1.1;
 			text-align: center;
 			color: var(--clr-text-off);

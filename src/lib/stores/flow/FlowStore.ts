@@ -1,7 +1,7 @@
 import { writable, type Writable } from 'svelte/store';
 import { network } from '$flow/config';
-import type { CurrentUserObject } from '@onflow/fcl';
 import type { Profile } from '../../types/user/profile.interface';
+import type { User } from '@emerald-dao/component-library/models/user.interface';
 
 const contractData = {
 	NonFungibleToken: {
@@ -66,7 +66,7 @@ const contractData = {
 	}
 };
 
-export const user = writable<CurrentUserObject | { loggedIn: false; addr: null }>({
+export const user = writable<User | { loggedIn: false; addr: null }>({
 	loggedIn: false,
 	addr: null
 });

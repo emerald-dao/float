@@ -4,12 +4,23 @@ import { eventGeneratorData } from '../stores/EventGeneratorData';
 import { createEventExecution } from '$flow/actions';
 import uploadToIPFS from '$lib/utilities/uploadToIPFS';
 import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
+import { postEvent } from '../api/postEvent';
+import { user } from '$stores/flow/FlowStore';
 import type { TransactionStatusObject } from '@onflow/fcl';
+import { goto } from '$app/navigation';
 
 export const createEvent = async (): Promise<ActionExecutionResult> => {
 	eventGenerationInProgress.set(true);
 
-	let event = get(eventGeneratorData);
+	const event = get(eventGeneratorData);
+	const userObject = get(user);
+
+	if (userObject.addr == null) {
+		return {
+			state: 'error',
+			errorMessage: 'Error loading user address'
+		};
+	}
 
 	if (event.logo.length == 0 || event.image.length == 0 || event.ticketImage == null) {
 		return {
@@ -32,7 +43,10 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		const eventData = eventCreated.data;
 		const eventId = eventData.eventId;
 
-		console.log({ eventId })
+		const response = await postEvent(eventId, userObject);
+
+		// navigate to the event admin page
+		goto(`/admin/${userObject.addr}/events/${eventId}`);
 
 		return {
 			state: 'success',

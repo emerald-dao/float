@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
-	import { onMount, setContext } from 'svelte';
+	import { setContext } from 'svelte';
 	import StepButtons from './components/atoms/StepButtons.svelte';
 	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';

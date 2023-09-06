@@ -35,7 +35,7 @@
 		<div class={`body-wrapper ${labelColor}`}>
 			<div class="column align-center">
 				<div class="name-and-logo-wrapper">
-					<FloatLogo {float} width="5.7%" />
+					<FloatLogo {float} width="1.4em" />
 					<FloatName {float} fontSize="1.17em" />
 				</div>
 				<FloatEventType eventType={float.eventType} fontSize="0.84em" />
@@ -47,7 +47,7 @@
 				<EventData title="Organizer">
 					<Profile address={float.eventHost} />
 				</EventData>
-				{#if isForScreenshot}
+				{#if !isForScreenshot}
 					<EventData title="Recipient" align="right">
 						<Profile address={float.originalRecipient} inverse={true} />
 					</EventData>
@@ -85,6 +85,8 @@
 			align-items: center;
 			justify-content: center;
 			gap: 0.5em;
+			overflow: hidden;
+			width: 100%;
 		}
 	}
 </style>
