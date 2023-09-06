@@ -11,14 +11,14 @@ const supabase = createClient<Database>(
 
 export async function POST({ request, params }) {
 	const data = await request.json();
+	const { user } = data;
 
 	// Make sure a valid user was passed in
-	const verifyAccount = await verifyAccountOwnership(data.user);
+	const verifyAccount = await verifyAccountOwnership(user);
 	if (!verifyAccount) {
 		console.log('Error verifying user');
 		return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
 	}
-	const { user } = data;
 
 	const { error } = await supabase.from('events').insert({
 		id: params.eventId,
