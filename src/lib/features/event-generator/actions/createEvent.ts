@@ -43,6 +43,9 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		const eventData = eventCreated.data;
 		const eventId = eventData.eventId;
 
+		const blockId = res.blockId;
+		const transactionId = eventCreated.tranasctionId;
+
 		const response = await postEvent(eventId, userObject);
 
 		// navigate to the event admin page
