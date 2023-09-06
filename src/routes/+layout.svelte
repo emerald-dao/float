@@ -71,7 +71,7 @@
 	<slot />
 </main>
 
-{#if route === null || 'discover'}
+{#if route === null || route === 'discover'}
 	<Footer {navElements} {emeraldTools} socials={socialMedia} />
 {/if}
 
