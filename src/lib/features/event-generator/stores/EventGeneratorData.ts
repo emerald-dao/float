@@ -47,15 +47,15 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($eventGeneratorData) => ({
 	eventDescription: $eventGeneratorData.description,
 	eventHost: $eventGeneratorData.host,
-	eventId: '000000',
+	eventId: '123456789',
 	eventLogo: $eventGeneratorData.logo[0] as File,
 	eventImage: $eventGeneratorData.image[0] as File,
 	eventName: $eventGeneratorData.name,
 	totalSupply: $eventGeneratorData.totalSupply,
 	transferrable: $eventGeneratorData.transferrable,
 	eventType: $eventGeneratorData.eventType,
-	originalRecipient: 'jacob',
+	originalRecipient: '0x99bd48c8036e2876',
 	id: '00001',
-	serial: '0',
-	dateReceived: ''
+	serial: '1',
+	dateReceived: `${Date.now() / 1000}`
 }));

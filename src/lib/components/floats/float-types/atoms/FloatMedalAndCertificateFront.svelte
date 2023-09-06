@@ -47,7 +47,7 @@
 				<EventData title="Organizer">
 					<Profile address={float.eventHost} />
 				</EventData>
-				{#if isForScreenshot}
+				{#if !isForScreenshot}
 					<EventData title="Recipient" align="right">
 						<Profile address={float.originalRecipient} inverse={true} />
 					</EventData>
