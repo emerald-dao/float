@@ -15,7 +15,8 @@
 	import validateSecretCode from '../../_actions/validateSecretCode';
 	import { get } from 'svelte/store';
 	import { user } from '$stores/flow/FlowStore';
-	import { logIn } from '$flow/actions';
+	import { logIn, userHasClaimedEvent } from '$flow/actions';
+	import { page } from '$app/stores';
 
 	export let data;
 
@@ -46,6 +47,20 @@
 		endDate = unixTimestampToFormattedDate(dates.dateEnding);
 	} else {
 		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
+	}
+
+	let floatAlreadyClaimed: boolean;
+
+	async function checkIfUserHasClaimedEvent() {
+		floatAlreadyClaimed = await userHasClaimedEvent(
+			$page.params.eventId,
+			data.event.host,
+			$user.addr
+		);
+	}
+
+	$: if ($user.addr) {
+		checkIfUserHasClaimedEvent();
 	}
 
 	const handleChange = async () => {
@@ -120,7 +135,21 @@
 		</div>
 	</div>
 	<div class="button-wrapper">
-		{#if secretCode}
+		{#if !$user.loggedIn}
+			<div class="secret-code-message">
+				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+					<Icon icon="tabler:wallet" />
+					<span>Connect to claim the event</span>
+				</div>
+			</div>
+		{:else if floatAlreadyClaimed}
+			<div class="secret-code-message">
+				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+					<Icon icon="tabler:lock" />
+					<span>You already own this FLOAT</span>
+				</div>
+			</div>
+		{:else if secretCode}
 			<div
 				class="secret-code-message"
 				class:success={secretCodeValidation === true}
@@ -156,7 +185,9 @@
 			</div>
 		{/if}
 		<div class="button-background">
-			{#if secretCode}
+			{#if !$user.loggedIn || floatAlreadyClaimed}
+				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
+			{:else if secretCode}
 				<Button
 					size="large"
 					width="full-width"
