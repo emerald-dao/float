@@ -1,6 +1,5 @@
 import type { Event } from '$lib/types/event/event.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
-import { unixTimestampToFormattedDate } from './dates/unixTimestampToFormattedDate';
 
 function transformEventToFloat(event: Event): FLOAT {
 	const float: FLOAT = {

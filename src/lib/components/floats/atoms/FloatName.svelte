@@ -16,7 +16,6 @@
 <style lang="scss">
 	.heading-wrapper {
 		overflow: hidden;
-		width: 100%;
 
 		h3 {
 			text-overflow: ellipsis;
