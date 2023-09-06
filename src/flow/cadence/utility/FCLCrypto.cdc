@@ -1,4 +1,4 @@
- pub contract FCLCrypto {
+pub contract FCLCrypto {
 
     pub fun verifyUserSignatures(
         address: Address,
@@ -102,4 +102,3 @@
         self.domainSeparationTagAccountProof = "FCL-ACCOUNT-PROOF-V0.0"
     }
 }
- 
