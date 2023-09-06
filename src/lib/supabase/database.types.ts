@@ -34,6 +34,52 @@ export interface Database {
   }
   public: {
     Tables: {
+      claims: {
+        Row: {
+          created_at: string | null
+          event_id: string | null
+          float_id: string
+          user_address: string
+        }
+        Insert: {
+          created_at?: string | null
+          event_id?: string | null
+          float_id: string
+          user_address: string
+        }
+        Update: {
+          created_at?: string | null
+          event_id?: string | null
+          float_id?: string
+          user_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "claims_event_id_fkey"
+            columns: ["event_id"]
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          }
+        ]
+      }
+      events: {
+        Row: {
+          created_at: string | null
+          creator_address: string
+          id: string
+        }
+        Insert: {
+          created_at?: string | null
+          creator_address: string
+          id: string
+        }
+        Update: {
+          created_at?: string | null
+          creator_address?: string
+          id?: string
+        }
+        Relationships: []
+      }
       floats_groups: {
         Row: {
           float_id: string

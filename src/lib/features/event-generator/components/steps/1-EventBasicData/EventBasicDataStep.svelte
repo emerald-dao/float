@@ -1,10 +1,14 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import { EVENT_TYPES, EVENT_TYPE_DETAILS } from '$lib/types/event/even-type.type';
 	import { DropZone, InputWrapper } from '@emerald-dao/component-library';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
+	import {
+		EVENT_TYPES,
+		EVENT_TYPE_DETAILS,
+		type EventType
+	} from '$lib/types/event/event-type.type';
 
 	export let stepDataValid: boolean;
 
@@ -16,6 +20,14 @@
 		(res as SuiteRunResult).done((result) => {
 			res = result;
 		});
+	};
+
+	const handleEventTypeChange = (input: Event) => {
+		const target = input.target as HTMLInputElement;
+		$eventGeneratorData.eventType = target.value as EventType;
+		$eventGeneratorData.certificateType =
+			EVENT_TYPE_DETAILS[target.value as EventType].certificateType;
+		console.log($eventGeneratorData);
 	};
 
 	let res = validationSuite.get();
@@ -45,7 +57,7 @@
 		</div>
 		<div class="column-1">
 			<label for="event-type">Event type</label>
-			<select name="event-type" id="event-type" bind:value={$eventGeneratorData.eventType}>
+			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
 				{#each EVENT_TYPES as eventType}
 					<option value={eventType}>{EVENT_TYPE_DETAILS[eventType].eventTypeName}</option>
 				{/each}

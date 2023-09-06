@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { transactionStore } from './../lib/stores/flow/TransactionStore.ts';
+	import { transactionStore } from '$lib/stores/flow/TransactionStore';
 	import { profile } from '$lib/stores/flow/FlowStore';
 	import '../app.postcss';
 	import '@emerald-dao/design-system/build/variables-dark.css';

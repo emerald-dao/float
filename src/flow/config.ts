@@ -29,7 +29,7 @@ const fclConfigInfo = {
 		accessNode: 'https://rest-mainnet.onflow.org',
 		discoveryWallet: 'https://fcl-discovery.onflow.org/authn'
 	}
-}
+};
 
 config({
 	'app.detail.title': dappInfo.title,

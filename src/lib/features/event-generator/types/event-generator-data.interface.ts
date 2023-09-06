@@ -1,9 +1,10 @@
-import type { EventType } from '$lib/types/event/even-type.type';
+import type { CertificateType, EventType } from '$lib/types/event/event-type.type';
 
 export interface EventGeneratorData {
 	name: string;
 	eventId: string;
 	eventType: EventType;
+	certificateType: CertificateType;
 	description: string;
 	host: string;
 	url: string;

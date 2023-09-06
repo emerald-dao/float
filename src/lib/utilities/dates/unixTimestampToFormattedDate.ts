@@ -7,7 +7,7 @@ export const unixTimestampToFormattedDate = (
 
 	const date = new Date(seconds * 1000 + fractionalSeconds);
 
-	const month = date.getMonth();
+	const month = date.getMonth() + 1;
 	const year = date.getFullYear();
 
 	if (format === 'year') {

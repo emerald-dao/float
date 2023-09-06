@@ -1,4 +1,4 @@
-import { EVENT_TYPES } from '$lib/types/event/even-type.type';
+import { EVENT_TYPES } from '$lib/types/event/event-type.type';
 import type { FLOAT } from '$lib/types/float/float.interface';
 
 const usersFloatsMock: FLOAT[] = [

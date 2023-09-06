@@ -1,5 +1,5 @@
 import type { Filter } from '$lib/types/content/filters/filter.interface';
-import { EVENT_TYPE_DETAILS, EVENT_TYPES } from '$lib/types/event/even-type.type';
+import { EVENT_TYPE_DETAILS, EVENT_TYPES } from '$lib/types/event/event-type.type';
 
 let typeOfEventFilter: Filter = {
 	title: 'Type of event',
