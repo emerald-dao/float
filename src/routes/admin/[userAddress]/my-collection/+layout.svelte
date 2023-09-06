@@ -158,6 +158,7 @@
 			@include mq(medium) {
 				display: block;
 				background-color: var(--clr-background-secondary);
+				overflow: hidden;
 			}
 		}
 	}
