@@ -82,6 +82,12 @@
         "emulator": "0xf8d6e0586b0a20c7",
         "mainnet": "0xe52522745adf5c34"
       }
+    },
+    "FCLCrypto": {
+      "source": "./src/flow/cadence/utility/FCLCrypto.cdc",
+      "aliases": {
+        "emulator": "0xf8d6e0586b0a20c7"
+      }
     }
   },
   "networks": {
@@ -98,6 +104,7 @@
   "deployments": {
     "emulator": {
       "emulator-account": [
+        "FCLCrypto",
         "FindViews",
         "FIND",
         "FLOAT",
