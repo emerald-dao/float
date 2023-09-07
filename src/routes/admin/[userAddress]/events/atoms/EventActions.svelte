@@ -38,40 +38,42 @@
 		<Icon icon="uil:bolt-alt" color="var(--clr-neutral-600)" />
 		<p>ACTIONS</p>
 	</div>
-	<div class="column-3">
-		<div class="row-3">
-			<label for="claiming" class="switch">
-				<input
-					type="checkbox"
-					name="claiming"
-					id="claiming"
-					bind:checked={claimingState}
-					on:change={handleToggleClaiming}
-				/>
-				<span class="slider" />
-			</label>
-			<p class="small">Claiming ative</p>
+	<div class="actions-wrapper">
+		<div class="column-3">
+			<div class="row-3">
+				<label for="claiming" class="switch">
+					<input
+						type="checkbox"
+						name="claiming"
+						id="claiming"
+						bind:checked={claimingState}
+						on:change={handleToggleClaiming}
+					/>
+					<span class="slider" />
+				</label>
+				<p class="small">Claiming ative</p>
+			</div>
+			<div class="row-3">
+				<label for="transfering" class="switch">
+					<input
+						type="checkbox"
+						name="transfering"
+						id="transfering"
+						bind:checked={transferingState}
+						on:change={handleToggleTransfering}
+					/>
+					<span class="slider" />
+				</label>
+				<p class="small">User transfering</p>
+			</div>
+			<DistributeFloatsModal />
 		</div>
-		<div class="row-3">
-			<label for="transfering" class="switch">
-				<input
-					type="checkbox"
-					name="transfering"
-					id="transfering"
-					bind:checked={transferingState}
-					on:change={handleToggleTransfering}
-				/>
-				<span class="slider" />
-			</label>
-			<p class="small">User transfering</p>
+		<div class="event-actions">
+			<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
+				<Icon icon="ph:trash" color="var(--clr-alert-main)" />
+				<p style="color: var(--clr-alert-main);">Delete Event</p>
+			</Button>
 		</div>
-		<DistributeFloatsModal />
-	</div>
-	<div class="event-actions">
-		<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
-			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
-			<p style="color: var(--clr-alert-main);">Delete Event</p>
-		</Button>
 	</div>
 </div>
 
@@ -81,6 +83,7 @@
 		flex-direction: column;
 		gap: var(--space-3);
 		padding-inline: var(--space-6);
+		flex: 1;
 
 		@include mq(medium) {
 			padding-inline: var(--space-8);
@@ -99,10 +102,18 @@
 		}
 	}
 
-	.event-actions {
+	.actions-wrapper {
 		display: flex;
-		align-items: center;
-		justify-content: flex-start;
-		gap: var(--space-5);
+		flex-direction: column;
+		gap: var(--space-3);
+		justify-content: space-between;
+		flex: 1;
+
+		.event-actions {
+			display: flex;
+			align-items: center;
+			justify-content: flex-start;
+			gap: var(--space-5);
+		}
 	}
 </style>
