@@ -51,13 +51,13 @@
 			<em>No events found</em>
 		{:else if viewMode === 'grid'}
 			<div class="events-grid-wrapper" in:fly={{ x: 10, duration: 400 }}>
-				{#each $searchStore.filtered as event}
+				{#each $searchStore.filtered as event (event.eventId)}
 					<EventCard {event} display="grid" />
 				{/each}
 			</div>
 		{:else}
 			<div class="events-list-wrapper" in:fly={{ x: 10, duration: 400 }}>
-				{#each $searchStore.filtered as event}
+				{#each $searchStore.filtered as event (event.eventId)}
 					<EventCard {event} display="list" />
 				{/each}
 			</div>

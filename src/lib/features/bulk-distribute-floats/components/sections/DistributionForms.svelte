@@ -1,16 +1,20 @@
 <script lang="ts">
+	import type { CertificateType } from '$lib/types/event/event-type.type';
 	import { fly } from 'svelte/transition';
 	import Papa from 'papaparse';
 	import { Button, DropZone } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
-	import { InputWrapper, Tabs, Tab, TabList, TabPanel } from '@emerald-dao/component-library';
-	import validationSuite from './validation';
-	import type { SuiteRunResult } from 'vest';
+	import { Tabs, Tab, TabList, TabPanel } from '@emerald-dao/component-library';
+	import validationSuite from '../atoms/searchBar/validation';
 	import { hasFLOATCollectionSetUp } from '$flow/actions';
+	import type { Distribution, DistributionElement } from '../../types/distribution.interface';
+	import UserSearchBar from '../atoms/searchBar/UserSearchBar.svelte';
 
 	export let addressInputValue: string;
-	export let csvDist: string[];
-	export let addToStaging: (validForm: boolean) => void;
+	export let certificateType: CertificateType;
+	export let csvDist: DistributionElement<typeof certificateType>[];
+	export let addToStaging: () => void;
+	export let distribution: Distribution<typeof certificateType>;
 
 	let csvFiles: File[] = [];
 	let validCsv: boolean | 'loading' | undefined;
@@ -30,7 +34,12 @@
 				complete: async ({ data }) => {
 					if (await checkValidCsv(data)) {
 						validCsv = true;
-						csvDist = data.map((row) => (row as ParsedCsvRow).address) as string[];
+						csvDist = data.map((row) => {
+							return {
+								address: (row as ParsedCsvRow).address,
+								medal: 'gold'
+							};
+						}) as DistributionElement<typeof certificateType>[];
 					} else {
 						validCsv = false;
 						csvFiles = [];
@@ -84,6 +93,11 @@
 		return false;
 	};
 
+	export const restartValidation = () => {
+		validationSuite.reset();
+		res = validationSuite.get();
+	};
+
 	const emptyCsv = () => {
 		csvDist = [];
 	};
@@ -92,22 +106,6 @@
 	$: if (csvFiles.length === 0) emptyCsv();
 
 	let res = validationSuite.get();
-	let addressPending: boolean;
-	let addressPendingMessage = ['Checking if address exists in the blockchain'];
-
-	const handleChange = (input: Event) => {
-		const target = input.target as HTMLInputElement;
-		res = validationSuite(target.value);
-
-		if (target.name === 'address') {
-			addressPending = true;
-		}
-
-		(res as SuiteRunResult).done((result) => {
-			res = result;
-			addressPending = false;
-		});
-	};
 </script>
 
 <div transition:fly|local={{ duration: 200, y: 30 }}>
@@ -121,40 +119,31 @@
 		<TabPanel>
 			<form
 				id="dist-form"
-				on:submit|preventDefault={() => addToStaging(res.isValid())}
+				on:submit|preventDefault={() => addToStaging()}
 				autocomplete="off"
 				class="wrapper"
 			>
-				<InputWrapper
-					name="address"
-					label="Address"
-					pending={addressPending}
-					pendingMessage={addressPendingMessage}
-					errors={res.getErrors('address')}
-					isValid={res.isValid('address')}
-				>
-					<input
-						name="address"
-						type="text"
-						maxlength="18"
-						on:input={handleChange}
-						bind:value={addressInputValue}
-					/>
-				</InputWrapper>
-				<Button
-					form="dist-form"
-					type="ghost"
-					color="neutral"
-					width="full-width"
-					state={res.isValid() ? 'active' : 'disabled'}
-					>Add <Icon icon="tabler:arrow-narrow-right" /></Button
-				>
+				<UserSearchBar
+					bind:addressInputValue
+					customError={distribution.distributionObjects.find(
+						(distObj) => distObj.address === addressInputValue
+					)
+						? 'Address already added'
+						: ''}
+				/>
+				<!-- {#if certificateType === 'medal'}
+					<select bind:value={medalTypeSelectValue}>
+						{#each MEDAL_TYPES as type}
+							<option value={type}>{`${type.charAt(0).toUpperCase() + type.slice(1)}`}</option>
+						{/each}
+					</select>
+				{/if} -->
 			</form>
 		</TabPanel>
 		<TabPanel>
 			<form
 				id="dist-form"
-				on:submit|preventDefault={() => addToStaging(res.isValid())}
+				on:submit|preventDefault={() => addToStaging()}
 				autocomplete="off"
 				class="wrapper"
 			>
@@ -206,6 +195,9 @@
 	.wrapper,
 	form {
 		margin-block: var(--space-4);
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-6);
 	}
 
 	.csv-state-message {

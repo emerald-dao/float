@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import getProfile from '$lib/utilities/profiles/getProfile';
-	import Profile from '../atoms/Profile.svelte';
+	import Profile from '../atoms/Profile/Profile.svelte';
 	import FloatSerialLabel from '../atoms/FloatSerialLabel.svelte';
 	import PoweredBy from '../atoms/PoweredBy.svelte';
 	import FloatHeading from '../atoms/FloatHeading.svelte';

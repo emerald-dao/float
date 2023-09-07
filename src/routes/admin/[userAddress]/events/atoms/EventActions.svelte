@@ -66,12 +66,12 @@
 				</label>
 				<p class="small">User transfering</p>
 			</div>
-			<DistributeFloatsModal />
+			<DistributeFloatsModal {event} />
 		</div>
 		<div class="event-actions">
 			<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
 				<Icon icon="ph:trash" color="var(--clr-alert-main)" />
-				<p style="color: var(--clr-alert-main);">Delete Event</p>
+				<p class="small" style="color: var(--clr-alert-main);">Delete Event</p>
 			</Button>
 		</div>
 	</div>

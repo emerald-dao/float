@@ -11,7 +11,7 @@
 	import FloatName from '../../atoms/FloatName.svelte';
 	import FloatSerialLabel from '../../atoms/FloatSerialLabel.svelte';
 	import PoweredBy from '../../atoms/PoweredBy.svelte';
-	import Profile from '../../atoms/Profile.svelte';
+	import Profile from '../../atoms/Profile/Profile.svelte';
 
 	export let float: FLOAT;
 	export let labelColor: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
