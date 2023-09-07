@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { fly } from 'svelte/transition';
 	import Float from '$lib/components/floats/Float.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
@@ -21,7 +22,9 @@
 		</div>
 	</div>
 	<div class="ticket-wrapper">
-		<Float {float} />
+		<div in:fly={{ duration: 400, x: 180 }}>
+			<Float {float} />
+		</div>
 	</div>
 	<div class="details-wrapper">
 		<div>
@@ -45,6 +48,7 @@
 		gap: var(--space-12);
 		padding: var(--space-8) var(--space-15);
 		height: 100%;
+		overflow: visible;
 
 		.top-wrapper {
 			display: flex;
@@ -57,6 +61,7 @@
 
 		.ticket-wrapper {
 			width: 100%;
+			overflow: visible;
 		}
 
 		.details-wrapper {

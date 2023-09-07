@@ -18,7 +18,7 @@ export async function POST({ request, params }) {
 		return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
 	}
 
-	const { user, eventId, eventCreatorAddress } = data;
+	const { user, eventId, eventCreatorAddress, blockId, transactionId } = data;
 
 	const { data: existingRow, error } = await supabase.from('events').select('id').eq('id', eventId);
 
@@ -31,7 +31,13 @@ export async function POST({ request, params }) {
 	if (existingRow.length > 0) {
 		const { error } = await supabase
 			.from('claims')
-			.insert({ float_id: params.claimId, user_address: user.addr, event_id: eventId });
+			.insert({
+				float_id: params.claimId,
+				user_address: user.addr,
+				event_id: eventId,
+				block_id: blockId,
+				transaction_id: transactionId
+			});
 
 		if (error) {
 			return new Response(JSON.stringify({ error: 'Error adding claim' }), { status: 401 });
@@ -51,7 +57,13 @@ export async function POST({ request, params }) {
 
 			const { error } = await supabase
 				.from('claims')
-				.insert({ float_id: params.claimId, user_address: user.addr, event_id: eventId });
+				.insert({
+					float_id: params.claimId,
+					user_address: user.addr,
+					event_id: eventId,
+					block_id: blockId,
+					transaction_id: transactionId
+				});
 
 			if (error) {
 				return new Response(JSON.stringify({ error: 'Error adding claim' }), { status: 401 });
