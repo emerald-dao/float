@@ -15,41 +15,43 @@
 	export let medalType: MedalType | null;
 </script>
 
-<div transition:fly|local={{ x: 10, duration: 300 }}>
-	<div class="main-wrapper row-4 align-center">
-		{#if medalType}
-			<select bind:value={medalType}>
-				{#each MEDAL_TYPES as type}
-					<option value={type}>
-						{#if type === 'gold'}
-							{`🥇 `}
-						{:else if type === 'silver'}
-							{`🥈 `}
-						{:else if type === 'bronze'}
-							{`🥉 `}
-						{/if}
-						{`${type.charAt(0).toUpperCase() + type.slice(1)}`}
-					</option>
-				{/each}
-			</select>
-		{/if}
-		<div class={`card-primary row-space-between align-center ${medalType}`}>
-			<UserProfileLabel address={forAccount} />
-		</div>
-		<div class="clickable" on:click={deleteDist} on:keydown>
-			<Icon icon="tabler:trash" />
-		</div>
+<div transition:fly|local={{ x: 10, duration: 300 }} class="main-wrapper row-4 align-center">
+	{#if medalType}
+		<select bind:value={medalType}>
+			{#each MEDAL_TYPES as type}
+				<option value={type}>
+					{#if type === 'gold'}
+						{`🥇 `}
+					{:else if type === 'silver'}
+						{`🥈 `}
+					{:else if type === 'bronze'}
+						{`🥉 `}
+					{/if}
+					{`${type.charAt(0).toUpperCase() + type.slice(1)}`}
+				</option>
+			{/each}
+		</select>
+	{/if}
+	<div class={`card-primary row-space-between align-center ${medalType}`}>
+		<UserProfileLabel address={forAccount} />
+	</div>
+	<div class="clickable" on:click={deleteDist} on:keydown>
+		<Icon icon="tabler:trash" />
 	</div>
 </div>
 
 <style lang="scss">
 	.main-wrapper {
 		width: 100%;
+		overflow: visible;
 
 		.card-primary {
 			width: 100%;
 			padding: var(--space-3) var(--space-4);
 			border-radius: var(--radius-2);
+			background-color: var(--clr-surface-secondary);
+			border: none;
+			box-shadow: 4px 2px 10px 0px var(--clr-shadow-primary);
 		}
 
 		.clickable {

@@ -32,9 +32,8 @@
 			<p class="small">Date Minted</p>
 		</div>
 		<div class="price">
-			<!-- This is temporary, whe should change the hardcoded price-->
-			<p class="large">Original Recipient</p>
-			<p class="small">{float.originalRecipient}</p>
+			<p class="large">{float.originalRecipient}</p>
+			<p class="small">Original Recipient</p>
 		</div>
 	</div>
 </div>

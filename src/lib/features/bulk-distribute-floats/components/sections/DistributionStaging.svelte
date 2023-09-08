@@ -51,19 +51,22 @@
 	.main-wrapper {
 		padding-left: var(--space-4);
 		border: 1px solid var(--clr-border-primary);
-		overflow: hidden;
-		border-radius: var(--radius-2);
+		overflow-y: visible;
 		height: 100%;
+		width: 100%;
+		overflow-x: hidden;
+		border-radius: var(--radius-2);
+		background-color: var(--clr-background-secondary);
 
 		.dist-elements-wrapper {
 			height: 100%;
 			display: flex;
 			flex-direction: column;
 			gap: 1rem;
-			overflow-y: auto;
-			overflow-x: hidden;
+			overflow-y: visible;
 			padding-right: var(--space-5);
 			padding-block: var(--space-4);
+			overflow-x: hidden;
 
 			.request-wrapper {
 				height: 100%;

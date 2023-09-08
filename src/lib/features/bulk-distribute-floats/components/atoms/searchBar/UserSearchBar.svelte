@@ -10,6 +10,7 @@
 
 	const handleChange = (input: Event) => {
 		const target = input.target as HTMLInputElement;
+
 		res = validationSuite(target.value);
 
 		(res as SuiteRunResult).done((result) => {
@@ -64,11 +65,13 @@
 	.main-wrapper {
 		border-top-left-radius: var(--radius-2);
 		border-top-right-radius: var(--radius-2);
+		overflow: visible;
 
 		&.valid {
-			background-color: var(--clr-primary-badge);
+			background-color: var(--clr-surface-secondary);
 			border-bottom-left-radius: var(--radius-2);
 			border-bottom-right-radius: var(--radius-2);
+			box-shadow: 3px 4px 10px -4px var(--clr-shadow-primary);
 
 			.input-wrapper {
 				input {
@@ -105,6 +108,7 @@
 
 				&::placeholder {
 					color: var(--clr-text-off);
+					opacity: 0.7;
 				}
 			}
 

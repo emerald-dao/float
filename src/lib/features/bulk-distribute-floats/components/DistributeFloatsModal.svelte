@@ -8,11 +8,14 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 	import type { Distribution, DistributionElement } from '../types/distribution.interface';
-	import type { MedalType } from '$lib/types/event/medal-types.type';
+	import Icon from '@iconify/svelte';
+	import { resolveAddressOrFindName } from '../functions/resolveAddressOrFindName';
 
 	export let event: Event;
 
 	let certificateType = EVENT_TYPE_DETAILS[event.eventType].certificateType;
+
+	let csvFiles: File[] = [];
 
 	let distribution: Distribution<typeof certificateType> = {
 		certificateType,
@@ -22,39 +25,51 @@
 	let addressInputValue = '';
 	let csvDist: DistributionElement<typeof certificateType>[] = [];
 
-	let restartValidation: () => void;
-
 	$: id = `distribute-floats-${$page.params.id}`;
 
 	const resolveMedalType = () => {
-		// if (certificateType === 'medal') {
-		switch (distribution.distributionObjects.length) {
-			case 0:
-				return 'gold';
-			case 1:
-				return 'silver';
-			case 2:
-				return 'bronze';
-			default:
-				return 'participation';
+		if (certificateType === 'medal') {
+			switch (distribution.distributionObjects.length) {
+				case 0:
+					return 'gold';
+				case 1:
+					return 'silver';
+				case 2:
+					return 'bronze';
+				default:
+					return 'participation';
+			}
+		} else {
+			return null;
 		}
-		// } else {
-		// 	return null;
-		// }
 	};
 
-	const addToStaging = () => {
-		distribution.distributionObjects = [
-			...distribution.distributionObjects,
-			{
-				address: addressInputValue,
-				medal: resolveMedalType()
-			},
-			...csvDist
-		];
+	const addToStagingFromInput = async () => {
+		const resolvedAddress = await resolveAddressOrFindName(addressInputValue);
 
-		addressInputValue = '';
-		restartValidation();
+		if (!distribution.distributionObjects.find((obj) => obj.address === resolvedAddress)) {
+			distribution.distributionObjects = [
+				...distribution.distributionObjects,
+				{
+					address: resolvedAddress,
+					medal: resolveMedalType()
+				}
+			];
+
+			addressInputValue = '';
+		} else {
+			alert('Address already added');
+		}
+	};
+
+	const addToStagingFromCsv = () => {
+		for (let i = 0; i < csvDist.length; i++) {
+			if (!distribution.distributionObjects.find((obj) => obj.address === csvDist[i].address)) {
+				distribution.distributionObjects = [...distribution.distributionObjects, csvDist[i]];
+			}
+		}
+
+		csvFiles = [];
 	};
 
 	const handleOpenModal = () => {
@@ -67,7 +82,7 @@
 </script>
 
 <Button on:click={handleOpenModal} size="small">Distribute FLOATs</Button>
-<Modal {id} background="var(--clr-surface-primary)">
+<Modal {id} background="var(--clr-background-primary)">
 	<div class="main-wrapper">
 		<div class="forms-wrapper sub-wrapper column">
 			<div class="introduction">
@@ -78,20 +93,22 @@
 			<DistributionForms
 				bind:addressInputValue
 				bind:csvDist
-				bind:restartValidation
 				bind:distribution
-				{addToStaging}
+				bind:csvFiles
+				{addToStagingFromInput}
+				{addToStagingFromCsv}
 				{certificateType}
 			/>
 		</div>
-		<div class="dist-wrapper sub-wrapper">
+		<div class="dist-wrapper sub-wrapper align-end">
 			<DistributionStaging bind:distribution {certificateType} />
 			<div class="button-wrapper" transition:fly|local={{ y: 10, duration: 400, delay: 100 }}>
 				<Button
-					width="full-width"
+					width="extended"
+					size="large"
 					on:click={handleDistributeFloats}
 					state={distribution.distributionObjects.length > 0 ? 'active' : 'disabled'}
-					>Distribute FLOATs</Button
+					>Distribute FLOATs <Icon icon="tabler:arrow-right" /></Button
 				>
 			</div>
 		</div>
@@ -133,6 +150,7 @@
 				height: fit-content;
 				margin-bottom: 0;
 				padding-bottom: 0;
+				overflow: visible;
 
 				.introduction {
 					h5 {
