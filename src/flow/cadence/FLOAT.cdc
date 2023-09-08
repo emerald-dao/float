@@ -170,7 +170,7 @@ pub contract FLOAT: NonFungibleToken {
                     return MetadataViews.Display(
                         name: self.eventName, 
                         description: self.eventDescription, 
-                        thumbnail: MetadataViews.HTTPFile(url: "https://nftstorage.link/ipfs/".concat(self.getImage()))
+                        thumbnail: MetadataViews.HTTPFile(url: "https://ipfs.io/ipfs/".concat(self.getImage()))
                     )
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
