@@ -4,8 +4,7 @@
 
 	export let float: FLOAT;
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
-
-	let level: 'gold' | 'silver' | 'bronze' = 'bronze';
+	export let level: 'gold' | 'silver' | 'bronze' = 'bronze';
 </script>
 
 <div class={`float-front ${level}`}>

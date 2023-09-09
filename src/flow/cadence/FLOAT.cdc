@@ -467,6 +467,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getCurrentHolders(): {UInt64: TokenIdentifier}
         pub fun getCurrentHolder(serial: UInt64): TokenIdentifier?
         pub fun getExtraMetadata(): {String: AnyStruct}
+        pub fun getSpecificExtraMetadata(key: String): AnyStruct?
         pub fun getVerifiers(): {String: [{IVerifier}]}
         pub fun getPrices(): {String: TokenInfo}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
@@ -578,8 +579,14 @@ pub contract FLOAT: NonFungibleToken {
         /***************** Getters (all exposed to the public) *****************/
 
         pub fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct} {
-            if let e = self.extraMetadata["extraFloatMetadatas"] as! {UInt64: AnyStruct}? {
-                return e[serial] as! {String: AnyStruct}
+            if self.extraMetadata["extraFloatMetadatas"] != nil {
+                if let e: {UInt64: AnyStruct} = self.extraMetadata["extraFloatMetadatas"]! as? {UInt64: AnyStruct} {
+                    if e[serial] != nil {
+                        if let f: {String: AnyStruct} = e[serial]! as? {String: AnyStruct} {
+                            return f
+                        }
+                    }
+                }
             }
             return {}
         }
@@ -625,6 +632,10 @@ pub contract FLOAT: NonFungibleToken {
             return self.extraMetadata
         }
 
+        pub fun getSpecificExtraMetadata(key: String): AnyStruct? {
+            return self.extraMetadata[key]
+        }
+
         // Gets all the verifiers that will be used
         // for claiming
         pub fun getVerifiers(): {String: [{IVerifier}]} {
@@ -659,16 +670,6 @@ pub contract FLOAT: NonFungibleToken {
 
         /****************** Getting a FLOAT ******************/
 
-        // Will not panic if one of the recipients has already claimed.
-        // It will just skip them.
-        pub fun batchMint(recipients: [&Collection{NonFungibleToken.CollectionPublic}]) {
-            for recipient in recipients {
-                if self.claimed[recipient.owner!.address] == nil {
-                    self.mint(recipient: recipient)
-                }
-            }
-        }
-
         // Used to give a person a FLOAT from this event.
         // Used as a helper function for `claim`, but can also be 
         // used by the event owner and shared accounts to
@@ -678,7 +679,7 @@ pub contract FLOAT: NonFungibleToken {
         // run the verifiers on the user. It bypasses all of them.
         //
         // Return the id of the FLOAT it minted
-        pub fun mint(recipient: &Collection{NonFungibleToken.CollectionPublic}): UInt64 {
+        pub fun mint(recipient: &Collection{NonFungibleToken.CollectionPublic}, optExtraFloatMetadata: {String: AnyStruct}?): UInt64 {
             pre {
                 self.claimed[recipient.owner!.address] == nil:
                     "This person already claimed their FLOAT!"
@@ -695,6 +696,11 @@ pub contract FLOAT: NonFungibleToken {
                 _originalRecipient: recipientAddr, 
                 _serial: serial
             ) 
+
+            if let extraFloatMetadata: {String: AnyStruct} = optExtraFloatMetadata {
+                self.setExtraFloatMetadata(serial: serial, metadata: extraFloatMetadata)
+            }
+
             let id = token.id
             // Saves the claimer
             self.claimed[recipientAddr] = TokenIdentifier(
@@ -733,7 +739,7 @@ pub contract FLOAT: NonFungibleToken {
             }
 
             // You're good to go.
-            let id = self.mint(recipient: recipient)
+            let id = self.mint(recipient: recipient, optExtraFloatMetadata: nil)
 
             emit FLOATClaimed(
                 id: id,

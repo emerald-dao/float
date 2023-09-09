@@ -14,4 +14,5 @@ export interface FLOAT {
 	totalSupply: string | null;
 	transferrable: boolean;
 	eventType: EventType;
+	extraMetadata: { [key: string]: string }
 }
