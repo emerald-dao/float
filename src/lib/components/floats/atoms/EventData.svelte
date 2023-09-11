@@ -10,6 +10,8 @@
 
 <style lang="scss">
 	.main-wrapper {
+		overflow: hidden;
+
 		.title {
 			font-size: 0.55em;
 			margin-bottom: 0.9%;

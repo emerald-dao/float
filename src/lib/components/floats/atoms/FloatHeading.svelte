@@ -1,15 +1,18 @@
 <script lang="ts">
 	import type { CertificateType } from '$lib/types/event/event-type.type';
+	import type { MedalType } from '$lib/types/event/medal-types.type';
+	import type { FloatColors } from '../float-colors.type';
 
 	export let certificateType: CertificateType;
-	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let color: FloatColors = 'neutral';
+	export let level: MedalType | null;
 </script>
 
 <div class="main-wrapper">
 	<!-- <img src="/ec-logo.png" alt="FLOAT logo" /> -->
 	<span class="heading w-medium">FLOAT</span>
-	{#if certificateType === 'medal'}
-		<span class={`${color}`}>{color}</span>
+	{#if certificateType === 'medal' && level !== null}
+		<span class={`${color}`}>{level}</span>
 	{/if}
 	<span class={`off ${color}`}>{certificateType}</span>
 </div>

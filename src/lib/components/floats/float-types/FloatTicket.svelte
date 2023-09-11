@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import getProfile from '$lib/utilities/profiles/getProfile';
-	import Profile from '../atoms/Profile.svelte';
+	import Profile from '../atoms/Profile/Profile.svelte';
 	import FloatSerialLabel from '../atoms/FloatSerialLabel.svelte';
 	import PoweredBy from '../atoms/PoweredBy.svelte';
 	import FloatHeading from '../atoms/FloatHeading.svelte';
@@ -30,7 +30,7 @@
 					<FloatEventType eventType={float.eventType} />
 				</div>
 			</div>
-			<div class="row-space-between">
+			<div class="profiles-wrapper">
 				<EventData title="Organizer">
 					<Profile address={float.eventHost} />
 				</EventData>
@@ -105,6 +105,14 @@
 				width: 100%;
 				overflow: hidden;
 			}
+		}
+
+		.profiles-wrapper {
+			width: 100%;
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.8em;
 		}
 	}
 </style>

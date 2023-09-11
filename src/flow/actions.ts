@@ -21,6 +21,7 @@ import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
 import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw';
+import distributeMedalFLOATsTx from './cadence/transactions/distribute_floats_medal.cdc?raw';
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
@@ -77,6 +78,8 @@ const createEvent = async (
 		const { publicKey } = await fetchKeysFromClaimCode(secret);
 		secretPK = publicKey;
 	}
+
+	console.log(eventType)
 
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
@@ -229,6 +232,7 @@ export const toggleTransferringExecution = (eventId: string) =>
 	executeTransaction(() => toggleTransferring(eventId));
 
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
+
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(distributeFLOATsTx),
 		args: (arg, t) => [arg(eventId, t.UInt64), arg(addresses, t.Array(t.Address))],
@@ -241,6 +245,28 @@ const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 
 export const distributeFLOATsExecution = (eventId: string, addresses: string[]) =>
 	executeTransaction(() => distributeFLOATs(eventId, addresses));
+
+const distributeMedalFLOATs = async (eventId: string, addresses: string[], medalTypes: { address: string, medal: string }[]) => {
+	let medalTypesArg = medalTypes.map(obj => {
+		return { key: obj.address, value: obj.medal }
+	});
+
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(distributeMedalFLOATsTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64),
+			arg(addresses, t.Array(t.Address)),
+			arg(medalTypesArg, t.Dictionary({ key: t.Address, value: t.String }))
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const distributeMedalFLOATsExecution = (eventId: string, addresses: string[], medalTypes: { address: string, medal: string }[]) =>
+	executeTransaction(() => distributeMedalFLOATs(eventId, addresses, medalTypes));
 
 // Scripts
 

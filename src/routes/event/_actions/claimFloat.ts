@@ -26,10 +26,14 @@ const claimFloat = async (eventId: string, eventCreator: string, claimCode: stri
 		const eventData = floatClaimedEvent.data;
 		const claimId = eventData.id;
 
-		console.log({ claimId });
-
-		// FOR CHINO: I replaced the mock claimId with the real one here.
-		await postClaim(claimId, userObject, eventId, eventCreator);
+		await postClaim(
+			claimId,
+			userObject,
+			eventId,
+			eventCreator,
+			res.blockId,
+			floatClaimedEvent.transactionId
+		);
 
 		return {
 			state: 'success',

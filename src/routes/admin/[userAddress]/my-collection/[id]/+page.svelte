@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { fly } from 'svelte/transition';
 	import { getContext, onMount } from 'svelte';
 	import FloatInfo from './_components/FloatInfo.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
@@ -17,5 +16,9 @@
 {#if activeFloat === undefined}
 	<p>Float not found</p>
 {:else}
-	<FloatInfo float={activeFloat} />
+	{#each floats as float (float.id)}
+		{#if float.id === activeFloat.id}
+			<FloatInfo {float} />
+		{/if}
+	{/each}
 {/if}

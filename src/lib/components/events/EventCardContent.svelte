@@ -1,9 +1,9 @@
 <script lang="ts">
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
-	import { Label } from '@emerald-dao/component-library';
 	import EventStatus from './EventStatus.svelte';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
+	import FloatEventType from '../floats/atoms/FloatEventType.svelte';
 
 	export let event: EventWithStatus;
 	export let display: 'grid' | 'list' = 'list';
@@ -16,7 +16,7 @@
 			<img src={event.image} width="55px" height="55px" alt="logo" />
 			<div class="name-wrapper">
 				<p class="w-medium">{event.name}</p>
-				<Label size="xx-small" color="neutral" hasBorder={false}>{event.eventType}</Label>
+				<FloatEventType eventType={event.eventType} fontSize="0.8em" />
 			</div>
 		</div>
 		<div
