@@ -4,8 +4,9 @@
 	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
 	import TrendingEvents from './_components/TrendingEvents.svelte';
-
-	export let data;
+	import { onMount } from 'svelte';
+	import { getTrendingEvents } from './_api/getTrendingEvents.js';
+	import type { EventWithStatus } from '$lib/types/event/event.interface.js';
 
 	let userValidation: boolean;
 	let inputValue: string;
@@ -14,10 +15,19 @@
 		userValidation = await validateUserExistance(value);
 
 		if (userValidation) {
-			// Add the user wallet address after the "/"
-			window.location.href = 'u/';
+			window.location.href = `u/${value}`;
 		}
 	};
+
+	let dataFetched = false;
+	let trendingEvents: EventWithStatus[];
+
+	onMount(async () => {
+		let response = await getTrendingEvents();
+		console.log(response);
+
+		dataFetched = true;
+	});
 </script>
 
 <section
@@ -54,7 +64,9 @@
 	</div>
 </section>
 <section class="container-medium">
-	<TrendingEvents events={data.events} />
+	{#if dataFetched}
+		<TrendingEvents events={trendingEvents} />
+	{/if}
 </section>
 
 <style lang="scss">
