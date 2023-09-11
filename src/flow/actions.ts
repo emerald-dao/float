@@ -268,20 +268,19 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 	}
 };
 
-export const getEventsBatch = async (events: { user_address: string, event_id: string }[]): Promise<Event[]> => {
+export const getEventsBatch = async (
+	events: { user_address: string; event_id: string }[]
+): Promise<Event[]> => {
 	try {
 		let eventsArg = [];
 		let addressesArg = [];
-		events.forEach(event => {
-			eventsArg.push(event.event_id)
-			addressesArg.push(event.user_address)
-		})
+		events.forEach((event) => {
+			eventsArg.push(event.id);
+			addressesArg.push(event.creator_address);
+		});
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventsBatchScript),
-			args: (arg, t) => [
-				arg(eventsArg, t.Array(t.UInt64)),
-				arg(addressesArg, t.Array(t.Address))
-			]
+			args: (arg, t) => [arg(eventsArg, t.Array(t.UInt64)), arg(addressesArg, t.Array(t.Address))]
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
