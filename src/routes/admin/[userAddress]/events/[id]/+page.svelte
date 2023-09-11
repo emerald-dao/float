@@ -3,7 +3,7 @@
 	import EventDomains from '../atoms/EventDomains.svelte';
 	import EventActions from '../atoms/EventActions.svelte';
 	import EventInfo from './_components/EventInfo.svelte';
-	import { Label } from '@emerald-dao/component-library';
+	import FloatEventType from '$lib/components/floats/atoms/FloatEventType.svelte';
 
 	export let data;
 </script>
@@ -11,11 +11,11 @@
 <div class="main-wrapper" in:fly={{ x: 10, duration: 400 }}>
 	<div class="left-wrapper">
 		<div class="header-wrapper">
-			<div class="row-4">
+			<div class="row-4 align-center">
 				<img src={data.event.image} alt="logo" height="70" width="70" />
-				<div class="column-2">
-					<h4>{data.event.name}</h4>
-					<Label color="neutral" size="small" hasBorder={false}>{data.event.eventType}</Label>
+				<div class="column-1">
+					<h4 class="w-medium">{data.event.name}</h4>
+					<FloatEventType eventType={data.event.eventType} fontSize="1em" />
 				</div>
 			</div>
 		</div>

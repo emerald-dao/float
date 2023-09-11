@@ -1,9 +1,10 @@
 <script lang="ts">
+	import type { FloatColors } from '../../float-colors.type';
 	import Body from './FloatFrontBody.svelte';
 	import Footer from './FloatFrontFooter.svelte';
 	import Header from './FloatFrontHeader.svelte';
 
-	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let color: FloatColors = 'neutral';
 
 	const F = {
 		Body,
