@@ -6,7 +6,7 @@
 	export let address: string;
 	export let inverse = false;
 	export let isMedal = false;
-	export let size = '1rem';
+	export let size = '1em';
 </script>
 
 <div style={`font-size: ${size}`}>
@@ -85,11 +85,10 @@
 				gap: 0.2em;
 				align-items: center;
 				justify-content: start;
-				width: 100%;
 			}
 
 			.profile-name {
-				font-size: 0.85em;
+				font-size: 0.87em;
 				color: var(--clr-heading-main);
 				--font-weight: var(--font-weight-medium);
 			}
