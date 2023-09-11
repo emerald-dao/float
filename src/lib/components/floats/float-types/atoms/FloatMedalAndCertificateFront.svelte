@@ -12,9 +12,10 @@
 	import FloatSerialLabel from '../../atoms/FloatSerialLabel.svelte';
 	import PoweredBy from '../../atoms/PoweredBy.svelte';
 	import Profile from '../../atoms/Profile/Profile.svelte';
+	import type { FloatColors } from '../../float-colors.type';
 
 	export let float: FLOAT;
-	export let labelColor: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let labelColor: FloatColors = 'neutral';
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
@@ -23,6 +24,7 @@
 		<FloatHeading
 			certificateType={EVENT_TYPE_DETAILS[float.eventType].certificateType}
 			color={labelColor}
+			level={float.extraMetadata.medalType}
 		/>
 		<FloatSerialLabel
 			eventId={float.eventId}

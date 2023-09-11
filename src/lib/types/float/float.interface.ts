@@ -1,4 +1,5 @@
 import type { EventType } from '../event/event-type.type';
+import type { MedalType } from '../event/medal-types.type';
 
 export interface FLOAT {
 	id: string;
@@ -14,5 +15,5 @@ export interface FLOAT {
 	totalSupply: string | null;
 	transferrable: boolean;
 	eventType: EventType;
-	extraMetadata: { [key: string]: string }
+	extraMetadata: { [key: string]: string | null; medalType: MedalType | null };
 }

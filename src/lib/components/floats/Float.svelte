@@ -17,7 +17,7 @@
 	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
 		<FloatCertificate {float} {isForScreenshot} />
 	{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
-		<FloatMedal {float} {isForScreenshot} level={float.extraMetadata['medalType']} />
+		<FloatMedal {float} {isForScreenshot} />
 	{:else}
 		<FloatTicket {float} {isForScreenshot} />
 	{/if}

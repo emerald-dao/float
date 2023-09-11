@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	import type { FloatColors } from '../../float-colors.type';
+
+	export let color: FloatColors = 'neutral';
 </script>
 
 <div class={`body-wrapper ${color}`}>

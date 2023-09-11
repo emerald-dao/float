@@ -1,3 +1,4 @@
+import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 
@@ -15,7 +16,10 @@ function transformEventToFloat(event: Event): FLOAT {
 		serial: '1',
 		totalSupply: event.totalSupply,
 		transferrable: event.transferrable,
-		eventType: event.eventType
+		eventType: event.eventType,
+		extraMetadata: {
+			medalType: EVENT_TYPE_DETAILS[event.eventType].certificateType === 'medal' ? 'gold' : null
+		}
 	};
 
 	return float;

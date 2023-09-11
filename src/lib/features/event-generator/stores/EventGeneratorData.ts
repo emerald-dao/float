@@ -2,6 +2,7 @@ import { writable, type Writable, derived, type Readable, get } from 'svelte/sto
 import type { EventGeneratorData } from '../types/event-generator-data.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 import { user } from '$lib/stores/flow/FlowStore';
+import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 
 export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	description: '',
@@ -57,5 +58,11 @@ export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($event
 	originalRecipient: '0x99bd48c8036e2876',
 	id: '00001',
 	serial: '1',
-	dateReceived: `${Date.now() / 1000}`
+	dateReceived: `${Date.now() / 1000}`,
+	extraMetadata: {
+		medalType:
+			EVENT_TYPE_DETAILS[$eventGeneratorData.eventType].certificateType === 'medal'
+				? ('gold' as const)
+				: null
+	}
 }));

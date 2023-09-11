@@ -1,14 +1,18 @@
 <script lang="ts">
+	import type { MedalType } from '$lib/types/event/medal-types.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import type { FloatColors } from '../float-colors.type';
 	import FloatMedalAndCertificateFront from './atoms/FloatMedalAndCertificateFront.svelte';
 
 	export let float: FLOAT;
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
-	export let level: 'gold' | 'silver' | 'bronze' = 'bronze';
+
+	let level = float.extraMetadata.medalType as MedalType;
+	let color = level === 'participation' ? 'neutral' : (level as FloatColors);
 </script>
 
-<div class={`float-front ${level}`}>
-	<FloatMedalAndCertificateFront {float} labelColor={level} {isForScreenshot} />
+<div class={`float-front ${color}`}>
+	<FloatMedalAndCertificateFront {float} labelColor={color} {isForScreenshot} />
 </div>
 
 <style lang="scss">

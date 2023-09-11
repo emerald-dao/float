@@ -51,7 +51,7 @@
 					/>
 					<span class="slider" />
 				</label>
-				<p class="small">Claiming ative</p>
+				<p class="small">Claiming active</p>
 			</div>
 			<div class="row-3">
 				<label for="transfering" class="switch">

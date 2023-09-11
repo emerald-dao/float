@@ -1,7 +1,9 @@
 <script lang="ts">
+	import type { FloatColors } from '../float-colors.type';
+
 	export let eventId: string;
 	export let floatSerial: string;
-	export let color: 'primary' | 'gold' | 'silver' | 'bronze' = 'primary';
+	export let color: FloatColors = 'neutral';
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
