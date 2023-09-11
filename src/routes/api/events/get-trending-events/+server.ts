@@ -42,7 +42,7 @@ export async function GET() {
 
 	const { data: eventsData, error: eventsError } = await supabase
 		.from('events')
-		.select()
+		.select('id , creator_address')
 		.in('id', mostFrequentEventIds);
 
 	if (eventsError) {

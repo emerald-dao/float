@@ -5,8 +5,8 @@
 	import { fly } from 'svelte/transition';
 	import TrendingEvents from './_components/TrendingEvents.svelte';
 	import { onMount } from 'svelte';
-	import { getTrendingEvents } from './_api/getTrendingEvents.js';
 	import type { EventWithStatus } from '$lib/types/event/event.interface.js';
+	import getTrendingEventsFromBlockchain from './_actions/getTrendingEventsFromBlockchain.js';
 
 	let userValidation: boolean;
 	let inputValue: string;
@@ -23,9 +23,7 @@
 	let trendingEvents: EventWithStatus[];
 
 	onMount(async () => {
-		let response = await getTrendingEvents();
-		console.log(response);
-
+		trendingEvents = await getTrendingEventsFromBlockchain();
 		dataFetched = true;
 	});
 </script>
