@@ -38,7 +38,7 @@ pub struct FLOATMetadata {
     self.eventDescription = event.description
     self.eventId = event.eventId
     self.eventHost = event.host
-    self.eventImage = "https://nftstorage.link/ipfs/".concat(event.image)
+    self.eventImage = "https://ipfs.io/ipfs/".concat(event.image)
     self.eventName = event.name
     self.transferrable = event.transferrable
     self.totalSupply = event.totalSupply

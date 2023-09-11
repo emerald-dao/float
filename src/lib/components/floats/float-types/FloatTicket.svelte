@@ -30,7 +30,7 @@
 					<FloatEventType eventType={float.eventType} />
 				</div>
 			</div>
-			<div class="row-space-between">
+			<div class="profiles-wrapper">
 				<EventData title="Organizer">
 					<Profile address={float.eventHost} />
 				</EventData>
@@ -105,6 +105,14 @@
 				width: 100%;
 				overflow: hidden;
 			}
+		}
+
+		.profiles-wrapper {
+			width: 100%;
+			overflow: hidden;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.8em;
 		}
 	}
 </style>

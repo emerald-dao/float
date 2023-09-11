@@ -34,7 +34,17 @@
 			</div>
 		</div>
 	{:catch error}
-		<EmptyProfile {inverse} />
+		<div class="main-wrapper row align-center" class:inverse>
+			<img class="creator-avatar" src="/new-avatar.png" alt="Creator avatar" />
+			<div class="profile-wrapper">
+				<div class="profile-name-wrapper">
+					<span class="profile-name"> Anonymus User </span>
+				</div>
+				<span class="wallet-address w-regular off">
+					{address}
+				</span>
+			</div>
+		</div>
 	{/await}
 </div>
 
@@ -43,6 +53,8 @@
 		display: flex;
 		flex-direction: row;
 		gap: 0.5em;
+		width: 100%;
+		overflow: hidden;
 
 		&.inverse {
 			flex-direction: row-reverse;
@@ -64,12 +76,16 @@
 			display: flex;
 			flex-direction: column;
 			gap: 0.1em;
+			overflow: hidden;
+			width: 100%;
 
 			.profile-name-wrapper {
 				display: flex;
 				flex-direction: row;
 				gap: 0.2em;
 				align-items: center;
+				justify-content: start;
+				width: 100%;
 			}
 
 			.profile-name {
@@ -90,6 +106,9 @@
 
 		span {
 			line-height: 1.3em;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 	}
 </style>
