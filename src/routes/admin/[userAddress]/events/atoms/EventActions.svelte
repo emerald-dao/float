@@ -6,6 +6,7 @@
 	import type { Event } from '$lib/types/event/event.interface';
 	import DistributeFloatsModal from '$lib/features/bulk-distribute-floats/components/DistributeFloatsModal.svelte';
 	import { invalidate } from '$app/navigation';
+	import toggleVisibilityMode from '../../_actions/event-actions/toggleVisibilityMode';
 
 	export let event: Event;
 
@@ -33,7 +34,7 @@
 
 	const handleToggleVisibilityType = async () => {
 		// For jacob!
-		await toggleVisibilityType(event.eventId);
+		await toggleVisibilityMode(event.eventId);
 
 		setTimeout(async () => {
 			await invalidate('admin:specificEvent');

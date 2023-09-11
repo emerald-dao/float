@@ -20,6 +20,7 @@ import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
+import toggleVisibilityModeTx from './cadence/transactions/toggle_visibility_mode.cdc?raw';
 import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw';
 import distributeMedalFLOATsTx from './cadence/transactions/distribute_floats_medal.cdc?raw';
 
@@ -64,7 +65,8 @@ const createEvent = async (
 	secret: string | null,
 	limited: number | null,
 	payment: number | null,
-	minimumBalance: number | null
+	minimumBalance: number | null,
+	visibilityMode: 'certificate' | 'picture'
 ) => {
 	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
 	const timePeriod =
@@ -101,7 +103,8 @@ const createEvent = async (
 			arg(payment != null, t.Bool),
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
-			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64)
+			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
+			arg(visibilityMode, t.String)
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -126,6 +129,7 @@ export const createEventExecution = (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
+	visibilityMode: 'certificate' | 'picture',
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
 	executeTransaction(() =>
@@ -144,7 +148,8 @@ export const createEventExecution = (
 			secret,
 			limited,
 			payment,
-			minimumBalance
+			minimumBalance,
+			visibilityMode
 		),
 		actionAfterSucceed
 	);
@@ -226,6 +231,20 @@ const toggleTransferring = async (eventId: string) => {
 
 export const toggleTransferringExecution = (eventId: string) =>
 	executeTransaction(() => toggleTransferring(eventId));
+
+const toggleVisibilityMode = async (eventId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(toggleVisibilityModeTx),
+		args: (arg, t) => [arg(eventId, t.UInt64)],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const toggleVisibilityModeExecution = (eventId: string) =>
+	executeTransaction(() => toggleVisibilityMode(eventId));
 
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 
