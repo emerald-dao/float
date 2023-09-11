@@ -268,7 +268,7 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 	}
 };
 
-export const getEventsBatch = async (events: { user_address: string, event_id: string }[]): Promise<Event> => {
+export const getEventsBatch = async (events: { user_address: string, event_id: string }[]): Promise<Event[]> => {
 	try {
 		let eventsArg = [];
 		let addressesArg = [];
