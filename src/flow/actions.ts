@@ -25,6 +25,7 @@ import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
 import getEventScript from './cadence/scripts/get_event.cdc?raw';
+import getEventsBatchScript from './cadence/scripts/get_events_batch.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
@@ -260,6 +261,27 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventScript),
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
+		});
+	} catch (e) {
+		console.log('Error in getEvents', e);
+		throw new Error('Error in getEvents');
+	}
+};
+
+export const getEventsBatch = async (events: { user_address: string, event_id: string }[]): Promise<Event> => {
+	try {
+		let eventsArg = [];
+		let addressesArg = [];
+		events.forEach(event => {
+			eventsArg.push(event.event_id)
+			addressesArg.push(event.user_address)
+		})
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventsBatchScript),
+			args: (arg, t) => [
+				arg(eventsArg, t.Array(t.UInt64)),
+				arg(addressesArg, t.Array(t.Address))
+			]
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
