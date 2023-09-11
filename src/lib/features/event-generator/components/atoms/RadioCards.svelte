@@ -25,6 +25,7 @@
 		opacity: 0.6;
 		cursor: pointer;
 		transition: 0.6s;
+		border-radius: var(--radius-2);
 
 		span:first-child {
 			transition: 0.6s;

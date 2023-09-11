@@ -81,7 +81,10 @@
 	};
 </script>
 
-<Button on:click={handleOpenModal} size="small">Distribute FLOATs</Button>
+<Button on:click={handleOpenModal} size="small">
+	<Icon icon="tabler:arrows-move" />
+	Distribute FLOATs
+</Button>
 <Modal {id} background="var(--clr-background-primary)">
 	<div class="main-wrapper">
 		<div class="forms-wrapper sub-wrapper column">

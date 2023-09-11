@@ -1,9 +1,7 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import deleteEvent from '../../_actions/event-actions/deleteEvent';
 	import toggleClaiming from '../../_actions/event-actions/toggleClaiming';
 	import toggleTransfering from '../../_actions/event-actions/toggleTransfering';
-	import { Button } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import DistributeFloatsModal from '$lib/features/bulk-distribute-floats/components/DistributeFloatsModal.svelte';
@@ -13,6 +11,7 @@
 
 	let claimingState = event.claimable;
 	let transferingState = event.transferrable;
+	let certificateVisibility: boolean = event.visibilityMode === 'picture' ? false : true;
 
 	const handleToggleClaiming = async () => {
 		await toggleClaiming(event.eventId);
@@ -31,14 +30,31 @@
 			transferingState = event.transferrable;
 		}, 4000);
 	};
+
+	const handleToggleVisibilityType = async () => {
+		// For jacob!
+		await toggleVisibilityType(event.eventId);
+
+		setTimeout(async () => {
+			await invalidate('admin:specificEvent');
+			certificateVisibility = event.visibilityMode === 'picture' ? false : true;
+		}, 4000);
+	};
 </script>
 
 <div class="main-wrapper">
-	<div class="row-1">
-		<Icon icon="uil:bolt-alt" color="var(--clr-neutral-600)" />
-		<p>ACTIONS</p>
-	</div>
 	<div class="actions-wrapper">
+		<div class="title-wrapper">
+			<Icon icon="tabler:bolt" color="var(--clr-neutral-600)" />
+			<p>ACTIONS</p>
+		</div>
+		<DistributeFloatsModal {event} />
+	</div>
+	<div class="toggles-wrapper">
+		<div class="title-wrapper">
+			<Icon icon="tabler:toggle-right" color="var(--clr-neutral-600)" />
+			<p>SWITCHS</p>
+		</div>
 		<div class="column-3">
 			<div class="row-3">
 				<label for="claiming" class="switch">
@@ -66,14 +82,30 @@
 				</label>
 				<p class="small">User transfering</p>
 			</div>
-			<DistributeFloatsModal {event} />
+			<div class="row-3">
+				<label for="visibility" class="switch">
+					<input
+						type="checkbox"
+						name="visibility"
+						id="visibility"
+						bind:checked={certificateVisibility}
+						on:change={handleToggleVisibilityType}
+					/>
+					<span class="slider" />
+				</label>
+				<p class="small">Certificate visibility</p>
+			</div>
 		</div>
-		<div class="event-actions">
-			<Button type="transparent" on:click={() => deleteEvent(event.eventId)}>
-				<Icon icon="ph:trash" color="var(--clr-alert-main)" />
-				<p class="small" style="color: var(--clr-alert-main);">Delete Event</p>
-			</Button>
+	</div>
+	<div class="danger-zone">
+		<div class="title-wrapper">
+			<Icon icon="tabler:alert-triangle" color="var(--clr-neutral-600)" />
+			<p>DANGER ZONE</p>
 		</div>
+		<button on:click={() => deleteEvent(event.eventId)}>
+			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
+			<p class="small" style="color: var(--clr-alert-main);">Delete Event</p>
+		</button>
 	</div>
 </div>
 
@@ -81,7 +113,8 @@
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		justify-content: space-between;
+		gap: var(--space-6);
 		padding-inline: var(--space-6);
 		flex: 1;
 
@@ -89,31 +122,40 @@
 			padding-inline: var(--space-8);
 		}
 
-		.row-1 {
+		.title-wrapper {
+			display: flex;
+			flex-direction: row;
+			gap: var(--space-1);
 			align-items: center;
+
 			p {
 				color: var(--clr-text-off);
+				font-size: var(--font-size-1);
+				letter-spacing: 0.07em;
 			}
 		}
 
-		.column-3 {
-			// border-bottom: 1px dashed var(--clr-border-primary);
-			padding-bottom: var(--space-6);
-		}
-	}
-
-	.actions-wrapper {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-3);
-		justify-content: space-between;
-		flex: 1;
-
-		.event-actions {
+		.actions-wrapper,
+		.toggles-wrapper,
+		.danger-zone {
 			display: flex;
-			align-items: center;
-			justify-content: flex-start;
-			gap: var(--space-5);
+			flex-direction: column;
+			align-items: flex-start;
+			gap: var(--space-3);
+		}
+
+		.danger-zone {
+			button {
+				background-color: transparent;
+				border: none;
+				padding: 0;
+				display: flex;
+				flex-direction: row;
+				gap: var(--space-1);
+				align-items: center;
+				cursor: pointer;
+				margin: 0;
+			}
 		}
 	}
 </style>

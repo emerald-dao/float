@@ -18,6 +18,7 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 	claimable: false,
 	eventType: 'conference',
 	certificateType: 'ticket',
+	visibilityMode: 'certificate',
 	powerups: {
 		payment: {
 			active: false,
@@ -59,6 +60,7 @@ export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($event
 	id: '00001',
 	serial: '1',
 	dateReceived: `${Date.now() / 1000}`,
+	visibilityMode: $eventGeneratorData.visibilityMode,
 	extraMetadata: {
 		medalType:
 			EVENT_TYPE_DETAILS[$eventGeneratorData.eventType].certificateType === 'medal'

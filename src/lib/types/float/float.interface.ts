@@ -16,4 +16,5 @@ export interface FLOAT {
 	transferrable: boolean;
 	eventType: EventType;
 	extraMetadata: { [key: string]: string | null; medalType: MedalType | null };
+	visibilityMode?: 'certificate' | 'picture';
 }
