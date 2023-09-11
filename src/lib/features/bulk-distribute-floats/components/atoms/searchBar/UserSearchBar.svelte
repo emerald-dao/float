@@ -5,7 +5,7 @@
 	import Profile from '$lib/components/floats/atoms/Profile/Profile.svelte';
 	import Icon from '@iconify/svelte';
 
-	export let addressInputValue: string;
+	export let addressInputValue: string = '';
 	export let customError: string = '';
 
 	const handleChange = (input: Event) => {
