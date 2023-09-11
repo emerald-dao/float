@@ -22,7 +22,6 @@ export async function GET() {
 	let mostFrequentEventIds: string[] = [];
 
 	if (claimsData && claimsData.length > 0) {
-		// Create a map to count occurrences of each event_id
 		const eventCountMap: Record<string, number> = {};
 		claimsData.forEach((row) => {
 			const eventId = row.event_id;
@@ -31,12 +30,10 @@ export async function GET() {
 			}
 		});
 
-		// Sort the event_ids by count in descending order
 		const sortedEventIds = Object.keys(eventCountMap).sort(
 			(a, b) => eventCountMap[b] - eventCountMap[a]
 		);
 
-		// Get the top 6 most frequent event_ids
 		mostFrequentEventIds = sortedEventIds.slice(0, 6);
 	}
 
