@@ -7,7 +7,7 @@
 </script>
 
 <div class="domains-wrapper">
-	<div class="row-1">
+	<div class="title-wrapper">
 		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
 		<p>EVENT URLs</p>
 	</div>
@@ -26,10 +26,16 @@
 			padding-inline: var(--space-8);
 		}
 
-		.row-1 {
+		.title-wrapper {
+			display: flex;
+			flex-direction: row;
+			gap: var(--space-1);
 			align-items: center;
+
 			p {
 				color: var(--clr-text-off);
+				font-size: var(--font-size-1);
+				letter-spacing: 0.07em;
 			}
 		}
 	}

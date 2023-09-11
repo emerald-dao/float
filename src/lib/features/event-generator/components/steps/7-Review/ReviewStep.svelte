@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { generatedNft } from './../../../stores/EventGeneratorData';
-	import { eventGeneratorActiveStep } from './../../../stores/EventGeneratorSteps';
+	import { generatedNft } from '../../../stores/EventGeneratorData';
+	import { eventGeneratorActiveStep } from '../../../stores/EventGeneratorSteps';
 	import { fly } from 'svelte/transition';
 	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';

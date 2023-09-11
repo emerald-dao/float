@@ -10,6 +10,7 @@
 	<StepIntro
 		title={$eventGeneratorSteps[$eventGeneratorActiveStep].title}
 		description={$eventGeneratorSteps[$eventGeneratorActiveStep].description}
+		canBeEditedLater={$eventGeneratorSteps[$eventGeneratorActiveStep].canBeEditedLater}
 		{alignCenter}
 	/>
 	<slot />
