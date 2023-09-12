@@ -475,6 +475,7 @@ pub contract FLOAT: NonFungibleToken {
         pub fun getPrices(): {String: TokenInfo}?
         pub fun hasClaimed(account: Address): TokenIdentifier?
         pub fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
+        pub fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
 
         access(account) fun updateFLOATHome(id: UInt64, serial: UInt64, owner: Address?)
     }
@@ -603,6 +604,10 @@ pub contract FLOAT: NonFungibleToken {
                 }
             }
             return {}
+        }
+
+        pub fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct? {
+            return self.getExtraFloatMetadata(serial: serial)[key]
         }
 
         // Returns info about the FLOAT that this account claimed
@@ -752,8 +757,14 @@ pub contract FLOAT: NonFungibleToken {
                 }
             }
 
+            var optExtraFloatMetadata: {String: AnyStruct}? = nil
+            // if this is a medal type float and user is publicly claiming, assign to participation
+            if self.getSpecificExtraMetadata(key: "certificateType") as! String? == "medal" {
+                optExtraFloatMetadata = {"medalType": "participation"}
+            }
+
             // You're good to go.
-            let id = self.mint(recipient: recipient, optExtraFloatMetadata: nil)
+            let id: UInt64 = self.mint(recipient: recipient, optExtraFloatMetadata: optExtraFloatMetadata)
 
             emit FLOATClaimed(
                 id: id,
