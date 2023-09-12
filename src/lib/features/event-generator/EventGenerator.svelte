@@ -5,10 +5,11 @@
 	import { setContext } from 'svelte';
 	import StepButtons from './components/atoms/StepButtons.svelte';
 	import Blur from '$lib/components/Blur.svelte';
-	import { POWER_UPS } from './components/steps/5-PowerUps/powerUps';
+	import { POWER_UPS } from './components/steps/6-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
+	import CanBeEditedLater from './components/atoms/CanBeEditedLater.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -20,8 +21,8 @@
 
 	setContext('activePowerUp', activePowerUp);
 
-	$: powerUpsStep = $eventGeneratorActiveStep === 4;
-	$: reviewStep = $eventGeneratorActiveStep === 5;
+	$: powerUpsStep = $eventGeneratorActiveStep === 5;
+	$: reviewStep = $eventGeneratorActiveStep === 6;
 	$: activePowerUpComponent = POWER_UPS.find(
 		(powerUp) => powerUp.type === $activePowerUp
 	)?.component;

@@ -30,13 +30,13 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchFloat = sortedEvents.map((event) => ({
+	$: searchEvent = sortedEvents.map((event) => ({
 		...event,
 
 		searchTerms: `${event.name}`
 	}));
 
-	$: searchStore = createSearchStore(searchFloat);
+	$: searchStore = createSearchStore(searchEvent);
 
 	$: unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 

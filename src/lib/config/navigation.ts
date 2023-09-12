@@ -1,12 +1,12 @@
 export const navElements = [
 	{
-		name: 'Create Event',
-		url: '/event-generator',
+		name: 'Admin',
+		url: '/admin',
 		prefetch: true
 	},
 	{
-		name: 'Admin',
-		url: '/admin',
+		name: 'Discover',
+		url: '/discover',
 		prefetch: true
 	}
 ];
@@ -44,5 +44,20 @@ export const socialMedia = [
 		name: 'Github ',
 		url: 'https://github.com/emerald-dao',
 		icon: 'ion:logo-github'
+	}
+];
+
+export const avatarDropDownNavigation = [
+	{
+		name: 'Admin',
+		url: '/admin',
+		icon: 'tabler:adjustments-horizontal',
+		prefetch: true
+	},
+	{
+		name: 'My profile',
+		url: '/profile',
+		icon: 'tabler:user-square',
+		prefetch: true
 	}
 ];

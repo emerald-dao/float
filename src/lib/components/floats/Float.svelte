@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 	import type { FLOAT } from '$lib/types/float/float.interface';
+	import FloatProfilePicture from './atoms/FloatProfilePicture.svelte';
 	import BaseFloat from './base-float/BaseFloat.svelte';
 	import FloatCertificate from './float-types/FloatCertificate.svelte';
 	import FloatMedal from './float-types/FloatMedal.svelte';
@@ -13,12 +14,24 @@
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 </script>
 
-<BaseFloat {float} {showBack} {minWidth} {maxWidth}>
-	{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
-		<FloatCertificate {float} {isForScreenshot} />
-	{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
-		<FloatMedal {float} {isForScreenshot} />
-	{:else}
-		<FloatTicket {float} {isForScreenshot} />
-	{/if}
-</BaseFloat>
+{#if !float.visibilityMode || float.visibilityMode === 'certificate'}
+	<BaseFloat {float} {showBack} {minWidth} {maxWidth}>
+		{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
+			<FloatCertificate {float} {isForScreenshot} />
+		{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
+			<FloatMedal {float} {isForScreenshot} />
+		{:else}
+			<FloatTicket {float} {isForScreenshot} />
+		{/if}
+	</BaseFloat>
+{:else if float.visibilityMode === 'picture'}
+	<FloatProfilePicture {float} />
+{/if}
+
+<style lang="scss">
+	img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+</style>

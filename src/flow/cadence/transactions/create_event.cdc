@@ -24,7 +24,8 @@ transaction(
   flowTokenPurchaseToggle: Bool, 
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
-  minimumBalance: UFix64
+  minimumBalance: UFix64,
+  visibilityMode: String // "certificate" or "picture"
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -81,6 +82,7 @@ transaction(
     extraMetadata["eventType"] = eventType
     extraMetadata["certificateType"] = certificateType
     extraMetadata["certificateImage"] = certificateImage
+    extraMetadata["visibilityMode"] = visibilityMode
 
     self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
     log("Started a new event for host.")

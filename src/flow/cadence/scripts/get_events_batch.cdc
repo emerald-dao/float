@@ -2,15 +2,14 @@ import FLOAT from "../FLOAT.cdc"
 import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import FlowToken from "../utility/FlowToken.cdc"
 
-pub fun main(account: Address): [FLOATEventMetadata] {
-  let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                              .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
-                              ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-  let floatEvents: [UInt64] = floatEventCollection.getIDs() 
+pub fun main(events: [UInt64], addresses: [Address]): [FLOATEventMetadata] {
   let returnVal: [FLOATEventMetadata] = []
 
-  for eventId in floatEvents {
-    let event = floatEventCollection.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist in the account")
+  for i, eventId in events {
+    let authAccount = getAuthAccount(addresses[i])
+    let floatEventCollection = authAccount.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+                              ?? panic("Could not borrow the FLOAT Events Collection from the account.")
+    let event = floatEventCollection.borrowEventRef(eventId: eventId) ?? panic("This event does not exist in the account")
     let metadata = FLOATEventMetadata(event)
     returnVal.append(metadata)
   }
@@ -32,7 +31,6 @@ pub struct FLOATEventMetadata {
   pub let verifiers: [AnyStruct]
   pub let eventType: String
   pub let price: UFix64?
-  pub let visibilityMode: String
 
   init(_ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
       self.claimable = event.claimable
@@ -42,11 +40,11 @@ pub struct FLOATEventMetadata {
       let extraMetadata = event.getExtraMetadata()
       self.host = event.host
       if let backImage = extraMetadata["backImage"] as! String? {
-        self.backImage = "https://ipfs.io/ipfs/".concat(backImage)
+        self.backImage = "https://nftstorage.link/ipfs/".concat(backImage)
       } else {
         self.backImage = nil
       }
-      self.image = "https://ipfs.io/ipfs/".concat(event.image)
+      self.image = "https://nftstorage.link/ipfs/".concat(event.image)
       self.name = event.name
       self.transferrable = event.transferrable
       self.totalSupply = event.totalSupply
@@ -81,7 +79,5 @@ pub struct FLOATEventMetadata {
       } else {
         self.price = nil
       }
-
-      self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
   }
 }

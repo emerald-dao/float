@@ -1,7 +1,7 @@
 import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import scrypt from "scrypt-async";
-import { ec } from "elliptic";
+import elliptic from "elliptic";
 
 // called directly when creating an event, or as a dependency when claiming
 function getKeysFromClaimCode(claimCode: string) {
@@ -17,7 +17,7 @@ function getKeysFromClaimCode(claimCode: string) {
             encoding: 'hex'
         },
         function (privateKey) {
-            var ec_p256 = new ec('p256');
+            var ec_p256 = new elliptic.ec('p256');
             let kp = ec_p256.keyFromPrivate(privateKey, 'hex'); // hex string, array or Buffer
             var publicKey = kp.getPublic().encode('hex').substr(2);
             keys = { publicKey, privateKey };

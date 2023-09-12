@@ -17,6 +17,7 @@ function transformEventToFloat(event: Event): FLOAT {
 		totalSupply: event.totalSupply,
 		transferrable: event.transferrable,
 		eventType: event.eventType,
+		visibilityMode: event.visibilityMode,
 		extraMetadata: {
 			medalType: EVENT_TYPE_DETAILS[event.eventType].certificateType === 'medal' ? 'gold' : null
 		}

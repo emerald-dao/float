@@ -20,12 +20,14 @@ import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
+import toggleVisibilityModeTx from './cadence/transactions/toggle_visibility_mode.cdc?raw';
 import distributeFLOATsTx from './cadence/transactions/distribute_floats.cdc?raw';
 import distributeMedalFLOATsTx from './cadence/transactions/distribute_floats_medal.cdc?raw';
 
 // Scripts
 import getEventsScript from './cadence/scripts/get_events.cdc?raw';
 import getEventScript from './cadence/scripts/get_event.cdc?raw';
+import getEventsBatchScript from './cadence/scripts/get_events_batch.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
@@ -35,6 +37,8 @@ import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
 import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
+import validateAddressExistanceScript from './cadence/scripts/validate_address_existance.cdc?raw';
+import validateFindExistanceScript from './cadence/scripts/validate_find_existance.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -64,7 +68,8 @@ const createEvent = async (
 	secret: string | null,
 	limited: number | null,
 	payment: number | null,
-	minimumBalance: number | null
+	minimumBalance: number | null,
+	visibilityMode: 'certificate' | 'picture'
 ) => {
 	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
 	const timePeriod =
@@ -101,7 +106,8 @@ const createEvent = async (
 			arg(payment != null, t.Bool),
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
-			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64)
+			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
+			arg(visibilityMode, t.String)
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -126,6 +132,7 @@ export const createEventExecution = (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
+	visibilityMode: 'certificate' | 'picture',
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
 	executeTransaction(() =>
@@ -144,7 +151,8 @@ export const createEventExecution = (
 			secret,
 			limited,
 			payment,
-			minimumBalance
+			minimumBalance,
+			visibilityMode
 		),
 		actionAfterSucceed
 	);
@@ -227,6 +235,20 @@ const toggleTransferring = async (eventId: string) => {
 export const toggleTransferringExecution = (eventId: string) =>
 	executeTransaction(() => toggleTransferring(eventId));
 
+const toggleVisibilityMode = async (eventId: string) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(toggleVisibilityModeTx),
+		args: (arg, t) => [arg(eventId, t.UInt64)],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const toggleVisibilityModeExecution = (eventId: string) =>
+	executeTransaction(() => toggleVisibilityMode(eventId));
+
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 
 	return await fcl.mutate({
@@ -283,6 +305,26 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 		return await fcl.query({
 			cadence: replaceWithProperValues(getEventScript),
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
+		});
+	} catch (e) {
+		console.log('Error in getEvents', e);
+		throw new Error('Error in getEvents');
+	}
+};
+
+export const getEventsBatch = async (
+	events: { user_address: string; event_id: string }[]
+): Promise<Event[]> => {
+	try {
+		let eventsArg = [];
+		let addressesArg = [];
+		events.forEach((event) => {
+			eventsArg.push(event.id);
+			addressesArg.push(event.creator_address);
+		});
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventsBatchScript),
+			args: (arg, t) => [arg(eventsArg, t.Array(t.UInt64)), arg(addressesArg, t.Array(t.Address))]
 		});
 	} catch (e) {
 		console.log('Error in getEvents', e);
@@ -421,6 +463,30 @@ export const userHasClaimedEvent = async (
 				arg(eventHost, t.Address),
 				arg(userAddress, t.Address)
 			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const validateAddressExistance = async (address: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(validateAddressExistanceScript),
+			args: (arg, t) => [arg(address, t.Address)]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const validateFindExistance = async (findName: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(validateFindExistanceScript),
+			args: (arg, t) => [arg(findName, t.String)]
 		});
 	} catch (e) {
 		console.log(e);

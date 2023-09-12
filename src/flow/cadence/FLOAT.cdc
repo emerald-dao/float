@@ -133,6 +133,9 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun getImage(): String {
             if let extraEventMetadata: {String: AnyStruct} = self.getEventMetadata()?.getExtraMetadata() {
+                if (extraEventMetadata["visibilityMode"] as! String?) == "picture" {
+                    return self.eventImage
+                }
                 if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
                     if certificateType == "medal" {
                         // put extra metadata about colors
@@ -529,6 +532,17 @@ pub contract FLOAT: NonFungibleToken {
         pub fun toggleTransferrable(): Bool {
             self.transferrable = !self.transferrable
             return self.transferrable
+        }
+
+        // Toggles claiming on/off
+        pub fun toggleVisibilityMode() {
+            if let currentVisibilityMode = self.getSpecificExtraMetadata(key: "visibilityMode") as! String? {
+                if currentVisibilityMode == "certificate" {
+                    self.extraMetadata["visibilityMode"] = "picture"
+                    return
+                }
+            }
+            self.extraMetadata["visibilityMode"] = "certificate"
         }
 
         /***************** Setters for the Contract Only *****************/

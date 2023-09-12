@@ -23,6 +23,7 @@ export interface Event {
 	url: string;
 	verifiers: EventVerifier[];
 	eventType: EventType;
+	visibilityMode?: 'certificate' | 'picture';
 }
 
 export type EventVerifier = Timelock | Secret | Limited | MinimumBalance;

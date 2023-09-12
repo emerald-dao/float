@@ -27,6 +27,7 @@ pub struct FLOATEventMetadata {
   pub let verifiers: [AnyStruct]
   pub let eventType: String
   pub let price: UFix64?
+  pub let visibilityMode: String
 
   init(_ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
       self.claimable = event.claimable
@@ -75,5 +76,7 @@ pub struct FLOATEventMetadata {
       } else {
         self.price = nil
       }
+
+      self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
   }
 }
