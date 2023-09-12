@@ -14,8 +14,6 @@
 	export let events: EventWithStatus[];
 	export let viewMode: 'cards' | 'tickets';
 
-	console.log(events);
-
 	let sortedEvents = events.sort((a, b) => {
 		const dateA = parseFloat(a.dateCreated);
 		const dateB = parseFloat(b.dateCreated);

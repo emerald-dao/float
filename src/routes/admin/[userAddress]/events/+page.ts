@@ -4,7 +4,13 @@ import { getVerifiersState } from '$lib/features/event-status-management/functio
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 export async function load({ params }) {
-	const userEvents = await getEvents(params.userAddress);
+	const response = await getEvents(params.userAddress);
+
+	const userEvents = response.sort((a, b) => {
+		const dateA = parseFloat(a.dateCreated);
+		const dateB = parseFloat(b.dateCreated);
+		return dateB - dateA;
+	});
 
 	const getEventsWithStatus = (events: Event[]): EventWithStatus[] => {
 		const eventsWithStatus: EventWithStatus[] = [];
