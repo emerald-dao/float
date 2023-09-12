@@ -7,6 +7,12 @@
 
 	export let data;
 
+	let sortedEvents = data.events.sort((a, b) => {
+		const dateA = parseFloat(a.dateCreated);
+		const dateB = parseFloat(b.dateCreated);
+		return dateB - dateA;
+	});
+
 	let viewMode: 'grid' | 'list' = 'grid';
 	let showInactive = false;
 
@@ -27,8 +33,8 @@
 	});
 
 	$: filteredEvents = showInactive
-		? data.events
-		: data.events.filter((event) => event.status.generalStatus === 'available');
+		? sortedEvents
+		: sortedEvents.filter((event) => event.status.generalStatus === 'available');
 
 	$: searchEvent = filteredEvents.map((example) => ({
 		...example,

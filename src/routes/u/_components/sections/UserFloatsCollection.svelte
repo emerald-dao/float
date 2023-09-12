@@ -18,6 +18,12 @@
 	export let groups: GroupWithFloatsIds[];
 	export let viewMode: 'cards' | 'tickets';
 
+	let sortedFloats = floats.sort((a, b) => {
+		const dateA = parseFloat(a.dateReceived);
+		const dateB = parseFloat(b.dateReceived);
+		return dateB - dateA;
+	});
+
 	let selectedGroupsIds: number[] = [];
 	let activeGroupsFloats: FLOAT[] = [];
 
@@ -33,12 +39,12 @@
 			}
 		});
 
-		activeGroupsFloats = floats.filter((float) => {
+		activeGroupsFloats = sortedFloats.filter((float) => {
 			const floatId = float.id;
 			return allActiveFloatsIds.some((ids) => ids.includes(floatId));
 		});
 	} else {
-		activeGroupsFloats = floats;
+		activeGroupsFloats = sortedFloats;
 	}
 
 	let filters: Filter[] = [];
@@ -51,7 +57,7 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchFloat = floats.map((float) => ({
+	$: searchFloat = sortedFloats.map((float) => ({
 		...float,
 
 		searchTerms: `${float.eventName}`

@@ -14,6 +14,14 @@
 	export let events: EventWithStatus[];
 	export let viewMode: 'cards' | 'tickets';
 
+	console.log(events);
+
+	let sortedEvents = events.sort((a, b) => {
+		const dateA = parseFloat(a.dateCreated);
+		const dateB = parseFloat(b.dateCreated);
+		return dateB - dateA;
+	});
+
 	let filters: Filter[] = [];
 
 	let activeFilters = {
@@ -24,10 +32,10 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchFloat = events.map((float) => ({
-		...float,
+	$: searchFloat = sortedEvents.map((event) => ({
+		...event,
 
-		searchTerms: `${float.name}`
+		searchTerms: `${event.name}`
 	}));
 
 	$: searchStore = createSearchStore(searchFloat);
@@ -43,11 +51,11 @@
 	$: if (filters.length > 0 && $searchStore.search.length > 0) {
 		filteredContent = filterEventsContent(filters, $searchStore.filtered, activeFilters);
 	} else if (filters.length > 0) {
-		filteredContent = filterEventsContent(filters, events, activeFilters);
+		filteredContent = filterEventsContent(filters, sortedEvents, activeFilters);
 	} else if ($searchStore.search.length > 0) {
 		filteredContent = $searchStore.filtered;
 	} else {
-		filteredContent = events;
+		filteredContent = sortedEvents;
 	}
 
 	// Infinite scroll feature
