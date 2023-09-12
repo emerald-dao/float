@@ -12,6 +12,7 @@
 <form id="dist-form" on:submit|preventDefault={() => addToStagingFromInput()} autocomplete="off">
 	<UserSearchBar
 		bind:addressInputValue
+		autoFocus={true}
 		customError={distribution.distributionObjects.find(
 			(distObj) => distObj.address === addressInputValue
 		)

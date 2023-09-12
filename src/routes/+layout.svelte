@@ -7,15 +7,26 @@
 	import '@emerald-dao/design-system/build/variables.css';
 	import '@emerald-dao/component-library/styles/app.scss';
 	import { Header, Footer, TransactionModal } from '@emerald-dao/component-library';
-	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
+	import {
+		navElements,
+		emeraldTools,
+		socialMedia,
+		avatarDropDownNavigation
+	} from '$lib/config/navigation';
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
 	import { onMount } from 'svelte';
 	import { page } from '$app/stores';
 	import getProfile from '$lib/utilities/profiles/getProfile';
+	import Icon from '@iconify/svelte';
+	import UserSearchBar from '$lib/features/bulk-distribute-floats/components/atoms/searchBar/UserSearchBar.svelte';
+	import { goto } from '$app/navigation';
 
 	let route: string | null;
+
+	let addressInputValue: string;
+	let validUserInSearchbar: boolean;
 
 	function extractFirstSegment(route: string): string | null {
 		const regex = /^\/([^\/]+)/;
@@ -62,7 +73,36 @@
 		logoText="FLOAT"
 		userAvatar={$profile?.avatar}
 		userName={$profile?.name}
-	/>
+		width="full"
+		{avatarDropDownNavigation}
+	>
+		<div slot="commands" class="commands-wrapper row-3">
+			<form
+				on:submit|preventDefault={() => {
+					if (validUserInSearchbar) {
+						goto(`/u/${addressInputValue}`);
+						addressInputValue = '';
+					}
+				}}
+			>
+				<UserSearchBar
+					bind:addressInputValue
+					bind:validUser={validUserInSearchbar}
+					buttonText="Profile"
+					fontSize="0.9rem"
+					autoSelectKey="/"
+					placeholder={`Search user by address or .find name`}
+					dropdownMode={true}
+				/>
+			</form>
+			{#if $user.loggedIn}
+				<a href="/event-generator">
+					<Icon icon="tabler:plus" />
+					Create event
+				</a>
+			{/if}
+		</div>
+	</Header>
 {:else}
 	<div />
 {/if}
@@ -79,5 +119,21 @@
 	main {
 		display: flex;
 		flex-direction: column;
+	}
+
+	.commands-wrapper {
+		a {
+			border: none;
+			background-color: var(--clr-neutral-badge);
+			border-radius: var(--radius-1);
+			display: flex;
+			align-items: center;
+			gap: var(--space-1);
+			font-size: var(--font-size-0);
+			padding: var(--space-1) var(--space-3);
+			color: var(--clr-heading-main);
+			cursor: pointer;
+			text-decoration: none;
+		}
 	}
 </style>

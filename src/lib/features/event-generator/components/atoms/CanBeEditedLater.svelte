@@ -17,16 +17,8 @@
 {/if}
 
 <style lang="scss">
-	.editable {
-		color: var(--clr-primary-main);
-		opacity: 0.7;
-	}
-
-	.not-editable {
-		opacity: 0.7;
-	}
-
 	p {
+		opacity: 0.7;
 		color: inherit;
 	}
 </style>
