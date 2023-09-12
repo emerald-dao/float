@@ -1,4 +1,4 @@
-import { ec } from "elliptic";
+import elliptic from "elliptic";
 import { SHA3 } from "sha3";
 import { Buffer } from 'buffer';
 import { fetchKeysFromClaimCode } from "$lib/utilities/api/fetchKeysFromClaimCode";
@@ -13,7 +13,7 @@ const USER_DOMAIN_TAG = rightPaddedHexBuffer(
 ).toString('hex');
 
 const sign = (message, privateKey) => {
-    var ec_p256 = new ec('p256');
+    var ec_p256 = new elliptic.ec('p256');
     const key = ec_p256.keyFromPrivate(Buffer.from(privateKey, 'hex'));
     const sig = key.sign(hash(message)); // hashMsgHex -> hash
     const n = 32;

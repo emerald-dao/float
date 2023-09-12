@@ -70,6 +70,7 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.powerups.limited.active ? event.powerups.limited.data : null,
 		event.powerups.payment.active ? event.powerups.payment.data : null,
 		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null,
+		event.visibilityMode,
 		actionAfterCreateEvent
 	);
 

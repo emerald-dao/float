@@ -34,6 +34,8 @@ pub struct FLOATMetadata {
   pub let originalRecipient: Address
   pub let eventId: UInt64
   pub let serial: UInt64
+  pub let visibilityMode: String
+  pub let extraMetadata: {String: AnyStruct}
 
   init(_ float: &FLOAT.NFT, _ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
     self.dateReceived = float.dateReceived
@@ -47,6 +49,8 @@ pub struct FLOATMetadata {
     self.originalRecipient = float.originalRecipient
     self.id = float.id
     self.serial = float.serial
-    self.eventType = (event.getExtraMetadata()["eventType"] as? String) ?? "other"
+    self.eventType = (event.getExtraMetadata()["eventType"] as! String?) ?? "other"
+    self.extraMetadata = event.getExtraFloatMetadata(serial: self.serial)
+    self.visibilityMode = (event.getSpecificExtraMetadata(key: "visibilityMode") as! String?) ?? "certificate"
   }
 }

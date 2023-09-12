@@ -12,6 +12,7 @@ export interface Step {
 		text: string;
 		icon?: string;
 	};
+	canBeEditedLater?: boolean;
 }
 
 export interface ActionExecutionResult {

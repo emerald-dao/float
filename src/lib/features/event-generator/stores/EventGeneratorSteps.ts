@@ -9,6 +9,7 @@ import {
 	PowerUpsStep,
 	ReviewStep
 } from '../components/steps';
+import VisibilityOptions from '../components/steps/5-VisibilityOptions/VisibilityOptions.svelte';
 
 export const eventGeneratorSteps = createSteps([
 	{
@@ -20,7 +21,8 @@ export const eventGeneratorSteps = createSteps([
 		button: {
 			text: 'Next',
 			icon: 'tabler:arrow-right'
-		}
+		},
+		canBeEditedLater: false
 	},
 	{
 		name: 'General Data',
@@ -31,7 +33,8 @@ export const eventGeneratorSteps = createSteps([
 		button: {
 			text: 'Next',
 			icon: 'tabler:arrow-right'
-		}
+		},
+		canBeEditedLater: false
 	},
 	{
 		name: 'Claiming Options',
@@ -42,7 +45,8 @@ export const eventGeneratorSteps = createSteps([
 		button: {
 			text: 'Next',
 			icon: 'tabler:arrow-right'
-		}
+		},
+		canBeEditedLater: true
 	},
 	{
 		name: 'Trading Options',
@@ -53,7 +57,20 @@ export const eventGeneratorSteps = createSteps([
 		button: {
 			text: 'Next',
 			icon: 'tabler:arrow-right'
-		}
+		},
+		canBeEditedLater: true
+	},
+	{
+		name: 'Visibility Options',
+		component: VisibilityOptions,
+		title: 'How do you want your FLOAT to be seen?',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Next',
+			icon: 'tabler:arrow-right'
+		},
+		canBeEditedLater: true
 	},
 	{
 		name: 'Power Ups',
@@ -64,7 +81,8 @@ export const eventGeneratorSteps = createSteps([
 		button: {
 			text: 'Review Event',
 			icon: 'tabler:arrow-right'
-		}
+		},
+		canBeEditedLater: false
 	},
 	{
 		name: 'Review',

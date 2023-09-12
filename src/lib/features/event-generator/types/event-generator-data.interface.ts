@@ -14,6 +14,7 @@ export interface EventGeneratorData {
 	totalSupply: string;
 	transferrable: boolean;
 	claimable: boolean;
+	visibilityMode: 'certificate' | 'picture';
 	powerups: {
 		[key in PowerUpType]: {
 			active: boolean;
