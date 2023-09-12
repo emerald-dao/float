@@ -8,6 +8,11 @@ export const navElements = [
 		name: 'Admin',
 		url: '/admin',
 		prefetch: true
+	},
+	{
+		name: 'Discover',
+		url: '/discover',
+		prefetch: true
 	}
 ];
 

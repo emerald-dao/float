@@ -24,13 +24,13 @@
 		filters = createFilters(activeFilters);
 	});
 
-	$: searchFloat = events.map((float) => ({
-		...float,
+	$: searchEvent = events.map((event) => ({
+		...event,
 
-		searchTerms: `${float.name}`
+		searchTerms: `${event.name}`
 	}));
 
-	$: searchStore = createSearchStore(searchFloat);
+	$: searchStore = createSearchStore(searchEvent);
 
 	$: unsubscribe = searchStore.subscribe((model) => searchHandler(model));
 
