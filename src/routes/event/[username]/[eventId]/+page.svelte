@@ -62,10 +62,16 @@
 		<div class="row-2 align-center">
 			{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
 				{#if data.event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel timelockStatus={data.event.status.verifiersStatus.timelockStatus} />
+					<TimelockStateLabel
+						timelockStatus={data.event.status.verifiersStatus.timelockStatus}
+						generalStatus={data.event.status.generalStatus}
+					/>
 				{/if}
 				{#if data.event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel limitedStatus={data.event.status.verifiersStatus.limitedStatus} />
+					<LimitedStateLabel
+						limitedStatus={data.event.status.verifiersStatus.limitedStatus}
+						generalStatus={data.event.status.generalStatus}
+					/>
 				{/if}
 			{/if}
 			<EventStatus status={data.event.status.generalStatus} claimability={data.event.claimable} />

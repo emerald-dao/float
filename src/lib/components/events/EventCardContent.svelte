@@ -36,10 +36,16 @@
 		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
 			<div class="powerups-wrapper" class:no-extra-info={display === 'list' && !displayedInAdmin}>
 				{#if event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel timelockStatus={event.status.verifiersStatus.timelockStatus} />
+					<TimelockStateLabel
+						timelockStatus={event.status.verifiersStatus.timelockStatus}
+						generalStatus={event.status.generalStatus}
+					/>
 				{/if}
 				{#if event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel limitedStatus={event.status.verifiersStatus.limitedStatus} />
+					<LimitedStateLabel
+						limitedStatus={event.status.verifiersStatus.limitedStatus}
+						generalStatus={event.status.generalStatus}
+					/>
 				{/if}
 			</div>
 		{/if}
