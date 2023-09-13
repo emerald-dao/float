@@ -31,7 +31,7 @@
 	</div>
 	<div class="secondary-wrapper">
 		<div class="status-wrapper column-1">
-			<EventStatus status={event.status.generalStatus} />
+			<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
 		</div>
 		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
 			<div class="powerups-wrapper" class:no-extra-info={display === 'list' && !displayedInAdmin}>

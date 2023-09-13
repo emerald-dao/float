@@ -28,7 +28,7 @@
 					<LimitedStateLabel limitedStatus={event.status.verifiersStatus.limitedStatus} />
 				{/if}
 			{/if}
-			<EventStatus status={event.status.generalStatus} />
+			<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
 		</div>
 	</div>
 	<div class="ticket-wrapper">

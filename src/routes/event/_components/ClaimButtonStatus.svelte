@@ -40,7 +40,7 @@
 </script>
 
 <div class="button-wrapper">
-	{#if event.status.generalStatus === 'available'}
+	{#if event.status.generalStatus === 'available' && event.claimable}
 		{#if !$user.loggedIn}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
@@ -94,7 +94,9 @@
 		<div class="secret-code-message">
 			<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
 				<Icon icon="tabler:lock" />
-				{#if event.status.generalStatus === 'expired'}
+				{#if !event.claimable}
+					<span>This event is non-claimable</span>
+				{:else if event.status.generalStatus === 'expired'}
 					<span>The event has {event.status.generalStatus}</span>
 				{:else}
 					<span>The event is {event.status.generalStatus}</span>

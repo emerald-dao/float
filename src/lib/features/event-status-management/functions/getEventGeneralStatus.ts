@@ -25,9 +25,5 @@ export const getEventGeneralStatus = (
 		}
 	}
 
-	if (!claimability) {
-		return 'paused';
-	}
-
 	return 'available';
 };

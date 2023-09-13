@@ -68,7 +68,7 @@
 					<LimitedStateLabel limitedStatus={data.event.status.verifiersStatus.limitedStatus} />
 				{/if}
 			{/if}
-			<EventStatus status={data.event.status.generalStatus} />
+			<EventStatus status={data.event.status.generalStatus} claimability={data.event.claimable} />
 		</div>
 		{#if starDate && endDate}
 			<div>
