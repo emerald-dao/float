@@ -1,8 +1,21 @@
-<script>
+<script lang="ts">
 	import Blur from '$lib/components/Blur.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
-	import homeFloatTicket from '$lib/config/homeFloatTicket';
+	import homeFloatTickets from '$lib/config/homeFloatTickets';
+	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { Button } from '@emerald-dao/component-library';
+	import { onMount } from 'svelte';
+
+	const getRandomFLOAT = async (floats: FLOAT[]) => {
+		const randomIndex = Math.floor(Math.random() * floats.length);
+		return floats[randomIndex];
+	};
+
+	let randomFLOAT: FLOAT | null = null;
+
+	onMount(async () => {
+		randomFLOAT = await getRandomFLOAT(homeFloatTickets);
+	});
 </script>
 
 <section class="container-small center column-12">
@@ -15,8 +28,9 @@
 			trust for event creators.
 		</p>
 	</div>
-
-	<Float float={homeFloatTicket} />
+	{#if randomFLOAT}
+		<Float float={randomFLOAT} />
+	{/if}
 	<div class="column-2 center">
 		<Button color="primary" size="large" width="extended" href="/event-generator"
 			>Create an Event - it's free!</Button
