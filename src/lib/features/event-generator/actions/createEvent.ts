@@ -46,7 +46,7 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		await postEvent(eventId, userObject);
 
 		// navigate to the event admin page
-		goto(`/admin/${userObject.addr}/events/${eventId}`);
+		goto(`/admin/events/${eventId}`);
 
 		return {
 			state: 'success',

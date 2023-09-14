@@ -1,7 +1,7 @@
 import { getEvent, getEventClaims } from '$flow/actions';
 import { getFindProfileFromAddressOrName } from '$flow/utils';
-import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus.js';
-import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState.js';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus.js';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState.js';
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface.js';
 
 export const load = async ({ params }) => {
