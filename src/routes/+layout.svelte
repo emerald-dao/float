@@ -63,7 +63,7 @@
 	transactionStatus={$transactionStore.transaction}
 	on:close={() => transactionStore.resetTransaction()}
 />
-{#if route !== 'admin' || !($user && $user.addr)}
+{#if (route !== 'admin' && route !== 'embed') || !($user && $user.addr)}
 	<Header
 		{logIn}
 		{unauthenticate}
