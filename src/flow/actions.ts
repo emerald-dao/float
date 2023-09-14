@@ -297,10 +297,16 @@ export const distributeMedalFLOATsExecution = (
 
 export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	try {
-		return await fcl.query({
+		let events = await fcl.query({
 			cadence: replaceWithProperValues(getEventsScript),
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
+		let sortedEvents = events.sort((a: Event, b: Event) => {
+			const dateA = parseFloat(a.dateCreated);
+			const dateB = parseFloat(b.dateCreated);
+			return dateB - dateA;
+		});
+		return sortedEvents;
 	} catch (e) {
 		console.log('Error in getEvents', e);
 		return [];
@@ -374,10 +380,16 @@ export const getLatestEventClaims = async (
 
 export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 	try {
-		return await fcl.query({
+		let floats = await fcl.query({
 			cadence: replaceWithProperValues(getFLOATsScript),
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
+		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
+			const dateA = parseFloat(a.dateReceived);
+			const dateB = parseFloat(b.dateReceived);
+			return dateB - dateA;
+		});
+		return sortedFloats;
 	} catch (e) {
 		console.log('Error in getFLOATs', e);
 		return [];
@@ -386,10 +398,16 @@ export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 
 export const getSpecificFLOATs = async (userAddress: string, ids: string[]): Promise<FLOAT[]> => {
 	try {
-		return await fcl.query({
+		let floats = await fcl.query({
 			cadence: replaceWithProperValues(getSpecificFLOATsScript),
 			args: (arg, t) => [arg(userAddress, t.Address), arg(ids, t.Array(t.UInt64))]
 		});
+		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
+			const dateA = parseFloat(a.dateReceived);
+			const dateB = parseFloat(b.dateReceived);
+			return dateB - dateA;
+		});
+		return sortedFloats;
 	} catch (e) {
 		console.log('Error in getSpecificFLOATs', e);
 		throw new Error('Error in getSpecificFLOATs');
