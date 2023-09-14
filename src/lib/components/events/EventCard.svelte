@@ -10,7 +10,7 @@
 
 	let link: string;
 	if (displayedInAdmin) {
-		link = `/admin/${$user.addr}/events/${event.eventId}`;
+		link = `/admin/events/${event.eventId}`;
 	} else {
 		link = `/event/${event.host}/${event.eventId}`;
 	}

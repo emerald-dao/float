@@ -18,7 +18,7 @@
 	div {
 		border-radius: 50%;
 		position: absolute;
-		z-index: -1;
+		z-index: 0;
 
 		&.color-primary {
 			background-color: var(--clr-primary-main);

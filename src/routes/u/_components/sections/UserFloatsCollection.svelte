@@ -11,7 +11,7 @@
 	import IntersectionObserver from 'svelte-intersection-observer';
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import GroupsToggles from '../atoms/GroupsToggles.svelte';
-	import FloatCard from '../../../admin/[userAddress]/my-collection/_components/FloatCard/FloatCard.svelte';
+	import FloatCard from '../../../admin/my-collection/_components/FloatCard/FloatCard.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 
 	export let floats: FLOAT[];
