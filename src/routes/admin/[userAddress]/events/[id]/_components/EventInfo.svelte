@@ -4,41 +4,84 @@
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
-	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
 	import Float from '$lib/components/floats/Float.svelte';
+	import TimelockReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/TimelockReview.svelte';
+	import LimitedReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/LimitedReview.svelte';
+	import PaymentReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/PaymentReview.svelte';
+	import type { MinimumBalance, Secret } from '$lib/types/event/verifiers.interface';
+	import MinimumBalanceReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/MinimumBalanceReview.svelte';
+	import SecretCodeReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/SecretCodeReview.svelte';
 
 	export let event: EventWithStatus;
 	export let claims: Claim[] = [];
+
+	let amount: string;
+	let secretCode: string;
+	event.verifiers.forEach((verifier) => {
+		if (verifier.hasOwnProperty('amount')) {
+			amount = (verifier as MinimumBalance).amount;
+		}
+		if (verifier.hasOwnProperty('publicKey')) {
+			secretCode = (verifier as Secret).publicKey;
+		}
+	});
 </script>
 
 <div class="main-wrapper">
-	<div class="top-wrapper">
-		<div class="column align-center">
-			<h4 class="h5">{event.totalSupply}</h4>
-			<p class="small">FLOATs claimed</p>
+	<div class="main-info-wrapper">
+		<div class="top-wrapper">
+			<div class="column align-center">
+				<h4 class="h5">{event.totalSupply}</h4>
+				<p class="small">FLOATs claimed</p>
+			</div>
+			<div>
+				<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
+			</div>
 		</div>
-		<div class="row-2">
-			{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
-				{#if event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel
-						timelockStatus={event.status.verifiersStatus.timelockStatus}
-						generalStatus={event.status.generalStatus}
-					/>
-				{/if}
-				{#if event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel
-						limitedStatus={event.status.verifiersStatus.limitedStatus}
-						generalStatus={event.status.generalStatus}
-					/>
-				{/if}
-			{/if}
-			<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
-		</div>
+		{#if event.verifiers.length > 0}
+			<div class="powerups-main-wrapper">
+				<div class="title-wrapper">
+					<Icon icon="tabler:plus" />
+					<p class="w-medium">Power Ups</p>
+				</div>
+				<div class="powerups-cards-wrapper">
+					{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
+						{#if event.status.verifiersStatus.timelockStatus}
+							<div>
+								<TimelockReview
+									timelockStatus={event.status.verifiersStatus.timelockStatus}
+									{event}
+								/>
+							</div>
+						{/if}
+						{#if event.status.verifiersStatus.limitedStatus}
+							<div>
+								<LimitedReview limitedStatus={event.status.verifiersStatus.limitedStatus} {event} />
+							</div>
+						{/if}
+					{/if}
+					{#if event.price}
+						<div>
+							<PaymentReview {event} />
+						</div>
+					{/if}
+					{#if amount}
+						<div>
+							<MinimumBalanceReview {event} />
+						</div>
+					{/if}
+					{#if secretCode}
+						<div>
+							<SecretCodeReview {event} />
+						</div>
+					{/if}
+				</div>
+			</div>
+		{/if}
 	</div>
 	<div class="ticket-wrapper">
-		<Float float={transformEventToFloat(event)} />
+		<Float float={transformEventToFloat(event)} maxWidth="450px" />
 	</div>
 	<div class="claims-wrapper">
 		<div class="row-1 claims-title-wrapper">
@@ -65,20 +108,43 @@
 		gap: var(--space-10);
 		height: 100%;
 
-		.top-wrapper {
-			display: flex;
-			justify-content: space-between;
+		.main-info-wrapper {
 			width: 100%;
-			align-items: center;
-			padding: var(--space-4) var(--space-8);
-			border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
 
-			@include mq(small) {
-				padding: var(--space-4) var(--space-18);
+			.top-wrapper {
+				display: flex;
+				justify-content: space-between;
+				width: 100%;
+				align-items: center;
+				padding: var(--space-4) var(--space-8);
+				border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
+
+				@include mq(small) {
+					padding: var(--space-3) var(--space-18);
+				}
+
+				@include mq(medium) {
+					padding: var(--space-3) var(--space-15) var(--space-3) var(--space-12);
+				}
 			}
 
-			@include mq(medium) {
-				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
+			.powerups-main-wrapper {
+				padding: var(--space-3) var(--space-15) var(--space-3) var(--space-12);
+				border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
+
+				.title-wrapper {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					padding-bottom: var(--space-2);
+				}
+
+				.powerups-cards-wrapper {
+					display: flex;
+					flex-direction: row;
+					gap: var(--space-2);
+					flex-wrap: wrap;
+				}
 			}
 		}
 

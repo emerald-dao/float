@@ -36,7 +36,7 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 2fr 3fr;
 		}
 
 		.left-wrapper {

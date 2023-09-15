@@ -10,15 +10,20 @@ const eventMock: Event = {
 	extraMetadata: { key: 'string' },
 	groups: ['TRY'],
 	host: 'Twitter',
-	eventImage:
+	image:
 		'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 	eventLogo:
 		'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
 	name: 'FIRST EVENT',
-	totalSupply: '2,306',
+	totalSupply: '14',
 	transferrable: false,
 	url: 'https://www.google.com.uy/',
-	verifiers: [],
+	verifiers: [
+		{ dateStart: '1652928840.00000000', dateEnding: '1652928840.00000000' },
+		{ capacity: '40' },
+		{ publicKey: 'secretCode' },
+		{ amount: '20' }
+	],
 	eventType: EVENT_TYPES[0]
 };
 

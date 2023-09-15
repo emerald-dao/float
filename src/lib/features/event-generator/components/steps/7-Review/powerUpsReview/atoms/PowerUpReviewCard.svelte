@@ -15,13 +15,18 @@
 
 <style lang="scss">
 	.card {
-		padding: var(--space-4);
+		display: flex;
+		flex-direction: column;
+		justify-content: space-around;
+		padding: 0;
 		background-color: transparent;
 		border-radius: var(--radius-2);
 		background-color: var(--clr-background-primary);
+		height: 100%;
 
 		span {
-			margin-bottom: var(--space-2);
+			padding: var(--space-1) var(--space-4);
+			border-bottom: 1px dashed var(--clr-border-primary);
 		}
 	}
 </style>
