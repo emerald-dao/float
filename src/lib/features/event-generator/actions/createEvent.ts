@@ -1,6 +1,9 @@
 import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
 import { get } from 'svelte/store';
-import { eventGeneratorData } from '../stores/EventGeneratorData';
+import {
+	EMPTY_GENERATOR_DATA,
+	eventGeneratorData
+} from '$lib/features/event-generator/stores/EventGeneratorData';
 import { createEventExecution } from '$flow/actions';
 import uploadToIPFS from '$lib/utilities/uploadToIPFS';
 import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
@@ -8,6 +11,7 @@ import { postEvent } from '../api/postEvent';
 import { user } from '$stores/flow/FlowStore';
 import type { TransactionStatusObject } from '@onflow/fcl';
 import { goto } from '$app/navigation';
+import { eventGeneratorActiveStep } from '../stores/EventGeneratorSteps';
 
 export const createEvent = async (): Promise<ActionExecutionResult> => {
 	eventGenerationInProgress.set(true);
@@ -45,8 +49,10 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 
 		await postEvent(eventId, userObject);
 
-		// navigate to the event admin page
-		goto(`/admin/events/${eventId}`);
+		await goto(`/admin/events/${eventId}`);
+
+		eventGeneratorActiveStep.reset();
+		eventGeneratorData.set(EMPTY_GENERATOR_DATA);
 
 		return {
 			state: 'success',
