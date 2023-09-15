@@ -9,6 +9,7 @@
 		EVENT_TYPE_DETAILS,
 		type EventType
 	} from '$lib/types/event/event-type.type';
+	import { onMount } from 'svelte';
 
 	export let stepDataValid: boolean;
 
@@ -30,6 +31,12 @@
 	};
 
 	let res = validationSuite.get();
+
+	onMount(() => {
+		validationSuite.reset();
+
+		res = validationSuite.get();
+	});
 
 	$: stepDataValid = res.isValid() && $eventGeneratorData.logo.length > 0;
 </script>
