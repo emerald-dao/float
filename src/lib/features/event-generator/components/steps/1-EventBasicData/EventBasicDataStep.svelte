@@ -27,7 +27,6 @@
 		$eventGeneratorData.eventType = target.value as EventType;
 		$eventGeneratorData.certificateType =
 			EVENT_TYPE_DETAILS[target.value as EventType].certificateType;
-		console.log($eventGeneratorData);
 	};
 
 	let res = validationSuite.get();

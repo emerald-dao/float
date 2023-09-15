@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { eventGenerationInProgress } from './stores/EventGenerationInProgress';
 	import { fly } from 'svelte/transition';
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
@@ -9,7 +10,6 @@
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
-	import CanBeEditedLater from './components/atoms/CanBeEditedLater.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -51,8 +51,10 @@
 		/>
 	</div>
 	<div class="right-column hide-on-small">
-		<Blur color="tertiary" right="0" top="30%" />
-		<Blur left="0" bottom="20%" />
+		<div style="position: absolute" class:rotate-slow={$eventGenerationInProgress}>
+			<Blur color="tertiary" right="0" top="30%" />
+			<Blur left="0" bottom="20%" />
+		</div>
 		{#if reviewStep}
 			<div class="review-step-wrapper">
 				<svelte:component
@@ -170,6 +172,19 @@
 	.hide-on-medium {
 		@include mq(medium) {
 			display: none !important;
+		}
+	}
+
+	.rotate-slow {
+		animation: rotate 4s linear infinite;
+	}
+
+	@keyframes rotate {
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
 		}
 	}
 </style>
