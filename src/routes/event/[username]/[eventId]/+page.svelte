@@ -3,7 +3,7 @@
 	import { Currency } from '@emerald-dao/component-library';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
-	import type { Secret, Timelock } from '$lib/types/event/verifiers.interface';
+	import type { MinimumBalance, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from '../../../admin/[userAddress]/events/atoms/ClaimTicketCard.svelte';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
@@ -11,6 +11,11 @@
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 	import ClaimButtonStatus from '../../_components/ClaimButtonStatus.svelte';
+	import LimitedReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/LimitedReview.svelte';
+	import TimelockReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/TimelockReview.svelte';
+	import PaymentReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/PaymentReview.svelte';
+	import MinimumBalanceReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/MinimumBalanceReview.svelte';
+	import SecretCodeReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/SecretCodeReview.svelte';
 
 	export let data;
 
@@ -21,6 +26,7 @@
 		dateEnding: ''
 	};
 	let secretCode: string;
+	let amount: string;
 
 	data.event.verifiers.forEach((verifier) => {
 		if (verifier.hasOwnProperty('dateStart')) {
@@ -28,6 +34,9 @@
 		}
 		if ((verifier as Timelock).dateEnding) {
 			dates.dateEnding = (verifier as Timelock).dateEnding;
+		}
+		if (verifier.hasOwnProperty('amount')) {
+			amount = (verifier as MinimumBalance).amount;
 		}
 		if (verifier.hasOwnProperty('publicKey')) {
 			secretCode = (verifier as Secret).publicKey;
@@ -58,22 +67,51 @@
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
+	<div class="column-4">
+		{#if data.event.verifiers.length > 0}
+			<div class="title-wrapper">
+				<Icon icon="tabler:plus" />
+				<p class="w-medium">Power Ups</p>
+			</div>
+			<div class="powerups-cards-wrapper row-3">
+				{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
+					{#if data.event.status.verifiersStatus.timelockStatus}
+						<div>
+							<TimelockReview
+								timelockStatus={data.event.status.verifiersStatus.timelockStatus}
+								event={data.event}
+							/>
+						</div>
+					{/if}
+					{#if data.event.status.verifiersStatus.limitedStatus}
+						<div>
+							<LimitedReview
+								limitedStatus={data.event.status.verifiersStatus.limitedStatus}
+								event={data.event}
+							/>
+						</div>
+					{/if}
+				{/if}
+				{#if data.event.price}
+					<div>
+						<PaymentReview event={data.event} />
+					</div>
+				{/if}
+				{#if amount}
+					<div>
+						<MinimumBalanceReview event={data.event} />
+					</div>
+				{/if}
+				{#if secretCode}
+					<div>
+						<SecretCodeReview event={data.event} />
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
 	<div class="details-wrapper">
 		<div class="row-2 align-center">
-			{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
-				{#if data.event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel
-						timelockStatus={data.event.status.verifiersStatus.timelockStatus}
-						generalStatus={data.event.status.generalStatus}
-					/>
-				{/if}
-				{#if data.event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel
-						limitedStatus={data.event.status.verifiersStatus.limitedStatus}
-						generalStatus={data.event.status.generalStatus}
-					/>
-				{/if}
-			{/if}
 			<EventStatus status={data.event.status.generalStatus} claimability={data.event.claimable} />
 		</div>
 		{#if starDate && endDate}
@@ -114,13 +152,13 @@
 		<p>LATEST CLAIMS</p>
 	</div>
 	<div class="column-3 claims-cards-wrapper">
-		{#if data.claims.length === 0}
+		<!-- {#if data.claims.length === 0}
 			<p>No claims yet</p>
 		{:else}
 			{#each data.claims as claim}
 				<ClaimTicketCard {claim} />
 			{/each}
-		{/if}
+		{/if} -->
 	</div>
 </section>
 
@@ -131,7 +169,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--space-13);
+		gap: var(--space-10);
 		flex: 1;
 		border-bottom: 1px dashed var(--clr-border-primary);
 

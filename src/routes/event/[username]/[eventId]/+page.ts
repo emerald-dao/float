@@ -3,17 +3,19 @@ import { getFindProfileFromAddressOrName } from '$flow/utils';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus.js';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState.js';
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface.js';
+import eventMock from '../../_mock-data/event-one.js';
 
 export const load = async ({ params }) => {
-	const findProfile = await getFindProfileFromAddressOrName(params.username);
+	/* const findProfile = await getFindProfileFromAddressOrName(params.username); */
+	const event = eventMock;
 
-	let walletAddress = params.username;
+	/* let walletAddress = params.username;
 
 	if (findProfile) {
 		walletAddress = findProfile.address;
-	}
+	} */
 
-	const event = await getEvent(walletAddress, params.eventId);
+	/* const event = await getEvent(walletAddress, params.eventId); */
 
 	const getLatestClaims = async (address: string, eventId: string) => {
 		const eventClaims = await getEventClaims(address, eventId);
@@ -39,7 +41,7 @@ export const load = async ({ params }) => {
 	};
 
 	return {
-		event: getEventWithStatus(event),
-		claims: await getLatestClaims(walletAddress, params.eventId)
+		event: getEventWithStatus(event)
+		/* claims: await getLatestClaims(walletAddress, params.eventId) */
 	};
 };
