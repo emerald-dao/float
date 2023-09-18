@@ -62,7 +62,7 @@ pub struct FLOATEventMetadata {
         if minBalance.length > 0 {
           let castedM = minBalance[0] as! FLOATVerifiers.MinimumBalance
           self.verifiers["minimumBalance"] = {
-            "type": "minmumumBalance",
+            "type": "minimumBalance",
             "amount": castedM.amount
           }
         }
@@ -80,7 +80,7 @@ pub struct FLOATEventMetadata {
         if limited.length > 0 {
           let castedL = limited[0] as! FLOATVerifiers.Limited
           self.verifiers["limited"] = {
-            "type": "secret",
+            "type": "limited",
             "capacity": castedL.capacity
           }
           self.verifiers["limited"] = limited[0]
