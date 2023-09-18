@@ -53,21 +53,39 @@ pub struct FLOATEventMetadata {
       self.verifiers = {}
       if let timelock = verifiers[Type<FLOATVerifiers.Timelock>().identifier] {
         if timelock.length > 0 {
-          self.verifiers["timelock"] = timelock[0]
+          let castedT = timelock[0] as! FLOATVerifiers.Timelock
+          self.verifiers["timelock"] = {
+            "type": "timelock",
+            "dateStart": castedT.dateStart,
+            "dateEnding": castedT.dateEnding
+          }
         }
       }
       if let minBalance = verifiers[Type<FLOATVerifiers.MinimumBalance>().identifier] {
         if minBalance.length > 0 {
-          self.verifiers["minimumBalance"] = minBalance[0]
+          let castedM = minBalance[0] as! FLOATVerifiers.MinimumBalance
+          self.verifiers["minimumBalance"] = {
+            "type": "minmumumBalance",
+            "amount": castedM.amount
+          }
         }
       }
       if let secret = verifiers[Type<FLOATVerifiers.SecretV2>().identifier] {
         if secret.length > 0 {
-          self.verifiers["secret"] = secret[0]
+          let castedS = secret[0] as! FLOATVerifiers.SecretV2
+          self.verifiers["secret"] = {
+            "type": "secret",
+            "secret": castedS.publicKey
+          }
         }
       }
       if let limited = verifiers[Type<FLOATVerifiers.Limited>().identifier] {
         if limited.length > 0 {
+          let castedL = limited[0] as! FLOATVerifiers.Limited
+          self.verifiers["limited"] = {
+            "type": "secret",
+            "capacity": castedL.capacity
+          }
           self.verifiers["limited"] = limited[0]
         }
       }
