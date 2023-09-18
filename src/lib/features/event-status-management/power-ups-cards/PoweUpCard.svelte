@@ -4,25 +4,27 @@
 	import LimitedReview from './cards/LimitedReview.svelte';
 	import PaymentReview from './cards/PaymentReview.svelte';
 	import SecretCodeReview from './cards/SecretCodeReview.svelte';
-	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
+	import type { EventVerifier } from '$lib/types/event/event.interface';
+
+	export let powerUp: EventVerifier;
 </script>
 
-{#if $eventGeneratorData.powerups.payment.active}
+{#if powerUp.type === 'payment'}
 	<PaymentReview />
 {/if}
 
-{#if $eventGeneratorData.powerups.timelock.active}
+{#if powerUp.type === 'timelock'}
 	<TimelockReview />
 {/if}
 
-{#if $eventGeneratorData.powerups.secretCode.active}
+{#if powerUp.type === 'secretCode'}
 	<SecretCodeReview />
 {/if}
 
-{#if $eventGeneratorData.powerups.limited.active}
+{#if powerUp.type === 'limited'}
 	<LimitedReview />
 {/if}
 
-{#if $eventGeneratorData.powerups.minimumBalance.active}
+{#if powerUp.type === 'minimumBalance'}
 	<MinimumBalanceReview />
 {/if}

@@ -6,12 +6,7 @@
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
 	import Float from '$lib/components/floats/Float.svelte';
-	import TimelockReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/TimelockReview.svelte';
-	import LimitedReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/LimitedReview.svelte';
-	import PaymentReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/PaymentReview.svelte';
 	import type { MinimumBalance, Secret } from '$lib/types/event/verifiers.interface';
-	import MinimumBalanceReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/MinimumBalanceReview.svelte';
-	import SecretCodeReview from '$lib/features/event-generator/components/steps/7-Review/powerUpsReview/cards/SecretCodeReview.svelte';
 
 	export let event: EventWithStatus;
 	export let claims: Claim[] = [];
@@ -32,19 +27,22 @@
 	<div class="main-info-wrapper">
 		<div class="top-wrapper">
 			<div class="column align-center">
-				<h4 class="h5">{event.totalSupply}</h4>
+				<p class="h5">{event.totalSupply}</p>
 				<p class="small">FLOATs claimed</p>
 			</div>
 			<div>
 				<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
 			</div>
 		</div>
+		<div class="ticket-wrapper">
+			<Float float={transformEventToFloat(event)} maxWidth="450px" />
+		</div>
 		{#if event.verifiers.length > 0}
 			<div class="powerups-main-wrapper">
-				<div class="title-wrapper">
-					<Icon icon="tabler:plus" />
-					<p class="w-medium">Power Ups</p>
-				</div>
+				<h4>
+					<Icon icon="tabler:plus" inline />
+					POWER UPS
+				</h4>
 				<div class="powerups-cards-wrapper">
 					{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
 						{#if event.status.verifiersStatus.timelockStatus}
@@ -80,14 +78,11 @@
 			</div>
 		{/if}
 	</div>
-	<div class="ticket-wrapper">
-		<Float float={transformEventToFloat(event)} maxWidth="450px" />
-	</div>
 	<div class="claims-wrapper">
-		<div class="row-1 claims-title-wrapper">
-			<Icon icon="tabler:news" color="var(--clr-neutral-600)" />
-			<p>LATEST CLAIMS</p>
-		</div>
+		<h4>
+			<Icon icon="tabler:news" inline />
+			LATEST CLAIMS
+		</h4>
 		<div class="claim-tickets">
 			{#if claims.length === 0}
 				<p class="small"><em>No claims yet</em></p>
@@ -129,20 +124,16 @@
 			}
 
 			.powerups-main-wrapper {
-				padding: var(--space-3) var(--space-15) var(--space-3) var(--space-12);
-				border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
-
-				.title-wrapper {
-					display: flex;
-					flex-direction: row;
-					align-items: center;
-					padding-bottom: var(--space-2);
-				}
+				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
+				border-top: var(--border-width-primary) dashed var(--clr-border-primary);
+				display: flex;
+				flex-direction: column;
+				gap: var(--space-3);
 
 				.powerups-cards-wrapper {
 					display: flex;
 					flex-direction: row;
-					gap: var(--space-2);
+					gap: var(--space-4);
 					flex-wrap: wrap;
 				}
 			}
@@ -150,6 +141,9 @@
 
 		.ticket-wrapper {
 			width: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
 
 			@include mq(medium) {
 				padding: 0 var(--space-15) 0 var(--space-12);
@@ -164,19 +158,12 @@
 			justify-content: center;
 			max-height: 100%;
 			overflow-y: hidden;
-
-			.claims-title-wrapper {
-				padding: var(--space-2) var(--space-12);
-				display: flex;
-				align-items: center;
-				justify-content: flex-start;
-				width: 100%;
-				border-bottom: 0.5px solid var(--clr-border-primary);
-			}
+			padding-inline: var(--space-12);
+			border-top: var(--border-width-primary) dashed var(--clr-border-primary);
+			padding-top: var(--space-6);
 
 			.claim-tickets {
 				display: flex;
-				padding: var(--space-2) var(--space-12);
 				flex-direction: column;
 				gap: var(--space-3);
 				overflow-y: auto;
@@ -187,5 +174,11 @@
 				color: var(--clr-text-off);
 			}
 		}
+	}
+
+	h4 {
+		font-size: var(--font-size-1);
+		color: var(--clr-text-off);
+		letter-spacing: 0.07em;
 	}
 </style>

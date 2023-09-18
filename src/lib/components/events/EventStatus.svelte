@@ -16,12 +16,12 @@
 </script>
 
 <div class="main-wrapper">
-	<span class="title xsmall">Status</span>
+	<span class="title xsmall">Event status</span>
 	<div
 		class="state-wrapper column"
 		style={`background-color: var(--clr-${STATUS_COLOR_MAP[status]}-badge)`}
 	>
-		<span class="small" style={`color: var(--clr-${STATUS_COLOR_MAP[status]}-main)`}>
+		<span class="state small w-medium" style={`color: var(--clr-${STATUS_COLOR_MAP[status]}-main)`}>
 			{status.charAt(0).toUpperCase() + status.slice(1)}
 		</span>
 		{#if status === 'available'}

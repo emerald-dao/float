@@ -2,16 +2,18 @@
 	import { generatedNft } from '../../../stores/EventGeneratorData';
 	import { eventGeneratorActiveStep } from '../../../stores/EventGeneratorSteps';
 	import { fly } from 'svelte/transition';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Float from '$lib/components/floats/Float.svelte';
 	import captureFloatTicket from '$lib/features/event-generator/actions/captureFloatTicket';
 	import Blur from '$lib/components/Blur.svelte';
 	import { onMount } from 'svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
+	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
 
 	export let stepDataValid: boolean;
+
+	let target: HTMLElement;
 
 	const hasPowerUps = () => {
 		for (const key in $eventGeneratorData.powerups) {
@@ -21,8 +23,6 @@
 		}
 		return false;
 	};
-
-	let target: HTMLElement;
 
 	onMount(async () => {
 		// make timeout to make sure the float image rendered
@@ -80,9 +80,7 @@
 				<div>
 					<h4 class="w-medium">+ Power Ups</h4>
 					<p class="small">Can not be changed later.</p>
-					<div class="content-wrapper">
-						<PowerUpsReview />
-					</div>
+					<PowerUpsReview />
 				</div>
 			{/if}
 		</div>

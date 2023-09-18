@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
-	import DomainLink from './DomainLink.svelte';
+	import DomainLink from '../[id]/_components/atoms/DomainLink.svelte';
 
 	export let event: Event;
 </script>

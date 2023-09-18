@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import EventDomains from '../atoms/EventDomains.svelte';
 	import EventActions from '../atoms/EventActions.svelte';
-	import EventInfo from './_components/EventInfo.svelte';
+	import EventInfo from './_components/EventDetails.svelte';
 	import FloatEventType from '$lib/components/floats/atoms/FloatEventType.svelte';
 
 	export let data;
