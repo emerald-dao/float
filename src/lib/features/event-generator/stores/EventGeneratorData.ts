@@ -4,21 +4,21 @@ import type { FLOAT } from '$lib/types/float/float.interface';
 import { user } from '$lib/stores/flow/FlowStore';
 import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 
-export const eventGeneratorData: Writable<EventGeneratorData> = writable({
+export const EMPTY_GENERATOR_DATA = {
 	description: '',
 	eventId: '',
 	host: get(user).addr ?? '',
-	logo: [],
-	image: [],
+	logo: [] as [File] | [],
+	image: [] as [File] | [],
 	ticketImage: null,
 	name: '',
 	url: '',
 	totalSupply: '',
 	transferrable: false,
 	claimable: false,
-	eventType: 'conference',
-	certificateType: 'ticket',
-	visibilityMode: 'certificate',
+	eventType: 'conference' as const,
+	certificateType: 'ticket' as const,
+	visibilityMode: 'certificate' as const,
 	powerups: {
 		payment: {
 			active: false,
@@ -44,6 +44,10 @@ export const eventGeneratorData: Writable<EventGeneratorData> = writable({
 			data: 0
 		}
 	}
+};
+
+export const eventGeneratorData: Writable<EventGeneratorData> = writable({
+	...EMPTY_GENERATOR_DATA
 });
 
 export const generatedNft: Readable<FLOAT> = derived(eventGeneratorData, ($eventGeneratorData) => ({

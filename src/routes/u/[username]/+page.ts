@@ -1,6 +1,6 @@
 import { getEvents, getFLOATs } from '$flow/actions.js';
-import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus.js';
-import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState.js';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus.js';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState.js';
 import type { EventWithStatus } from '$lib/types/event/event.interface.js';
 
 export async function load({ params, fetch }) {

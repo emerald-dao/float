@@ -17,8 +17,8 @@
 {/if}
 
 <style lang="scss">
-	p {
-		opacity: 0.7;
-		color: inherit;
+	div {
+		opacity: 0.6;
+		color: var(--clr-text-off);
 	}
 </style>

@@ -5,7 +5,7 @@
 	import { ConnectWalletPage } from '@emerald-dao/component-library';
 
 	$: if ($user.addr) {
-		goto(`/admin/${$user.addr}/events`);
+		goto(`/admin/events`);
 	}
 </script>
 

@@ -28,7 +28,7 @@ pub struct FLOATEventMetadata {
   pub let totalSupply: UInt64
   pub let transferrable: Bool
   pub let url: String
-  pub let verifiers: [AnyStruct]
+  pub let verifiers: {String: AnyStruct}
   pub let eventType: String
   pub let price: UFix64?
 
@@ -50,25 +50,43 @@ pub struct FLOATEventMetadata {
       self.totalSupply = event.totalSupply
       self.url = event.url
       let verifiers = event.getVerifiers()
-      self.verifiers = []
+      self.verifiers = {}
       if let timelock = verifiers[Type<FLOATVerifiers.Timelock>().identifier] {
         if timelock.length > 0 {
-          self.verifiers.append(timelock[0])
+          let castedT = timelock[0] as! FLOATVerifiers.Timelock
+          self.verifiers["timelock"] = {
+            "type": "timelock",
+            "dateStart": castedT.dateStart,
+            "dateEnding": castedT.dateEnding
+          }
         }
       }
       if let minBalance = verifiers[Type<FLOATVerifiers.MinimumBalance>().identifier] {
         if minBalance.length > 0 {
-          self.verifiers.append(minBalance[0])
+          let castedM = minBalance[0] as! FLOATVerifiers.MinimumBalance
+          self.verifiers["minimumBalance"] = {
+            "type": "minimumBalance",
+            "amount": castedM.amount
+          }
         }
       }
       if let secret = verifiers[Type<FLOATVerifiers.SecretV2>().identifier] {
         if secret.length > 0 {
-          self.verifiers.append(secret[0])
+          let castedS = secret[0] as! FLOATVerifiers.SecretV2
+          self.verifiers["secret"] = {
+            "type": "secret",
+            "secret": castedS.publicKey
+          }
         }
       }
       if let limited = verifiers[Type<FLOATVerifiers.Limited>().identifier] {
         if limited.length > 0 {
-          self.verifiers.append(limited[0])
+          let castedL = limited[0] as! FLOATVerifiers.Limited
+          self.verifiers["limited"] = {
+            "type": "limited",
+            "capacity": castedL.capacity
+          }
+          self.verifiers["limited"] = limited[0]
         }
       }
       self.eventType = (extraMetadata["eventType"] as! String?) ?? "other"

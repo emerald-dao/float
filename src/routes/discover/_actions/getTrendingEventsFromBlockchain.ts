@@ -1,6 +1,6 @@
 import { getEventsBatch } from '$flow/actions';
-import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/getEventGeneralStatus';
-import { getVerifiersState } from '$lib/features/event-status-management/functions/getVerifiersState';
+import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus';
+import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState';
 import type { EventWithStatus } from '$lib/types/event/event.interface';
 import { getTrendingEvents } from '../_api/getTrendingEvents';
 

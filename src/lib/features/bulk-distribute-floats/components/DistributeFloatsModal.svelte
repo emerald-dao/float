@@ -10,8 +10,12 @@
 	import type { Distribution, DistributionElement } from '../types/distribution.interface';
 	import Icon from '@iconify/svelte';
 	import { resolveAddressOrFindName } from '../functions/resolveAddressOrFindName';
+	import { getContext } from 'svelte';
+	import type createFetchStore from '../../../../routes/admin/_stores/fetchStore';
 
 	export let event: Event;
+
+	const eventsStore: ReturnType<typeof createFetchStore> = getContext('events');
 
 	let certificateType = EVENT_TYPE_DETAILS[event.eventType].certificateType;
 
@@ -76,8 +80,10 @@
 		getModal(id).open();
 	};
 
-	const handleDistributeFloats = () => {
-		distributeFloats($page.params.id, distribution);
+	const handleDistributeFloats = async () => {
+		await distributeFloats($page.params.id, distribution);
+		getModal(id).close();
+		eventsStore.invalidate();
 	};
 </script>
 

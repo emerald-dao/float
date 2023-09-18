@@ -28,6 +28,10 @@
 		width: 100%;
 		height: 100%;
 
+		&.neutral {
+			background-color: var(--clr-surface-secondary);
+		}
+
 		&.gold {
 			background: linear-gradient(
 				150deg,

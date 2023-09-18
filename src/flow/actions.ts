@@ -81,7 +81,7 @@ const createEvent = async (
 		secretPK = publicKey;
 	}
 
-	console.log(eventType)
+	console.log(eventType);
 
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
@@ -135,25 +135,26 @@ export const createEventExecution = (
 	visibilityMode: 'certificate' | 'picture',
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
-	executeTransaction(() =>
-		createEvent(
-			name,
-			description,
-			url,
-			logo,
-			backImage,
-			certificateImage,
-			transferrable,
-			claimable,
-			eventType,
-			certificateType,
-			timelock,
-			secret,
-			limited,
-			payment,
-			minimumBalance,
-			visibilityMode
-		),
+	executeTransaction(
+		() =>
+			createEvent(
+				name,
+				description,
+				url,
+				logo,
+				backImage,
+				certificateImage,
+				transferrable,
+				claimable,
+				eventType,
+				certificateType,
+				timelock,
+				secret,
+				limited,
+				payment,
+				minimumBalance,
+				visibilityMode
+			),
 		actionAfterSucceed
 	);
 
@@ -250,7 +251,6 @@ export const toggleVisibilityModeExecution = (eventId: string) =>
 	executeTransaction(() => toggleVisibilityMode(eventId));
 
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
-
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(distributeFLOATsTx),
 		args: (arg, t) => [arg(eventId, t.UInt64), arg(addresses, t.Array(t.Address))],
@@ -264,9 +264,13 @@ const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 export const distributeFLOATsExecution = (eventId: string, addresses: string[]) =>
 	executeTransaction(() => distributeFLOATs(eventId, addresses));
 
-const distributeMedalFLOATs = async (eventId: string, addresses: string[], medalTypes: { address: string, medal: string }[]) => {
-	let medalTypesArg = medalTypes.map(obj => {
-		return { key: obj.address, value: obj.medal }
+const distributeMedalFLOATs = async (
+	eventId: string,
+	addresses: string[],
+	medalTypes: { address: string; medal: string }[]
+) => {
+	let medalTypesArg = medalTypes.map((obj) => {
+		return { key: obj.address, value: obj.medal };
 	});
 
 	return await fcl.mutate({
@@ -283,17 +287,26 @@ const distributeMedalFLOATs = async (eventId: string, addresses: string[], medal
 	});
 };
 
-export const distributeMedalFLOATsExecution = (eventId: string, addresses: string[], medalTypes: { address: string, medal: string }[]) =>
-	executeTransaction(() => distributeMedalFLOATs(eventId, addresses, medalTypes));
+export const distributeMedalFLOATsExecution = (
+	eventId: string,
+	addresses: string[],
+	medalTypes: { address: string; medal: string }[]
+) => executeTransaction(() => distributeMedalFLOATs(eventId, addresses, medalTypes));
 
 // Scripts
 
 export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	try {
-		return await fcl.query({
+		let events = await fcl.query({
 			cadence: replaceWithProperValues(getEventsScript),
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
+		let sortedEvents = events.sort((a: Event, b: Event) => {
+			const dateA = parseFloat(a.dateCreated);
+			const dateB = parseFloat(b.dateCreated);
+			return dateB - dateA;
+		});
+		return sortedEvents;
 	} catch (e) {
 		console.log('Error in getEvents', e);
 		return [];
@@ -367,22 +380,34 @@ export const getLatestEventClaims = async (
 
 export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 	try {
-		return await fcl.query({
+		let floats = await fcl.query({
 			cadence: replaceWithProperValues(getFLOATsScript),
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
+		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
+			const dateA = parseFloat(a.dateReceived);
+			const dateB = parseFloat(b.dateReceived);
+			return dateB - dateA;
+		});
+		return sortedFloats;
 	} catch (e) {
 		console.log('Error in getFLOATs', e);
 		return [];
 	}
 };
 
-export const getSpecificFLOATs = async (userAddress: string, ids: string[]) => {
+export const getSpecificFLOATs = async (userAddress: string, ids: string[]): Promise<FLOAT[]> => {
 	try {
-		return await fcl.query({
+		let floats = await fcl.query({
 			cadence: replaceWithProperValues(getSpecificFLOATsScript),
 			args: (arg, t) => [arg(userAddress, t.Address), arg(ids, t.Array(t.UInt64))]
 		});
+		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
+			const dateA = parseFloat(a.dateReceived);
+			const dateB = parseFloat(b.dateReceived);
+			return dateB - dateA;
+		});
+		return sortedFloats;
 	} catch (e) {
 		console.log('Error in getSpecificFLOATs', e);
 		throw new Error('Error in getSpecificFLOATs');

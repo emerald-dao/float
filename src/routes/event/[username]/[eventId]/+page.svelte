@@ -5,7 +5,7 @@
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import type { MinimumBalance, Secret, Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
-	import ClaimTicketCard from '../../../admin/[userAddress]/events/atoms/ClaimTicketCard.svelte';
+	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
 	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
