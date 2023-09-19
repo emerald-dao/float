@@ -13,10 +13,7 @@
 
 	let timelockStatus: TimelockStatus = timelockToStatusObject(startDate, endDate);
 
-	const timelockPowerUp = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'timelock'
-	) as PowerUpGeneratorData<'timelock'>;
-
+	const timelockPowerUp = POWER_UPS['timelock'];
 	$: message =
 		timelockStatus?.status === 'expired'
 			? 'Expired'

@@ -6,16 +6,17 @@
 	import { setContext } from 'svelte';
 	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/6-PowerUps/powerUps';
-	import { writable } from 'svelte/store';
+	import { writable, type Writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 	import StepButtons from './components/steps/atoms/StepButtons.svelte';
+	import type { PowerUpType } from './types/event-generator-data.interface';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
 	setContext('eventData', eventGeneratorData);
 
-	const activePowerUp = writable('payment');
+	const activePowerUp: Writable<PowerUpType> = writable('payment');
 
 	let stepDataValid: boolean;
 
@@ -23,9 +24,7 @@
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 5;
 	$: reviewStep = $eventGeneratorActiveStep === 6;
-	$: activePowerUpComponent = POWER_UPS.find(
-		(powerUp) => powerUp.type === $activePowerUp
-	)?.component;
+	$: activePowerUpComponent = POWER_UPS[$activePowerUp].component;
 </script>
 
 <section class:review-step={reviewStep}>

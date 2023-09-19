@@ -30,8 +30,13 @@
 
 <StepComponentWrapper>
 	<div>
-		{#each POWER_UPS as { type, name, icon }}
-			<PowerUpToggle {name} {icon} {type} on:click={() => handleSelectPowerUp(type)} />
+		{#each Object.entries(POWER_UPS) as [key, value]}
+			<PowerUpToggle
+				name={value.name}
+				icon={value.icon}
+				type={key}
+				on:click={() => handleSelectPowerUp(key)}
+			/>
 		{/each}
 	</div>
 </StepComponentWrapper>

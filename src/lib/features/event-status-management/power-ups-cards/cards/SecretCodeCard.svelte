@@ -1,17 +1,12 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import PowerUpReviewCard from '../atoms/PowerUpCard.svelte';
-	import {
-		POWER_UPS,
-		type PowerUpGeneratorData
-	} from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
+	import { POWER_UPS } from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
 
 	export let secretCode: string;
 	export let isAdmin: boolean = false;
 
-	const paymentPowerUp = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secret'
-	) as PowerUpGeneratorData<'secret'>;
+	const paymentPowerUp = POWER_UPS['secret'];
 
 	let visible = true;
 </script>

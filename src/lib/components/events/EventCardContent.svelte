@@ -1,10 +1,8 @@
 <script lang="ts">
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import EventStatus from './EventStatus.svelte';
-	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import FloatEventType from '../floats/atoms/FloatEventType.svelte';
-	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
+	import { Label } from '@emerald-dao/component-library';
 
 	export let event: EventWithStatus;
 	export let display: 'grid' | 'list' = 'list';
@@ -34,11 +32,16 @@
 		<div class="status-wrapper column-1">
 			<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
 		</div>
-		{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
-			<div class:no-extra-info={display === 'list' && !displayedInAdmin}>
-				<PowerUpCards powerUps={event.verifiers} price={event.price} />
+		<div class="powerups-wrapper">
+			<p>Powerups</p>
+			<div class="labels-wrapper">
+				{#each Object.keys(event.verifiers) as verifier}
+					<span>
+						{verifier}
+					</span>
+				{/each}
 			</div>
-		{/if}
+		</div>
 	</div>
 </div>
 
@@ -93,17 +96,29 @@
 
 		.secondary-wrapper {
 			display: flex;
-			align-items: flex-start;
 			border-top: 1px dashed var(--clr-border-primary);
 			padding-inline: var(--space-2);
 
 			.powerups-wrapper {
 				border-left: 1px dashed var(--clr-border-primary);
 				padding-inline: var(--space-4);
-				height: 100%;
 				display: flex;
-				flex-direction: row;
-				gap: var(--space-3);
+				flex-direction: column;
+				gap: var(--space-1);
+				flex: 1;
+
+				.labels-wrapper {
+					display: flex;
+					flex-direction: row;
+					gap: var(--space-3);
+
+					span {
+						border: 1px solid var(--clr-border-primary);
+						border-radius: var(--radius-1);
+						padding: 0 var(--space-3);
+						font-size: var(--font-size-1);
+					}
+				}
 			}
 
 			.status-wrapper,

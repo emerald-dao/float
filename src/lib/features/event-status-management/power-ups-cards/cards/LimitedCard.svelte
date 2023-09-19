@@ -12,9 +12,7 @@
 
 	const limitedStatus = claims ? limitedToStatusObject(maxSupply, claims) : null;
 
-	const limitedPowerUp = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'limited'
-	) as PowerUpGeneratorData<'limited'>;
+	const limitedPowerUp = POWER_UPS['limited'];
 
 	$: message =
 		limitedStatus?.status === 'soldout' ? 'Sold out' : `${limitedStatus?.remainingFloats} left`;

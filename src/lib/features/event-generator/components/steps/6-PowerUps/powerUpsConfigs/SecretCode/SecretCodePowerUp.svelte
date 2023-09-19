@@ -6,9 +6,7 @@
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secret'
-	) as PowerUpGeneratorData<'secret'>;
+	const powerUpData = POWER_UPS['secret'];
 
 	$: isActive = $eventGeneratorData.powerups.secret.active;
 
@@ -25,7 +23,7 @@
 	let res = validationSuite.get();
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="secret">
 	<div>
 		<InputWrapper
 			label="Secret code"

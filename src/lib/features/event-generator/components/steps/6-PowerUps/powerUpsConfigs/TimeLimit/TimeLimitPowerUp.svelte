@@ -7,9 +7,7 @@
 	import type { SuiteRunResult } from 'vest';
 	import { onMount } from 'svelte';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'timelock'
-	) as PowerUpGeneratorData<'timelock'>;
+	const powerUpData = POWER_UPS['timelock'];
 
 	$: isActive = $eventGeneratorData.powerups.timelock.active;
 
@@ -55,7 +53,7 @@
 	}
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="timelock">
 	<div class="column-4">
 		<div>
 			<InputWrapper

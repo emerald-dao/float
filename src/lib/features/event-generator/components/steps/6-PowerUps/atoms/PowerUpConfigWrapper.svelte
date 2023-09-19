@@ -6,7 +6,8 @@
 	import type { PowerUpGeneratorData } from '../powerUps';
 	import { Button } from '@emerald-dao/component-library';
 
-	export let powerUpData: PowerUpGeneratorData<PowerUpType>;
+	export let powerUpData: PowerUpGeneratorData;
+	export let powerUpType: PowerUpType;
 
 	const handleTogglePowerUp = (powerUpType: PowerUpType) => {
 		eventGeneratorData.update((data) => {
@@ -15,7 +16,7 @@
 		});
 	};
 
-	$: powerUpActive = $eventGeneratorData.powerups[powerUpData.type].active === true;
+	$: powerUpActive = $eventGeneratorData.powerups[powerUpType].active === true;
 </script>
 
 <div class="main-wrapper">
@@ -30,13 +31,13 @@
 					size="small"
 					type="ghost"
 					color="neutral"
-					on:click={() => handleTogglePowerUp(powerUpData.type)}
+					on:click={() => handleTogglePowerUp(powerUpType)}
 				>
 					<Icon icon="tabler:minus" />
 					Deactivate PowerUp
 				</Button>
 			{:else}
-				<Button size="small" on:click={() => handleTogglePowerUp(powerUpData.type)}>
+				<Button size="small" on:click={() => handleTogglePowerUp(powerUpType)}>
 					<Icon icon="tabler:plus" />
 					Activate PowerUp
 				</Button>
