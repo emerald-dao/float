@@ -4,7 +4,8 @@ import type {
 	TimelockStatus
 } from '$lib/features/event-status-management/types/verifiers-status.interface';
 import type { EventType } from './event-type.type';
-import type { Limited, MinimumBalance, Secret, Timelock } from './verifiers.interface';
+import type { VerifierData } from './verifiers.interface';
+import type { PowerUpType } from '../../features/event-generator/types/event-generator-data.interface';
 
 export interface Event {
 	claimable: boolean;
@@ -26,12 +27,9 @@ export interface Event {
 	visibilityMode?: 'certificate' | 'picture';
 }
 
-export interface EventVerifiers {
-	timelock?: Timelock;
-	secret?: Secret;
-	limited?: Limited;
-	minimumBalance?: MinimumBalance;
-}
+export type EventVerifiers = {
+	[key in PowerUpType]?: VerifierData<key>;
+};
 
 export interface EventWithStatus extends Event {
 	status: {

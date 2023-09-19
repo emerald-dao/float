@@ -31,7 +31,7 @@ export const POWER_UPS: PowerUpGeneratorData<PowerUpType>[] = [
 		component: TimeLimitPowerUp
 	},
 	{
-		type: 'secretCode',
+		type: 'secret',
 		name: 'Secret Code',
 		icon: 'tabler:key',
 		description: 'This FLOAT can only be claimed by entering a secret code.',

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import PowerUpState from '../atoms/PowerUpCardState.svelte';
-	import type { LimitedStatus } from '$lib/features/event-status-management/types/verifiers-status.interface';
 	import PowerUpReviewCard from '../atoms/PowerUpCard.svelte';
 	import {
 		POWER_UPS,
@@ -9,9 +8,9 @@
 	import { limitedToStatusObject } from '../../functions/helpers/limitedToStatusObject';
 
 	export let maxSupply: number;
-	export let claims: number;
+	export let claims: number | null;
 
-	let limitedStatus: LimitedStatus = limitedToStatusObject(maxSupply, claims);
+	const limitedStatus = claims ? limitedToStatusObject(maxSupply, claims) : null;
 
 	const limitedPowerUp = POWER_UPS.find(
 		(powerUp) => powerUp.type === 'limited'

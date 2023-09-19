@@ -10,8 +10,8 @@
 	export let isAdmin: boolean = false;
 
 	const paymentPowerUp = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secretCode'
-	) as PowerUpGeneratorData<'secretCode'>;
+		(powerUp) => powerUp.type === 'secret'
+	) as PowerUpGeneratorData<'secret'>;
 
 	let visible = true;
 </script>

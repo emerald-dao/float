@@ -31,7 +31,7 @@ export const EMPTY_GENERATOR_DATA = {
 				dateEnding: ''
 			}
 		},
-		secretCode: {
+		secret: {
 			active: false,
 			data: ''
 		},

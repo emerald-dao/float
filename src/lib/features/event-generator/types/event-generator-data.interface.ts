@@ -15,18 +15,20 @@ export interface EventGeneratorData {
 	transferrable: boolean;
 	claimable: boolean;
 	visibilityMode: 'certificate' | 'picture';
-	powerups: {
-		[key in PowerUpType]: {
-			active: boolean;
-			data: PowerUpData<key>;
-		};
-	};
+	powerups: EventGeneratorPowerUps;
 }
+
+export type EventGeneratorPowerUps = {
+	[key in PowerUpType]: {
+		active: boolean;
+		data: PowerUpData<key>;
+	};
+};
 
 export const POWER_UPS_TYPES = [
 	'payment',
 	'timelock',
-	'secretCode',
+	'secret',
 	'limited',
 	'minimumBalance'
 ] as const;
@@ -46,7 +48,7 @@ export type PowerUpData<T extends PowerUpType> = T extends 'payment'
 	? PaymentPowerUpData
 	: T extends 'timelock'
 	? TimeLockPowerUpData
-	: T extends 'secretCode'
+	: T extends 'secret'
 	? SecretCodePowerUpData
 	: T extends 'limited'
 	? LimitedPowerUpData

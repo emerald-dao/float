@@ -7,10 +7,10 @@
 	import type { SuiteRunResult } from 'vest';
 
 	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secretCode'
-	) as PowerUpGeneratorData<'secretCode'>;
+		(powerUp) => powerUp.type === 'secret'
+	) as PowerUpGeneratorData<'secret'>;
 
-	$: isActive = $eventGeneratorData.powerups.secretCode.active;
+	$: isActive = $eventGeneratorData.powerups.secret.active;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
@@ -18,7 +18,7 @@
 		(res as SuiteRunResult).done((result) => {
 			res = result;
 
-			$powerUpsValidations.secretCode = res.isValid();
+			$powerUpsValidations.secret = res.isValid();
 		});
 	};
 
@@ -37,7 +37,7 @@
 				type="text"
 				name="secret-code"
 				disabled={!isActive}
-				bind:value={$eventGeneratorData.powerups.secretCode.data}
+				bind:value={$eventGeneratorData.powerups.secret.data}
 				on:input={handleChange}
 			/>
 		</InputWrapper>

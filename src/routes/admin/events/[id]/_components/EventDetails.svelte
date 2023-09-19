@@ -5,15 +5,11 @@
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
 	import Float from '$lib/components/floats/Float.svelte';
-	import TimelockReview from '$lib/features/event-status-management/power-ups-cards/cards/TimelockReview.svelte';
-	import LimitedReview from '$lib/features/event-status-management/power-ups-cards/cards/LimitedReview.svelte';
-	import PaymentReview from '$lib/features/event-status-management/power-ups-cards/cards/PaymentReview.svelte';
-	import MinimumBalanceReview from '$lib/features/event-status-management/power-ups-cards/cards/MinimumBalanceReview.svelte';
-	import SecretCodeReview from '$lib/features/event-status-management/power-ups-cards/cards/SecretCodeReview.svelte';
 	import { user } from '$stores/flow/FlowStore';
 	import { onMount } from 'svelte';
 	import { getLatestEventClaims } from '$flow/actions';
 	import EventDataTitle from '../../_components/EventDataTitle.svelte';
+	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
 
 	export let event: EventWithStatus;
 
@@ -43,32 +39,7 @@
 	{#if Object.keys(event.verifiers).length > 0 || (event.price && Number(event.price) > 0)}
 		<div class="powerups-main-wrapper">
 			<EventDataTitle icon="tabler:plus">Power ups</EventDataTitle>
-			<div class="powerups-cards-wrapper">
-				{#if event.verifiers.timelock}
-					<TimelockReview
-						startDate={event.verifiers.timelock.dateStart}
-						endDate={event.verifiers.timelock.dateEnding}
-					/>
-				{/if}
-				{#if event.verifiers.limited}
-					<LimitedReview
-						maxSupply={Number(event.verifiers.limited.capacity)}
-						claims={claims.length}
-					/>
-				{/if}
-				{#if event.price}
-					<PaymentReview price={event.price} />
-				{/if}
-				{#if event.verifiers.minimumBalance}
-					<MinimumBalanceReview balanceAmount={Number(event.verifiers.minimumBalance.amount)} />
-				{/if}
-				{#if event.verifiers.secret}
-					<SecretCodeReview secretCode={event.verifiers.secret.publicKey} isAdmin={true} />
-				{/if}
-				{#if event.price && Number(event.price) > 0}
-					<PaymentReview price={event.price} />
-				{/if}
-			</div>
+			<PowerUpCards powerUps={event.verifiers} price={event.price} numberOfClaims={claims.length} />
 		</div>
 	{/if}
 	<div class="claims-wrapper">
@@ -106,14 +77,6 @@
 			display: flex;
 			flex-direction: column;
 			gap: var(--space-3);
-
-			.powerups-cards-wrapper {
-				display: flex;
-				flex-direction: row;
-				gap: var(--space-3);
-				flex-wrap: wrap;
-				align-items: flex-start;
-			}
 		}
 
 		.ticket-wrapper {
