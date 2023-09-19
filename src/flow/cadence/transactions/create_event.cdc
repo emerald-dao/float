@@ -2,6 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../utility/NonFungibleToken.cdc"
 import MetadataViews from "../utility/MetadataViews.cdc"
+import FlowToken from "../utility/FlowToken.cdc"
 
 transaction(
   name: String, 
@@ -25,7 +26,8 @@ transaction(
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
   minimumBalance: UFix64,
-  visibilityMode: String // "certificate" or "picture"
+  visibilityMode: String, // "certificate" or "picture"
+  allowMultipleClaim: Bool
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -75,16 +77,27 @@ transaction(
 
     let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchaseToggle {
-      let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-      extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
+      let tokenInfo: FLOAT.TokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
+      let flowTokenVaultIdentifier: String = Type<@FlowToken.Vault>().identifier
+      extraMetadata["prices"] = {flowTokenVaultIdentifier: tokenInfo}
     }
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
-    extraMetadata["certificateType"] = certificateType
     extraMetadata["certificateImage"] = certificateImage
     extraMetadata["visibilityMode"] = visibilityMode
 
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
+    self.FLOATEvents.createEvent(
+      claimable: claimable, 
+      description: description, 
+      image: logo, 
+      name: name, 
+      transferrable: transferrable, 
+      url: url, 
+      verifiers: verifiers, 
+      allowMultipleClaim: allowMultipleClaim,
+      certificateType: certificateType,
+      extraMetadata: extraMetadata
+    )
     log("Started a new event for host.")
   }
 }
