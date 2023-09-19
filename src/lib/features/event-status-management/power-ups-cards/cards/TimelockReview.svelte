@@ -3,9 +3,9 @@
 		POWER_UPS,
 		type PowerUpGeneratorData
 	} from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
-	import { timelockToStatusObject } from '$lib/features/event-status-management/functions/timelockToStatusObject';
 	import type { TimelockStatus } from '$lib/features/event-status-management/types/verifiers-status.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
+	import { timelockToStatusObject } from '../../functions/helpers/timelockToStatusObject';
 	import PowerUpReviewCard from '../atoms/PowerUpCard.svelte';
 
 	export let startDate: string;
@@ -64,9 +64,10 @@
 			gap: 0.25em;
 
 			.date-title {
-				font-size: 0.65em;
+				font-size: 0.6em;
 				line-height: 1;
 				color: var(--clr-text-off);
+				opacity: 0.8;
 			}
 		}
 	}

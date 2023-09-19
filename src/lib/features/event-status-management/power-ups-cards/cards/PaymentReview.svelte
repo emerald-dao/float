@@ -15,6 +15,6 @@
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon} let:PowerUpCard>
 	<PowerUpCard.Content>
-		<Currency amount={price} currency="FLOW" fontSize="var(--font-size-0)" />
+		<Currency amount={price} currency="FLOW" fontSize="var(--font-size-0)" thinCurrency={false} />
 	</PowerUpCard.Content>
 </PowerUpReviewCard>

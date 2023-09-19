@@ -15,6 +15,11 @@
 
 <PowerUpReviewCard name={minimumBalance.name} icon={minimumBalance.icon} let:PowerUpCard>
 	<PowerUpCard.Content>
-		<Currency amount={balanceAmount} currency="FLOW" fontSize="var(--font-size-0)" />
+		<Currency
+			amount={balanceAmount}
+			currency="FLOW"
+			fontSize="var(--font-size-0)"
+			thinCurrency={false}
+		/>
 	</PowerUpCard.Content>
 </PowerUpReviewCard>

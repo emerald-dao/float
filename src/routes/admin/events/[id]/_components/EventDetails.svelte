@@ -1,96 +1,84 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import ClaimTicketCard from '../../atoms/ClaimTicketCard.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { Claim } from '$lib/types/event/event-claim.interface';
 	import Float from '$lib/components/floats/Float.svelte';
-	import type { MinimumBalance, Secret } from '$lib/types/event/verifiers.interface';
+	import TimelockReview from '$lib/features/event-status-management/power-ups-cards/cards/TimelockReview.svelte';
+	import LimitedReview from '$lib/features/event-status-management/power-ups-cards/cards/LimitedReview.svelte';
+	import PaymentReview from '$lib/features/event-status-management/power-ups-cards/cards/PaymentReview.svelte';
+	import MinimumBalanceReview from '$lib/features/event-status-management/power-ups-cards/cards/MinimumBalanceReview.svelte';
+	import SecretCodeReview from '$lib/features/event-status-management/power-ups-cards/cards/SecretCodeReview.svelte';
+	import { user } from '$stores/flow/FlowStore';
+	import { onMount } from 'svelte';
+	import { getLatestEventClaims } from '$flow/actions';
+	import EventDataTitle from '../../_components/EventDataTitle.svelte';
 
 	export let event: EventWithStatus;
-	export let claims: Claim[] = [];
 
-	let amount: string;
-	let secretCode: string;
-	event.verifiers.forEach((verifier) => {
-		if (verifier.hasOwnProperty('amount')) {
-			amount = (verifier as MinimumBalance).amount;
-		}
-		if (verifier.hasOwnProperty('publicKey')) {
-			secretCode = (verifier as Secret).publicKey;
-		}
+	let claims: Claim[] = [];
+	let userAddress = $user.addr as string;
+
+	onMount(async () => {
+		claims = await getLatestEventClaims(userAddress, event.eventId, 20);
 	});
 </script>
 
 <div class="main-wrapper">
-	<div class="main-info-wrapper">
-		<div class="top-wrapper">
-			<div class="column align-center">
-				<p class="h5">{event.totalSupply}</p>
-				<p class="small">FLOATs claimed</p>
+	<div class="ticket-wrapper">
+		<div class="data-wrapper">
+			<div class="column number-of-claims-wrapper">
+				<p class="large w-medium">{`${event.totalSupply}`}</p>
+				<p class="xsmall off">FLOATs claimed</p>
 			</div>
-			<div>
+			<div class="event-status-wrapper">
 				<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
 			</div>
 		</div>
-		<div class="ticket-wrapper">
+		<div class="float-wrapper">
 			<Float float={transformEventToFloat(event)} maxWidth="450px" />
 		</div>
-		{#if event.verifiers.length > 0}
-			<div class="powerups-main-wrapper">
-				<h4>
-					<Icon icon="tabler:plus" inline />
-					POWER UPS
-				</h4>
-				<div class="powerups-cards-wrapper">
-					{#if event.status.verifiersStatus && (event.status.verifiersStatus.timelockStatus !== null || event.status.verifiersStatus.limitedStatus !== null)}
-						{#if event.status.verifiersStatus.timelockStatus}
-							<div>
-								<TimelockReview
-									timelockStatus={event.status.verifiersStatus.timelockStatus}
-									{event}
-								/>
-							</div>
-						{/if}
-						{#if event.status.verifiersStatus.limitedStatus}
-							<div>
-								<LimitedReview limitedStatus={event.status.verifiersStatus.limitedStatus} {event} />
-							</div>
-						{/if}
-					{/if}
-					{#if event.price}
-						<div>
-							<PaymentReview {event} />
-						</div>
-					{/if}
-					{#if amount}
-						<div>
-							<MinimumBalanceReview {event} />
-						</div>
-					{/if}
-					{#if secretCode}
-						<div>
-							<SecretCodeReview {event} />
-						</div>
-					{/if}
-				</div>
-			</div>
-		{/if}
 	</div>
-	<div class="claims-wrapper">
-		<h4>
-			<Icon icon="tabler:news" inline />
-			LATEST CLAIMS
-		</h4>
-		<div class="claim-tickets">
-			{#if claims.length === 0}
-				<p class="small"><em>No claims yet</em></p>
-			{/if}
-			{#each claims as claim}
-				<ClaimTicketCard {claim} />
-			{/each}
+	{#if Object.keys(event.verifiers).length > 0 || (event.price && Number(event.price) > 0)}
+		<div class="powerups-main-wrapper">
+			<EventDataTitle icon="tabler:plus">Power ups</EventDataTitle>
+			<div class="powerups-cards-wrapper">
+				{#if event.verifiers.timelock}
+					<TimelockReview
+						startDate={event.verifiers.timelock.dateStart}
+						endDate={event.verifiers.timelock.dateEnding}
+					/>
+				{/if}
+				{#if event.verifiers.limited}
+					<LimitedReview
+						maxSupply={Number(event.verifiers.limited.capacity)}
+						claims={claims.length}
+					/>
+				{/if}
+				{#if event.price}
+					<PaymentReview price={event.price} />
+				{/if}
+				{#if event.verifiers.minimumBalance}
+					<MinimumBalanceReview balanceAmount={Number(event.verifiers.minimumBalance.amount)} />
+				{/if}
+				{#if event.verifiers.secret}
+					<SecretCodeReview secretCode={event.verifiers.secret.publicKey} isAdmin={true} />
+				{/if}
+				{#if event.price && Number(event.price) > 0}
+					<PaymentReview price={event.price} />
+				{/if}
+			</div>
 		</div>
+	{/if}
+	<div class="claims-wrapper">
+		<EventDataTitle icon="tabler:news">Latest claims</EventDataTitle>
+		{#if claims.length === 0}
+			<p class="small"><em>No claims yet</em></p>
+		{/if}
+		{#each claims as claim}
+			<ClaimTicketCard {claim} />
+		{/each}
 	</div>
 </div>
 
@@ -100,53 +88,69 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		align-items: center;
-		gap: var(--space-10);
 		height: 100%;
 
-		.main-info-wrapper {
+		.powerups-main-wrapper,
+		.ticket-wrapper,
+		.claims-wrapper {
+			border-bottom: 1px solid var(--clr-neutral-badge);
+			padding: var(--space-6) var(--space-10);
 			width: 100%;
 
-			.top-wrapper {
-				display: flex;
-				justify-content: space-between;
-				width: 100%;
-				align-items: center;
-				padding: var(--space-4) var(--space-8);
-				border-bottom: var(--border-width-primary) dashed var(--clr-border-primary);
-
-				@include mq(small) {
-					padding: var(--space-3) var(--space-18);
-				}
-
-				@include mq(medium) {
-					padding: var(--space-3) var(--space-15) var(--space-3) var(--space-12);
-				}
+			&:last-child {
+				border: none;
 			}
+		}
 
-			.powerups-main-wrapper {
-				padding: var(--space-6) var(--space-15) var(--space-6) var(--space-12);
-				border-top: var(--border-width-primary) dashed var(--clr-border-primary);
+		.powerups-main-wrapper {
+			display: flex;
+			flex-direction: column;
+			gap: var(--space-3);
+
+			.powerups-cards-wrapper {
 				display: flex;
-				flex-direction: column;
+				flex-direction: row;
 				gap: var(--space-3);
-
-				.powerups-cards-wrapper {
-					display: flex;
-					flex-direction: row;
-					gap: var(--space-4);
-					flex-wrap: wrap;
-				}
+				flex-wrap: wrap;
+				align-items: flex-start;
 			}
 		}
 
 		.ticket-wrapper {
-			width: 100%;
-			display: flex;
-			align-items: center;
-			justify-content: center;
+			display: grid;
+			grid-template-columns: 1fr 3fr;
+			padding-block: var(--space-10);
 
-			@include mq(medium) {
-				padding: 0 var(--space-15) 0 var(--space-12);
+			.data-wrapper {
+				display: flex;
+				flex-direction: column;
+				gap: var(--space-5);
+				height: 100%;
+
+				.number-of-claims-wrapper,
+				.event-status-wrapper {
+					padding-right: var(--space-6);
+				}
+
+				.event-status-wrapper {
+					border-top: 1px solid var(--clr-neutral-badge);
+					padding-top: var(--space-5);
+				}
+
+				.number-of-claims-wrapper {
+					align-items: center;
+
+					.off {
+						color: var(--clr-text-off);
+						opacity: 0.7;
+					}
+				}
+			}
+
+			.float-wrapper {
+				border-left: 1px solid var(--clr-neutral-badge);
+				width: 100%;
+				padding-left: var(--space-8);
 			}
 		}
 
@@ -154,31 +158,12 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
-			width: 100%;
-			justify-content: center;
-			max-height: 100%;
-			overflow-y: hidden;
-			padding-inline: var(--space-12);
-			border-top: var(--border-width-primary) dashed var(--clr-border-primary);
-			padding-top: var(--space-6);
-
-			.claim-tickets {
-				display: flex;
-				flex-direction: column;
-				gap: var(--space-3);
-				overflow-y: auto;
-				padding-top: var(--space-3);
-			}
+			overflow-y: auto;
+			gap: var(--space-3);
 
 			em {
 				color: var(--clr-text-off);
 			}
 		}
-	}
-
-	h4 {
-		font-size: var(--font-size-1);
-		color: var(--clr-text-off);
-		letter-spacing: 0.07em;
 	}
 </style>

@@ -15,8 +15,10 @@
 	};
 </script>
 
-<div class="main-wrapper">
-	<span class="title xsmall">Event status</span>
+<div class="main-wrapper card">
+	<div class="title-wrapper">
+		<span class="title xsmall w-medium">Event status</span>
+	</div>
 	<div
 		class="state-wrapper column"
 		style={`background-color: var(--clr-${STATUS_COLOR_MAP[status]}-badge)`}
@@ -36,19 +38,29 @@
 
 <style lang="scss">
 	.main-wrapper {
-		border: 1px solid var(--clr-border-primary);
+		border: 1px solid var(--clr-neutral-badge);
 		border-radius: var(--radius-1);
-		flex: 1;
 		text-align: center;
+		overflow: hidden;
+		padding: 0;
 
-		.state-wrapper {
-			border-top: 1px solid var(--clr-border-primary);
+		.title-wrapper {
+			background-color: var(--clr-surface-secondary);
+
+			.title {
+				color: var(--clr-text-off);
+			}
 		}
 
-		.title,
 		.state-wrapper {
 			text-align: center;
-			padding: var(--space-1) var(--space-3);
+			padding-block: var(--space-1);
+			border-top: 1px dashed var(--clr-neutral-badge);
+		}
+
+		.title-wrapper,
+		.state-wrapper {
+			padding-inline: var(--space-5);
 		}
 	}
 </style>

@@ -14,10 +14,10 @@
 	};
 </script>
 
-<div class="card">
+<div class="main-wrapper shadow-small">
 	<div class="title-wrapper">
 		<Icon {icon} inline />
-		<span>
+		<span class="w-medium">
 			{name}
 		</span>
 	</div>
@@ -25,21 +25,20 @@
 </div>
 
 <style lang="scss">
-	.card {
-		padding: 0;
-		border-radius: 0.6em;
+	.main-wrapper {
+		border-radius: var(--radius-1);
 		background-color: var(--clr-background-primary);
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
-		border: 0.5px solid var(--clr-border-primary);
+		border-color: var(--clr-neutral-badge);
+		background-color: var(--clr-background-primary);
 
 		.title-wrapper {
-			padding: 0em 0.7em;
-			border-bottom: 1px dashed var(--clr-border-primary);
-			background-color: var(--clr-background-secondary);
+			padding: 0em 1.2em;
+			border-bottom: 1px dashed var(--clr-neutral-badge);
 			font-size: 0.7em;
-			color: var(--clr-text-main);
+			color: var(--clr-text-off);
 
 			span {
 				line-height: 1;

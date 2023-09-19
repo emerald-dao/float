@@ -1,16 +1,13 @@
 <script lang="ts">
-	import Icon from '@iconify/svelte';
 	import type { Event } from '$lib/types/event/event.interface';
 	import DomainLink from '../[id]/_components/atoms/DomainLink.svelte';
+	import EventDataTitle from '../_components/EventDataTitle.svelte';
 
 	export let event: Event;
 </script>
 
 <div class="domains-wrapper">
-	<div class="title-wrapper">
-		<Icon icon="ph:link" color="var(--clr-neutral-600)" />
-		<p>EVENT URLs</p>
-	</div>
+	<EventDataTitle icon="tabler:link">Event URLs</EventDataTitle>
 	<DomainLink id={event.eventId} linkType="eventPage" />
 	<DomainLink id={event.eventId} linkType="qr" />
 </div>
@@ -24,19 +21,6 @@
 
 		@include mq(medium) {
 			padding-inline: var(--space-8);
-		}
-
-		.title-wrapper {
-			display: flex;
-			flex-direction: row;
-			gap: var(--space-1);
-			align-items: center;
-
-			p {
-				color: var(--clr-text-off);
-				font-size: var(--font-size-1);
-				letter-spacing: 0.07em;
-			}
 		}
 	}
 </style>

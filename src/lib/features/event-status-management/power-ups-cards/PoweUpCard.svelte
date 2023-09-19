@@ -9,7 +9,7 @@
 	export let powerUp: EventVerifier;
 </script>
 
-{#if powerUp.type === 'payment'}
+<!-- {#if powerUp.type === 'payment'}
 	<PaymentReview />
 {/if}
 
@@ -27,4 +27,4 @@
 
 {#if powerUp.type === 'minimumBalance'}
 	<MinimumBalanceReview />
-{/if}
+{/if} -->

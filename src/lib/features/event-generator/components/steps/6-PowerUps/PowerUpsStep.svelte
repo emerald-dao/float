@@ -3,7 +3,7 @@
 	import { POWER_UPS } from './powerUps';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import { getContext } from 'svelte';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
 	import PowerUpToggle from './atoms/PowerUpToggle.svelte';
 	import { derived, type Writable } from 'svelte/store';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';

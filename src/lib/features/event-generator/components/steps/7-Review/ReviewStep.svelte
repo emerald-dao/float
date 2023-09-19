@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PowerUpsReview from './atoms/PowerUpsReview.svelte';
 	import { generatedNft } from '../../../stores/EventGeneratorData';
 	import { eventGeneratorActiveStep } from '../../../stores/EventGeneratorSteps';
 	import { fly } from 'svelte/transition';
@@ -9,7 +10,6 @@
 	import Blur from '$lib/components/Blur.svelte';
 	import { onMount } from 'svelte';
 	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
-	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
 
 	export let stepDataValid: boolean;
 

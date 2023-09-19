@@ -6,7 +6,7 @@
 		POWER_UPS,
 		type PowerUpGeneratorData
 	} from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
-	import { limitedToStatusObject } from '$lib/features/event-status-management/functions/limitedToStatusObject';
+	import { limitedToStatusObject } from '../../functions/helpers/limitedToStatusObject';
 
 	export let maxSupply: number;
 	export let claims: number;

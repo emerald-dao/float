@@ -21,12 +21,17 @@ export interface Event {
 	totalSupply: string;
 	transferrable: boolean;
 	url: string;
-	verifiers: EventVerifier[];
+	verifiers: EventVerifiers;
 	eventType: EventType;
 	visibilityMode?: 'certificate' | 'picture';
 }
 
-export type EventVerifier = Timelock | Secret | Limited | MinimumBalance;
+export interface EventVerifiers {
+	timelock?: Timelock;
+	secret?: Secret;
+	limited?: Limited;
+	minimumBalance?: MinimumBalance;
+}
 
 export interface EventWithStatus extends Event {
 	status: {

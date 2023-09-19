@@ -4,12 +4,12 @@
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { setContext } from 'svelte';
-	import StepButtons from './components/atoms/StepButtons.svelte';
 	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/6-PowerUps/powerUps';
 	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
+	import StepButtons from './components/steps/atoms/StepButtons.svelte';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -51,7 +51,7 @@
 		/>
 	</div>
 	<div class="right-column hide-on-small">
-		<div style="position: absolute" class:rotate-slow={$eventGenerationInProgress}>
+		<div style="position: absolute; z-index: -1" class:rotate-slow={$eventGenerationInProgress}>
 			<Blur color="tertiary" right="0" top="30%" />
 			<Blur left="0" bottom="20%" />
 		</div>

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { DropZone, InputWrapper } from '@emerald-dao/component-library';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 	import {
@@ -10,6 +9,7 @@
 		type EventType
 	} from '$lib/types/event/event-type.type';
 	import { onMount } from 'svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
 
 	export let stepDataValid: boolean;
 

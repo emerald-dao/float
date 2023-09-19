@@ -25,7 +25,7 @@ export const POWER_UPS: PowerUpGeneratorData<PowerUpType>[] = [
 	},
 	{
 		type: 'timelock',
-		name: 'Time Limit',
+		name: 'Timelock',
 		icon: 'tabler:clock',
 		description: 'This FLOAT will only be available for a limited time.',
 		component: TimeLimitPowerUp
@@ -39,14 +39,14 @@ export const POWER_UPS: PowerUpGeneratorData<PowerUpType>[] = [
 	},
 	{
 		type: 'limited',
-		name: 'Limit Supply',
+		name: 'Supply',
 		icon: 'tabler:chart-bubble',
 		description: 'This FLOAT can only be claimed a limited number of times.',
 		component: LimitedPowerUp
 	},
 	{
 		type: 'minimumBalance',
-		name: 'Minimum Balance',
+		name: 'Min. Balance',
 		icon: 'tabler:coin',
 		description: 'This FLOAT can only be claimed by users with a minimum $FLOW balance.',
 		component: MinimumBalancePowerUp
