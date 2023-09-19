@@ -63,8 +63,8 @@
     uploadedSuccessfully = true;
     uploading = false;
     $draftFloat.ipfsHash = cid;
-    imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`;
-    // imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`; // if CF is slow, use <-
+    imagePreviewSrc = `https://ipfs.io/ipfs/${cid}`;
+    // imagePreviewSrc = `https://ipfs.io/ipfs/${cid}`; // if CF is slow, use <-
   };
 
   // function ipfsReady() {

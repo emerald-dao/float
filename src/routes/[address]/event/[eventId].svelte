@@ -25,8 +25,8 @@
         description: response?.description,
         author: response?.host,
         removeTitleSuffix: true,
-        //image: `https://nftstorage.link/ipfs/${response.image}`
-        //image: `https://nftstorage.link/ipfs/${response.image}`
+        //image: `https://ipfs.io/ipfs/${response.image}`
+        //image: `https://ipfs.io/ipfs/${response.image}`
       },
     };
   }

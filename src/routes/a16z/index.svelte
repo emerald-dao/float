@@ -110,21 +110,23 @@
             {#if floatEvent.image}
               <img
                 class="float-image"
-                src="https://nftstorage.link/ipfs/{floatEvent.image}"
-                alt="{floatEvent.name} Image" />
+                src="https://ipfs.io/ipfs/{floatEvent.image}"
+                alt="{floatEvent.name} Image"
+              />
             {/if}
             <p>
               <small class>
                 <span class="credit">Created by</span>
-                <a href="/{resolvedHostName}" class="host"
-                  >{resolvedHostName}</a>
+                <a href="/{resolvedHostName}" class="host">{resolvedHostName}</a
+                >
               </small>
             </p>
 
             <Socials
               web="https://a16zcrypto.com/crypto-startup-school/"
               insta="a16z"
-              twitter="a16z" />
+              twitter="a16z"
+            />
           </div>
           <div>
             {#if floatEvent?.groups.length > 0}
@@ -133,23 +135,24 @@
                 <br />
                 {#each floatEvent?.groups as group}
                   <a href="/{resolvedHostName}/group/{group}"
-                    ><div class="group-badge">{group}</div></a>
+                    ><div class="group-badge">{group}</div></a
+                  >
                 {/each}
               </blockquote>
             {/if}
 
             <blockquote>
-              <strong><small class="muted">DESCRIPTION</small></strong
-              ><br />This unique NFT was claimable on April 12th 2023 to
-              commemorate joining us at the a16z CSS infrastructure exposition.
+              <strong><small class="muted">DESCRIPTION</small></strong><br
+              />This unique NFT was claimable on April 12th 2023 to commemorate
+              joining us at the a16z CSS infrastructure exposition.
             </blockquote>
 
             <blockquote>
               <strong><small class="muted">STATS</small></strong><br />
               <p>
                 <span class="emphasis"
-                  >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> are
-                minted.
+                  >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span
+                > are minted.
               </p>
             </blockquote>
           </div>
@@ -159,13 +162,15 @@
             <button class="secondary outline" disabled
               >🎉 You already claimed this FLOAT! 🎉 <br /><small
                 >Share your love of NFTs using #a16zCSS!</small
-              ></button>
+              ></button
+            >
           {:else}
             <button
               class="primary"
               on:click={() =>
                 claimFLOATv2(floatEvent.eventId, floatEvent.host, null)}
-              >Claim this FLOAT</button>
+              >Claim this FLOAT</button
+            >
           {/if}
         </footer>
       </article>

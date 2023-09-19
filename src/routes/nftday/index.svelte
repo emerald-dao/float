@@ -22,8 +22,8 @@
         author: response?.host,
         removeTitleSuffix : true,
         image: "https://floats.city/nftday-logo.png"
-        //image: `https://nftstorage.link/ipfs/${response.image}`
-        //image: `https://nftstorage.link/ipfs/${response.image}`
+        //image: `https://ipfs.io/ipfs/${response.image}`
+        //image: `https://ipfs.io/ipfs/${response.image}`
       },
     };
   }
@@ -111,7 +111,7 @@
 
             {#if floatEvent.image}
               <img class="float-image"
-                src="https://nftstorage.link/ipfs/{floatEvent.image}"
+                src="https://ipfs.io/ipfs/{floatEvent.image}"
                 alt="{floatEvent.name} Image" />
             {/if}
             <p>

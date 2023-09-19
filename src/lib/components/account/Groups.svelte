@@ -54,7 +54,7 @@
     uploadedSuccessfully = true;
     uploading = false;
     $draftGroup.ipfsHash = cid;
-    imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`;
+    imagePreviewSrc = `https://ipfs.io/ipfs/${cid}`;
   };
 
   function ipfsReady() {
@@ -68,7 +68,8 @@
 <LibLoader
   url="https://cdn.jsdelivr.net/npm/ipfs-http-client@56.0.0/index.min.js"
   on:loaded={ipfsReady}
-  uniqueId={+new Date()} />
+  uniqueId={+new Date()}
+/>
 
 {#if $user?.addr === addressObject.address}
   {#if open}
@@ -83,7 +84,8 @@
           type="text"
           id="name"
           name="name"
-          bind:value={$draftGroup.name} />
+          bind:value={$draftGroup.name}
+        />
       </label>
 
       <label for="description"
@@ -91,7 +93,8 @@
         <textarea
           id="description"
           name="description"
-          bind:value={$draftGroup.description} />
+          bind:value={$draftGroup.description}
+        />
       </label>
 
       {#if ipfsIsReady}
@@ -103,7 +106,8 @@
             type="file"
             id="image"
             name="image"
-            accept="image/png, image/gif, image/jpeg" />
+            accept="image/png, image/gif, image/jpeg"
+          />
           {#if uploading}
             <progress value={uploadingPercent * 100} max="100" />
           {/if}
@@ -122,13 +126,15 @@
           preview={true}
           name={$draftGroup.name}
           {imagePreviewSrc}
-          description={$draftGroup.description} />
+          description={$draftGroup.description}
+        />
       {/if}
 
       {#if !$user?.loggedIn}
         <div class="mt-2 mb-2">
           <button class="contrast small-button" on:click={authenticate}
-            >Connect Wallet</button>
+            >Connect Wallet</button
+          >
         </div>
       {:else if $addGroupInProgress}
         <button aria-busy="true" disabled>Creating Group</button>
@@ -152,7 +158,8 @@
     <h3 class="text-center">Groups</h3>
   </header>
   <button on:click={() => (open = true)} class="create"
-    >Create a new Group</button>
+    >Create a new Group</button
+  >
   {#await groups then groups}
     {#await resolvedName then resolvedName}
       {#if Object.keys(groups).length > 0}
@@ -160,8 +167,9 @@
           <Group
             {resolvedName}
             name={group.name}
-            imagePreviewSrc={`https://nftstorage.link/ipfs/${group.image}`}
-            description={group.description} />
+            imagePreviewSrc={`https://ipfs.io/ipfs/${group.image}`}
+            description={group.description}
+          />
         {/each}
       {:else}
         <p class="text-center">This account has not created any groups yet.</p>

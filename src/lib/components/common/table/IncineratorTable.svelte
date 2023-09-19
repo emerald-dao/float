@@ -58,7 +58,8 @@
   labels={{
     empty: "This account has not claimed any FLOATs.",
     loading: "Loading FLOATs...",
-  }}>
+  }}
+>
   <thead slot="head">
     <tr>
       <th>Burn</th>
@@ -84,16 +85,21 @@
           ><input
             checked={row.id in $selectedToBurn}
             on:click={() => toggleBurn(row)}
-            type="checkbox" /></td>
+            type="checkbox"
+          /></td
+        >
         <td data-label="Image"
           ><img
             alt=""
             class="table-image"
-            src="https://nftstorage.link/ipfs/{row.eventImage}" /></td>
+            src="https://ipfs.io/ipfs/{row.eventImage}"
+          /></td
+        >
         <td data-label="Name">{row.eventName}</td>
         <td data-label="Serial"><code>#{row.serial}</code></td>
         <td data-label="Received"
-          >{formatter.format(row.dateReceived * 1000)}</td>
+          >{formatter.format(row.dateReceived * 1000)}</td
+        >
       </Row>
     {/each}
   </tbody>

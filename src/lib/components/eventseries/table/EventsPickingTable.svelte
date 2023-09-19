@@ -101,7 +101,7 @@
                 <img
                   alt=""
                   class="table-image"
-                  src="https://nftstorage.link/ipfs/{row.event.image}"
+                  src="https://ipfs.io/ipfs/{row.event.image}"
                 />
               </a>
             </div>

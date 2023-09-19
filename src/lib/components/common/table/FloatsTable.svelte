@@ -10,8 +10,8 @@
   export let floats;
   let rows = floats;
 
-  if(rows?.length > 0) {
-    rows = rows.sort((a,b) => b.dateReceived-a.dateReceived )
+  if (rows?.length > 0) {
+    rows = rows.sort((a, b) => b.dateReceived - a.dateReceived);
   }
 
   let pageCount = 0;
@@ -36,7 +36,6 @@
       event.detail.key
     );
   }
-
 </script>
 
 <Table
@@ -47,7 +46,8 @@
   labels={{
     empty: "This account has not claimed any FLOATs.",
     loading: "Loading FLOATs...",
-  }}>
+  }}
+>
   <thead slot="head">
     <tr>
       <th> Image </th>
@@ -73,16 +73,22 @@
             ><img
               alt=""
               class="table-image"
-              src="https://nftstorage.link/ipfs/{row.eventImage}" /></a
-          ></td>
+              src="https://ipfs.io/ipfs/{row.eventImage}"
+            /></a
+          ></td
+        >
         <td data-label="Name"
           ><a href="/{row.eventHost}/event/{row.eventId}">{row.eventName}</a
-          ></td>
+          ></td
+        >
         <td data-label="Serial"
-          ><a href="{$page.url.pathname}/float/{row.id}"><code>#{row.serial}</code></a
-          ></td>
+          ><a href="{$page.url.pathname}/float/{row.id}"
+            ><code>#{row.serial}</code></a
+          ></td
+        >
         <td data-label="Received"
-          >{formatter.format(row.dateReceived * 1000)}</td>
+          >{formatter.format(row.dateReceived * 1000)}</td
+        >
       </Row>
     {/each}
   </tbody>
@@ -92,7 +98,7 @@
   .table-image {
     max-width: 100px;
     max-height: 50px;
-    display:block;
+    display: block;
     margin: 0 auto;
   }
 </style>

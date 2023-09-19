@@ -22,7 +22,7 @@
     const cid = await client.storeBlob(file);
     uploadedSuccessfully = true;
     uploading = false;
-    imagePreviewSrc = `https://nftstorage.link/ipfs/${cid}`;
+    imagePreviewSrc = `https://ipfs.io/ipfs/${cid}`;
 
     dispatch("ipfsAdded", cid);
   };

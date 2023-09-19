@@ -46,7 +46,8 @@
   labels={{
     empty: "This account has not created any events.",
     loading: "Loading events...",
-  }}>
+  }}
+>
   <thead slot="head">
     <tr>
       <th>
@@ -71,7 +72,8 @@
                 <img
                   alt=""
                   class="table-image"
-                  src="https://nftstorage.link/ipfs/{row.image}" />
+                  src="https://ipfs.io/ipfs/{row.image}"
+                />
               </a>
             </div>
             <div>
@@ -90,7 +92,8 @@
             >{row.groups.length > 0 ? "" : " - "}
             {#each row.groups as group}
               <a href="/{$page.params.address}/group/{group}"
-                ><div class="group-badge small">{group}</div></a>
+                ><div class="group-badge small">{group}</div></a
+              >
             {/each}
           </span>
         </td>

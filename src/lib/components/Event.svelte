@@ -19,8 +19,9 @@
     <article class="card">
       {#if floatEvent?.image}
         <img
-          src="https://nftstorage.link/ipfs/{floatEvent?.image}"
-          alt="{floatEvent.name} Image" />
+          src="https://ipfs.io/ipfs/{floatEvent?.image}"
+          alt="{floatEvent.name} Image"
+        />
       {/if}
       <h1>{floatEvent?.name}</h1>
       <p>

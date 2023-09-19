@@ -68,7 +68,7 @@
           <h3 class="empty unclaimed">Empty<br />Slot</h3>
         {:else}
           <img
-            src="https://nftstorage.link/ipfs/{floatEvent.image}"
+            src="https://ipfs.io/ipfs/{floatEvent.image}"
             alt="{floatEvent.name} Image"
             class:unclaimed={!preview && !owned}
           />

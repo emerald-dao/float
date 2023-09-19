@@ -23,18 +23,21 @@
     <a class="no-style" href="/{float.owner}/float/{float.id}">
       <article class="card">
         <img
-          src="https://nftstorage.link/ipfs/{float.eventImage}"
-          alt="{float.eventName} Image" />
+          src="https://ipfs.io/ipfs/{float.eventImage}"
+          alt="{float.eventName} Image"
+        />
         <h1>{float.eventName}</h1>
         <p>
           <small>
             <span class="credit">Created by</span>
             <a href="/{eventHostResolvedName}" class="host"
-              >{eventHostResolvedName}</a>
+              >{eventHostResolvedName}</a
+            >
           </small>
         </p>
         <code data-tooltip="{float.serial} of {float.totalSupply}"
-          >#{float.serial}</code>
+          >#{float.serial}</code
+        >
       </article>
     </a>
   {:else}
@@ -42,19 +45,22 @@
       {#if float.eventImage}
         <img
           class:smaller
-          src="https://nftstorage.link/ipfs/{float.eventImage}"
-          alt="{float.eventName} Image" />
+          src="https://ipfs.io/ipfs/{float.eventImage}"
+          alt="{float.eventName} Image"
+        />
       {/if}
       <h1 class:smaller>{float.eventName}</h1>
       <p>
         <small class:smaller>
           <span class="credit">Created by</span>
           <a href="/{eventHostResolvedName}" class="host"
-            >{eventHostResolvedName}</a>
+            >{eventHostResolvedName}</a
+          >
         </small>
       </p>
       <code data-tooltip="Minted so far" class:smaller
-        >#{float.totalSupply}</code>
+        >#{float.totalSupply}</code
+      >
     </article>
   {/if}
 {/await}
