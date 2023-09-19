@@ -1,8 +1,6 @@
 <script>
 </script>
 
-<img src="/nftday.png" alt="NFT Day Banner"/>
-
 <slot></slot>
 
 <style>

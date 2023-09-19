@@ -5,10 +5,10 @@
 
   export async function load({ url, params, stuff }) {
 
-    let resolvedNameObject = await resolveAddressObject("0x07ccd4bb872a7790");
+    let resolvedNameObject = await resolveAddressObject("0x941e3e2ddbb5c259");
 
     // TODO: change with actual FLOAT account and eventID
-    const response = await getEvent(resolvedNameObject.address, 583967214);
+    const response = await getEvent(resolvedNameObject.address, 1276164171);
 
     return {
       status: 200,
@@ -99,8 +99,8 @@
       <article>
         <header>
           <div class="hero">
-            <h1>Thank you for celebrating #NFTDay!</h1>
-            <p>20/9/2022</p>
+            <h1>Let's celebrate #NFTDay!</h1>
+            <p>Claim your unique NFT and get special perks.</p>
           </div>
         </header>
         <div class="grid">
@@ -136,17 +136,20 @@
                 {/each}
               </blockquote>
             {/if}
-
             <blockquote>
-              <strong><small class="muted">DESCRIPTION</small></strong
-              ><br />This unique NFT was claimable on Sept 20th 2022 to commemorate International NFT Day. 
-              <br/>Join us next year on the same day, for #NFTDay 2023!
+              <strong><small class="muted">COST</small></strong>
+              Free
             </blockquote>
+
+            <!-- <blockquote>
+              <strong><small class="muted">DESCRIPTION</small></strong
+              ><br />{floatEvent?.description}
+            </blockquote> -->
 
             <blockquote>
               <strong><small class="muted">STATS</small></strong><br/>
               <p><span class="emphasis"
-                >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> were minted.</p>
+                >{parseInt(floatEvent?.totalSupply).toLocaleString()}</span> have been minted so far.</p>
             </blockquote>
 
             {#if limitedVerifier && limitedVerifier[0]}
@@ -160,10 +163,13 @@
         <footer>
           {#if floatEvent?.hasClaimed}
           <button class="secondary  outline" disabled>🎉 You already claimed this FLOAT! 🎉 <br/><small>Share your love of NFTs using #NFTDay!</small></button>
+          {:else if $user?.loggedIn}
+          <ClaimButton
+            {flowTokenCost}
+            {floatEvent}
+            hasClaimed={floatEvent?.hasClaimed} />
           {:else}
-            <button class="secondary  outline" disabled>International NFT Day was on Sept. 20th, 2022<br/><small>This NFT is no longer claimable.</small></button>
-            <br/>
-            <a href="https://floats.city/0x11ca36743554b4b0/event/590020743">If you're here to mint your first NFT, claim this one instead!</a>
+            <button id="connect" on:click={authenticate}>Claim your NFT</button>
           {/if}
         </footer>
       </article>
@@ -178,7 +184,7 @@
    <p style="text-align:left">
     NFT Day is meant for everyone, an all-inclusive moment the entire Web3 world can rally around. From creators and collectors, to developers and founders, NFT Day is a celebration of the entire ecosystem across every blockchain.</p>
     <p style="text-align:left">
-    This September 20 marks the five-year anniversary of Dapper Labs CTO Dete Shirley publishing <a href="https://github.com/ethereum/eips/issues/721">ERC-721</a>, which would go on to become the NFT standard. Since then, NFTs have become the lifeblood of communities, innovation, and blockchain adoption. NFT Day is a new officially recognized holiday.
+    This September 20 marks the six-year anniversary of Dapper Labs CTO Dete Shirley publishing <a href="https://github.com/ethereum/eips/issues/721">ERC-721</a>, which would go on to become the NFT standard. Since then, NFTs have become the lifeblood of communities, innovation, and blockchain adoption. NFT Day is a new officially recognized holiday.
    </p>
    <hr>
 
@@ -195,6 +201,7 @@
       <div>
         <h3><img src="dapper-logo.png" class="logo"/> Dapper </h3>
         <p>Dapper is the digital wallet that millions of people use to find, earn and own digital assets built on the Flow blockchain. Designed for ease of use, Dapper provides a fun and safe experience for exploring Web3.</p> 
+        <!-- <div class="claimed-badge">✅ Eligible for NFT Day SWAG!</div> -->
       </div>
       <div>
         <h3><img src="blocto-logo.jpg" class="logo"/> Blocto</h3>
@@ -326,4 +333,3 @@
     text-align: left;
   } */
 </style>
- 
