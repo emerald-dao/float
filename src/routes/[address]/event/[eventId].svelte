@@ -131,6 +131,7 @@
       (groupName) => !data.groups.includes(groupName)
     );
     isSharedWithMe = isSharedWithUser(resolvedNameObject.address, $user?.addr);
+    console.log(data);
     return data;
   };
   let floatEvent = floatEventCallback();
