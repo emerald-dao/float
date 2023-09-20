@@ -8,7 +8,7 @@
 	import Blur from '$lib/components/Blur.svelte';
 	import { onMount } from 'svelte';
 	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
-	import PowerUpsReview from './atoms/PowerUpsReview.svelte';
+	import PowerUpsReview from '../atoms/PowerUpsReview.svelte';
 
 	export let stepDataValid: boolean;
 

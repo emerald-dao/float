@@ -102,6 +102,6 @@ pub struct FLOATEventMetadata {
       }
 
       self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
-      self.multipleClaim = (extraMetadata["multipleClaim"] as! Bool?) ?? false
+      self.multipleClaim = (extraMetadata["allowMultipleClaim"] as! Bool?) ?? false
   }
 }

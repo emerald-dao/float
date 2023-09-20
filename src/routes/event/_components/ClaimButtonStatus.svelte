@@ -48,7 +48,7 @@
 					<span>Connect to claim the event</span>
 				</div>
 			</div>
-		{:else if floatAlreadyClaimed}
+		{:else if floatAlreadyClaimed && !event.multipleClaim}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
 					<Icon icon="tabler:lock" />
@@ -106,7 +106,7 @@
 	{/if}
 	<div class="button-background">
 		{#if event.status.generalStatus === 'available'}
-			{#if !$user.loggedIn || floatAlreadyClaimed}
+			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim)}
 				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
 			{:else if secretCode}
 				<Button

@@ -93,7 +93,7 @@ pub struct FLOATEventMetadata {
       }
       self.eventType = (extraMetadata["eventType"] as! String?) ?? "other"
       self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
-      self.multipleClaim = (extraMetadata["multipleClaim"] as! Bool?) ?? false
+      self.multipleClaim = (extraMetadata["allowMultipleClaim"] as! Bool?) ?? false
 
       if let prices = event.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
