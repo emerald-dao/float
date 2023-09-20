@@ -8,7 +8,6 @@
 	export let status: EventGeneralStatus;
 	export let claimability: boolean;
 	export let timelockStatus: TimelockStatus;
-	export let limitedStatus: LimitedStatus;
 
 	const STATUS_COLOR_MAP: {
 		[key in EventGeneralStatus]: 'primary' | 'alert' | 'neutral';

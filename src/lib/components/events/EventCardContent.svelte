@@ -37,7 +37,6 @@
 			<EventStatus
 				status={event.status.generalStatus}
 				claimability={event.claimable}
-				limitedStatus={event.status.verifiersStatus.limitedStatus}
 				timelockStatus={event.status.verifiersStatus.timelockStatus}
 			/>
 		</div>
@@ -154,7 +153,8 @@
 		}
 
 		&.list {
-			flex-direction: row;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 			padding: var(--space-1) var(--space-6);
 
 			.no-extra-info {
@@ -166,6 +166,7 @@
 				flex-direction: row;
 				align-items: center;
 				gap: var(--space-12);
+				justify-self: start;
 			}
 
 			.secondary-wrapper {
@@ -173,11 +174,12 @@
 				align-items: center;
 				border-top: none;
 				padding: 0;
+				justify-self: end;
 
 				.powerups-wrapper {
 					border-right: 1px dashed var(--clr-border-primary);
 					height: 100%;
-					border-left: none;
+					border: none;
 				}
 			}
 		}
