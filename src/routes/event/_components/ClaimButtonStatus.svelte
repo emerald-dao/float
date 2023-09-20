@@ -90,6 +90,14 @@
 				</button>
 			</div>
 		{/if}
+		{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
+			<div class="secret-code-message">
+				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+					<Icon icon="tabler:info-circle" />
+					<span>You already own this FLOAT</span>
+				</div>
+			</div>
+		{/if}
 	{:else}
 		<div class="secret-code-message">
 			<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
