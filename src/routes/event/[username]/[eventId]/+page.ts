@@ -6,7 +6,6 @@ import type { Event, EventWithStatus } from '$lib/types/event/event.interface.js
 
 export const load = async ({ params }) => {
 	const findProfile = await getFindProfileFromAddressOrName(params.username);
-	// const event = eventMock;
 
 	let walletAddress = params.username;
 
@@ -32,7 +31,7 @@ export const load = async ({ params }) => {
 			...event,
 			status: {
 				verifiersStatus: verifiersStatus,
-				generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+				generalStatus: getEventGeneralStatus(verifiersStatus)
 			}
 		};
 
