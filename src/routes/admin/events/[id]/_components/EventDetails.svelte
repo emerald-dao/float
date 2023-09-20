@@ -29,7 +29,12 @@
 				<p class="xsmall off">FLOATs claimed</p>
 			</div>
 			<div class="event-status-wrapper">
-				<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
+				<EventStatus
+					status={event.status.generalStatus}
+					claimability={event.claimable}
+					limitedStatus={event.status.verifiersStatus.limitedStatus}
+					timelockStatus={event.status.verifiersStatus.timelockStatus}
+				/>
 			</div>
 		</div>
 		<div class="float-wrapper">

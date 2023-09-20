@@ -34,6 +34,7 @@
 		flex-direction: row;
 		gap: var(--space-3);
 		flex-wrap: wrap;
-		align-items: flex-start;
+		// align-items: flex-start;
+		justify-content: flex-start;
 	}
 </style>

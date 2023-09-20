@@ -1,8 +1,5 @@
 <script lang="ts">
-	import {
-		POWER_UPS,
-		type PowerUpGeneratorData
-	} from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
+	import { POWER_UPS } from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
 	import type { TimelockStatus } from '$lib/features/event-status-management/types/verifiers-status.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import { timelockToStatusObject } from '../../functions/helpers/timelockToStatusObject';

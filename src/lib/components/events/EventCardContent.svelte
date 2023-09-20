@@ -1,12 +1,16 @@
 <script lang="ts">
+	import { POWER_UPS } from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import EventStatus from './EventStatus.svelte';
 	import FloatEventType from '../floats/atoms/FloatEventType.svelte';
-	import { Label } from '@emerald-dao/component-library';
+	import Icon from '@iconify/svelte';
+	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 
 	export let event: EventWithStatus;
 	export let display: 'grid' | 'list' = 'list';
 	export let displayedInAdmin = true;
+
+	let verifiersList = Object.keys(event.verifiers) as PowerUpType[];
 </script>
 
 <div class={`main-wrapper ${display}`}>
@@ -29,19 +33,33 @@
 		</div>
 	</div>
 	<div class="secondary-wrapper">
-		<div class="status-wrapper column-1">
-			<EventStatus status={event.status.generalStatus} claimability={event.claimable} />
+		<div class="status-wrapper column align-center justify-center">
+			<EventStatus
+				status={event.status.generalStatus}
+				claimability={event.claimable}
+				limitedStatus={event.status.verifiersStatus.limitedStatus}
+				timelockStatus={event.status.verifiersStatus.timelockStatus}
+			/>
 		</div>
-		<div class="powerups-wrapper">
-			<p>Powerups</p>
-			<div class="labels-wrapper">
-				{#each Object.keys(event.verifiers) as verifier}
-					<span>
-						{verifier}
-					</span>
-				{/each}
+		{#if verifiersList.length > 0 || (event.price && Number(event.price) > 0)}
+			<div class="powerups-wrapper">
+				<span class="power-ups-title">Powerups</span>
+				<div class="labels-wrapper">
+					{#each verifiersList as verifier}
+						<span class="power-up-label">
+							<Icon icon={POWER_UPS[verifier].icon} inline />
+							{POWER_UPS[verifier].name}
+						</span>
+					{/each}
+					{#if event.price && Number(event.price) > 0}
+						<span class="power-up-label">
+							<Icon icon={POWER_UPS['payment'].icon} inline />
+							{POWER_UPS['payment'].name}
+						</span>
+					{/if}
+				</div>
 			</div>
-		</div>
+		{/if}
 	</div>
 </div>
 
@@ -107,16 +125,24 @@
 				gap: var(--space-1);
 				flex: 1;
 
+				.power-ups-title {
+					font-size: var(--font-size-0);
+					padding-left: var(--space-2);
+				}
+
 				.labels-wrapper {
 					display: flex;
 					flex-direction: row;
-					gap: var(--space-3);
+					flex-wrap: wrap;
+					gap: var(--space-2);
 
-					span {
-						border: 1px solid var(--clr-border-primary);
+					.power-up-label {
+						font-size: var(--font-size-0);
+						color: var(--clr-text-off);
+						background-color: var(--clr-surface-secondary);
+						border: 1px solid var(--clr-neutral-badge);
+						padding: 0 var(--space-2);
 						border-radius: var(--radius-1);
-						padding: 0 var(--space-3);
-						font-size: var(--font-size-1);
 					}
 				}
 			}

@@ -41,4 +41,4 @@ export interface EventWithStatus extends Event {
 	};
 }
 
-export type EventGeneralStatus = 'available' | 'soldout' | 'paused' | 'expired' | 'locked';
+export type EventGeneralStatus = 'available' | 'soldout' | 'expired' | 'locked';

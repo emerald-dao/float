@@ -13,32 +13,30 @@
 
 <PowerUpReviewCard name={paymentPowerUp.name} icon={paymentPowerUp.icon} let:PowerUpCard>
 	<PowerUpCard.Content>
-		<span class="small">
-			<div class="input-wrapper row">
-				{#if isAdmin}
-					{#if visible}
-						<input type="password" value={secretCode} />
-						<button class="eye-wrapper row align-center" on:click={() => (visible = !visible)}>
-							<Icon icon="tabler:eye-off" />
-						</button>
-					{:else}
-						<input type="text" value={secretCode} />
-						<button class="eye-wrapper row align-center" on:click={() => (visible = !visible)}>
-							<Icon icon="tabler:eye" />
-						</button>
-					{/if}
+		<div class="input-wrapper row">
+			{#if isAdmin}
+				{#if visible}
+					<input type="password" value={secretCode} />
+					<button class="eye-wrapper row align-center" on:click={() => (visible = !visible)}>
+						<Icon icon="tabler:eye-off" />
+					</button>
 				{:else}
-					<span>••••••••••</span>
+					<input type="text" value={secretCode} />
+					<button class="eye-wrapper row align-center" on:click={() => (visible = !visible)}>
+						<Icon icon="tabler:eye" />
+					</button>
 				{/if}
-			</div>
-		</span>
+			{:else}
+				<span>••••••••••</span>
+			{/if}
+		</div>
 	</PowerUpCard.Content>
 </PowerUpReviewCard>
 
 <style lang="scss">
 	.input-wrapper {
 		align-items: center;
-		justify-content: center;
+		justify-content: space-between;
 
 		input {
 			padding: 0;

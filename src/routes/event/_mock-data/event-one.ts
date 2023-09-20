@@ -18,12 +18,22 @@ const eventMock: Event = {
 	totalSupply: '14',
 	transferrable: false,
 	url: 'https://www.google.com.uy/',
-	verifiers: [
-		{ dateStart: '1652928840.00000000', dateEnding: '1652928840.00000000' },
-		{ capacity: '40' },
-		{ publicKey: 'secretCode' },
-		{ amount: '20' }
-	],
+	verifiers: {
+		timelock: {
+			dateStart: '1652928840.00000000',
+			dateEnding: '1652928840.00000000',
+			type: 'timelock'
+		},
+		limited: {
+			capacity: '40',
+			type: 'limited'
+		},
+		minimumBalance: {
+			amount: '20',
+			type: 'minimumBalance'
+		},
+		secret: { publicKey: 'secretCode', type: 'secret' }
+	},
 	eventType: EVENT_TYPES[0]
 };
 

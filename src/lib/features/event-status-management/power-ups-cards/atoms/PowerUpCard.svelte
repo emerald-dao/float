@@ -33,6 +33,9 @@
 		flex-direction: column;
 		border-color: var(--clr-neutral-badge);
 		background-color: var(--clr-background-primary);
+		flex: 1;
+		min-width: fit-content;
+		max-width: fit-content;
 
 		.title-wrapper {
 			padding: 0em 1.2em;

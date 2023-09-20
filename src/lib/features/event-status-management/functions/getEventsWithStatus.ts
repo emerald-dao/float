@@ -12,7 +12,7 @@ export const getEventsWithStatus = (events: Event[]): EventWithStatus[] => {
 			...event,
 			status: {
 				verifiersStatus: verifiersStatus,
-				generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+				generalStatus: getEventGeneralStatus(verifiersStatus)
 			}
 		};
 

@@ -1,10 +1,7 @@
 import type { EventGeneralStatus } from '$lib/types/event/event.interface';
 import type { VerifiersStatus } from '../../types/verifiers-status.interface';
 
-export const getEventGeneralStatus = (
-	verifiersStatus: VerifiersStatus,
-	claimability: boolean
-): EventGeneralStatus => {
+export const getEventGeneralStatus = (verifiersStatus: VerifiersStatus): EventGeneralStatus => {
 	const { timelockStatus, limitedStatus } = verifiersStatus;
 
 	if (timelockStatus !== null) {

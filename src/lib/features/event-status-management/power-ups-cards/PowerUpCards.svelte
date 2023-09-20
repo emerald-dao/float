@@ -34,8 +34,7 @@
 	.powerups-cards-wrapper {
 		display: flex;
 		flex-direction: row;
-		gap: var(--space-3);
+		gap: var(--space-4);
 		flex-wrap: wrap;
-		align-items: flex-start;
 	}
 </style>

@@ -47,7 +47,12 @@
 	</div>
 	<div class="details-wrapper">
 		<div class="row-2 align-center">
-			<EventStatus status={data.event.status.generalStatus} claimability={data.event.claimable} />
+			<EventStatus
+				status={data.event.status.generalStatus}
+				claimability={data.event.claimable}
+				limitedStatus={data.event.status.verifiersStatus.limitedStatus}
+				timelockStatus={data.event.status.verifiersStatus.timelockStatus}
+			/>
 		</div>
 		{#if startDate && endDate}
 			<div>
