@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { POWER_UPS } from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
+	import { POWER_UPS } from '$lib/features/event-generator/components/steps/7-PowerUps/powerUps';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import EventStatus from './EventStatus.svelte';
 	import FloatEventType from '../floats/atoms/FloatEventType.svelte';

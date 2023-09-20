@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Icon from '@iconify/svelte';
 	import PowerUpReviewCard from '../atoms/PowerUpCard.svelte';
-	import { POWER_UPS } from '$lib/features/event-generator/components/steps/6-PowerUps/powerUps';
+	import { POWER_UPS } from '$lib/features/event-generator/components/steps/7-PowerUps/powerUps';
 
 	export let secretCode: string;
 	export let isAdmin: boolean = false;
