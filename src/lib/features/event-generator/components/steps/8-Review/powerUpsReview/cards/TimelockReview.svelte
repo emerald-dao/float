@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
-	import { POWER_UPS, type PowerUpGeneratorData } from '../../../6-PowerUps/powerUps';
+	import { POWER_UPS, type PowerUpGeneratorData } from '../../../7-PowerUps/powerUps';
 	import PowerUpReviewCard from '../atoms/PowerUpReviewCard.svelte';
 
 	const paymentPowerUp = POWER_UPS.find(

@@ -13,6 +13,7 @@ export interface EventGeneratorData {
 	ticketImage: File | null;
 	totalSupply: string;
 	transferrable: boolean;
+	multipleClaim: boolean;
 	claimable: boolean;
 	visibilityMode: 'certificate' | 'picture';
 	powerups: {
