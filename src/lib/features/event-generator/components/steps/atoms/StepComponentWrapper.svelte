@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { fly } from 'svelte/transition';
 	import StepIntro from './StepIntro.svelte';
-	import { eventGeneratorActiveStep, eventGeneratorSteps } from '../../stores/EventGeneratorSteps';
+	import {
+		eventGeneratorActiveStep,
+		eventGeneratorSteps
+	} from '../../../stores/EventGeneratorSteps';
 
 	export let alignCenter = false;
 </script>

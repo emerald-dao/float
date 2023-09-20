@@ -31,7 +31,7 @@ export const load = async ({ params }) => {
 			...event,
 			status: {
 				verifiersStatus: verifiersStatus,
-				generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+				generalStatus: getEventGeneralStatus(verifiersStatus)
 			}
 		};
 

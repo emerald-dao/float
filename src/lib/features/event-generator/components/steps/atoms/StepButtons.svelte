@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { eventGenerationInProgress } from './../../stores/EventGenerationInProgress';
+	import { eventGenerationInProgress } from './../../../stores/EventGenerationInProgress';
 	import { Button } from '@emerald-dao/component-library';
 	import type { createActiveStep } from '$stores/custom/steps/ActiveStep';
 	import type { createSteps } from '$stores/custom/steps/Steps';

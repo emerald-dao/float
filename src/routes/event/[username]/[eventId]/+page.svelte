@@ -3,43 +3,23 @@
 	import { Currency } from '@emerald-dao/component-library';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
-	import type { Secret, Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
-	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
-	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 	import ClaimButtonStatus from '../../_components/ClaimButtonStatus.svelte';
+	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
+	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 
 	export let data;
 
-	let starDate: string;
-	let endDate: string;
-	let dates = {
-		dateStart: '',
-		dateEnding: ''
-	};
-	let secretCode: string;
+	let startDate = data.event.verifiers.timelock?.dateStart
+		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateStart)
+		: null;
+	let endDate = data.event.verifiers.timelock?.dateEnding
+		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateEnding)
+		: null;
 
-	data.event.verifiers.forEach((verifier) => {
-		if (verifier.hasOwnProperty('dateStart')) {
-			dates.dateStart = (verifier as Timelock).dateStart;
-		}
-		if ((verifier as Timelock).dateEnding) {
-			dates.dateEnding = (verifier as Timelock).dateEnding;
-		}
-		if (verifier.hasOwnProperty('publicKey')) {
-			secretCode = (verifier as Secret).publicKey;
-		}
-	});
-
-	if (dates.dateStart && dates.dateEnding) {
-		starDate = unixTimestampToFormattedDate(dates.dateStart);
-		endDate = unixTimestampToFormattedDate(dates.dateEnding);
-	} else {
-		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
-	}
+	let secretCode = data.event.verifiers.secret?.publicKey ?? '';
 </script>
 
 <section class="container-medium">
@@ -58,21 +38,25 @@
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
+	<div class="column-4">
+		<p class="w-medium">
+			<Icon icon="tabler:plus" inline />
+			Power Ups
+		</p>
+		<PowerUpCards powerUps={data.event.verifiers} price={data.event.price} />
+	</div>
 	<div class="details-wrapper">
 		<div class="row-2 align-center">
-			{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
-				{#if data.event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel timelockStatus={data.event.status.verifiersStatus.timelockStatus} />
-				{/if}
-				{#if data.event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel limitedStatus={data.event.status.verifiersStatus.limitedStatus} />
-				{/if}
-			{/if}
-			<EventStatus status={data.event.status.generalStatus} />
+			<EventStatus
+				status={data.event.status.generalStatus}
+				claimability={data.event.claimable}
+				limitedStatus={data.event.status.verifiersStatus.limitedStatus}
+				timelockStatus={data.event.status.verifiersStatus.timelockStatus}
+			/>
 		</div>
-		{#if starDate && endDate}
+		{#if startDate && endDate}
 			<div>
-				<p class="large">{starDate}</p>
+				<p class="large">{startDate}</p>
 				<p class="small">Start Date</p>
 			</div>
 			<div>
@@ -81,7 +65,7 @@
 			</div>
 		{:else}
 			<div>
-				<p class="large">{starDate}</p>
+				<p class="large">{startDate}</p>
 				<p class="small">Start Date</p>
 			</div>
 		{/if}
@@ -125,7 +109,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--space-13);
+		gap: var(--space-10);
 		flex: 1;
 		border-bottom: 1px dashed var(--clr-border-primary);
 

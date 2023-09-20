@@ -6,11 +6,9 @@
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'secretCode'
-	) as PowerUpGeneratorData<'secretCode'>;
+	const powerUpData = POWER_UPS['secret'];
 
-	$: isActive = $eventGeneratorData.powerups.secretCode.active;
+	$: isActive = $eventGeneratorData.powerups.secret.active;
 
 	const handleChange = () => {
 		res = validationSuite($eventGeneratorData);
@@ -18,14 +16,14 @@
 		(res as SuiteRunResult).done((result) => {
 			res = result;
 
-			$powerUpsValidations.secretCode = res.isValid();
+			$powerUpsValidations.secret = res.isValid();
 		});
 	};
 
 	let res = validationSuite.get();
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="secret">
 	<div>
 		<InputWrapper
 			label="Secret code"
@@ -37,7 +35,7 @@
 				type="text"
 				name="secret-code"
 				disabled={!isActive}
-				bind:value={$eventGeneratorData.powerups.secretCode.data}
+				bind:value={$eventGeneratorData.powerups.secret.data}
 				on:input={handleChange}
 			/>
 		</InputWrapper>
