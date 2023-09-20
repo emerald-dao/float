@@ -64,6 +64,15 @@
 							{/if}
 						</span>
 					</div>
+					<div class="card">
+						<span class="small">
+							{#if $eventGeneratorData.multipleClaim}
+								User can claim multiple
+							{:else}
+								User can only claim one
+							{/if}
+						</span>
+					</div>
 				</div>
 			</div>
 			<div class="column-3">
@@ -102,9 +111,8 @@
 
 		.content-wrapper {
 			margin-top: var(--space-2);
-			display: flex;
-			flex-direction: row;
-			flex-wrap: wrap;
+			display: grid;
+			grid-template-columns: 1fr 1fr;
 			gap: var(--space-3);
 			align-items: flex-start;
 
