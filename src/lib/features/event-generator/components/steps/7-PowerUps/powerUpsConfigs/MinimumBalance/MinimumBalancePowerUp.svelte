@@ -6,9 +6,7 @@
 	import type { SuiteRunResult } from 'vest';
 	import validationSuite from './validation';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'minimumBalance'
-	) as PowerUpGeneratorData<'minimumBalance'>;
+	const powerUpData = POWER_UPS['minimumBalance'];
 
 	$: isActive = $eventGeneratorData.powerups.minimumBalance.active;
 
@@ -25,7 +23,7 @@
 	let res = validationSuite.get();
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="minimumBalance">
 	<div>
 		<CurrencyInput
 			currency="FLOW"

@@ -6,9 +6,7 @@
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'payment'
-	) as PowerUpGeneratorData<'payment'>;
+	const powerUpData = POWER_UPS['payment'];
 
 	$: isActive = $eventGeneratorData.powerups.payment.active;
 
@@ -25,7 +23,7 @@
 	let res = validationSuite.get();
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="payment">
 	<div>
 		<CurrencyInput
 			currency="FLOW"

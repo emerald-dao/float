@@ -4,18 +4,19 @@
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { setContext } from 'svelte';
-	import StepButtons from './components/atoms/StepButtons.svelte';
-	import { writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
-	import Blur from '$lib/components/Blur.svelte';
 	import { POWER_UPS } from './components/steps/7-PowerUps/powerUps';
+	import Blur from '$lib/components/Blur.svelte';
+	import { writable, type Writable } from 'svelte/store';
+	import StepButtons from './components/steps/atoms/StepButtons.svelte';
+	import type { PowerUpType } from './types/event-generator-data.interface';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
 	setContext('eventData', eventGeneratorData);
 
-	const activePowerUp = writable('payment');
+	const activePowerUp: Writable<PowerUpType> = writable('payment');
 
 	let stepDataValid: boolean;
 
@@ -23,9 +24,7 @@
 
 	$: powerUpsStep = $eventGeneratorActiveStep === 6;
 	$: reviewStep = $eventGeneratorActiveStep === 7;
-	$: activePowerUpComponent = POWER_UPS.find(
-		(powerUp) => powerUp.type === $activePowerUp
-	)?.component;
+	$: activePowerUpComponent = POWER_UPS[$activePowerUp].component;
 </script>
 
 <section class:review-step={reviewStep}>
@@ -51,7 +50,7 @@
 		/>
 	</div>
 	<div class="right-column hide-on-small">
-		<div style="position: absolute" class:rotate-slow={$eventGenerationInProgress}>
+		<div style="position: absolute; z-index: -1" class:rotate-slow={$eventGenerationInProgress}>
 			<Blur color="tertiary" right="0" top="30%" />
 			<Blur left="0" bottom="20%" />
 		</div>

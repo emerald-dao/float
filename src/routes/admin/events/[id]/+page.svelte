@@ -2,7 +2,7 @@
 	import { fly } from 'svelte/transition';
 	import EventDomains from '../atoms/EventDomains.svelte';
 	import EventActions from '../atoms/EventActions.svelte';
-	import EventInfo from './_components/EventInfo.svelte';
+	import EventDetails from './_components/EventDetails.svelte';
 	import FloatEventType from '$lib/components/floats/atoms/FloatEventType.svelte';
 	import { getContext } from 'svelte';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
@@ -21,7 +21,7 @@
 				<div class="row-4 align-center">
 					<img src={event.image} alt="logo" height="70" width="70" />
 					<div class="column-1">
-						<h4 class="w-medium">{event.name}</h4>
+						<h1 class="w-medium h4">{event.name}</h1>
 						<FloatEventType eventType={event.eventType} fontSize="1em" />
 					</div>
 				</div>
@@ -30,7 +30,7 @@
 			<EventActions {event} />
 		</div>
 		<div class="right-wrapper hide-on-small">
-			<EventInfo {event} />
+			<EventDetails {event} />
 		</div>
 	</div>
 {:else}
@@ -48,7 +48,7 @@
 
 		@include mq(medium) {
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 2fr 3fr;
 		}
 
 		.left-wrapper {

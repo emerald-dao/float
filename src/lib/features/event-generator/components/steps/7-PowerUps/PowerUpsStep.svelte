@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { powerUpsValidations } from './powerUps';
+	import { powerUpsValidations, type PowerUpGeneratorData } from './powerUps';
 	import { POWER_UPS } from './powerUps';
 	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import { getContext } from 'svelte';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
 	import PowerUpToggle from './atoms/PowerUpToggle.svelte';
 	import { derived, type Writable } from 'svelte/store';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
@@ -26,11 +26,18 @@
 	);
 
 	$: stepDataValid = $stepDataValidStore;
+
+	let powerUps = Object.entries(POWER_UPS).map(([key, value]) => {
+		return {
+			...(value as PowerUpGeneratorData),
+			type: key as PowerUpType
+		};
+	});
 </script>
 
 <StepComponentWrapper>
 	<div>
-		{#each POWER_UPS as { type, name, icon }}
+		{#each powerUps as { name, icon, type }}
 			<PowerUpToggle {name} {icon} {type} on:click={() => handleSelectPowerUp(type)} />
 		{/each}
 	</div>

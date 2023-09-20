@@ -1,5 +1,4 @@
-import type { EventVerifier } from '$lib/types/event/event.interface';
-import type { Limited, Timelock } from '$lib/types/event/verifiers.interface';
+import type { EventVerifiers } from '$lib/types/event/event.interface';
 import { limitedToStatusObject } from './limitedToStatusObject';
 import { timelockToStatusObject } from './timelockToStatusObject';
 import type {
@@ -9,21 +8,11 @@ import type {
 } from '../../types/verifiers-status.interface';
 
 export const getVerifiersState = (
-	verifiers: EventVerifier[],
+	verifiers: EventVerifiers,
 	floatsClaimed: number
 ): VerifiersStatus => {
-	let timelockVerifier: Timelock | null = null;
-	let limitedVerifier: Limited | null = null;
-
-	verifiers.forEach((verifier) => {
-		if (Object.hasOwn(verifier, 'dateStart') && Object.hasOwn(verifier, 'dateEnding')) {
-			timelockVerifier = verifier as Timelock;
-		}
-
-		if (Object.hasOwn(verifier, 'capacity')) {
-			limitedVerifier = verifier as Limited;
-		}
-	});
+	let timelockVerifier = verifiers['timelock'];
+	let limitedVerifier = verifiers['limited'];
 
 	let timelockStatus: TimelockStatus | null = null;
 	let limitedStatus: LimitedStatus | null = null;

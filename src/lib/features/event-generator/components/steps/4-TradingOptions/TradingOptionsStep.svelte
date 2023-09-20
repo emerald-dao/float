@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { eventGeneratorData } from './../../../stores/EventGeneratorData';
-	import RadioCards from '../../atoms/RadioCards.svelte';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
+	import RadioCards from '../atoms/RadioCards.svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
 
 	export let stepDataValid = true;
 

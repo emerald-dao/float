@@ -2,25 +2,15 @@
 	import { generatedNft } from '../../../stores/EventGeneratorData';
 	import { eventGeneratorActiveStep } from '../../../stores/EventGeneratorSteps';
 	import { fly } from 'svelte/transition';
-	import StepComponentWrapper from '../../atoms/StepComponentWrapper.svelte';
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
-	import PowerUpsReview from './powerUpsReview/PowerUpsReview.svelte';
-	import type { PowerUpType } from '$lib/features/event-generator/types/event-generator-data.interface';
 	import Float from '$lib/components/floats/Float.svelte';
 	import captureFloatTicket from '$lib/features/event-generator/actions/captureFloatTicket';
 	import Blur from '$lib/components/Blur.svelte';
 	import { onMount } from 'svelte';
+	import StepComponentWrapper from '../atoms/StepComponentWrapper.svelte';
+	import PowerUpsReview from './atoms/PowerUpsReview.svelte';
 
 	export let stepDataValid: boolean;
-
-	const hasPowerUps = () => {
-		for (const key in $eventGeneratorData.powerups) {
-			if ($eventGeneratorData.powerups[key as PowerUpType].active === true) {
-				return true;
-			}
-		}
-		return false;
-	};
 
 	let target: HTMLElement;
 
@@ -76,15 +66,13 @@
 					</div>
 				</div>
 			</div>
-			{#if hasPowerUps()}
+			<div class="column-3">
 				<div>
 					<h4 class="w-medium">+ Power Ups</h4>
 					<p class="small">Can not be changed later.</p>
-					<div class="content-wrapper">
-						<PowerUpsReview />
-					</div>
 				</div>
-			{/if}
+				<PowerUpsReview />
+			</div>
 		</div>
 	</div>
 </StepComponentWrapper>

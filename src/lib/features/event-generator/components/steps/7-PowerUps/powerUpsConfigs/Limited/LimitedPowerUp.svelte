@@ -2,13 +2,11 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import { type PowerUpGeneratorData, POWER_UPS, powerUpsValidations } from '../../powerUps';
+	import { POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 
-	const powerUpData = POWER_UPS.find(
-		(powerUp) => powerUp.type === 'limited'
-	) as PowerUpGeneratorData<'limited'>;
+	const powerUpData = POWER_UPS['limited'];
 
 	$: isActive = $eventGeneratorData.powerups.limited.active;
 
@@ -25,7 +23,7 @@
 	let res = validationSuite.get();
 </script>
 
-<PowerUpConfigWrapper {powerUpData}>
+<PowerUpConfigWrapper {powerUpData} powerUpType="limited">
 	<div>
 		<InputWrapper
 			label="Amount of FLOATs"

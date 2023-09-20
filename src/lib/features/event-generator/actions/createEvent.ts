@@ -72,7 +72,7 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 		event.eventType,
 		event.certificateType,
 		event.powerups.timelock.active ? event.powerups.timelock.data : null,
-		event.powerups.secretCode.active ? event.powerups.secretCode.data : null,
+		event.powerups.secret.active ? event.powerups.secret.data : null,
 		event.powerups.limited.active ? event.powerups.limited.data : null,
 		event.powerups.payment.active ? event.powerups.payment.data : null,
 		event.powerups.minimumBalance.active ? event.powerups.minimumBalance.data : null,
