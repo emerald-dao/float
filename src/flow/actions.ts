@@ -69,7 +69,8 @@ const createEvent = async (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
-	visibilityMode: 'certificate' | 'picture'
+	visibilityMode: 'certificate' | 'picture',
+	multipleClaim: boolean
 ) => {
 	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
 	const timePeriod =
@@ -107,7 +108,8 @@ const createEvent = async (
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
 			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
-			arg(visibilityMode, t.String)
+			arg(visibilityMode, t.String),
+			arg(multipleClaim, t.Bool)
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -133,6 +135,7 @@ export const createEventExecution = (
 	payment: number | null,
 	minimumBalance: number | null,
 	visibilityMode: 'certificate' | 'picture',
+	multipleClaim: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
 	executeTransaction(
@@ -153,7 +156,8 @@ export const createEventExecution = (
 				limited,
 				payment,
 				minimumBalance,
-				visibilityMode
+				visibilityMode,
+				multipleClaim
 			),
 		actionAfterSucceed
 	);

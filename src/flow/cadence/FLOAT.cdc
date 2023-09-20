@@ -644,7 +644,7 @@ pub contract FLOAT: NonFungibleToken {
         // Description: Checks if a user can mint a new FLOAT from this event
         pub fun userCanMint(address: Address): Bool {
             if let allows: Bool = self.getSpecificExtraMetadata(key: "allowsMultipleClaim") as! Bool? {
-                if (!allows && self.getSerialsUserClaimed(address: address).length == 0) || allows {
+                if allows || self.getSerialsUserClaimed(address: address).length == 0 {
                     return true
                 }
             }
