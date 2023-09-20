@@ -185,6 +185,13 @@
     var encodedUri = encodeURI(csvContent);
     window.open(encodedUri);
   };
+
+  function convertToUrl(url) {
+    if (url && !url.startsWith("https://") && !url.startsWith("http://")) {
+      return "https://" + url;
+    }
+    return url;
+  }
 </script>
 
 <div class="container">
@@ -198,7 +205,7 @@
     {:else}
       <article>
         <header>
-          <a href={floatEvent?.url} target="_blank">
+          <a href={convertToUrl(floatEvent?.url)} target="_blank">
             <h1>{floatEvent?.name}</h1>
           </a>
           <QrCode data={window.location.href} image={floatEvent?.image} />
