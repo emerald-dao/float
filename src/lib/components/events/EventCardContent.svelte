@@ -162,9 +162,10 @@
 			}
 
 			.general-info-wrapper {
-				padding: 0;
-				flex-direction: row;
+				display: grid;
+				grid-template-columns: 2fr 1fr;
 				align-items: center;
+				padding: 0;
 				gap: var(--space-12);
 				justify-self: start;
 			}
