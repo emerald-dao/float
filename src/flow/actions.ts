@@ -30,13 +30,13 @@ import getEventScript from './cadence/scripts/get_event.cdc?raw';
 import getEventsBatchScript from './cadence/scripts/get_events_batch.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
-import getEventClaimsScript from './cadence/scripts/get_claimed_in_event.cdc?raw';
 import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
 import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
+import userCanMintScript from './cadence/scripts/user_can_mint.cdc?raw';
 import validateAddressExistanceScript from './cadence/scripts/validate_address_existance.cdc?raw';
 import validateFindExistanceScript from './cadence/scripts/validate_find_existance.cdc?raw';
 
@@ -69,7 +69,8 @@ const createEvent = async (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
-	visibilityMode: 'certificate' | 'picture'
+	visibilityMode: 'certificate' | 'picture',
+	multipleClaim: boolean
 ) => {
 	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
 	const timePeriod =
@@ -107,7 +108,8 @@ const createEvent = async (
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
 			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
-			arg(visibilityMode, t.String)
+			arg(visibilityMode, t.String),
+			arg(multipleClaim, t.Bool)
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -133,6 +135,7 @@ export const createEventExecution = (
 	payment: number | null,
 	minimumBalance: number | null,
 	visibilityMode: 'certificate' | 'picture',
+	multipleClaim: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) =>
 	executeTransaction(
@@ -153,7 +156,8 @@ export const createEventExecution = (
 				limited,
 				payment,
 				minimumBalance,
-				visibilityMode
+				visibilityMode,
+				multipleClaim
 			),
 		actionAfterSucceed
 	);
@@ -345,18 +349,6 @@ export const getEventsBatch = async (
 	}
 };
 
-export const getEventClaims = async (eventHost: string, eventId: string): Promise<Claim[]> => {
-	try {
-		return await fcl.query({
-			cadence: replaceWithProperValues(getEventClaimsScript),
-			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
-		});
-	} catch (e) {
-		console.log('Error in getEventClaims', e);
-		throw new Error('Error in getEventClaims');
-	}
-};
-
 export const getLatestEventClaims = async (
 	eventHost: string,
 	eventId: string,
@@ -483,6 +475,26 @@ export const userHasClaimedEvent = async (
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(userHasClaimedEventScript),
+			args: (arg, t) => [
+				arg(eventId, t.UInt64),
+				arg(eventHost, t.Address),
+				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const userCanMint = async (
+	eventId: string,
+	eventHost: string,
+	userAddress: string
+) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(userCanMintScript),
 			args: (arg, t) => [
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),

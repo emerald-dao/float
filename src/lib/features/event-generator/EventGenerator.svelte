@@ -4,11 +4,11 @@
 	import { eventGeneratorSteps, eventGeneratorActiveStep } from './stores/EventGeneratorSteps';
 	import { eventGeneratorData, generatedNft } from './stores/EventGeneratorData';
 	import { setContext } from 'svelte';
-	import Blur from '$lib/components/Blur.svelte';
-	import { POWER_UPS } from './components/steps/6-PowerUps/powerUps';
-	import { writable, type Writable } from 'svelte/store';
 	import Icon from '@iconify/svelte';
 	import Float from '$lib/components/floats/Float.svelte';
+	import { POWER_UPS } from './components/steps/7-PowerUps/powerUps';
+	import Blur from '$lib/components/Blur.svelte';
+	import { writable, type Writable } from 'svelte/store';
 	import StepButtons from './components/steps/atoms/StepButtons.svelte';
 	import type { PowerUpType } from './types/event-generator-data.interface';
 
@@ -22,8 +22,8 @@
 
 	setContext('activePowerUp', activePowerUp);
 
-	$: powerUpsStep = $eventGeneratorActiveStep === 5;
-	$: reviewStep = $eventGeneratorActiveStep === 6;
+	$: powerUpsStep = $eventGeneratorActiveStep === 6;
+	$: reviewStep = $eventGeneratorActiveStep === 7;
 	$: activePowerUpComponent = POWER_UPS[$activePowerUp].component;
 </script>
 

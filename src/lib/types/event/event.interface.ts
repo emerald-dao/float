@@ -21,6 +21,7 @@ export interface Event {
 	price: string | null;
 	totalSupply: string;
 	transferrable: boolean;
+	multipleClaim: boolean;
 	url: string;
 	verifiers: EventVerifiers;
 	eventType: EventType;

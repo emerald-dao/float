@@ -31,6 +31,8 @@ pub struct FLOATEventMetadata {
   pub let verifiers: {String: AnyStruct}
   pub let eventType: String
   pub let price: UFix64?
+  pub let visibilityMode: String
+  pub let multipleClaim: Bool
 
   init(_ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
       self.claimable = event.claimable
@@ -90,6 +92,8 @@ pub struct FLOATEventMetadata {
         }
       }
       self.eventType = (extraMetadata["eventType"] as! String?) ?? "other"
+      self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
+      self.multipleClaim = (extraMetadata["multipleClaim"] as! Bool?) ?? false
 
       if let prices = event.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
