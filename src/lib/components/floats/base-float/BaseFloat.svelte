@@ -51,6 +51,12 @@
 			}
 		}
 
+		@container ticket (max-width: 300px) {
+			.secondary-wrapper {
+				font-size: 0.5rem;
+			}
+		}
+
 		.secondary-wrapper {
 			position: relative;
 			width: 100%;
