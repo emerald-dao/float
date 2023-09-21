@@ -5,7 +5,7 @@
 
 	export let certificateType: CertificateType;
 	export let color: FloatColors = 'neutral';
-	export let level: MedalType | null;
+	export let level: MedalType | null = null;
 </script>
 
 <div class="main-wrapper">
@@ -23,6 +23,7 @@
 		height: 1.4em;
 		object-fit: cover;
 	} */
+
 	.main-wrapper {
 		display: flex;
 		align-items: baseline;

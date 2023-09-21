@@ -35,14 +35,16 @@
 	</F.Header>
 	<F.Body color={labelColor}>
 		<div class={`body-wrapper ${labelColor}`}>
-			<div class="column align-center">
+			<div class="secondary-body-wrapper column align-center">
 				<div class="name-and-logo-wrapper">
 					<FloatLogo {float} width="1.4em" />
 					<FloatName {float} fontSize="1.17em" />
 				</div>
 				<FloatEventType eventType={float.eventType} fontSize="0.84em" />
 				{#await getProfile(float.originalRecipient) then profile}
-					<span class="certificate-recipient">{profile.name}</span>
+					<div class="certificate-recipient-wrapper">
+						<span class="certificate-recipient">{profile.name}</span>
+					</div>
 				{/await}
 			</div>
 			<div class="row-space-between">
@@ -74,21 +76,30 @@
 		justify-content: space-between;
 		flex: 1;
 
-		.certificate-recipient {
-			font-size: 1.38em;
-			--font-weight: var(--font-weight-medium);
-			color: var(--clr-heading-main);
-			margin-top: 3%;
-		}
+		.secondary-body-wrapper {
+			flex: 1;
 
-		.name-and-logo-wrapper {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			justify-content: center;
-			gap: 0.5em;
-			overflow: hidden;
-			width: 100%;
+			.certificate-recipient-wrapper {
+				flex: 1;
+				display: flex;
+				align-items: center;
+
+				.certificate-recipient {
+					font-size: 1.38em;
+					--font-weight: var(--font-weight-medium);
+					color: var(--clr-heading-main);
+				}
+			}
+
+			.name-and-logo-wrapper {
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				gap: 0.5em;
+				overflow: hidden;
+				width: 100%;
+			}
 		}
 	}
 </style>
