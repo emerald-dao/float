@@ -47,7 +47,7 @@
 				<p class="small">Can be changed later.</p>
 				<div class="content-wrapper">
 					<div class="card">
-						<span class="small">
+						<span class="w-medium">
 							{#if $eventGeneratorData.claimable}
 								FLOAT is claimable
 							{:else}
@@ -56,7 +56,7 @@
 						</span>
 					</div>
 					<div class="card">
-						<span class="small">
+						<span class="w-medium">
 							{#if $eventGeneratorData.transferrable}
 								FLOAT is transferrable
 							{:else}
@@ -65,7 +65,7 @@
 						</span>
 					</div>
 					<div class="card">
-						<span class="small">
+						<span class="w-medium">
 							{#if $eventGeneratorData.multipleClaim}
 								User can claim multiple
 							{:else}
@@ -110,7 +110,7 @@
 		}
 
 		.content-wrapper {
-			margin-top: var(--space-2);
+			margin-top: var(--space-3);
 			display: grid;
 			grid-template-columns: 1fr 1fr;
 			gap: var(--space-3);
@@ -118,9 +118,13 @@
 
 			.card {
 				padding: var(--space-4);
-				background-color: transparent;
 				border-radius: var(--radius-2);
+				border-color: var(--clr-neutral-badge);
 				background-color: var(--clr-background-primary);
+
+				span {
+					font-size: var(--font-size-1);
+				}
 			}
 		}
 
