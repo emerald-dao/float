@@ -127,7 +127,7 @@
 		border-top-left-radius: var(--radius-2);
 		border-top-right-radius: var(--radius-2);
 		overflow: visible;
-		width: 500px;
+		width: 100%;
 
 		.input-wrapper {
 			position: relative;
@@ -165,7 +165,7 @@
 				}
 
 				&.has-shortcut {
-					padding-left: 8%;
+					padding-left: 2.6em;
 				}
 			}
 
