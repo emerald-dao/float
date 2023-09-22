@@ -1,6 +1,8 @@
 export async function getLiveEvent(eventId: string) {
 	try {
-		const response = await fetch(`/api/events/liveEventId/${eventId}`);
+		const response = await fetch(`/api/events/${eventId}`, {
+			method: 'GET'
+		});
 		if (!response.ok) {
 			const errorData = await response.json();
 			console.error('Error fetching events:', errorData.error);
