@@ -15,7 +15,7 @@
 		{:else}
 			<Icon icon="tabler:eye-off" />
 		{/if}
-		Not claimable events
+		Inactive Events
 	</button>
 </div>
 

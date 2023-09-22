@@ -22,6 +22,6 @@
 		</PowerUpCard.Details>
 	</PowerUpCard.Content>
 	{#if limitedStatus !== null}
-		<PowerUpState status="active" {message} />
+		<PowerUpState status={limitedStatus.status === 'soldout' ? 'inactive' : 'active'} {message} />
 	{/if}
 </PowerUpReviewCard>

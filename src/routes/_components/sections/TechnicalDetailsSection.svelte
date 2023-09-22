@@ -50,11 +50,19 @@
 <style lang="scss">
 	.container-small {
 		background-color: var(--clr-neutral-50);
-		padding: var(--space-16);
+		padding: var(--space-10);
 		border-radius: var(--radius-9);
 		position: relative;
 		overflow: hidden;
 		display: flex;
+
+		@include mq(small) {
+			padding: var(--space-12);
+		}
+
+		@include mq(medium) {
+			padding: var(--space-16);
+		}
 
 		.orbits-wrapper {
 			position: absolute;

@@ -135,5 +135,14 @@
 			cursor: pointer;
 			text-decoration: none;
 		}
+
+		form {
+			width: 350px;
+			display: none;
+
+			@include mq(medium) {
+				display: block;
+			}
+		}
 	}
 </style>
