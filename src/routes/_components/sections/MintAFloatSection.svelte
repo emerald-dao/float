@@ -8,9 +8,8 @@
 	<Blur color="tertiary" right="0" top="30%" />
 	<Blur left="0" bottom="20%" />
 	<SectionHeading
-		title="We've got you covered"
-		description="Create a unique and valuable experience for event attendees, while increasing engagement and
-			trust for event creators."
+		title="Start collecting experiences"
+		description="Mint this FLOAT to start your collection!"
 	/>
 	<EventQrCard title="I visited FLOAT's Home Page" type="Website Visit" qrUrl="/test-qr.png" />
 </section>
