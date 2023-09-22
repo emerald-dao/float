@@ -128,6 +128,7 @@
 		border-top-right-radius: var(--radius-2);
 		overflow: visible;
 		width: 100%;
+		position: relative;
 
 		.input-wrapper {
 			position: relative;
@@ -183,8 +184,8 @@
 		}
 
 		.profile-wrapper {
+			width: 100%;
 			padding: var(--space-4);
-			width: 500px;
 			position: absolute;
 			display: inline-block;
 			background-color: var(--clr-surface-secondary);
