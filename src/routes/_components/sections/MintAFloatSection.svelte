@@ -11,7 +11,7 @@
 		title="Start collecting experiences"
 		description="Mint this FLOAT to start your collection!"
 	/>
-	<EventQrCard title="I visited FLOAT's Home Page" type="Website Visit" qrUrl="/test-qr.png" />
+	<EventQrCard title="I visited FLOAT's Home Page" type="Website Visit" />
 </section>
 
 <style lang="scss">
