@@ -41,7 +41,14 @@
 		</div>
 	</PowerUpCard.Content>
 	{#if timelockStatus !== null}
-		<PowerUpCard.State status="inactive" {message} />
+		<PowerUpCard.State
+			status={timelockStatus.status === 'unlocked'
+				? 'active'
+				: timelockStatus.status === 'locked'
+				? 'neutral'
+				: 'inactive'}
+			{message}
+		/>
 	{/if}
 </PowerUpReviewCard>
 
