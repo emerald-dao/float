@@ -11,10 +11,11 @@
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 
 	export let data;
+	console.log(data);
 
 	let startDate = data.event.verifiers.timelock?.dateStart
 		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateStart)
-		: null;
+		: unixTimestampToFormattedDate(data.event.dateCreated);
 	let endDate = data.event.verifiers.timelock?.dateEnding
 		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateEnding)
 		: null;
