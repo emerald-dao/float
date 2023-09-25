@@ -16,7 +16,8 @@ import type { ActionExecutionResult } from '$stores/custom/steps/step.interface'
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
 import burnFLOATTx from './cadence/transactions/burn_float.cdc?raw';
-import claimFLOATTx from './cadence/transactions/claim.cdc?raw';
+import claimFLOATTx from './cadence/transactions/claim_float.cdc?raw';
+import purchaseFLOATTx from './cadence/transactions/purchase_float.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
@@ -175,10 +176,24 @@ const burnFLOAT = async (floatId: string) => {
 
 export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
 
-// only provide claimCode and claimeeAddress if the FLOAT has a password on it
 const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(claimFLOATTx),
+		args: (arg, t) => [
+			arg(eventId, t.UInt64),
+			arg(eventCreator, t.Address),
+			arg(secretSig, t.Optional(t.String))
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+const purchaseFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(purchaseFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
@@ -195,8 +210,14 @@ export const claimFLOATExecution = (
 	eventId: string,
 	eventCreator: string,
 	secretSig: string | null,
+	free: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
-) => executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
+) => {
+	if (free) {
+		return executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
+	}
+	return executeTransaction(() => purchaseFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
+}
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({

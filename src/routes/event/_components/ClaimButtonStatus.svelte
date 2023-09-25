@@ -12,6 +12,7 @@
 
 	export let event: EventWithStatus;
 	export let secretCode: string;
+	export let free: boolean;
 
 	let floatAlreadyClaimed: boolean;
 
@@ -121,7 +122,7 @@
 					size="large"
 					width="full-width"
 					state={secretCodeValidation ? 'active' : 'disabled'}
-					on:click={() => claimFloat(event.eventId, event.host, inputValue)}
+					on:click={() => claimFloat(event.eventId, event.host, inputValue, free)}
 				>
 					Claim FLOAT
 				</Button>
@@ -129,7 +130,7 @@
 				<Button
 					size="large"
 					width="full-width"
-					on:click={() => claimFloat(event.eventId, event.host, undefined)}
+					on:click={() => claimFloat(event.eventId, event.host, undefined, free)}
 				>
 					Claim FLOAT
 				</Button>

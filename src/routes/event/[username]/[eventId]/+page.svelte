@@ -85,7 +85,7 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<ClaimButtonStatus event={data.event} {secretCode} />
+	<ClaimButtonStatus event={data.event} {secretCode} free={!data.event.price} />
 </section>
 <section class="container-small claims-wrapper">
 	<div class="row-1 claims-title-wrapper align-center">
