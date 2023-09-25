@@ -12,9 +12,9 @@
 	<div class="main-wrapper">
 		<AdminHeader />
 		<div class="secondary-wrapper">
-			<AdminNavMobile />
 			<AdminNavDesktop />
 			<slot />
+			<AdminNavMobile />
 		</div>
 	</div>
 {:else}
@@ -31,14 +31,20 @@
 		}
 
 		.secondary-wrapper {
-			display: flex;
-			flex-direction: column;
-			flex: 1;
-			overflow: hidden;
+			display: grid;
+			grid-template-rows: 1fr 100px;
+
+			@include mq(small) {
+				display: flex;
+				flex-direction: column;
+				flex: 1;
+				overflow: hidden;
+			}
 
 			@include mq(medium) {
 				display: grid;
 				grid-template-columns: 1fr 4fr;
+				grid-template-rows: 1fr;
 			}
 		}
 	}
