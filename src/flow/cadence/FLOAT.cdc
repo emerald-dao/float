@@ -301,7 +301,7 @@ pub contract FLOAT: NonFungibleToken {
         // this user owns from that event. It's possible
         // for it to be out of sync until June 2022 spork, 
         // but it is used merely as a helper, so that's okay.
-        access(account) var events: {UInt64: {UInt64: Bool}}
+        access(self) var events: {UInt64: {UInt64: Bool}}
 
         // Deposits a FLOAT to the collection
         pub fun deposit(token: @NonFungibleToken.NFT) {
@@ -330,11 +330,7 @@ pub contract FLOAT: NonFungibleToken {
             // have this FLOAT's id in it
             self.events[nft.eventId]!.remove(key: withdrawID)
 
-            // Try to update the FLOATEvent's current holders. This will
-            // not work if they unlinked their FLOATEvent to the public,
-            // and the data will go out of sync. But that is their fault.
-            //
-            // Additionally, this checks if the FLOATEvent host wanted this
+            // This checks if the FLOATEvent host wanted this
             // FLOAT to be transferrable. Secondary marketplaces will use this
             // withdraw function, so if the FLOAT is not transferrable,
             // you can't sell it there.
@@ -498,6 +494,9 @@ pub contract FLOAT: NonFungibleToken {
         // Will be used every time someone "claims" a FLOAT
         // to see if they pass the requirements
         access(self) let verifiers: {String: [{IVerifier}]}
+        // Used to store extra metadata about the event but
+        // also individual FLOATs, because Jacob forgot to
+        // put a dictionary in the NFT resource :/ Idiot
         access(self) var extraMetadata: {String: AnyStruct}
 
         // DEPRECATED, DO NOT USE
@@ -869,21 +868,12 @@ pub contract FLOAT: NonFungibleToken {
         pub let name: String
         pub let image: String
         pub let description: String
-        access(account) var events: {UInt64: Bool}
-        access(account) fun addEvent(eventId: UInt64) {
-            self.events[eventId] = true
-        }
-        access(account) fun removeEvent(eventId: UInt64) {
-            self.events.remove(key: eventId)
-        }
-        pub fun getEvents(): [UInt64] {
-            return self.events.keys
-        }
-        init(_name: String, _image: String, _description: String) {
-            self.id = self.uuid
-            self.name = _name
-            self.image = _image
-            self.description = _description
+        access(self) var events: {UInt64: Bool}
+        init() {
+            self.id = 0
+            self.name = ""
+            self.image = ""
+            self.description = ""
             self.events = {}
         }
     }
@@ -896,17 +886,36 @@ pub contract FLOAT: NonFungibleToken {
         pub fun borrowPublicEventRef(eventId: UInt64): &FLOATEvent{FLOATEventPublic}?
         pub fun getAllEvents(): {UInt64: String}
         pub fun getIDs(): [UInt64]
+        pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver}
     }
 
     // A "Collection" of FLOAT Events
     pub resource FLOATEvents: FLOATEventsPublic, MetadataViews.ResolverCollection {
         // All the FLOAT Events this collection stores
-        access(account) var events: @{UInt64: FLOATEvent}
+        access(self) var events: @{UInt64: FLOATEvent}
         // DEPRECATED
-        access(account) var groups: @{String: Group}
+        access(self) var groups: @{String: Group}
 
-        // Creates a new FLOAT Event by passing in some basic parameters
-        // and a list of all the verifiers this event must abide by
+        // Creates a new FLOAT Event
+        //
+        // Read below for a description on all the values and expectations here
+        //
+        // claimable: Do you want this FLOAT to be publicly claimable by users?
+        // transferrable: Should this FLOAT be transferrable or soulbound?
+        // url: A generic url to your FLOAT Event
+        // verifiers: An array of verifiers from FLOATVerifiers contract
+        // allowMultipleClaim: Should users be able to claim/receive multiple
+        // of this FLOAT?
+        // certificateType: Determines how the FLOAT is displayed on the FLOAT platform. Must be one of the 
+        // following or it will fail: "ticket", "medal", "certificate"
+        // visibilityMode: Determines how the FLOAT is displayed on the FLOAT platform. Must be one of the 
+        // following: "picture", "certificate"
+        // extraMetadata: Any extra metadata for your event. Here are some restrictions on the keys of this dictionary:
+            // userClaims: You cannot provide a userClaims key
+            // extraFloatMetadatas: You cannot provide a extraFloatMetadatas key
+            // certificateImage: Must either be nil or a String type
+            // backImage: The IPFS CID of what will display on the back of your FLOAT. Must either be nil or a String type
+            // eventType: Must either be nil or a String type
         pub fun createEvent(
             claimable: Bool,
             description: String,
@@ -917,12 +926,19 @@ pub contract FLOAT: NonFungibleToken {
             verifiers: [{IVerifier}],
             allowMultipleClaim: Bool,
             certificateType: String,
+            visibilityMode: String,
             extraMetadata: {String: AnyStruct}
         ): UInt64 {
-            assert(
-                certificateType == "ticket" || certificateType == "medal" || certificateType == "certificate", 
-                message: "You must either choose 'ticket', 'medal', or 'certificate' for certificate type. This is how your FLOAT will be displayed."
-            )
+            pre {
+                certificateType == "ticket" || certificateType == "medal" || certificateType == "certificate": "You must either choose 'ticket', 'medal', or 'certificate' for certificateType. This is how your FLOAT will be displayed."
+                visibilityMode == "certificate" || visibilityMode == "picture": "You must either choose 'certificate' or 'picture' for visibilityMode. This is how your FLOAT will be displayed."
+                extraMetadata["userClaims"] == nil: "Cannot use userClaims key in extraMetadata."
+                extraMetadata["extraFloatMetadatas"] == nil: "Cannot use extraFloatMetadatas key in extraMetadata."
+                extraMetadata["certificateImage"] == nil || extraMetadata["certificateImage"]!.getType() == Type<String>(): "certificateImage must be a String or nil type."
+                extraMetadata["backImage"] == nil || extraMetadata["backImage"]!.getType() == Type<String>(): "backImage must be a String or nil type."
+                extraMetadata["eventType"] == nil || extraMetadata["eventType"]!.getType() == Type<String>(): "eventType must be a String or nil type."
+            }
+
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
                 let identifier = verifier.getType().identifier
@@ -935,6 +951,7 @@ pub contract FLOAT: NonFungibleToken {
 
             extraMetadata["allowMultipleClaim"] = allowMultipleClaim
             extraMetadata["certificateType"] = certificateType
+            extraMetadata["visibilityMode"] = visibilityMode
 
             let FLOATEvent <- create FLOATEvent(
                 _claimable: claimable,
@@ -962,8 +979,6 @@ pub contract FLOAT: NonFungibleToken {
         pub fun borrowEventRef(eventId: UInt64): &FLOATEvent? {
             return &self.events[eventId] as &FLOATEvent?
         }
-
-        /************* Getters (for anyone) *************/
 
         // Get a public reference to the FLOATEvent
         // so you can call some helpful getters
@@ -1045,13 +1060,13 @@ pub contract FLOAT: NonFungibleToken {
         extraMetadata["eventType"] = "course"
         extraMetadata["certificateImage"] = "bafkreidcwg6jkcsugms2jtv6suwk2cao2ij6y57mopz4p4anpnvwswv2ku"
 
-        FLOATEvents.createEvent(claimable: true, description: "Test description for the upcoming Flow Hackathon. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Flow Hackathon", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "medal", extraMetadata: extraMetadata)
+        FLOATEvents.createEvent(claimable: true, description: "Test description for the upcoming Flow Hackathon. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Flow Hackathon", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "medal", visibilityMode: "certificate", extraMetadata: extraMetadata)
         
         extraMetadata["backImage"] = "bafkreihwra72f2sby4h2bswej4zzrmparb6jy55ygjrymxjk572tjziatu"
         extraMetadata["eventType"] = "discordMeeting"
         extraMetadata["certificateImage"] = "bafkreidcwg6jkcsugms2jtv6suwk2cao2ij6y57mopz4p4anpnvwswv2ku"
 
-        FLOATEvents.createEvent(claimable: true, description: "Test description for a Discord meeting. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Discord Meeting", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "ticket", extraMetadata: extraMetadata)
+        FLOATEvents.createEvent(claimable: true, description: "Test description for a Discord meeting. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Discord Meeting", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "ticket", visibilityMode: "picture", extraMetadata: extraMetadata)
     }
 }
  

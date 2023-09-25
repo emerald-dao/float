@@ -84,7 +84,6 @@ transaction(
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
     extraMetadata["certificateImage"] = certificateImage
-    extraMetadata["visibilityMode"] = visibilityMode
 
     self.FLOATEvents.createEvent(
       claimable: claimable, 
@@ -96,6 +95,7 @@ transaction(
       verifiers: verifiers, 
       allowMultipleClaim: allowMultipleClaim,
       certificateType: certificateType,
+      visibilityMode: visibilityMode,
       extraMetadata: extraMetadata
     )
     log("Started a new event for host.")
