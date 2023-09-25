@@ -28,7 +28,7 @@
 </script>
 
 <section class:review-step={reviewStep}>
-	<div class="step-component-wrapper" class:hide-on-medium={reviewStep}>
+	<div class="step-component-wrapper">
 		<div class="component-wrapper">
 			<svelte:component
 				this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
@@ -49,37 +49,27 @@
 			bind:stepDataValid
 		/>
 	</div>
-	<div class="right-column hide-on-small">
-		<div style="position: absolute; z-index: -1" class:rotate-slow={$eventGenerationInProgress}>
-			<Blur color="tertiary" right="0" top="30%" />
-			<Blur left="0" bottom="20%" />
+	{#if !reviewStep}
+		<div class="right-column hide-on-small">
+			<div style="position: absolute; z-index: -1" class:rotate-slow={$eventGenerationInProgress}>
+				<Blur color="tertiary" right="0" top="30%" />
+				<Blur left="0" bottom="20%" />
+			</div>
+			{#if powerUpsStep}
+				<div in:fly|local={{ x: -200, duration: 500, delay: 200 }} class="power-up-wrapper">
+					<svelte:component this={activePowerUpComponent} />
+				</div>
+			{:else}
+				<div class="column align-center ticket-wrapper" in:fly|local={{ x: 500, duration: 700 }}>
+					<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
+				</div>
+				<span class="small click-to-flip row-2 align-center">
+					<Icon icon="tabler:360" width="1.3rem" />
+					Click ticket to flip
+				</span>
+			{/if}
 		</div>
-		{#if reviewStep}
-			<div class="review-step-wrapper">
-				<svelte:component
-					this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
-					bind:stepDataValid
-				/>
-				<StepButtons
-					stepsStore={eventGeneratorSteps}
-					activeStepStore={eventGeneratorActiveStep}
-					bind:stepDataValid
-				/>
-			</div>
-		{:else if powerUpsStep}
-			<div in:fly|local={{ x: -200, duration: 500, delay: 200 }} class="power-up-wrapper">
-				<svelte:component this={activePowerUpComponent} />
-			</div>
-		{:else}
-			<div class="column align-center ticket-wrapper" in:fly|local={{ x: 500, duration: 700 }}>
-				<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
-			</div>
-			<span class="small click-to-flip row-2 align-center">
-				<Icon icon="tabler:360" width="1.3rem" />
-				Click ticket to flip
-			</span>
-		{/if}
-	</div>
+	{/if}
 </section>
 
 <style lang="scss">
@@ -91,7 +81,6 @@
 		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 4fr 5fr;
-			overflow: hidden;
 		}
 
 		&.review-step {
@@ -123,7 +112,7 @@
 				width: 100%;
 
 				@include mq(small) {
-					padding-bottom: none;
+					padding-bottom: 0px;
 				}
 			}
 		}

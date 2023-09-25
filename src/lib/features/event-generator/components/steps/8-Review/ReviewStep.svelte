@@ -107,6 +107,7 @@
 
 		.float-wrapper {
 			width: 100%;
+			position: relative;
 		}
 
 		.content-wrapper {
