@@ -29,7 +29,7 @@
 
 <section class:review-step={reviewStep}>
 	<div class="step-component-wrapper" class:hide-on-medium={reviewStep}>
-		<div>
+		<div class="component-wrapper">
 			<svelte:component
 				this={$eventGeneratorSteps[$eventGeneratorActiveStep].component}
 				bind:stepDataValid
@@ -103,7 +103,7 @@
 		.step-component-wrapper {
 			display: flex;
 			flex: 1;
-			height: 100%;
+			max-height: 100%;
 			flex-direction: column;
 			justify-content: space-between;
 			background-color: var(--clr-background-primary);
@@ -112,11 +112,19 @@
 			box-shadow: 0px 0px 20px 0 var(--clr-shadow-primary);
 			z-index: 2;
 			padding: var(--space-9) var(--space-6);
-			width: 100%;
 			gap: var(--space-8);
 
 			@include mq(medium) {
 				padding: var(--space-18);
+			}
+
+			.component-wrapper {
+				padding-bottom: var(--space-13);
+				width: 100%;
+
+				@include mq(small) {
+					padding-bottom: none;
+				}
 			}
 		}
 
