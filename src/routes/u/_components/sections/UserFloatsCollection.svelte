@@ -204,7 +204,7 @@
 		.rightside {
 			display: flex;
 			flex-direction: column;
-			justify-content: flex-start;
+			justify-content: center;
 			align-items: center;
 
 			@include mq('medium') {
@@ -275,7 +275,6 @@
 			}
 
 			.no-floats-message {
-				margin-top: var(--space-20);
 				color: var(--clr-text-off);
 			}
 		}
