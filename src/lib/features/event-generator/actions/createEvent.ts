@@ -39,11 +39,11 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 	let floatTicketIpfsCid:
 		| string
 		| {
-				gold: string;
-				silver: string;
-				bronze: string;
-				participation: string;
-		  };
+			gold: string;
+			silver: string;
+			bronze: string;
+			participation: string;
+		};
 
 	if (event.certificateType === 'medal') {
 		floatTicketIpfsCid = {

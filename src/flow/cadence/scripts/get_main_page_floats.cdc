@@ -12,7 +12,7 @@ pub fun main(floats: {Address: [UInt64]}): [FLOATMetadata] {
             let eventId = nft.eventId
             let eventHost = nft.eventHost
 
-            if let event = nft.getEventMetadata() {
+            if let event = nft.getEventRef() {
                 returnVal.append(FLOATMetadata(nft, event))
             }
         }

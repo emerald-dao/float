@@ -18,7 +18,7 @@ transaction(eventId: UInt64, recipients: [Address], medalTypes: {Address: String
 			let recipientCollection: &FLOAT.Collection{NonFungibleToken.CollectionPublic} = getAccount(address).getCapability(FLOAT.FLOATCollectionPublicPath)
 																.borrow<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>()
 																?? panic("Could not get the public FLOAT Collection from the recipient.")
-			self.FLOATEvent.mint(recipient: recipientCollection, optExtraFloatMetadata: {"medalType": medalTypes[address]})
+			self.FLOATEvent.mint(recipient: recipientCollection, optExtraFloatMetadata: {"medalType": medalTypes[address]!})
 		}
 	}
 }

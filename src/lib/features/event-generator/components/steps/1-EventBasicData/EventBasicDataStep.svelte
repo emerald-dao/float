@@ -43,24 +43,39 @@
 
 <StepComponentWrapper>
 	<div>
-		<div class="column">
-			<InputWrapper
-				label="Event name"
+		<InputWrapper
+			label="Event name"
+			name="event-name"
+			errors={res.getErrors('event-name')}
+			isValid={res.isValid('event-name')}
+			required={true}
+		>
+			<input
+				type="text"
+				bind:value={$eventGeneratorData.name}
 				name="event-name"
-				errors={res.getErrors('event-name')}
-				isValid={res.isValid('event-name')}
-				required={true}
-			>
-				<input
-					type="text"
-					bind:value={$eventGeneratorData.name}
-					name="event-name"
-					on:input={handleChange}
-					maxlength="30"
-					placeholder="Flow hackathon"
-				/>
-			</InputWrapper>
-		</div>
+				on:input={handleChange}
+				maxlength="30"
+				placeholder="Flow hackathon"
+			/>
+		</InputWrapper>
+
+		<InputWrapper
+			label="Event description"
+			name="event-description"
+			errors={res.getErrors('event-description')}
+			isValid={res.isValid('event-description')}
+			required={false}
+		>
+			<textarea
+				class="description"
+				bind:value={$eventGeneratorData.description}
+				name="event-description"
+				on:change={handleChange}
+				placeholder="This event symbalizes..."
+			/>
+		</InputWrapper>
+
 		<div class="column-1">
 			<label for="event-type">Event type</label>
 			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
@@ -93,5 +108,9 @@
 
 	.event-logo-wrapper {
 		margin-top: var(--space-6);
+	}
+
+	.description {
+		height: 6rem;
 	}
 </style>

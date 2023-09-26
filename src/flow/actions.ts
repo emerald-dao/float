@@ -15,6 +15,7 @@ import type { ActionExecutionResult } from '$stores/custom/steps/step.interface'
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
+import createMedalEventTx from './cadence/transactions/create_event_medal.cdc?raw';
 import burnFLOATTx from './cadence/transactions/burn_float.cdc?raw';
 import claimFLOATTx from './cadence/transactions/claim_float.cdc?raw';
 import purchaseFLOATTx from './cadence/transactions/purchase_float.cdc?raw';
@@ -71,20 +72,11 @@ const createEvent = async (
 	payment: number | null,
 	minimumBalance: number | null,
 	visibilityMode: 'certificate' | 'picture',
-	multipleClaim: boolean
+	multipleClaim: boolean,
+	startDate: number,
+	timePeriod: number,
+	secretPK: string
 ) => {
-	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
-	const timePeriod =
-		timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0;
-
-	let secretPK = '';
-	if (secret) {
-		const { publicKey } = await fetchKeysFromClaimCode(secret);
-		secretPK = publicKey;
-	}
-
-	console.log(eventType);
-
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(createEventTx),
 		args: (arg, t) => [
@@ -119,13 +111,13 @@ const createEvent = async (
 	});
 };
 
-export const createEventExecution = (
+const createMedalEvent = async (
 	name: string,
 	description: string,
 	url: string,
 	logo: string,
 	backImage: string,
-	certificateImage: string,
+	certificateImage: { gold: string; silver: string; bronze: string; participation: string; },
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
@@ -137,9 +129,110 @@ export const createEventExecution = (
 	minimumBalance: number | null,
 	visibilityMode: 'certificate' | 'picture',
 	multipleClaim: boolean,
+	startDate: number,
+	timePeriod: number,
+	secretPK: string
+) => {
+	let certificateImagesArg = [
+		{ key: "gold", value: certificateImage["gold"] },
+		{ key: "silver", value: certificateImage["silver"] },
+		{ key: "bronze", value: certificateImage["bronze"] },
+		{ key: "participation", value: certificateImage["participation"] }
+	];
+
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(createMedalEventTx),
+		args: (arg, t) => [
+			arg(name, t.String),
+			arg(description, t.String),
+			arg(url, t.String),
+			arg(logo, t.String),
+			arg(backImage, t.String),
+			arg(certificateImagesArg, t.Dictionary({ key: t.String, value: t.String })),
+			arg(transferrable, t.Bool),
+			arg(claimable, t.Bool),
+			arg(eventType, t.String),
+			arg(certificateType, t.String),
+			arg(timelock != null, t.Bool),
+			arg(startDate.toFixed(1), t.UFix64),
+			arg(timePeriod.toFixed(1), t.UFix64),
+			arg(secret != null, t.Bool),
+			arg(secret != null ? secretPK : '', t.String),
+			arg(limited != null, t.Bool),
+			arg(limited != null ? limited : '0', t.UInt64),
+			arg(payment != null, t.Bool),
+			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
+			arg(minimumBalance != null, t.Bool),
+			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
+			arg(visibilityMode, t.String),
+			arg(multipleClaim, t.Bool)
+		],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const createEventExecution = async (
+	name: string,
+	description: string,
+	url: string,
+	logo: string,
+	backImage: string,
+	certificateImage: string | { gold: string; silver: string; bronze: string; participation: string; },
+	transferrable: boolean,
+	claimable: boolean,
+	eventType: EventType,
+	certificateType: CertificateType,
+	timelock: { dateStart: string; dateEnding: string; } | null,
+	secret: string | null,
+	limited: number | null,
+	payment: number | null,
+	minimumBalance: number | null,
+	visibilityMode: 'certificate' | 'picture',
+	multipleClaim: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
-) =>
-	executeTransaction(
+) => {
+	const startDate = timelock != null ? Number(timelock.dateStart) : 0;
+	const timePeriod =
+		timelock != null ? Number(timelock.dateEnding) - Number(timelock.dateStart) : 0;
+
+	let secretPK = '';
+	if (secret) {
+		const { publicKey } = await fetchKeysFromClaimCode(secret);
+		secretPK = publicKey;
+	}
+
+	if (certificateType === 'medal') {
+		return executeTransaction(
+			() =>
+				createMedalEvent(
+					name,
+					description,
+					url,
+					logo,
+					backImage,
+					certificateImage as { gold: string; silver: string; bronze: string; participation: string; },
+					transferrable,
+					claimable,
+					eventType,
+					certificateType,
+					timelock,
+					secret,
+					limited,
+					payment,
+					minimumBalance,
+					visibilityMode,
+					multipleClaim,
+					startDate,
+					timePeriod,
+					secretPK
+				),
+			actionAfterSucceed
+		);
+	}
+	return executeTransaction(
 		() =>
 			createEvent(
 				name,
@@ -147,7 +240,7 @@ export const createEventExecution = (
 				url,
 				logo,
 				backImage,
-				certificateImage,
+				certificateImage as string,
 				transferrable,
 				claimable,
 				eventType,
@@ -158,10 +251,14 @@ export const createEventExecution = (
 				payment,
 				minimumBalance,
 				visibilityMode,
-				multipleClaim
+				multipleClaim,
+				startDate,
+				timePeriod,
+				secretPK
 			),
 		actionAfterSucceed
 	);
+}
 
 const burnFLOAT = async (floatId: string) => {
 	return await fcl.mutate({

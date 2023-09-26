@@ -117,29 +117,35 @@ pub contract FLOAT: NonFungibleToken {
         
         // Helper function to get the metadata of the event 
         // this FLOAT is from.
-        pub fun getEventMetadata(): &FLOATEvent{FLOATEventPublic}? {
-            if let events = self.eventsCap.borrow() {
+        pub fun getEventRef(): &FLOATEvent{FLOATEventPublic}? {
+            if let events: &FLOATEvents{FLOATEventsPublic, MetadataViews.ResolverCollection} = self.eventsCap.borrow() {
                 return events.borrowPublicEventRef(eventId: self.eventId)
             }
             return nil
         }
 
         pub fun getExtraMetadata(): {String: AnyStruct} {
-            if let event = self.getEventMetadata() {
+            if let event: &FLOATEvent{FLOATEventPublic} = self.getEventRef() {
                 return event.getExtraFloatMetadata(serial: self.serial)
             }
             return {}
         }
 
+        pub fun getSpecificExtraMetadata(key: String): AnyStruct? {
+            return self.getExtraMetadata()[key]
+        }
+
         pub fun getImage(): String {
-            if let extraEventMetadata: {String: AnyStruct} = self.getEventMetadata()?.getExtraMetadata() {
+            if let extraEventMetadata: {String: AnyStruct} = self.getEventRef()?.getExtraMetadata() {
                 if (extraEventMetadata["visibilityMode"] as! String?) == "picture" {
                     return self.eventImage
                 }
                 if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
                     if certificateType == "medal" {
-                        // put extra metadata about colors
-                        return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
+                        // extra metadata about colors
+                        if let medalType = self.getSpecificExtraMetadata(key: "medalType") {
+                            return (extraEventMetadata["certificateImage.".concat(medalType as! String? ?? "")] as! String?) ?? self.eventImage
+                        }
                     }
                     return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
                 }
@@ -159,7 +165,7 @@ pub contract FLOAT: NonFungibleToken {
                 Type<TokenIdentifier>()
             ]
 
-            if self.getEventMetadata()?.transferrable == false {
+            if self.getEventRef()?.transferrable == false {
                 supportedViews.append(Type<FindViews.SoulBound>())
             }
 
@@ -232,7 +238,7 @@ pub contract FLOAT: NonFungibleToken {
                         _serial: self.serial
                     ) 
                 case Type<FindViews.SoulBound>():
-                    if self.getEventMetadata()?.transferrable == false {
+                    if self.getEventRef()?.transferrable == false {
                         return FindViews.SoulBound(
                             "This FLOAT is soulbound because the event host toggled off transferring."
                         )
@@ -334,7 +340,7 @@ pub contract FLOAT: NonFungibleToken {
             // FLOAT to be transferrable. Secondary marketplaces will use this
             // withdraw function, so if the FLOAT is not transferrable,
             // you can't sell it there.
-            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventMetadata() {
+            if let floatEvent: &FLOATEvent{FLOATEventPublic} = nft.getEventRef() {
                 assert(
                     floatEvent.transferrable, 
                     message: "This FLOAT is not transferrable."
