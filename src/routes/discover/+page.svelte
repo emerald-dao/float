@@ -8,66 +8,96 @@
 	import getLiveEventFromBlockchain from './_actions/getLiveEventfromBlockchain.js';
 	import Float from '$lib/components/floats/Float.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat.js';
+	import getLatestEventsClaimedFromBlockchain from './_actions/getLatestEventsClaimedFromBlockchain.js';
+	import { fly, slide } from 'svelte/transition';
 
-	let dataFetched = false;
-	let dataLoading = true;
-	let trendingEvents: EventWithStatus[];
+	const claimStore = writable<{ eventIds: string[]; userAddresses: string[] }>(
+		{ eventIds: [], userAddresses: [] },
+		(set) => {
+			const eventIds: string[] = [];
+			const userAddresses: string[] = [];
 
-	const claimStore = writable<string[]>([], (set) => {
-		const eventIds: string[] = [];
+			const subscription = supabase
+				.channel('claims')
+				.on(
+					'postgres_changes',
+					{
+						event: 'INSERT',
+						schema: 'public',
+						table: 'claims'
+					},
+					(payload) => {
+						const event_id = payload.new?.event_id;
+						const user_address = payload.new?.user_address;
 
-		const subscription = supabase
-			.channel('claims')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'claims'
-				},
-				(payload) => {
-					const event_Id = payload.new?.event_id;
+						eventIds.push(event_id);
+						userAddresses.push(user_address);
 
-					eventIds.push(event_Id);
+						set({ eventIds, userAddresses });
+						fetchNewEventData();
+					}
+				)
+				.subscribe();
 
-					set(eventIds);
-					fetchData();
-				}
-			)
-			.subscribe();
+			return () => supabase.removeChannel(subscription);
+		}
+	);
 
-		return () => supabase.removeChannel(subscription);
-	});
-
-	let liveAction = false;
-
-	function showAlert() {
-		liveAction = true;
-		setTimeout(() => {
-			liveAction = false;
-		}, 8000);
-	}
-
-	let liveEvent: Event[] = [];
-
-	async function fetchData() {
+	async function fetchNewEventData() {
 		try {
 			if ($claimStore) {
-				const lastEventId = $claimStore[$claimStore.length - 1];
+				const lastEventId = $claimStore.eventIds[$claimStore.eventIds.length - 1];
+				const lastUserAddress = $claimStore.userAddresses[$claimStore.userAddresses.length - 1];
 				const event = await getLiveEventFromBlockchain(lastEventId);
-				liveEvent.push(event);
-				showAlert();
+				eventsAndUsers = [{ event, user_address: lastUserAddress }, ...eventsAndUsers];
 			}
 		} catch (error) {
 			console.error('Error fetching data:', error);
 		}
 	}
 
+	let trendingEventsFetched = false;
+	let trendingEventsLoading = true;
+	let trendingEvents: EventWithStatus[];
+
+	let latestEventsClaimedFetched = false;
+	let latestEventsClaimedLoading = true;
+	let latestEventsClaimed: { events: Event[]; latestUsersToClaim: any };
+	let eventsAndUsers: { event: Event; user_address: string }[] = [];
+
 	onMount(async () => {
-		trendingEvents = await getTrendingEventsFromBlockchain();
-		dataLoading = false;
-		if (trendingEvents) {
-			dataFetched = true;
+		try {
+			trendingEvents = await getTrendingEventsFromBlockchain();
+
+			trendingEventsLoading = false;
+			if (trendingEvents) {
+				trendingEventsFetched = true;
+			}
+		} catch (error) {
+			trendingEventsLoading = false;
+			console.error('Error fetching data:', error);
+		}
+
+		try {
+			latestEventsClaimed = await getLatestEventsClaimedFromBlockchain();
+
+			const eventsArray = latestEventsClaimed.events;
+			const latestUsersToClaimArray = latestEventsClaimed.latestUsersToClaim;
+
+			for (let i = 0; i < eventsArray.length; i++) {
+				const event = eventsArray[i];
+				const user_address = latestUsersToClaimArray[i];
+				const newObj = { event, user_address };
+				eventsAndUsers.push(newObj);
+			}
+
+			latestEventsClaimedLoading = false;
+			if (latestEventsClaimed) {
+				latestEventsClaimedFetched = true;
+			}
+		} catch (error) {
+			latestEventsClaimedLoading = false;
+			console.error('Error fetching data:', error);
 		}
 	});
 </script>
@@ -78,16 +108,15 @@
     rgba(250, 250, 250, 0.87),
 		rgba(250, 250, 250, 0.91),
     rgba(250, 250, 250, 1)
-  ), url("/badges/each-event-type-floats/level-3.png")`}
+  ), url("/badges/each-event-type-floats/level-3.png") `}
 >
 	<div class="container-medium">
 		<h2 class="w-medium">🔥Trending Events🔥</h2>
-
-		{#if dataLoading}
+		{#if trendingEventsLoading}
 			<div class="empty-state">
 				<span><em>Loading trending events</em></span>
 			</div>
-		{:else if dataFetched}
+		{:else if trendingEventsFetched}
 			<div class="cards-wrapper">
 				{#each trendingEvents as event}
 					<div class="event-wrapper">
@@ -101,27 +130,42 @@
 			</div>
 		{/if}
 	</div>
-	<div>
-		<div class="printer-wrapper">
-			<img src="/printer.png" alt="Printer" />
-			{#if liveAction}
-				<div class="cards">
-					{#each liveEvent as event}
-						<div class="float-wrapper">
-							<Float float={transformEventToFloat(event)} maxWidth="400px" />
+	<div class="live-tickets-wrapper">
+		<h3 class="w-medium align-center">Latest claims</h3>
+		{#if latestEventsClaimedLoading}
+			<div class="empty-state">
+				<span><em>Loading trending events</em></span>
+			</div>
+		{:else if latestEventsClaimedFetched}
+			<div class="cards">
+				{#each eventsAndUsers as data, i (data.event)}
+					<div in:slide={{ axis: 'x', duration: 4000 }}>
+						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }}>
+							<Float
+								float={transformEventToFloat(data.event, data.user_address)}
+								minWidth="400px"
+							/>
 						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
+					</div>
+				{/each}
+			</div>
+		{:else}
+			<div class="empty-state">
+				<span><em>No trending events</em></span>
+			</div>
+		{/if}
 	</div>
 </section>
 
 <style lang="scss">
 	section {
-		display: grid;
-		grid-template-columns: 3fr 1fr;
-		min-height: 85vh;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		min-height: 100vh;
+		width: 100%;
+		position: relative;
+		padding-block: 3rem;
 
 		.container-medium {
 			display: flex;
@@ -153,64 +197,51 @@
 					padding-bottom: var(--space-3);
 				}
 			}
-			.empty-state {
-				width: 100%;
-				height: 100%;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-			}
 		}
 
-		.printer-wrapper {
+		.live-tickets-wrapper {
 			display: flex;
 			flex-direction: column;
 			justify-content: flex-start;
-			align-items: center;
-			width: fit-content;
-			position: relative;
-			/* background-color: red; */
+			align-items: flex-start;
+			margin: var(--space-14) 0 var(--space-10) 0;
+			height: 100%;
+			width: 100%;
 
-			img {
-				width: 300px;
+			h3 {
+				align-self: center;
 			}
 
 			.cards {
 				display: flex;
-				flex-direction: column;
-				align-items: center;
+				justify-content: flex-start;
 				gap: var(--space-1);
-				width: 170px;
-				height: auto;
-				/* background-color: red; */
-				position: absolute;
-				top: 100%;
-				transform: rotate(-100%);
-				animation: appear 6s linear forwards, disappear 2s 8s forwards;
-
-				.float-wrapper {
-					transform: rotate(90deg);
-				}
+				padding-left: var(--space-1);
+				width: auto;
+				height: 100%;
+				margin-top: var(--space-14);
+				overflow: visible;
+				transform: transformX(-100%);
+				animation: appear 4s linear forwards;
 			}
 
 			@keyframes appear {
 				0% {
-					transform: translateY(-100%);
+					transform: translateX(-100%);
 				}
 				100% {
-					transform: translateY(0);
+					transform: translateX(0%);
 				}
 			}
+		}
 
-			@keyframes disappear {
-				0%,
-				100% {
-					transform: translateY(0);
-				}
-				50% {
-					transform: translateY(100%);
-				}
-			}
+		.empty-state {
+			width: 100%;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			margin-top: var(--space-8);
 		}
 	}
 </style>

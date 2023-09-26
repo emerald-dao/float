@@ -13,7 +13,7 @@ export async function GET() {
 		.from('claims')
 		.select('event_id, user_address')
 		.order('created_at', { ascending: false })
-		.limit(8);
+		.limit(6);
 
 	if (claimsError) {
 		throw claimsError;
