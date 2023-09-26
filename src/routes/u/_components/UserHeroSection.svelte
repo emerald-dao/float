@@ -116,8 +116,9 @@
 		justify-content: center;
 		align-items: center;
 		gap: var(--space-4);
-		padding-block: 4rem 0;
+		padding-block: 4rem 2rem;
 		border-bottom: 1px dashed var(--clr-border-primary);
+		position: relative;
 
 		@include mq(small) {
 			padding-block: 4rem;
@@ -162,8 +163,12 @@
 			}
 
 			.badge-wrapper {
-				display: flex;
-				justify-content: center;
+				display: none;
+
+				@include mq(small) {
+					display: flex;
+					justify-content: center;
+				}
 
 				&.badge-one {
 					grid-area: badge-one;
@@ -218,10 +223,15 @@
 	}
 
 	.badges-wrapper {
-		flex-wrap: wrap;
-		padding-bottom: var(--space-7);
-		align-items: center;
-		justify-content: center;
+		display: none;
+
+		@include mq(small) {
+			display: flex;
+			flex-wrap: wrap;
+			padding-bottom: var(--space-7);
+			align-items: center;
+			justify-content: center;
+		}
 	}
 
 	.opacity40 {
