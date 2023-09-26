@@ -41,11 +41,13 @@
 					<FloatName {float} fontSize="1.17em" />
 				</div>
 				<FloatEventType eventType={float.eventType} fontSize="0.84em" />
-				{#await getProfile(float.originalRecipient) then profile}
-					<div class="certificate-recipient-wrapper">
-						<span class="certificate-recipient">{profile.name}</span>
-					</div>
-				{/await}
+				{#if !isForScreenshot}
+					{#await getProfile(float.originalRecipient) then profile}
+						<div class="certificate-recipient-wrapper">
+							<span class="certificate-recipient">{profile.name}</span>
+						</div>
+					{/await}
+				{/if}
 			</div>
 			<div class="row-space-between">
 				<EventData title="Organizer">

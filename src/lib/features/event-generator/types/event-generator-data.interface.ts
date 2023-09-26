@@ -1,6 +1,8 @@
 import type { CertificateType, EventType } from '$lib/types/event/event-type.type';
 
-export interface EventGeneratorData {
+export type EventGeneratorData = EventGeneratorDataWithMedal | EventGeneratorDataWithNoMedal;
+
+export interface BaseEventGeneratorData {
 	name: string;
 	eventId: string;
 	eventType: EventType;
@@ -10,13 +12,36 @@ export interface EventGeneratorData {
 	url: string;
 	logo: [File] | [];
 	image: [File] | [];
-	ticketImage: File | null;
+	ticketImage:
+		| File
+		| {
+				gold: File;
+				silver: File;
+				bronze: File;
+				participation: File;
+		  }
+		| null;
 	totalSupply: string;
 	transferrable: boolean;
 	multipleClaim: boolean;
 	claimable: boolean;
 	visibilityMode: 'certificate' | 'picture';
 	powerups: EventGeneratorPowerUps;
+}
+
+export interface EventGeneratorDataWithMedal extends BaseEventGeneratorData {
+	certificateType: 'medal';
+	ticketImage: {
+		gold: File;
+		silver: File;
+		bronze: File;
+		participation: File;
+	};
+}
+
+export interface EventGeneratorDataWithNoMedal extends BaseEventGeneratorData {
+	certificateType: 'certificate' | 'ticket';
+	ticketImage: File | null;
 }
 
 export type EventGeneratorPowerUps = {

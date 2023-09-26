@@ -35,7 +35,26 @@ export const createEvent = async (): Promise<ActionExecutionResult> => {
 
 	const logoIpfsCid = await uploadToIPFS(event.logo[0]);
 	const backImageIpfsCid = await uploadToIPFS(event.image[0]);
-	const floatTicketIpfsCid = await uploadToIPFS(event.ticketImage);
+
+	let floatTicketIpfsCid:
+		| string
+		| {
+				gold: string;
+				silver: string;
+				bronze: string;
+				participation: string;
+		  };
+
+	if (event.certificateType === 'medal') {
+		floatTicketIpfsCid = {
+			gold: await uploadToIPFS(event.ticketImage.gold),
+			silver: await uploadToIPFS(event.ticketImage.silver),
+			bronze: await uploadToIPFS(event.ticketImage.bronze),
+			participation: await uploadToIPFS(event.ticketImage.participation)
+		};
+	} else {
+		floatTicketIpfsCid = await uploadToIPFS(event.ticketImage as File);
+	}
 
 	// After the new event is created, save event to database
 	const actionAfterCreateEvent: (

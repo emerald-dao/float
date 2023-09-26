@@ -15,6 +15,19 @@ const captureFloatTicket = async (elementToCapture: HTMLElement): Promise<File |
 			width: elementToCapture.offsetWidth * scale
 		});
 
+		const imageDataUrl = await domtoimage.toPng(elementToCapture, {
+			filter: (node: Node) => (node as HTMLElement).id !== 'float-back',
+			height: elementToCapture.offsetHeight * scale,
+			style: {
+				transform: `scale(${scale}) translate(${elementToCapture.offsetWidth / 2 / scale}px, ${
+					elementToCapture.offsetHeight / 2 / scale
+				}px)`
+			},
+			width: elementToCapture.offsetWidth * scale
+		});
+
+		console.log('a', imageDataUrl);
+
 		return new File([imageBlob], 'float-ticket.png', { type: 'image/png' });
 	} catch (error) {
 		console.error('Error capturing image:', error);

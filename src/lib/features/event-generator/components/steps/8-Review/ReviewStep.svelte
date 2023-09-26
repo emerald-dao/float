@@ -14,14 +14,35 @@
 
 	let target: HTMLElement;
 
+	let targetGold: HTMLElement;
+	let targetSilver: HTMLElement;
+	let targetBronze: HTMLElement;
+	let targetParticipation: HTMLElement;
+
 	onMount(async () => {
 		// make timeout to make sure the float image rendered
 		await new Promise((resolve) => setTimeout(resolve, 500));
 
-		$eventGeneratorData.ticketImage = await captureFloatTicket(target);
+		if (!($eventGeneratorData.certificateType === 'medal')) {
+			$eventGeneratorData.ticketImage = (await captureFloatTicket(target)) as File;
+		} else {
+			$eventGeneratorData.ticketImage = {
+				gold: (await captureFloatTicket(targetGold)) as File,
+				silver: (await captureFloatTicket(targetSilver)) as File,
+				bronze: (await captureFloatTicket(targetBronze)) as File,
+				participation: (await captureFloatTicket(targetParticipation)) as File
+			};
+		}
 	});
 
-	$: stepDataValid = $eventGeneratorData.ticketImage !== null;
+	$: stepDataValid =
+		$eventGeneratorData.certificateType === 'medal'
+			? $eventGeneratorData.ticketImage &&
+			  $eventGeneratorData.ticketImage.gold !== null &&
+			  $eventGeneratorData.ticketImage.silver !== null &&
+			  $eventGeneratorData.ticketImage.bronze !== null &&
+			  $eventGeneratorData.ticketImage.participation !== null
+			: $eventGeneratorData.ticketImage !== null;
 </script>
 
 <StepComponentWrapper alignCenter={true}>
@@ -29,16 +50,61 @@
 		<div in:fly|local={{ x: -500, duration: 700 }} class="float-wrapper">
 			<Float float={$generatedNft} showBack={$eventGeneratorActiveStep === 1} />
 			<div class="screenshot-float-target-wrapper">
-				<div id="screenshot-target" bind:this={target}>
-					<Blur color="tertiary" right="0" top="30%" />
-					<Blur left="0" bottom="20%" />
-					<Float
-						float={$generatedNft}
-						showBack={$eventGeneratorActiveStep === 1}
-						minWidth="600px"
-						isForScreenshot={true}
-					/>
-				</div>
+				{#if !($eventGeneratorData.certificateType === 'medal')}
+					<div id="screenshot-target" bind:this={target}>
+						<Blur color="tertiary" right="0" top="30%" />
+						<Blur left="0" bottom="20%" />
+						<Float
+							float={$generatedNft}
+							showBack={$eventGeneratorActiveStep === 1}
+							minWidth="600px"
+							isForScreenshot={true}
+						/>
+					</div>
+				{:else}
+					<div class="row">
+						<div id={`screenshot-target`} bind:this={targetGold}>
+							<Blur color="tertiary" right="0" top="30%" />
+							<Blur left="0" bottom="20%" />
+							<Float
+								float={{ ...$generatedNft, extraMetadata: { medalType: 'gold' } }}
+								showBack={$eventGeneratorActiveStep === 1}
+								minWidth="600px"
+								isForScreenshot={true}
+							/>
+						</div>
+						<div id={`screenshot-target`} bind:this={targetSilver}>
+							<Blur color="tertiary" right="0" top="30%" />
+							<Blur left="0" bottom="20%" />
+							<Float
+								float={{ ...$generatedNft, extraMetadata: { medalType: 'silver' } }}
+								showBack={$eventGeneratorActiveStep === 1}
+								minWidth="600px"
+								isForScreenshot={true}
+							/>
+						</div>
+						<div id={`screenshot-target`} bind:this={targetBronze}>
+							<Blur color="tertiary" right="0" top="30%" />
+							<Blur left="0" bottom="20%" />
+							<Float
+								float={{ ...$generatedNft, extraMetadata: { medalType: 'bronze' } }}
+								showBack={$eventGeneratorActiveStep === 1}
+								minWidth="600px"
+								isForScreenshot={true}
+							/>
+						</div>
+						<div id={`screenshot-target`} bind:this={targetParticipation}>
+							<Blur color="tertiary" right="0" top="30%" />
+							<Blur left="0" bottom="20%" />
+							<Float
+								float={{ ...$generatedNft, extraMetadata: { medalType: 'participation' } }}
+								showBack={$eventGeneratorActiveStep === 1}
+								minWidth="600px"
+								isForScreenshot={true}
+							/>
+						</div>
+					</div>
+				{/if}
 			</div>
 		</div>
 		<div class="column-8">
