@@ -200,13 +200,17 @@
 		}
 
 		.live-tickets-wrapper {
-			display: flex;
-			flex-direction: column;
-			justify-content: flex-start;
-			align-items: flex-start;
-			margin: var(--space-14) 0 var(--space-10) 0;
-			height: 100%;
-			width: 100%;
+			display: none;
+
+			@include mq(small) {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-start;
+				align-items: flex-start;
+				margin: var(--space-14) 0 var(--space-10) 0;
+				height: 100%;
+				width: 100%;
+			}
 
 			h3 {
 				align-self: center;
