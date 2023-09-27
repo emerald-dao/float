@@ -8,12 +8,7 @@
 	import '@emerald-dao/design-system/build/variables.css';
 	import '@emerald-dao/component-library/styles/app.scss';
 	import { Header, Footer, TransactionModal } from '@emerald-dao/component-library';
-	import {
-		navElements,
-		emeraldTools,
-		socialMedia,
-		avatarDropDownNavigation
-	} from '$lib/config/navigation';
+	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
 	import { getFindProfile } from '$flow/utils';
@@ -57,6 +52,21 @@
 	} else {
 		$profile = null;
 	}
+
+	let avatarDropDownNavigation = [
+		{
+			name: 'Admin',
+			url: '/admin',
+			icon: 'tabler:adjustments-horizontal',
+			prefetch: true
+		},
+		{
+			name: 'Profile',
+			url: `/u/${$user.addr}`,
+			icon: 'tabler:user',
+			prefetch: true
+		}
+	];
 </script>
 
 <TransactionModal
@@ -76,7 +86,7 @@
 		userAvatar={$profile?.avatar}
 		userName={$profile?.name}
 		width="full"
-		{avatarDropDownNavigation}
+		bind:avatarDropDownNavigation
 		{network}
 	>
 		<div slot="logo">

@@ -46,18 +46,3 @@ export const socialMedia = [
 		icon: 'ion:logo-github'
 	}
 ];
-
-export const avatarDropDownNavigation = [
-	{
-		name: 'Admin',
-		url: '/admin',
-		icon: 'tabler:adjustments-horizontal',
-		prefetch: true
-	},
-	{
-		name: 'My profile',
-		url: '/profile',
-		icon: 'tabler:user-square',
-		prefetch: true
-	}
-];
