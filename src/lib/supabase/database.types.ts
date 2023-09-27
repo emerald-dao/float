@@ -36,37 +36,24 @@ export interface Database {
     Tables: {
       claims: {
         Row: {
-          block_id: string | null
           created_at: string | null
           event_id: string | null
           float_id: string
-          transaction_id: string | null
           user_address: string
         }
         Insert: {
-          block_id?: string | null
           created_at?: string | null
           event_id?: string | null
           float_id: string
-          transaction_id?: string | null
           user_address: string
         }
         Update: {
-          block_id?: string | null
           created_at?: string | null
           event_id?: string | null
           float_id?: string
-          transaction_id?: string | null
           user_address?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "claims_event_id_fkey"
-            columns: ["event_id"]
-            referencedRelation: "events"
-            referencedColumns: ["id"]
-          }
-        ]
+        Relationships: []
       }
       events: {
         Row: {
