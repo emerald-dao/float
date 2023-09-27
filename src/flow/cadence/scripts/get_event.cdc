@@ -37,7 +37,7 @@ pub struct FLOATEventMetadata {
       self.eventId = event.eventId
       let extraMetadata = event.getExtraMetadata()
       self.host = event.host
-      if let backImage = extraMetadata["backImage"] as! String? {
+      if let backImage = FLOAT.extraMetadataToStrOpt(extraMetadata, "backImage") {
         self.backImage = "https://ipfs.io/ipfs/".concat(backImage)
       } else {
         self.backImage = nil
@@ -87,7 +87,7 @@ pub struct FLOATEventMetadata {
           self.verifiers["limited"] = limited[0]
         }
       }
-      self.eventType = (extraMetadata["eventType"] as! String?) ?? "other"
+      self.eventType = FLOAT.extraMetadataToStrOpt(extraMetadata, "eventType") ?? "other"
 
       if let prices = event.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
@@ -96,7 +96,7 @@ pub struct FLOATEventMetadata {
         self.price = nil
       }
 
-      self.visibilityMode = (extraMetadata["visibilityMode"] as! String?) ?? "certificate"
+      self.visibilityMode = FLOAT.extraMetadataToStrOpt(extraMetadata, "visibilityMode") ?? "certificate"
       self.multipleClaim = (extraMetadata["allowMultipleClaim"] as! Bool?) ?? false
   }
 }

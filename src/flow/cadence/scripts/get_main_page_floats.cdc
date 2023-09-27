@@ -49,8 +49,8 @@ pub struct FLOATMetadata {
     self.originalRecipient = float.originalRecipient
     self.id = float.id
     self.serial = float.serial
-    self.eventType = (event.getExtraMetadata()["eventType"] as! String?) ?? "other"
+    self.eventType = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "eventType") ?? "other"
     self.extraMetadata = event.getExtraFloatMetadata(serial: self.serial)
-    self.visibilityMode = (event.getSpecificExtraMetadata(key: "visibilityMode") as! String?) ?? "certificate"
+    self.visibilityMode = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "visibilityMode") ?? "certificate"
   }
 }

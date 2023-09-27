@@ -137,26 +137,19 @@ pub contract FLOAT: NonFungibleToken {
 
         pub fun getImage(): String {
             if let extraEventMetadata: {String: AnyStruct} = self.getEventRef()?.getExtraMetadata() {
-                if (extraEventMetadata["visibilityMode"] as! String?) == "picture" {
+                if FLOAT.extraMetadataToStrOpt(extraEventMetadata, "visibilityMode") == "picture" {
                     return self.eventImage
                 }
-                if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
+                if let certificateType: String = FLOAT.extraMetadataToStrOpt(extraEventMetadata, "certificateType") {
                     if certificateType == "medal" {
-                        // Extra metadata about medal colors
-                        //
-                        // Note about all the casting going on:
-                        // You might be saying, "Why are you casting `medalType! as String?` Jacob?"
-                        // "Why would an unwrapped type be casted to an optional?" The reason is 
-                        // because in Cadence dictionaries, you can encounter double optionals
-                        // where the actual type that lies in the value of a dictionary is itself
-                        // nil. In other words, it's possible to have `{ "jacob": nil }` in a dictionary.
-                        if let medalType: AnyStruct = self.getSpecificExtraMetadata(key: "medalType") {
-                            return (extraEventMetadata["certificateImage.".concat((medalType as! String?)!)] as! String?) ?? self.eventImage
+                         // Extra metadata about medal colors
+                        if let medalType: String = FLOAT.extraMetadataToStrOpt(self.getExtraMetadata(), "medalType") {
+                            return FLOAT.extraMetadataToStrOpt(extraEventMetadata, "certificateImage.".concat(medalType)) ?? self.eventImage
                         }
                         // if there is no medal type for the FLOAT
-                        return (extraEventMetadata["certificateImage.participation"] as! String?) ?? self.eventImage
+                        return FLOAT.extraMetadataToStrOpt(extraEventMetadata, "certificateImage.participation") ?? self.eventImage
                     }
-                    return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
+                    return FLOAT.extraMetadataToStrOpt(extraEventMetadata, "certificateImage") ?? self.eventImage
                 }
             }
             return self.eventImage
@@ -550,7 +543,7 @@ pub contract FLOAT: NonFungibleToken {
 
         // Type: Admin Toggle
         pub fun toggleVisibilityMode() {
-            if let currentVisibilityMode: String = self.getSpecificExtraMetadata(key: "visibilityMode") as! String? {
+            if let currentVisibilityMode: String = FLOAT.extraMetadataToStrOpt(self.getExtraMetadata(), "visibilityMode") {
                 if currentVisibilityMode == "certificate" {
                     self.extraMetadata["visibilityMode"] = "picture"
                     return
@@ -780,7 +773,7 @@ pub contract FLOAT: NonFungibleToken {
 
             var optExtraFloatMetadata: {String: AnyStruct}? = nil
             // if this is a medal type float and user is publicly claiming, assign to participation
-            if self.getSpecificExtraMetadata(key: "certificateType") as! String? == "medal" {
+            if FLOAT.extraMetadataToStrOpt(self.getExtraMetadata(), "certificateType") == "medal" {
                 optExtraFloatMetadata = {"medalType": "participation"}
             }
 
@@ -1061,19 +1054,35 @@ pub contract FLOAT: NonFungibleToken {
 
     // A function to validate expected FLOAT metadata that must be in a 
     // certain format as to not cause aborts during expected casting
-    access(contract) fun validateExtraFloatMetadata(data: {String: AnyStruct}): Bool {
+    pub fun validateExtraFloatMetadata(data: {String: AnyStruct}): Bool {
         if data.containsKey("medalType") {
-            // possible for dictionaries to have nil values
-            if data["medalType"] == nil || (
-                data["medalType"]! as? String? != "gold" &&
-                data["medalType"]! as? String? != "silver" &&
-                data["medalType"]! as? String? != "bronze" &&
-                data["medalType"]! as? String? != "participation"
-            ){
+            let medalType: String? = FLOAT.extraMetadataToStrOpt(data, "medalType")
+            if medalType == nil || (medalType != "gold" && medalType != "silver" && medalType != "bronze" && medalType != "participation") {
                 return false
             }
         }
         return true
+    }
+
+    // Helper to cast dictionary value to String? type
+    //
+    // Note about all the casting going on:
+    // You might be saying, "Why are you double force unwrapping 
+    // medalType Jacob?" "Why would an unwrapped type still needed to be unwrapped?" 
+    // The reason is because in Cadence dictionaries, you can encounter double optionals
+    // where the actual type that lies in the value of a dictionary is itself
+    // nil. In other words, it's possible to have `{ "jacob": nil }` in a dictionary.
+    // So we force unwrap due to the dictionary, then unwrap the value within.
+    // It will never abort because we have checked for nil above, which checks 
+    // for both types of nil.
+    pub fun extraMetadataToStrOpt(_ dict: {String: AnyStruct}, _ key: String): String? {
+        // `dict[key] == nil` means:
+        //    1. the key doesn't exist
+        //    2. the value for the key is nil
+        if dict[key] == nil || dict[key]!!.getType() != Type<String>() {
+            return nil
+        }
+        return dict[key]!! as! String
     }
 
     init() {
