@@ -12,7 +12,7 @@ export interface Limited {
 }
 
 export interface Secret {
-	publicKey: string;
+	secret: string;
 	type: 'secret';
 }
 

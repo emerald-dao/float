@@ -21,7 +21,11 @@
 	}
 
 	async function checkIfUserHasClaimedEvent() {
-		floatAlreadyClaimed = await userHasClaimedEvent($page.params.eventId, event.host, $user.addr);
+		floatAlreadyClaimed = await userHasClaimedEvent(
+			$page.params.eventId,
+			event.host,
+			$user.addr as string
+		);
 	}
 
 	let inputValue = '';
@@ -35,8 +39,14 @@
 			event.eventId,
 			event.host,
 			inputValue,
-			get(user).addr
+			get(user).addr as string
 		);
+	};
+
+	const handleClaimFloat = async () => {
+		await claimFloat(event.eventId, event.host, inputValue, free);
+
+		checkIfUserHasClaimedEvent();
 	};
 </script>
 
@@ -115,23 +125,19 @@
 	{/if}
 	<div class="button-background">
 		{#if event.status.generalStatus === 'available'}
-			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim)}
+			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim) || !event.claimable}
 				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
 			{:else if secretCode}
 				<Button
 					size="large"
 					width="full-width"
 					state={secretCodeValidation ? 'active' : 'disabled'}
-					on:click={() => claimFloat(event.eventId, event.host, inputValue, free)}
+					on:click={() => handleClaimFloat()}
 				>
 					Claim FLOAT
 				</Button>
 			{:else}
-				<Button
-					size="large"
-					width="full-width"
-					on:click={() => claimFloat(event.eventId, event.host, undefined, free)}
-				>
+				<Button size="large" width="full-width" on:click={() => handleClaimFloat()}>
 					Claim FLOAT
 				</Button>
 			{/if}
@@ -192,6 +198,16 @@
 			align-items: center;
 			font-size: var(--font-size-1);
 			padding-left: var(--space-2);
+			background-color: var(--clr-surface-secondary);
+			padding: var(--space-1);
+			color: var(--clr-text-off);
+			border-top: 1px solid var(--clr-neutral-badge);
+
+			@include mq(small) {
+				background-color: transparent;
+				border-top: none;
+				padding: 0px;
+			}
 
 			&.alert {
 				color: var(--clr-alert-main);

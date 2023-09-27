@@ -19,13 +19,13 @@
 		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateEnding)
 		: null;
 
-	let secretCode = data.event.verifiers.secret?.publicKey ?? '';
+	let secretCode = data.event.verifiers.secret?.secret ?? '';
 </script>
 
 <section class="container-medium">
 	<div class="main-wrapper">
 		<div class="side-wrapper event-id">
-			<h4>{`# ${data.event.eventId}`}</h4>
+			<h4 class="w-medium">{`#${data.event.eventId}`}</h4>
 			<p class="small">Event ID</p>
 		</div>
 		<div class="float-ticket-wrapper">
@@ -34,7 +34,7 @@
 			<Float float={transformEventToFloat(data.event)} />
 		</div>
 		<div class="side-wrapper floats-minted">
-			<h4>{`${data.event.totalSupply}`}</h4>
+			<h4 class="w-medium">{`${data.event.totalSupply}`}</h4>
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
@@ -86,7 +86,11 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<ClaimButtonStatus event={data.event} {secretCode} free={!data.event.price} />
+	<ClaimButtonStatus
+		event={data.event}
+		{secretCode}
+		free={data.event.price !== null || Number(data.event.price) === 0}
+	/>
 </section>
 <section class="container-small claims-wrapper">
 	<div class="row-1 claims-title-wrapper align-center">
@@ -123,11 +127,12 @@
 			display: grid;
 			grid-auto-columns: 1fr;
 			grid-template-columns: 1fr 1fr;
-			grid-template-rows: auto 1fr;
+			grid-template-rows: auto auto 1fr;
 			gap: var(--space-12) var(--space-6);
 			width: 100%;
 			grid-template-areas:
-				'event-id floats-minted'
+				'event-id event-id'
+				'floats-minted floats-minted'
 				'float-ticket float-ticket';
 
 			.event-id {
@@ -154,7 +159,7 @@
 
 				h4 {
 					color: var(--clr-text-main);
-					font-size: var(--font-size-5);
+					font-size: var(--font-size-2);
 				}
 
 				p {
@@ -174,12 +179,18 @@
 		.details-wrapper {
 			display: flex;
 			flex-direction: row;
-			gap: var(--space-18);
+			flex-wrap: wrap;
+			gap: var(--space-12);
 			justify-content: center;
 			align-items: center;
 			border-block: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) var(--space-12);
 			text-align: center;
+
+			@include mq(medium) {
+				flex-direction: row;
+				gap: var(--space-18);
+			}
 
 			.small {
 				color: var(--clr-text-off);
