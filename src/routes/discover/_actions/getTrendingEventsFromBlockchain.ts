@@ -1,7 +1,7 @@
 import { getEventsBatch } from '$flow/actions';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState';
-import type { EventWithStatus } from '$lib/types/event/event.interface';
+import type { Event, EventWithStatus } from '$lib/types/event/event.interface';
 
 const getTrendingEventsFromBlockchain = async (
 	events: {
@@ -9,32 +9,37 @@ const getTrendingEventsFromBlockchain = async (
 		event_id: string;
 	}[]
 ) => {
-	let blockchainEvents = await getEventsBatch(events);
+	try {
+		let blockchainEvents = await getEventsBatch(events);
 
-	const getEventsWithStatus = async (): Promise<EventWithStatus[]> => {
-		const userEvents = blockchainEvents;
-		const eventsWithStatus: EventWithStatus[] = [];
+		let trendingEvents = await getEventsWithStatus(blockchainEvents);
 
-		for (const event of userEvents) {
-			const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
+		return trendingEvents;
+	} catch (error) {
+		console.error('Error fetching events from the blockchain:', error);
 
-			const eventWithStatus: EventWithStatus = {
-				...event,
-				status: {
-					verifiersStatus: verifiersStatus,
-					generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
-				}
-			};
-
-			eventsWithStatus.push(eventWithStatus);
-		}
-
-		return eventsWithStatus;
-	};
-
-	let trendingEvents = await getEventsWithStatus();
-
-	return trendingEvents;
+		return [];
+	}
 };
 
 export default getTrendingEventsFromBlockchain;
+
+const getEventsWithStatus = async (events: Event[]): Promise<EventWithStatus[]> => {
+	const eventsWithStatus: EventWithStatus[] = [];
+
+	for (const event of events) {
+		const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
+
+		const eventWithStatus: EventWithStatus = {
+			...event,
+			status: {
+				verifiersStatus: verifiersStatus,
+				generalStatus: getEventGeneralStatus(verifiersStatus)
+			}
+		};
+
+		eventsWithStatus.push(eventWithStatus);
+	}
+
+	return eventsWithStatus;
+};
