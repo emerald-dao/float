@@ -35,7 +35,9 @@
 	onMount(() => {
 		validationSuite.reset();
 
-		res = validationSuite.get();
+		if ($eventGeneratorData.name.length > 0 && $eventGeneratorData.description.length > 0) {
+			res = validationSuite($eventGeneratorData);
+		}
 	});
 
 	$: stepDataValid = res.isValid() && $eventGeneratorData.logo.length > 0;
