@@ -67,6 +67,8 @@
 			prefetch: true
 		}
 	];
+
+	$: $user.addr && (avatarDropDownNavigation[1].url = `/u/${$user.addr}`);
 </script>
 
 <TransactionModal
