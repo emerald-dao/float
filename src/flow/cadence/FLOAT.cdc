@@ -143,7 +143,7 @@ pub contract FLOAT: NonFungibleToken {
                 if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
                     if certificateType == "medal" {
                         // extra metadata about colors
-                        if let medalType = self.getSpecificExtraMetadata(key: "medalType") {
+                        if let medalType: AnyStruct = self.getSpecificExtraMetadata(key: "medalType") {
                             return (extraEventMetadata["certificateImage.".concat(medalType as! String? ?? "")] as! String?) ?? self.eventImage
                         }
                     }
@@ -161,6 +161,7 @@ pub contract FLOAT: NonFungibleToken {
                 Type<MetadataViews.ExternalURL>(),
                 Type<MetadataViews.NFTCollectionData>(),
                 Type<MetadataViews.NFTCollectionDisplay>(),
+                Type<MetadataViews.Traits>(),
                 Type<MetadataViews.Serial>(),
                 Type<TokenIdentifier>()
             ]
@@ -244,6 +245,20 @@ pub contract FLOAT: NonFungibleToken {
                         )
                     }
                     return nil
+                case Type<MetadataViews.Traits>():
+                    let traitsView: MetadataViews.Traits = MetadataViews.dictToTraits(dict: self.getExtraMetadata(), excludedNames: nil)
+
+                    if let eventRef: &FLOATEvent{FLOATEventPublic} = self.getEventRef() {
+                        let eventExtraMetadata: {String: AnyStruct} = eventRef.getExtraMetadata()
+                        
+                        let certificateType: MetadataViews.Trait = MetadataViews.Trait(name: "certificateType", value: eventExtraMetadata["certificateType"], displayType: nil, rarity: nil)
+                        traitsView.addTrait(certificateType)
+
+                        let eventType: MetadataViews.Trait = MetadataViews.Trait(name: "eventType", value: eventExtraMetadata["eventType"], displayType: nil, rarity: nil)
+                        traitsView.addTrait(eventType)
+                    }
+
+                    return traitsView
             }
 
             return nil
