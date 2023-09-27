@@ -38,7 +38,6 @@
 	}
 
 	$: route = typeof $page.route.id === 'string' ? extractFirstSegment($page.route.id) : null;
-
 	onMount(() => {
 		let html = document.querySelector('html');
 
@@ -63,7 +62,8 @@
 	transactionStatus={$transactionStore.transaction}
 	on:close={() => transactionStore.resetTransaction()}
 />
-{#if (route !== 'admin' && route !== 'embed') || !($user && $user.addr)}
+
+{#if (route !== 'admin' || !($user && $user.addr)) && route !== 'embed'}
 	<Header
 		{logIn}
 		{unauthenticate}
@@ -126,6 +126,7 @@
 	main {
 		display: flex;
 		flex-direction: column;
+		overflow-x: hidden;
 	}
 
 	.commands-wrapper {

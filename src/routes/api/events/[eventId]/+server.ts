@@ -33,3 +33,22 @@ export async function POST({ request, params }) {
 		return new Response(JSON.stringify({ success: 'Event added' }), { status: 201 });
 	}
 }
+
+export async function GET({ params }) {
+	const { data, error } = await supabase
+		.from('events')
+		.select('id , creator_address')
+		.in('id', [params.eventId]);
+
+	if (error) {
+		throw error;
+	}
+	const jsonResponse = new Response(JSON.stringify(data), {
+		status: 200,
+		headers: {
+			'Content-Type': 'application/json'
+		}
+	});
+
+	return jsonResponse;
+}

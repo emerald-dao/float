@@ -7,6 +7,7 @@
 	export let showBack = false;
 	export let minWidth = '300px';
 	export let maxWidth = '600px';
+	export let hasShadow = true;
 
 	let flip: boolean = false;
 
@@ -15,6 +16,7 @@
 
 <div
 	class="main-wrapper"
+	class:shadow={hasShadow}
 	style={`min-width: ${minWidth}; max-width: ${maxWidth};`}
 	on:click={() => (flip = !flip)}
 >
@@ -36,7 +38,10 @@
 		container-type: inline-size;
 		container-name: ticket;
 		cursor: pointer;
-		filter: drop-shadow(var(--shadow-large-x) 5px 10px var(--shadow-large-color));
+
+		&.shadow {
+			filter: drop-shadow(var(--shadow-large-x) 5px 10px var(--shadow-large-color));
+		}
 
 		@container ticket (max-width: 500px) {
 			.secondary-wrapper {

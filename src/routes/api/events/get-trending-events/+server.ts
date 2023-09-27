@@ -13,7 +13,7 @@ export async function GET() {
 		.from('claims')
 		.select('event_id')
 		.order('created_at', { ascending: false })
-		.limit(50);
+		.limit(40);
 
 	if (claimsError) {
 		throw claimsError;
