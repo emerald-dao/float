@@ -3,6 +3,7 @@ import { env as PrivateEnv } from '$env/dynamic/private';
 import { env as PublicEnv } from '$env/dynamic/public';
 import { verifyAccountOwnership } from '$flow/utils.js';
 import type { Database } from '$lib/supabase/database.types.js';
+import { network } from '$flow/config';
 
 const supabase = createClient<Database>(
 	PublicEnv.PUBLIC_SUPABASE_API_URL,
@@ -22,7 +23,8 @@ export async function POST({ request, params }) {
 
 	const { error } = await supabase.from('events').insert({
 		id: params.eventId,
-		creator_address: user.addr
+		creator_address: user.addr,
+		network
 	});
 
 	if (error) {
@@ -37,7 +39,8 @@ export async function POST({ request, params }) {
 export async function GET({ params }) {
 	const { data, error } = await supabase
 		.from('events')
-		.select('id , creator_address')
+		.select('id , creator_address, network')
+		.eq('network', network)
 		.in('id', [params.eventId]);
 
 	if (error) {

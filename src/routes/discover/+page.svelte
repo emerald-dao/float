@@ -8,6 +8,7 @@
 	import { fly, slide } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import type { Event } from '$lib/types/event/event.interface.js';
+	import { network } from '$flow/config.js';
 
 	export let data;
 
@@ -24,7 +25,8 @@
 					{
 						event: 'INSERT',
 						schema: 'public',
-						table: 'claims'
+						table: 'claims',
+						filter: `network=eq.${network}`
 					},
 					(payload) => {
 						const event_id = payload.new?.event_id;

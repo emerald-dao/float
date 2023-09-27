@@ -6,6 +6,7 @@
 	import { fly } from 'svelte/transition';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { supabase } from '$lib/supabase/supabaseClient';
+	import { network } from '$flow/config';
 
 	export let float: FLOAT;
 
@@ -26,8 +27,9 @@
 
 			const { data, error } = await supabase
 				.from('claims')
-				.select('transaction_id, block_id')
+				.select('transaction_id, block_id, network')
 				.eq('float_id', float.id)
+				.eq('network', network)
 				.single();
 
 			if (error) {

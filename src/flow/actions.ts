@@ -442,8 +442,8 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
 		});
 	} catch (e) {
-		console.log('Error in getEvents', e);
-		throw new Error('Error in getEvents');
+		console.log('Error in getEvent', e);
+		throw new Error('Error in getEvent');
 	}
 };
 
@@ -462,8 +462,8 @@ export const getEventsBatch = async (
 			args: (arg, t) => [arg(eventsArg, t.Array(t.UInt64)), arg(addressesArg, t.Array(t.Address))]
 		});
 	} catch (e) {
-		console.log('Error in getEvents', e);
-		throw new Error('Error in getEvents');
+		console.log('Error in getEventsBatch', e);
+		throw new Error('Error in getEventsBatch');
 	}
 };
 
