@@ -1,4 +1,5 @@
 <script lang="ts">
+	import DappLogo from './../lib/components/atoms/DappLogo.svelte';
 	import { transactionStore } from '$lib/stores/flow/TransactionStore';
 	import { profile } from '$lib/stores/flow/FlowStore';
 	import '../app.postcss';
@@ -77,7 +78,7 @@
 		{avatarDropDownNavigation}
 	>
 		<div slot="logo">
-			<img src="/float-logo.svg" alt="FLOAT logo" width="140px" />
+			<DappLogo />
 		</div>
 		<div slot="commands" class="commands-wrapper row-3">
 			<form
@@ -117,7 +118,7 @@
 {#if route === null || route === 'discover'}
 	<Footer {navElements} {emeraldTools} socials={socialMedia}>
 		<div slot="logo">
-			<img src="/float-logo.svg" alt="FLOAT logo" width="130px" />
+			<DappLogo />
 		</div>
 	</Footer>
 {/if}

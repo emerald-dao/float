@@ -3,7 +3,7 @@ const dappInfo = {
 	description: 'Reward attendance',
 	url: 'floats.city',
 	author: 'Emerald City DAO',
-	icon: 'https://i.imgur.com/KSL4gq0.png'
+	icon: 'https://i.imgur.com/wFObfzL.png'
 };
 
 export default dappInfo;
