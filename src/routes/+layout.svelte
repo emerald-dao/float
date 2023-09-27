@@ -23,6 +23,7 @@
 	import Icon from '@iconify/svelte';
 	import UserSearchBar from '$lib/features/bulk-distribute-floats/components/atoms/searchBar/UserSearchBar.svelte';
 	import { goto } from '$app/navigation';
+	import { network } from '$flow/config';
 
 	let route: string | null;
 
@@ -76,6 +77,7 @@
 		userName={$profile?.name}
 		width="full"
 		{avatarDropDownNavigation}
+		{network}
 	>
 		<div slot="logo">
 			<DappLogo />
