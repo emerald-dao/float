@@ -128,7 +128,8 @@
 	.main-wrapper {
 		display: flex;
 		flex-direction: column;
-		height: 90vh;
+		height: 70vh;
+		width: 70vw;
 		overflow-y: hidden;
 		flex: 1;
 
