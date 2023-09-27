@@ -4,13 +4,15 @@ import getTrendingEventsFromBlockchain from './_actions/getTrendingEventsFromBlo
 export async function load({ fetch }) {
 	const response = await fetch('/api/events/get-trending-events');
 
+	let trendingEvents = [];
+
 	if (!response.ok) {
 		const errorData = await response.json();
 
 		console.error('Error fetching events:', errorData.error);
+	} else {
+		trendingEvents = (await response.json()).eventsData ?? [];
 	}
-
-	const trendingEvents = (await response.json()).eventsData ?? [];
 
 	return {
 		trendingEvents: await getTrendingEventsFromBlockchain(trendingEvents),
