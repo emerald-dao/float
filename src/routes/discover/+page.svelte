@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { Event, EventWithStatus } from '$lib/types/event/event.interface.js';
-	import getTrendingEventsFromBlockchain from './_actions/getTrendingEventsFromBlockchain.js';
 	import EventCard from '$lib/components/events/EventCard.svelte';
 	import { writable } from 'svelte/store';
 	import { supabase } from '$lib/supabase/supabaseClient.js';
 	import getLiveEventFromBlockchain from './_actions/getLiveEventfromBlockchain.js';
 	import Float from '$lib/components/floats/Float.svelte';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat.js';
-	import getLatestEventsClaimedFromBlockchain from './_actions/getLatestEventsClaimedFromBlockchain.js';
 	import { fly, slide } from 'svelte/transition';
+	import { onMount } from 'svelte';
+	import type { Event } from '$lib/types/event/event.interface.js';
+
+	export let data;
 
 	const claimStore = writable<{ eventIds: string[]; userAddresses: string[] }>(
 		{ eventIds: [], userAddresses: [] },
@@ -43,63 +43,27 @@
 		}
 	);
 
+	let latestClaims: {
+		event: Event;
+		user_address: any;
+	}[];
+
+	onMount(() => {
+		latestClaims = data.latestFloatsClaimed;
+	});
+
 	async function fetchNewEventData() {
 		try {
 			if ($claimStore) {
 				const lastEventId = $claimStore.eventIds[$claimStore.eventIds.length - 1];
 				const lastUserAddress = $claimStore.userAddresses[$claimStore.userAddresses.length - 1];
 				const event = await getLiveEventFromBlockchain(lastEventId);
-				eventsAndUsers = [{ event, user_address: lastUserAddress }, ...eventsAndUsers];
+				latestClaims = [{ event, user_address: lastUserAddress }, ...latestClaims];
 			}
 		} catch (error) {
 			console.error('Error fetching data:', error);
 		}
 	}
-
-	let trendingEventsFetched = false;
-	let trendingEventsLoading = true;
-	let trendingEvents: EventWithStatus[];
-
-	let latestEventsClaimedFetched = false;
-	let latestEventsClaimedLoading = true;
-	let latestEventsClaimed: { events: Event[]; latestUsersToClaim: any };
-	let eventsAndUsers: { event: Event; user_address: string }[] = [];
-
-	onMount(async () => {
-		try {
-			trendingEvents = await getTrendingEventsFromBlockchain();
-
-			trendingEventsLoading = false;
-			if (trendingEvents) {
-				trendingEventsFetched = true;
-			}
-		} catch (error) {
-			trendingEventsLoading = false;
-			console.error('Error fetching data:', error);
-		}
-
-		try {
-			latestEventsClaimed = await getLatestEventsClaimedFromBlockchain();
-
-			const eventsArray = latestEventsClaimed.events;
-			const latestUsersToClaimArray = latestEventsClaimed.latestUsersToClaim;
-
-			for (let i = 0; i < eventsArray.length; i++) {
-				const event = eventsArray[i];
-				const user_address = latestUsersToClaimArray[i];
-				const newObj = { event, user_address };
-				eventsAndUsers.push(newObj);
-			}
-
-			latestEventsClaimedLoading = false;
-			if (latestEventsClaimed) {
-				latestEventsClaimedFetched = true;
-			}
-		} catch (error) {
-			latestEventsClaimedLoading = false;
-			console.error('Error fetching data:', error);
-		}
-	});
 </script>
 
 <section
@@ -112,13 +76,9 @@
 >
 	<div class="container-medium">
 		<h2 class="w-medium h3">🔥Trending Events🔥</h2>
-		{#if trendingEventsLoading}
-			<div class="empty-state">
-				<span><em>Loading trending events</em></span>
-			</div>
-		{:else if trendingEventsFetched}
+		{#if data.trendingEvents.length > 0}
 			<div class="cards-wrapper">
-				{#each trendingEvents as event}
+				{#each data.trendingEvents as event}
 					<div class="event-wrapper">
 						<EventCard {event} display="grid" displayedInAdmin={false} hasLink={false} />
 					</div>
@@ -134,18 +94,14 @@
 <section>
 	<div class="live-tickets-wrapper">
 		<h3 class="w-medium align-center h5">Latest claims</h3>
-		{#if latestEventsClaimedLoading}
-			<div class="empty-state">
-				<span><em>Loading trending events</em></span>
-			</div>
-		{:else if latestEventsClaimedFetched}
+		{#if latestClaims && latestClaims.length > 0}
 			<div class="cards">
-				{#each eventsAndUsers as data, i (data.event)}
+				{#each latestClaims as eventClaimed, i (eventClaimed.event)}
 					<div in:slide={{ axis: 'x', duration: 4000 }}>
-						<div in:fly={{ x: -300, duration: 4000, opacity: 1 }}>
+						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }}>
 							<Float
-								float={transformEventToFloat(data.event, data.user_address)}
-								minWidth="350px"
+								float={transformEventToFloat(eventClaimed.event, eventClaimed.user_address)}
+								minWidth="400px"
 								hasShadow={false}
 							/>
 						</div>

@@ -2,15 +2,17 @@ import { getEventsBatch } from '$flow/actions';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState';
 import type { EventWithStatus } from '$lib/types/event/event.interface';
-import { getTrendingEvents } from '../_api/getTrendingEvents';
 
-const getTrendingEventsFromBlockchain = async () => {
-	let response = await getTrendingEvents();
-
-	let events = await getEventsBatch(response.eventsData);
+const getTrendingEventsFromBlockchain = async (
+	events: {
+		user_address: string;
+		event_id: string;
+	}[]
+) => {
+	let blockchainEvents = await getEventsBatch(events);
 
 	const getEventsWithStatus = async (): Promise<EventWithStatus[]> => {
-		const userEvents = events;
+		const userEvents = blockchainEvents;
 		const eventsWithStatus: EventWithStatus[] = [];
 
 		for (const event of userEvents) {
