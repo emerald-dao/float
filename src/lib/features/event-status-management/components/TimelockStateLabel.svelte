@@ -1,8 +1,10 @@
 <script lang="ts">
+	import type { EventGeneralStatus } from '$lib/types/event/event.interface';
 	import type { TimelockStatus } from '../types/verifiers-status.interface';
 	import VerifierStateLabel from './atoms/VerifierStateLabel.svelte';
 
 	export let timelockStatus: TimelockStatus;
+	export let generalStatus: EventGeneralStatus;
 
 	$: message =
 		timelockStatus?.status === 'expired'
@@ -15,8 +17,9 @@
 {#if timelockStatus !== null}
 	<VerifierStateLabel
 		name="Timelock"
-		status={timelockStatus.status}
+		specificStatus={timelockStatus.status}
 		icon="tabler:clock"
+		{generalStatus}
 		{message}
 	/>
 {/if}

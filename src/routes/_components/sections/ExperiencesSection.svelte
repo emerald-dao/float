@@ -34,23 +34,25 @@
 	}
 </script>
 
-<section class="column-11">
-	<Blur color="tertiary" right="30%" top="10%" />
-	<Blur left="30%" top="20%" />
-	<SectionHeading
-		title="Life is about experiences. Collect them!"
-		description="Create your personal collection of all the events you assisted."
-	/>
-	{#await fetchFLOATs() then FLOATS}
-		<div class="floats-wrapper">
-			{#each multiplyArray(FLOATS, 30) as float, i}
-				<div class="float-{i}">
-					<Float {float} minWidth="400px" />
-				</div>
-			{/each}
-		</div>
-	{/await}
-</section>
+{#await fetchFLOATs() then FLOATS}
+	{#if FLOATS.length > 0}
+		<section class="column-11">
+			<Blur color="tertiary" right="30%" top="10%" />
+			<Blur left="30%" top="20%" />
+			<SectionHeading
+				title="Life is about experiences. Collect them!"
+				description="Create your personal collection of all the events you assisted."
+			/>
+			<div class="floats-wrapper">
+				{#each multiplyArray(FLOATS, 30) as float, i}
+					<div class="float-{i}">
+						<Float {float} minWidth="400px" />
+					</div>
+				{/each}
+			</div>
+		</section>
+	{/if}
+{/await}
 
 <style lang="scss">
 	section {

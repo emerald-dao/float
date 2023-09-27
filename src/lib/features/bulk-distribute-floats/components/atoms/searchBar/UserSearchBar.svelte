@@ -127,7 +127,8 @@
 		border-top-left-radius: var(--radius-2);
 		border-top-right-radius: var(--radius-2);
 		overflow: visible;
-		width: 500px;
+		width: 100%;
+		position: relative;
 
 		.input-wrapper {
 			position: relative;
@@ -165,7 +166,7 @@
 				}
 
 				&.has-shortcut {
-					padding-left: 8%;
+					padding-left: 2.6em;
 				}
 			}
 
@@ -183,8 +184,8 @@
 		}
 
 		.profile-wrapper {
+			width: 100%;
 			padding: var(--space-4);
-			width: 500px;
 			position: absolute;
 			display: inline-block;
 			background-color: var(--clr-surface-secondary);

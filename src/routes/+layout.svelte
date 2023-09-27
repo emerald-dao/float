@@ -76,6 +76,9 @@
 		width="full"
 		{avatarDropDownNavigation}
 	>
+		<div slot="logo">
+			<img src="/float-logo.svg" alt="FLOAT logo" width="140px" />
+		</div>
 		<div slot="commands" class="commands-wrapper row-3">
 			<form
 				on:submit|preventDefault={() => {
@@ -112,7 +115,11 @@
 </main>
 
 {#if route === null || route === 'discover'}
-	<Footer {navElements} {emeraldTools} socials={socialMedia} />
+	<Footer {navElements} {emeraldTools} socials={socialMedia}>
+		<div slot="logo">
+			<img src="/float-logo.svg" alt="FLOAT logo" width="130px" />
+		</div>
+	</Footer>
 {/if}
 
 <style lang="scss">
@@ -135,6 +142,15 @@
 			color: var(--clr-heading-main);
 			cursor: pointer;
 			text-decoration: none;
+		}
+
+		form {
+			width: 350px;
+			display: none;
+
+			@include mq(medium) {
+				display: block;
+			}
 		}
 	}
 </style>

@@ -1,7 +1,9 @@
 import { create, test, enforce, only } from 'vest';
 
-const validationSuite = create((data = {}, currentField) => {
-	only(currentField);
+const validationSuite = create((data = {}, currentField?) => {
+	if (currentField) {
+		only(currentField);
+	}
 
 	test('event-name', 'Event name is required', () => {
 		enforce(data.name).isNotBlank();
@@ -9,6 +11,10 @@ const validationSuite = create((data = {}, currentField) => {
 
 	test('event-name', 'Event name must be at least 3 characters long', () => {
 		enforce(data.name).longerThan(3);
+	});
+
+	test('event-description', 'Event description should be shorter than 320 chars', () => {
+		enforce(data.description).shorterThan(320);
 	});
 });
 

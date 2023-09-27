@@ -6,7 +6,7 @@ pub fun main(account: Address, eventId: UInt64, amount: UInt64): [FLOAT.TokenIde
                               .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
   let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)!
-  let claims: [FLOAT.TokenIdentifier] = event.getClaimed().values
+  let claims: [FLOAT.TokenIdentifier] = event.getClaims().values
 
   if event.totalSupply == 0 {
     return []

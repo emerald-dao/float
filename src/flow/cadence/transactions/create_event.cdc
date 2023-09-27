@@ -2,6 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import FLOATVerifiers from "../FLOATVerifiers.cdc"
 import NonFungibleToken from "../utility/NonFungibleToken.cdc"
 import MetadataViews from "../utility/MetadataViews.cdc"
+import FlowToken from "../utility/FlowToken.cdc"
 
 transaction(
   name: String, 
@@ -25,7 +26,8 @@ transaction(
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
   minimumBalance: UFix64,
-  visibilityMode: String // "certificate" or "picture"
+  visibilityMode: String, // "certificate" or "picture"
+  allowMultipleClaim: Bool
 ) {
 
   let FLOATEvents: &FLOAT.FLOATEvents
@@ -33,6 +35,7 @@ transaction(
   prepare(acct: AuthAccount) {
     // SETUP COLLECTION
     if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+        acct.unlink(FLOAT.FLOATCollectionPublicPath)
         acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
         acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
                 (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
@@ -40,6 +43,7 @@ transaction(
 
     // SETUP FLOATEVENTS
     if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+      acct.unlink(FLOAT.FLOATEventsPublicPath)
       acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
       acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
                 (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
@@ -75,16 +79,27 @@ transaction(
 
     let extraMetadata: {String: AnyStruct} = {}
     if flowTokenPurchaseToggle {
-      let tokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
-      extraMetadata["prices"] = {"${flowTokenIdentifier}.FlowToken.Vault": tokenInfo}
+      let tokenInfo: FLOAT.TokenInfo = FLOAT.TokenInfo(_path: /public/flowTokenReceiver, _price: flowTokenCost)
+      let flowTokenVaultIdentifier: String = Type<@FlowToken.Vault>().identifier
+      extraMetadata["prices"] = {flowTokenVaultIdentifier: tokenInfo}
     }
     extraMetadata["backImage"] = backImage
     extraMetadata["eventType"] = eventType
-    extraMetadata["certificateType"] = certificateType
     extraMetadata["certificateImage"] = certificateImage
-    extraMetadata["visibilityMode"] = visibilityMode
 
-    self.FLOATEvents.createEvent(claimable: claimable, description: description, image: logo, name: name, transferrable: transferrable, url: url, verifiers: verifiers, extraMetadata)
+    self.FLOATEvents.createEvent(
+      claimable: claimable, 
+      description: description, 
+      image: logo, 
+      name: name, 
+      transferrable: transferrable, 
+      url: url, 
+      verifiers: verifiers, 
+      allowMultipleClaim: allowMultipleClaim,
+      certificateType: certificateType,
+      visibilityMode: visibilityMode,
+      extraMetadata: extraMetadata
+    )
     log("Started a new event for host.")
   }
 }

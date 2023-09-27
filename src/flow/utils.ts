@@ -21,7 +21,6 @@ export function replaceWithProperValues(script: string, contractName = '', contr
 			.replace('"../FLOAT.cdc"', addresses.FLOAT)
 			.replace('"../FLOATVerifiers.cdc"', addresses.FLOAT)
 			.replace('"../utility/NFTCatalog.cdc"', addresses.NFTCatalog)
-			.replace('"../utility/ArrayUtils.cdc"', addresses.ArrayUtils)
 			// For All
 			.replaceAll('ExampleToken', contractName)
 			.replaceAll('0x5643fd47a29770e7', addresses.ECTreasury)

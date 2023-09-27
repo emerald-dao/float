@@ -8,6 +8,7 @@
 	import toggleVisibilityMode from '../../_actions/event-actions/toggleVisibilityMode';
 	import { getContext } from 'svelte';
 	import type createFetchStore from '../../_stores/fetchStore';
+	import EventDataTitle from '../_components/EventDataTitle.svelte';
 
 	export let event: EventWithStatus;
 
@@ -18,34 +19,46 @@
 	let certificateVisibility: boolean = event.visibilityMode === 'picture' ? false : true;
 
 	const handleToggleClaiming = async () => {
+		claimingState = !claimingState;
 		await toggleClaiming(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			claimingState = event.claimable;
+		}, 1000);
 	};
 
 	const handleToggleTransfering = async () => {
+		transferingState = !transferingState;
 		await toggleTransfering(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			transferingState = event.transferrable;
+		}, 1000);
 	};
 
 	const handleToggleVisibilityType = async () => {
+		certificateVisibility = !certificateVisibility;
 		await toggleVisibilityMode(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			certificateVisibility = event.visibilityMode === 'picture' ? false : true;
+		}, 1000);
 	};
 </script>
 
 <div class="main-wrapper">
 	<div class="actions-wrapper">
-		<div class="title-wrapper">
-			<Icon icon="tabler:bolt" color="var(--clr-neutral-600)" />
-			<p>ACTIONS</p>
-		</div>
+		<EventDataTitle icon="tabler:bolt">Actions</EventDataTitle>
 		<DistributeFloatsModal {event} />
 	</div>
 	<div class="toggles-wrapper">
-		<div class="title-wrapper">
-			<Icon icon="tabler:toggle-right" color="var(--clr-neutral-600)" />
-			<p>SWITCHS</p>
-		</div>
+		<EventDataTitle icon="tabler:toggle-right">Switchs</EventDataTitle>
 		<div class="column-3">
 			<div class="row-3">
 				<label for="claiming" class="switch">
@@ -89,10 +102,7 @@
 		</div>
 	</div>
 	<div class="danger-zone">
-		<div class="title-wrapper">
-			<Icon icon="tabler:alert-triangle" color="var(--clr-neutral-600)" />
-			<p>DANGER ZONE</p>
-		</div>
+		<EventDataTitle icon="tabler:alert-triangle">Danger zone</EventDataTitle>
 		<button on:click={() => deleteEvent(event.eventId)}>
 			<Icon icon="ph:trash" color="var(--clr-alert-main)" />
 			<p class="small" style="color: var(--clr-alert-main);">Delete Event</p>
@@ -111,19 +121,6 @@
 
 		@include mq(medium) {
 			padding-inline: var(--space-8);
-		}
-
-		.title-wrapper {
-			display: flex;
-			flex-direction: row;
-			gap: var(--space-1);
-			align-items: center;
-
-			p {
-				color: var(--clr-text-off);
-				font-size: var(--font-size-1);
-				letter-spacing: 0.07em;
-			}
 		}
 
 		.actions-wrapper,

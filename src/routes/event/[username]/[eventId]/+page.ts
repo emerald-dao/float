@@ -1,4 +1,4 @@
-import { getEvent, getEventClaims } from '$flow/actions';
+import { getEvent, getLatestEventClaims } from '$flow/actions';
 import { getFindProfileFromAddressOrName } from '$flow/utils';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus.js';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState.js';
@@ -15,15 +15,6 @@ export const load = async ({ params }) => {
 
 	const event = await getEvent(walletAddress, params.eventId);
 
-	const getLatestClaims = async (address: string, eventId: string) => {
-		const eventClaims = await getEventClaims(address, eventId);
-		const latestClaims = Object.values(eventClaims)
-			.sort((a, b) => Number(b.serial) - Number(a.serial))
-			.slice(0, 20);
-
-		return latestClaims;
-	};
-
 	const getEventWithStatus = (event: Event): EventWithStatus => {
 		const verifiersStatus = getVerifiersState(event.verifiers, Number(event.totalSupply));
 
@@ -31,7 +22,7 @@ export const load = async ({ params }) => {
 			...event,
 			status: {
 				verifiersStatus: verifiersStatus,
-				generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+				generalStatus: getEventGeneralStatus(verifiersStatus)
 			}
 		};
 
@@ -40,6 +31,6 @@ export const load = async ({ params }) => {
 
 	return {
 		event: getEventWithStatus(event),
-		claims: await getLatestClaims(walletAddress, params.eventId)
+		claims: await getLatestEventClaims(walletAddress, params.eventId, 20)
 	};
 };

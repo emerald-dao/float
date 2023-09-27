@@ -28,11 +28,3 @@
 {:else if float.visibilityMode === 'picture'}
 	<FloatProfilePicture {float} />
 {/if}
-
-<style lang="scss">
-	img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-</style>

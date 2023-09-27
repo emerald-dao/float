@@ -12,6 +12,7 @@
 
 	export let event: EventWithStatus;
 	export let secretCode: string;
+	export let free: boolean;
 
 	let floatAlreadyClaimed: boolean;
 
@@ -20,7 +21,11 @@
 	}
 
 	async function checkIfUserHasClaimedEvent() {
-		floatAlreadyClaimed = await userHasClaimedEvent($page.params.eventId, event.host, $user.addr);
+		floatAlreadyClaimed = await userHasClaimedEvent(
+			$page.params.eventId,
+			event.host,
+			$user.addr as string
+		);
 	}
 
 	let inputValue = '';
@@ -34,13 +39,19 @@
 			event.eventId,
 			event.host,
 			inputValue,
-			get(user).addr
+			get(user).addr as string
 		);
+	};
+
+	const handleClaimFloat = async () => {
+		await claimFloat(event.eventId, event.host, inputValue, free);
+
+		checkIfUserHasClaimedEvent();
 	};
 </script>
 
 <div class="button-wrapper">
-	{#if event.status.generalStatus === 'available'}
+	{#if event.status.generalStatus === 'available' && event.claimable}
 		{#if !$user.loggedIn}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
@@ -48,7 +59,7 @@
 					<span>Connect to claim the event</span>
 				</div>
 			</div>
-		{:else if floatAlreadyClaimed}
+		{:else if floatAlreadyClaimed && !event.multipleClaim}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
 					<Icon icon="tabler:lock" />
@@ -90,11 +101,21 @@
 				</button>
 			</div>
 		{/if}
+		{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
+			<div class="secret-code-message">
+				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+					<Icon icon="tabler:info-circle" />
+					<span>You already own this FLOAT</span>
+				</div>
+			</div>
+		{/if}
 	{:else}
 		<div class="secret-code-message">
 			<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
 				<Icon icon="tabler:lock" />
-				{#if event.status.generalStatus === 'expired'}
+				{#if !event.claimable}
+					<span>This event is non-claimable</span>
+				{:else if event.status.generalStatus === 'expired'}
 					<span>The event has {event.status.generalStatus}</span>
 				{:else}
 					<span>The event is {event.status.generalStatus}</span>
@@ -104,23 +125,19 @@
 	{/if}
 	<div class="button-background">
 		{#if event.status.generalStatus === 'available'}
-			{#if !$user.loggedIn || floatAlreadyClaimed}
+			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim) || !event.claimable}
 				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
 			{:else if secretCode}
 				<Button
 					size="large"
 					width="full-width"
 					state={secretCodeValidation ? 'active' : 'disabled'}
-					on:click={() => claimFloat(event.eventId, event.host, inputValue)}
+					on:click={() => handleClaimFloat()}
 				>
 					Claim FLOAT
 				</Button>
 			{:else}
-				<Button
-					size="large"
-					width="full-width"
-					on:click={() => claimFloat(event.eventId, event.host, undefined)}
-				>
+				<Button size="large" width="full-width" on:click={() => handleClaimFloat()}>
 					Claim FLOAT
 				</Button>
 			{/if}
@@ -181,6 +198,16 @@
 			align-items: center;
 			font-size: var(--font-size-1);
 			padding-left: var(--space-2);
+			background-color: var(--clr-surface-secondary);
+			padding: var(--space-1);
+			color: var(--clr-text-off);
+			border-top: 1px solid var(--clr-neutral-badge);
+
+			@include mq(small) {
+				background-color: transparent;
+				border-top: none;
+				padding: 0px;
+			}
 
 			&.alert {
 				color: var(--clr-alert-main);

@@ -9,7 +9,8 @@ import {
 	PowerUpsStep,
 	ReviewStep
 } from '../components/steps';
-import VisibilityOptions from '../components/steps/5-VisibilityOptions/VisibilityOptions.svelte';
+import MultipleClaimStep from '../components/steps/5-MultipleClaim/MultipleClaimStep.svelte';
+import VisibilityOptions from '../components/steps/6-VisibilityOptions/VisibilityOptions.svelte';
 
 export const eventGeneratorSteps = createSteps([
 	{
@@ -59,6 +60,18 @@ export const eventGeneratorSteps = createSteps([
 			icon: 'tabler:arrow-right'
 		},
 		canBeEditedLater: true
+	},
+	{
+		name: 'Multiple Claim',
+		component: MultipleClaimStep,
+		title: 'How many FLOATs can each user claim?',
+		action: null,
+		state: 'inactive',
+		button: {
+			text: 'Next',
+			icon: 'tabler:arrow-right'
+		},
+		canBeEditedLater: false
 	},
 	{
 		name: 'Visibility Options',

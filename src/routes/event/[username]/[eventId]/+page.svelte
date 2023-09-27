@@ -3,49 +3,29 @@
 	import { Currency } from '@emerald-dao/component-library';
 	import transformEventToFloat from '$lib/utilities/transformEventToFloat';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
-	import type { Secret, Timelock } from '$lib/types/event/verifiers.interface';
 	import Icon from '@iconify/svelte';
-	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
-	import TimelockStateLabel from '$lib/features/event-status-management/components/TimelockStateLabel.svelte';
-	import LimitedStateLabel from '$lib/features/event-status-management/components/LimitedStateLabel.svelte';
 	import EventStatus from '$lib/components/events/EventStatus.svelte';
 	import Float from '$lib/components/floats/Float.svelte';
 	import ClaimButtonStatus from '../../_components/ClaimButtonStatus.svelte';
+	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
+	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 
 	export let data;
 
-	let starDate: string;
-	let endDate: string;
-	let dates = {
-		dateStart: '',
-		dateEnding: ''
-	};
-	let secretCode: string;
+	let startDate = data.event.verifiers.timelock?.dateStart
+		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateStart)
+		: unixTimestampToFormattedDate(data.event.dateCreated);
+	let endDate = data.event.verifiers.timelock?.dateEnding
+		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateEnding)
+		: null;
 
-	data.event.verifiers.forEach((verifier) => {
-		if (verifier.hasOwnProperty('dateStart')) {
-			dates.dateStart = (verifier as Timelock).dateStart;
-		}
-		if ((verifier as Timelock).dateEnding) {
-			dates.dateEnding = (verifier as Timelock).dateEnding;
-		}
-		if (verifier.hasOwnProperty('publicKey')) {
-			secretCode = (verifier as Secret).publicKey;
-		}
-	});
-
-	if (dates.dateStart && dates.dateEnding) {
-		starDate = unixTimestampToFormattedDate(dates.dateStart);
-		endDate = unixTimestampToFormattedDate(dates.dateEnding);
-	} else {
-		starDate = unixTimestampToFormattedDate(data.event.dateCreated);
-	}
+	let secretCode = data.event.verifiers.secret?.secret ?? '';
 </script>
 
 <section class="container-medium">
 	<div class="main-wrapper">
 		<div class="side-wrapper event-id">
-			<h4>{`# ${data.event.eventId}`}</h4>
+			<h4 class="w-medium">{`#${data.event.eventId}`}</h4>
 			<p class="small">Event ID</p>
 		</div>
 		<div class="float-ticket-wrapper">
@@ -54,25 +34,31 @@
 			<Float float={transformEventToFloat(data.event)} />
 		</div>
 		<div class="side-wrapper floats-minted">
-			<h4>{`${data.event.totalSupply}`}</h4>
+			<h4 class="w-medium">{`${data.event.totalSupply}`}</h4>
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
+	{#if Object.keys(data.event.verifiers).length > 0}
+		<div class="column-4">
+			<p class="w-medium">
+				<Icon icon="tabler:plus" inline />
+				Power Ups
+			</p>
+			<PowerUpCards powerUps={data.event.verifiers} price={data.event.price} />
+		</div>
+	{/if}
 	<div class="details-wrapper">
 		<div class="row-2 align-center">
-			{#if data.event.status.verifiersStatus && (data.event.status.verifiersStatus.timelockStatus !== null || data.event.status.verifiersStatus.limitedStatus !== null)}
-				{#if data.event.status.verifiersStatus.timelockStatus}
-					<TimelockStateLabel timelockStatus={data.event.status.verifiersStatus.timelockStatus} />
-				{/if}
-				{#if data.event.status.verifiersStatus.limitedStatus}
-					<LimitedStateLabel limitedStatus={data.event.status.verifiersStatus.limitedStatus} />
-				{/if}
-			{/if}
-			<EventStatus status={data.event.status.generalStatus} />
+			<EventStatus
+				status={data.event.status.generalStatus}
+				claimability={data.event.claimable}
+				limitedStatus={data.event.status.verifiersStatus.limitedStatus}
+				timelockStatus={data.event.status.verifiersStatus.timelockStatus}
+			/>
 		</div>
-		{#if starDate && endDate}
+		{#if startDate && endDate}
 			<div>
-				<p class="large">{starDate}</p>
+				<p class="large">{startDate}</p>
 				<p class="small">Start Date</p>
 			</div>
 			<div>
@@ -81,7 +67,7 @@
 			</div>
 		{:else}
 			<div>
-				<p class="large">{starDate}</p>
+				<p class="large">{startDate}</p>
 				<p class="small">Start Date</p>
 			</div>
 		{/if}
@@ -100,7 +86,11 @@
 			<p class="small">Price</p>
 		</div>
 	</div>
-	<ClaimButtonStatus event={data.event} {secretCode} />
+	<ClaimButtonStatus
+		event={data.event}
+		{secretCode}
+		free={data.event.price !== null || Number(data.event.price) === 0}
+	/>
 </section>
 <section class="container-small claims-wrapper">
 	<div class="row-1 claims-title-wrapper align-center">
@@ -125,7 +115,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		gap: var(--space-13);
+		gap: var(--space-10);
 		flex: 1;
 		border-bottom: 1px dashed var(--clr-border-primary);
 
@@ -137,11 +127,12 @@
 			display: grid;
 			grid-auto-columns: 1fr;
 			grid-template-columns: 1fr 1fr;
-			grid-template-rows: auto 1fr;
+			grid-template-rows: auto auto 1fr;
 			gap: var(--space-12) var(--space-6);
 			width: 100%;
 			grid-template-areas:
-				'event-id floats-minted'
+				'event-id event-id'
+				'floats-minted floats-minted'
 				'float-ticket float-ticket';
 
 			.event-id {
@@ -168,7 +159,7 @@
 
 				h4 {
 					color: var(--clr-text-main);
-					font-size: var(--font-size-5);
+					font-size: var(--font-size-2);
 				}
 
 				p {
@@ -182,18 +173,25 @@
 				align-items: center;
 				justify-content: center;
 				width: 100%;
+				position: relative;
 			}
 		}
 
 		.details-wrapper {
 			display: flex;
 			flex-direction: row;
-			gap: var(--space-18);
+			flex-wrap: wrap;
+			gap: var(--space-12);
 			justify-content: center;
 			align-items: center;
 			border-block: 1px dashed var(--clr-border-primary);
 			padding: var(--space-5) var(--space-12);
 			text-align: center;
+
+			@include mq(medium) {
+				flex-direction: row;
+				gap: var(--space-18);
+			}
 
 			.small {
 				color: var(--clr-text-off);

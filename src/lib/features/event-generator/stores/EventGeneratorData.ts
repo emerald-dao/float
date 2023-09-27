@@ -19,6 +19,7 @@ export const EMPTY_GENERATOR_DATA = {
 	eventType: 'conference' as const,
 	certificateType: 'ticket' as const,
 	visibilityMode: 'certificate' as const,
+	multipleClaim: false,
 	powerups: {
 		payment: {
 			active: false,
@@ -31,7 +32,7 @@ export const EMPTY_GENERATOR_DATA = {
 				dateEnding: ''
 			}
 		},
-		secretCode: {
+		secret: {
 			active: false,
 			data: ''
 		},
