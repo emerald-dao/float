@@ -15,13 +15,6 @@ export const actions = {
 		const floatIds: string[] = floatIdsString.split(',');
 
 		for (let i = 0; i < floatIds.length; i++) {
-			// if float is not in the floats table, add it
-			const { error: floatError } = await supabase.from('floats').insert({ id: floatIds[i] });
-
-			if (floatError) {
-				console.log(floatError);
-			}
-
 			const { error } = await supabase
 				.from('floats_groups')
 				.insert({ float_id: floatIds[i], group_id: groupId });
