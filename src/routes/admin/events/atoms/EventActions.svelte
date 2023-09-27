@@ -19,18 +19,36 @@
 	let certificateVisibility: boolean = event.visibilityMode === 'picture' ? false : true;
 
 	const handleToggleClaiming = async () => {
+		claimingState = !claimingState;
 		await toggleClaiming(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			claimingState = event.claimable;
+		}, 1000);
 	};
 
 	const handleToggleTransfering = async () => {
+		transferingState = !transferingState;
 		await toggleTransfering(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			transferingState = event.transferrable;
+		}, 1000);
 	};
 
 	const handleToggleVisibilityType = async () => {
+		certificateVisibility = !certificateVisibility;
 		await toggleVisibilityMode(event.eventId);
+
 		eventsStore.invalidate();
+
+		setTimeout(() => {
+			certificateVisibility = event.visibilityMode === 'picture' ? false : true;
+		}, 1000);
 	};
 </script>
 
