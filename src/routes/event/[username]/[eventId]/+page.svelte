@@ -11,6 +11,7 @@
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 
 	export let data;
+	console.log(data);
 
 	let startDate = data.event.verifiers.timelock?.dateStart
 		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateStart)
@@ -38,13 +39,15 @@
 			<p class="small">FLOATs claimed</p>
 		</div>
 	</div>
-	<div class="column-4">
-		<p class="w-medium">
-			<Icon icon="tabler:plus" inline />
-			Power Ups
-		</p>
-		<PowerUpCards powerUps={data.event.verifiers} price={data.event.price} />
-	</div>
+	{#if Object.keys(data.event.verifiers).length > 0}
+		<div class="column-4">
+			<p class="w-medium">
+				<Icon icon="tabler:plus" inline />
+				Power Ups
+			</p>
+			<PowerUpCards powerUps={data.event.verifiers} price={data.event.price} />
+		</div>
+	{/if}
 	<div class="details-wrapper">
 		<div class="row-2 align-center">
 			<EventStatus
