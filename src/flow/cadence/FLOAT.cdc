@@ -142,10 +142,19 @@ pub contract FLOAT: NonFungibleToken {
                 }
                 if let certificateType: String = extraEventMetadata["certificateType"] as! String? {
                     if certificateType == "medal" {
-                        // extra metadata about colors
+                        // Extra metadata about medal colors
+                        //
+                        // Note about all the casting going on:
+                        // You might be saying, "Why are you casting `medalType! as String?` Jacob?"
+                        // "Why would an unwrapped type be casted to an optional?" The reason is 
+                        // because in Cadence dictionaries, you can encounter double optionals
+                        // where the actual type that lies in the value of a dictionary is itself
+                        // nil. In other words, it's possible to have `{ "jacob": nil }` in a dictionary.
                         if let medalType: AnyStruct = self.getSpecificExtraMetadata(key: "medalType") {
-                            return (extraEventMetadata["certificateImage.".concat(medalType as! String? ?? "")] as! String?) ?? self.eventImage
+                            return (extraEventMetadata["certificateImage.".concat((medalType as! String?)!)] as! String?) ?? self.eventImage
                         }
+                        // if there is no medal type for the FLOAT
+                        return (extraEventMetadata["certificateImage.participation"] as! String?) ?? self.eventImage
                     }
                     return (extraEventMetadata["certificateImage"] as! String?) ?? self.eventImage
                 }
@@ -732,6 +741,11 @@ pub contract FLOAT: NonFungibleToken {
             ) 
 
             if let extraFloatMetadata: {String: AnyStruct} = optExtraFloatMetadata {
+                // ensure 
+                assert(
+                    FLOAT.validateExtraFloatMetadata(data: extraFloatMetadata), 
+                    message: "Extra FLOAT metadata is not proper. Check the `FLOAT.validateExtraFloatMetadata` function."
+                )
                 self.setExtraFloatMetadata(serial: serial, metadata: extraFloatMetadata)
             }
 
@@ -1043,6 +1057,21 @@ pub contract FLOAT: NonFungibleToken {
 
     pub fun createEmptyFLOATEventCollection(): @FLOATEvents {
         return <- create FLOATEvents()
+    }
+
+    access(contract) fun validateExtraFloatMetadata(data: {String: AnyStruct}): Bool {
+        if data.containsKey("medalType") {
+            // possible for dictionaries to have nil values
+            if data["medalType"] == nil || (
+                data["medalType"]! as? String? != "gold" &&
+                data["medalType"]! as? String? != "silver" &&
+                data["medalType"]! as? String? != "bronze" &&
+                data["medalType"]! as? String? != "participation"
+            ){
+                return false
+            }
+        }
+        return true
     }
 
     init() {
