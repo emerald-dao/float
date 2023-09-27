@@ -71,11 +71,11 @@
 				class="description"
 				bind:value={$eventGeneratorData.description}
 				name="event-description"
-				on:change={handleChange}
+				on:input={handleChange}
 				placeholder="This event symbalizes..."
+				rows="3"
 			/>
 		</InputWrapper>
-
 		<div class="column-1">
 			<label for="event-type">Event type</label>
 			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
@@ -111,6 +111,6 @@
 	}
 
 	.description {
-		height: 6rem;
+		border: none;
 	}
 </style>
