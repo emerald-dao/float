@@ -103,15 +103,15 @@
 </script>
 
 <section
-	class="section"
+	class="section-large"
 	style={`background-image: linear-gradient(
-    rgba(250, 250, 250, 0.87),
-		rgba(250, 250, 250, 0.91),
+    rgba(250, 250, 250, 0.92),
+		rgba(250, 250, 250, 0.94),
     rgba(250, 250, 250, 1)
   ), url("/badges/each-event-type-floats/level-3.png") `}
 >
 	<div class="container-medium">
-		<h2 class="w-medium">🔥Trending Events🔥</h2>
+		<h2 class="w-medium h3">🔥Trending Events🔥</h2>
 		{#if trendingEventsLoading}
 			<div class="empty-state">
 				<span><em>Loading trending events</em></span>
@@ -130,8 +130,10 @@
 			</div>
 		{/if}
 	</div>
+</section>
+<section>
 	<div class="live-tickets-wrapper">
-		<h3 class="w-medium align-center">Latest claims</h3>
+		<h3 class="w-medium align-center h5">Latest claims</h3>
 		{#if latestEventsClaimedLoading}
 			<div class="empty-state">
 				<span><em>Loading trending events</em></span>
@@ -140,10 +142,11 @@
 			<div class="cards">
 				{#each eventsAndUsers as data, i (data.event)}
 					<div in:slide={{ axis: 'x', duration: 4000 }}>
-						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }}>
+						<div in:fly={{ x: -300, duration: 4000, opacity: 1 }}>
 							<Float
 								float={transformEventToFloat(data.event, data.user_address)}
-								minWidth="400px"
+								minWidth="350px"
+								hasShadow={false}
 							/>
 						</div>
 					</div>
@@ -159,24 +162,24 @@
 
 <style lang="scss">
 	section {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		min-height: 100vh;
-		width: 100%;
 		position: relative;
-		padding-block: 3rem;
+
+		&:last-child {
+			background-color: var(--clr-neutral-badge);
+			border-top: 0.5px solid var(--clr-border-primary);
+			box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.05);
+		}
 
 		.container-medium {
 			display: flex;
 			flex-direction: column;
-			justify-content: flex-start;
+			gap: var(--space-12);
 			align-items: center;
 
 			h2 {
 				text-align: center;
-				margin-bottom: var(--space-15);
 			}
+
 			.cards-wrapper {
 				display: grid;
 				grid-template-columns: 1fr;
@@ -205,25 +208,18 @@
 			@include mq(small) {
 				display: flex;
 				flex-direction: column;
-				justify-content: flex-start;
-				align-items: flex-start;
-				margin: var(--space-14) 0 var(--space-10) 0;
-				height: 100%;
-				width: 100%;
+				align-items: center;
+				gap: var(--space-8);
 			}
 
 			h3 {
-				align-self: center;
+				text-align: center;
 			}
 
 			.cards {
 				display: flex;
 				justify-content: flex-start;
-				gap: var(--space-1);
-				padding-left: var(--space-1);
-				width: auto;
-				height: 100%;
-				margin-top: var(--space-14);
+				width: 100%;
 				overflow: visible;
 				transform: transformX(-100%);
 				animation: appear 4s linear forwards;
