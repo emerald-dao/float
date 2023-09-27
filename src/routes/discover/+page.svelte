@@ -110,7 +110,7 @@
 			</div>
 		{:else}
 			<div class="empty-state">
-				<span><em>No trending events</em></span>
+				<span><em>No claims reported lately</em></span>
 			</div>
 		{/if}
 	</div>
