@@ -59,7 +59,6 @@
 				placeholder="Flow hackathon"
 			/>
 		</InputWrapper>
-
 		<InputWrapper
 			label="Event description"
 			name="event-description"

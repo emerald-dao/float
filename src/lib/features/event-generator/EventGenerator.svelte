@@ -104,12 +104,13 @@
 			gap: var(--space-8);
 
 			@include mq(medium) {
-				padding: var(--space-18);
+				padding: var(--space-14) var(--space-18);
 			}
 
 			.component-wrapper {
 				padding-bottom: var(--space-13);
 				width: 100%;
+				flex: 1;
 
 				@include mq(small) {
 					padding-bottom: 0px;
@@ -121,12 +122,6 @@
 			padding-top: var(--space-6);
 			border-top: 0.5px solid var(--clr-border-primary);
 			margin-top: var(--space-6);
-		}
-
-		.review-step-wrapper {
-			flex: 1;
-			display: grid;
-			grid-template-rows: 1fr auto;
 		}
 
 		.right-column {

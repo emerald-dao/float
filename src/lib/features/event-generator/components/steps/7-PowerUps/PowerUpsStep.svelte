@@ -35,7 +35,7 @@
 	});
 </script>
 
-<StepComponentWrapper>
+<StepComponentWrapper fitContent={true}>
 	<div>
 		{#each powerUps as { name, icon, type }}
 			<PowerUpToggle {name} {icon} {type} on:click={() => handleSelectPowerUp(type)} />
