@@ -1059,6 +1059,8 @@ pub contract FLOAT: NonFungibleToken {
         return <- create FLOATEvents()
     }
 
+    // A function to validate expected FLOAT metadata that must be in a 
+    // certain format as to not cause aborts during expected casting
     access(contract) fun validateExtraFloatMetadata(data: {String: AnyStruct}): Bool {
         if data.containsKey("medalType") {
             // possible for dictionaries to have nil values
