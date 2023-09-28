@@ -22,7 +22,18 @@
 	/>
 {/await}
 <EventTypesSection />
-<ExperiencesSection />
+<div class="hide-in-mobile">
+	<ExperiencesSection />
+</div>
 <HowItWorksSection />
 <TechnicalDetailsSection />
 <MintAFloatSection />
+
+<style lang="scss">
+	.hide-in-mobile {
+		display: none;
+		@include mq(small) {
+			display: block;
+		}
+	}
+</style>

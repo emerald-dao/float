@@ -29,7 +29,18 @@
 							]
 						}
 				  ]
-				: [];
+				: network === 'testnet' 
+				? [
+					{
+							key: '0xd7f69a06f10eae0e',
+							value: [
+								'173212687',
+								'173205675',
+								'173205595',
+								'173143165'
+							]
+						}
+				] : [];
 		return await getMainPageFLOATs(floats);
 	}
 </script>

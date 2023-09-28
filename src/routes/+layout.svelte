@@ -7,7 +7,7 @@
 	import '@emerald-dao/design-system/build/variables-light.css';
 	import '@emerald-dao/design-system/build/variables.css';
 	import '@emerald-dao/component-library/styles/app.scss';
-	import { Header, Footer, TransactionModal } from '@emerald-dao/component-library';
+	import { Header, Footer, TransactionModal, Seo } from '@emerald-dao/component-library';
 	import { navElements, emeraldTools, socialMedia } from '$lib/config/navigation';
 	import { user } from '$stores/flow/FlowStore';
 	import { logIn, unauthenticate } from '$flow/actions';
@@ -19,6 +19,7 @@
 	import UserSearchBar from '$lib/features/bulk-distribute-floats/components/atoms/searchBar/UserSearchBar.svelte';
 	import { goto } from '$app/navigation';
 	import { network } from '$flow/config';
+	import dappInfo from '$lib/config/config';
 
 	let route: string | null;
 
@@ -136,6 +137,13 @@
 		</div>
 	</Footer>
 {/if}
+
+<Seo
+	title={dappInfo.title}
+	description={dappInfo.description}
+	type="WebSite"
+	image="https://floats.city/favicon.png"
+/>
 
 <style lang="scss">
 	main {
