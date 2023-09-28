@@ -4,9 +4,10 @@
 
 	export let float: FLOAT;
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
+	export let hasBorder = false;
 </script>
 
-<div class="float-front">
+<div class="float-front" class:dashed-border={hasBorder}>
 	<div class="top-right-triangle" />
 	<div class="top-left-triangle" />
 	<div class="bottom-right-triangle" />
@@ -28,6 +29,17 @@
 		width: 100%;
 		height: 100%;
 		overflow: hidden;
+
+		&.dashed-border:before {
+			position: absolute;
+			content: '';
+			display: block;
+			bottom: 0;
+			top: 0;
+			left: 0;
+			width: 0;
+			border-left: 1px dashed var(--clr-border-primary);
+		}
 	}
 
 	.bottom-right-triangle,

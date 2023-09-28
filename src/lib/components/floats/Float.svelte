@@ -13,16 +13,17 @@
 	export let maxWidth = '600px';
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
 	export let hasShadow = true;
+	export let hasBorder = false;
 </script>
 
 {#if !float.visibilityMode || float.visibilityMode === 'certificate'}
 	<BaseFloat {float} {showBack} {minWidth} {maxWidth} {hasShadow}>
 		{#if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'certificate'}
-			<FloatCertificate {float} {isForScreenshot} />
+			<FloatCertificate {float} {isForScreenshot} {hasBorder} />
 		{:else if EVENT_TYPE_DETAILS[float.eventType].certificateType === 'medal'}
-			<FloatMedal {float} {isForScreenshot} />
+			<FloatMedal {float} {isForScreenshot} {hasBorder} />
 		{:else}
-			<FloatTicket {float} {isForScreenshot} />
+			<FloatTicket {float} {isForScreenshot} {hasBorder} />
 		{/if}
 	</BaseFloat>
 {:else if float.visibilityMode === 'picture'}
