@@ -24,12 +24,12 @@ export const EVENT_TYPE_DETAILS: {
 } = {
 	discordMeeting: {
 		certificateType: 'ticket',
-		eventTypeName: 'Discord meeting',
+		eventTypeName: 'Discord Meeting',
 		icon: 'tabler:brand-discord'
 	},
 	twitterSpace: {
 		certificateType: 'ticket',
-		eventTypeName: 'Twitter space',
+		eventTypeName: 'Twitter Space',
 		icon: 'tabler:brand-twitter'
 	},
 	conference: {
@@ -39,7 +39,7 @@ export const EVENT_TYPE_DETAILS: {
 	},
 	productPresentation: {
 		certificateType: 'ticket',
-		eventTypeName: 'Product presentation',
+		eventTypeName: 'Product Presentation',
 		icon: 'tabler:presentation'
 	},
 	course: {
@@ -59,12 +59,12 @@ export const EVENT_TYPE_DETAILS: {
 	},
 	sportCompetition: {
 		certificateType: 'medal',
-		eventTypeName: 'Sport competition',
+		eventTypeName: 'Sport Competition',
 		icon: 'tabler:ball-football'
 	},
 	gamingCompetition: {
 		certificateType: 'medal',
-		eventTypeName: 'Gaming competition',
+		eventTypeName: 'Gaming Competition',
 		icon: 'tabler:device-gamepad'
 	},
 	other: {
