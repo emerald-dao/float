@@ -29,7 +29,8 @@ export const POWER_UPS: {
 		type: 'timelock',
 		name: 'Timelock',
 		icon: 'tabler:clock',
-		description: 'This FLOAT will only be available for a limited time.',
+		description:
+			'This FLOAT will only be available for a limited time. Events start and end at 12:00am of the selected date, in the timezone where the event was created.',
 		component: TimeLimitPowerUp
 	},
 	secret: {
@@ -43,14 +44,16 @@ export const POWER_UPS: {
 		type: 'limited',
 		name: 'Supply',
 		icon: 'tabler:chart-bubble',
-		description: 'Only a certain number of this FLOAT will exist. However, you will be able to airdrop/distribute beyond this limit as the Admin.',
+		description:
+			'Only a certain number of this FLOAT will exist. However, you will be able to airdrop/distribute beyond this limit as the Admin.',
 		component: LimitedPowerUp
 	},
 	minimumBalance: {
 		type: 'minimumBalance',
 		name: 'Min. Balance',
 		icon: 'tabler:coin',
-		description: 'This FLOAT will only be claimable by users with a minimum $FLOW balance. It will not cost any $FLOW to claim, rather it is just a minimum hold amount.',
+		description:
+			'This FLOAT will only be claimable by users with a minimum $FLOW balance. It will not cost any $FLOW to claim, rather it is just a minimum hold amount.',
 		component: MinimumBalancePowerUp
 	}
 };

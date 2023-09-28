@@ -2,7 +2,7 @@
 	import { eventGeneratorData } from '$lib/features/event-generator/stores/EventGeneratorData';
 	import { InputWrapper } from '@emerald-dao/component-library';
 	import PowerUpConfigWrapper from '../../atoms/PowerUpConfigWrapper.svelte';
-	import { type PowerUpGeneratorData, POWER_UPS, powerUpsValidations } from '../../powerUps';
+	import { POWER_UPS, powerUpsValidations } from '../../powerUps';
 	import validationSuite from './validation';
 	import type { SuiteRunResult } from 'vest';
 	import { onMount } from 'svelte';
@@ -40,15 +40,17 @@
 		}
 	});
 
+	let timezoneOffset = new Date().getTimezoneOffset();
+
 	$: if (startDate) {
 		$eventGeneratorData.powerups.timelock.data.dateStart = Math.floor(
-			new Date(startDate).getTime() / 1000
+			new Date(startDate).getTime() / 1000 + timezoneOffset * 60
 		).toString();
 	}
 
 	$: if (endDate) {
 		$eventGeneratorData.powerups.timelock.data.dateEnding = Math.floor(
-			new Date(endDate).getTime() / 1000
+			new Date(endDate).getTime() / 1000 + timezoneOffset * 60
 		).toString();
 	}
 </script>
