@@ -5,18 +5,12 @@
 	export let width = '18%';
 
 	$: if (
-		typeof float.eventLogo !== 'string' &&
-		float.eventLogo?.type &&
-		float.eventLogo?.type.startsWith('image/') &&
+		typeof float.eventImage !== 'string' &&
+		float.eventImage?.type &&
+		float.eventImage?.type.startsWith('image/') &&
 		floatLogo
 	) {
-		displayImage(float.eventLogo as File, floatLogo);
-	}
-
-	// Old FLOATs don't have an eventLogo property, they just have the eventImage property.
-	// In this cases, we are going to use the eventImage as the eventLogo.
-	$: if (typeof float.eventImage === 'string' && !float.eventLogo) {
-		float.eventLogo = float.eventImage;
+		displayImage(float.eventImage as File, floatLogo);
 	}
 
 	let floatLogo: HTMLDivElement;
@@ -41,9 +35,9 @@
 	};
 </script>
 
-{#if float.eventLogo && typeof float.eventLogo === 'string'}
-	<img src={float.eventLogo} alt="event-logo" style={`width: ${width}`} />
-{:else if float.eventLogo && typeof float.eventLogo !== 'string'}
+{#if float.eventImage && typeof float.eventImage === 'string'}
+	<img src={float.eventImage} alt="event-logo" style={`width: ${width}`} />
+{:else if float.eventImage && typeof float.eventImage !== 'string'}
 	<div class="float-logo" bind:this={floatLogo} style={`width: ${width}`} />
 {:else}
 	<div class="image-placeholder" style={`width: ${width}`}>

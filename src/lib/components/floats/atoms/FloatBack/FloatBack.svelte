@@ -11,11 +11,12 @@
 	// The reactive statement bellow, checks if the image is a File and then transforms it into a base 64 format.
 	// Then, it displays the image as a background in the backgroundImage div.
 	$: if (
-		(typeof float.eventImage === 'string' ||
-			(float.eventImage?.type && float.eventImage?.type.startsWith('image/'))) &&
+		typeof float.backImage !== 'string' &&
+		float.backImage?.type &&
+		float.backImage?.type.startsWith('image/') &&
 		backgroundImage
 	) {
-		displayImage(float.eventImage, backgroundImage);
+		displayImage(float.backImage, backgroundImage);
 	}
 
 	const displayImage = (file: File | string, element: HTMLDivElement) => {
@@ -30,19 +31,19 @@
 
 			reader.onload = () => {
 				element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
-				element.style.backgroundSize = 'cover';
-				element.style.backgroundPosition = 'center';
-				element.style.backgroundColor = 'var(--clr-surface-secondary)';
 			};
 		}
 	};
 </script>
 
 <div id="float-back" class="center" class:ticket={isTicket}>
-	{#if float.eventImage}
+	{#if float.backImage && typeof float.backImage === 'string'}
+		<div style={`background-image: url(${float.backImage})`} class="background-image" />
+	{:else if float.backImage && typeof float.backImage !== 'string'}
 		<div bind:this={backgroundImage} class="background-image" />
-	{/if}
-	{#if float.eventImage === undefined}
+	{:else if float.eventImage && typeof float.eventImage === 'string'}
+		<div style={`background-image: url(${float.eventImage})`} class="background-image" />
+	{:else}
 		<div class="content">
 			<p>Insert an image</p>
 		</div>
@@ -71,6 +72,9 @@
 	.background-image {
 		width: 100%;
 		height: 100%;
+		background-size: cover;
+		background-position: center;
+		background-color: var(--clr-surface-secondary);
 	}
 
 	.ticket {

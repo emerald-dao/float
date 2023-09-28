@@ -10,9 +10,9 @@ const homeFloatTickets: FLOAT[] = [
 		dateReceived: '1649886952.00000000',
 		eventDescription: 'Hackathon dictated by Emerald City',
 		eventId: '941533131',
-		eventImage:
+		backImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-		eventLogo:
+		eventImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958730799005876/Mateo_Roldos_An_avatar_for_the_Emerald_City_student._Emerald_Ci_0d9c4a87-8861-4779-bd9a-080ef0c838a5.png',
 
 		serial: '12',
@@ -29,9 +29,9 @@ const homeFloatTickets: FLOAT[] = [
 		dateReceived: '1649886952.00000000',
 		eventDescription: 'Hackathon dictated by Emerald City',
 		eventId: '941533131',
-		eventImage:
+		backImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-		eventLogo:
+		eventImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958730799005876/Mateo_Roldos_An_avatar_for_the_Emerald_City_student._Emerald_Ci_0d9c4a87-8861-4779-bd9a-080ef0c838a5.png',
 
 		serial: '12',
@@ -48,9 +48,9 @@ const homeFloatTickets: FLOAT[] = [
 		dateReceived: '1649886952.00000000',
 		eventDescription: 'Hackathon dictated by Emerald City',
 		eventId: '941533131',
-		eventImage:
+		backImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958725711319201/tsnakejake_A_cartoon_man_reading_a_mystical_book_with_an_emeral_d5f03067-6692-4152-8ade-37621c0776b5.png',
-		eventLogo:
+		eventImage:
 			'https://cdn.discordapp.com/attachments/1054775421671055390/1105958730799005876/Mateo_Roldos_An_avatar_for_the_Emerald_City_student._Emerald_Ci_0d9c4a87-8861-4779-bd9a-080ef0c838a5.png',
 
 		serial: '12',
