@@ -12,3 +12,4 @@ flow.json
 .env.development
 .env.production
 .vercel_build_output
+testnet-account.pkey
