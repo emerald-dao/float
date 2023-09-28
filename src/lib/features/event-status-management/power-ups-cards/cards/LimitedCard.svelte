@@ -7,7 +7,7 @@
 	export let maxSupply: number;
 	export let claims: number | null;
 
-	const limitedStatus = claims !== null ? limitedToStatusObject(maxSupply, claims) : null;
+	$: limitedStatus = claims !== null ? limitedToStatusObject(maxSupply, claims) : null;
 
 	const limitedPowerUp = POWER_UPS['limited'];
 
