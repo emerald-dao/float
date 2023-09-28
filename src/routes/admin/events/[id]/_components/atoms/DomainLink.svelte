@@ -115,6 +115,7 @@
 				padding: var(--space-1) var(--space-3);
 				overflow: hidden;
 				font-size: var(--font-size-0);
+				color: var(--clr-text-main);
 			}
 
 			.row-3 {
