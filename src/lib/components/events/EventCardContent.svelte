@@ -73,6 +73,7 @@
 		width: 100%;
 		transition: 300ms ease-in-out;
 		background-color: var(--clr-surface-primary);
+		flex: 1;
 
 		&:hover {
 			background: var(--clr-surface-secondary);
