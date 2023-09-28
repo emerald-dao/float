@@ -6,11 +6,9 @@
 
 	let floats: Writable<FLOAT[]> = getContext('floats');
 
-	onMount(() => {
-		if ($floats.length > 0) {
-			goto(`/admin/my-collection/${$floats[0].id}`);
-		}
-	});
+	$: if ($floats && $floats.length > 0) {
+		goto(`/admin/my-collection/${$floats[0].id}`);
+	}
 </script>
 
 <div class="center">

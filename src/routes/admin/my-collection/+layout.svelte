@@ -19,12 +19,6 @@
 	let paginationMax: number;
 	let paginationMin: number;
 
-	onMount(() => {
-		if ($floats[0] && $floats[0].id) {
-			goto(`/admin/my-collection/${$floats[0].id}`);
-		}
-	});
-
 	$: searchEvent = $floats.map((example) => ({
 		...example,
 
