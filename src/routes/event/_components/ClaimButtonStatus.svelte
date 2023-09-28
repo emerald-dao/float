@@ -9,6 +9,7 @@
 	import { get } from 'svelte/store';
 	import claimFloat from '../_actions/claimFloat';
 	import { page } from '$app/stores';
+	import { invalidate } from '$app/navigation';
 
 	export let event: EventWithStatus;
 	export let secretCode: string;
@@ -45,6 +46,8 @@
 
 	const handleClaimFloat = async () => {
 		await claimFloat(event.eventId, event.host, inputValue, free);
+
+		invalidate('app:event');
 
 		checkIfUserHasClaimedEvent();
 	};

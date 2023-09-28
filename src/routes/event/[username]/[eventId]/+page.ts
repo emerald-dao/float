@@ -4,7 +4,9 @@ import { getEventGeneralStatus } from '$lib/features/event-status-management/fun
 import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState.js';
 import type { Event, EventWithStatus } from '$lib/types/event/event.interface.js';
 
-export const load = async ({ params }) => {
+export async function load({ params, depends }) {
+	depends('app:event');
+
 	const findProfile = await getFindProfileFromAddressOrName(params.username);
 
 	let walletAddress = params.username;
@@ -33,4 +35,4 @@ export const load = async ({ params }) => {
 		event: getEventWithStatus(event),
 		claims: await getLatestEventClaims(walletAddress, params.eventId, 20)
 	};
-};
+}
