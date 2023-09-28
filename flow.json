@@ -64,6 +64,30 @@
         "testnet": "9a0766d93b6608b7"
       }
     },
+    "EmeraldIdentity": {
+      "source": "./src/flow/cadence/utility/EmeraldIdentity.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "39e42c67cc851cfb",
+        "testnet": "4d47bf3ce5e4393f"
+      }
+    },
+    "EmeraldIdentityDapper": {
+      "source": "./src/flow/cadence/utility/EmeraldIdentityDapper.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "39e42c67cc851cfb",
+        "testnet": "4d47bf3ce5e4393f"
+      }
+    },
+    "EmeraldIdentityLilico": {
+      "source": "./src/flow/cadence/utility/EmeraldIdentityLilico.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "39e42c67cc851cfb",
+        "testnet": "4d47bf3ce5e4393f"
+      }
+    },
     "MetadataViews": {
       "source": "./src/flow/cadence/utility/MetadataViews.cdc",
       "aliases": {
@@ -110,6 +134,9 @@
   "deployments": {
     "emulator": {
       "emulator-account": [
+        "EmeraldIdentity",
+        "EmeraldIdentityDapper",
+        "EmeraldIdentityLilico",
         "FCLCrypto",
         "FindViews",
         "FIND",
@@ -119,7 +146,9 @@
     },
     "testnet": {
       "testnet-account": [
-        "FLOAT"
+        "EmeraldIdentity",
+        "EmeraldIdentityDapper",
+        "EmeraldIdentityLilico"
       ]
     }
   }
