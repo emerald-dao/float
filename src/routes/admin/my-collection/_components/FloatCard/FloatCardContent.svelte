@@ -1,4 +1,5 @@
 <script lang="ts">
+	import FloatEventType from '$lib/components/floats/atoms/FloatEventType.svelte';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 	import { Label } from '@emerald-dao/component-library';
@@ -18,7 +19,7 @@
 		{/if}
 		<div class="column-1">
 			<p class="event-name w-medium">{float.eventName}</p>
-			<Label color="neutral" size="xx-small" hasBorder={false}>{float.eventType}</Label>
+			<FloatEventType eventType={float.eventType} fontSize="0.8em" />
 		</div>
 	</div>
 	<div class="date-wrapper">
