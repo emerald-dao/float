@@ -7,11 +7,17 @@
 	export let data;
 
 	let qrCodeDataUrl: string;
+	let eventUrl: string;
 
 	onMount(async () => {
-		let qr = `${$page.url.origin}/event/${$page.params.username}/${data.overview.eventId}`;
-		qrCodeDataUrl = await generateQRCode(qr);
+		eventUrl = `${$page.url.origin}/event/${$page.params.username}/${data.overview.eventId}`;
+		qrCodeDataUrl = await generateQRCode(eventUrl);
 	});
 </script>
 
-<EventQrCard title={data.overview.name} type={data.overview.eventType} qrUrl={qrCodeDataUrl} />
+<EventQrCard
+	title={data.overview.name}
+	type={data.overview.eventType}
+	qrUrl={qrCodeDataUrl}
+	{eventUrl}
+/>
