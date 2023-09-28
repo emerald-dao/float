@@ -23,19 +23,10 @@ export async function load({ fetch }) {
 const getLatestEventsClaimedAndItsUsers = async () => {
 	try {
 		let latestEventsClaimed = await getLatestEventsClaimedFromBlockchain();
-		let eventsAndUsers = [];
 
-		const eventsArray = latestEventsClaimed.events;
-		const latestUsersToClaimArray = latestEventsClaimed.latestUsersToClaim;
+		console.log(latestEventsClaimed);
 
-		for (let i = 0; i < eventsArray.length; i++) {
-			const event = eventsArray[i];
-			const user_address = latestUsersToClaimArray[i];
-			const newObj = { event, user_address };
-			eventsAndUsers.push(newObj);
-		}
-
-		return eventsAndUsers;
+		return latestEventsClaimed;
 	} catch (error) {
 		console.error('Error fetching data:', error);
 

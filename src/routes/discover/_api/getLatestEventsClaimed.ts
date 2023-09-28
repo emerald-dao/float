@@ -7,7 +7,18 @@ export async function getLatestEventsClaimed() {
 			return null;
 		}
 
-		const responseData = await response.json();
+		const responseData:
+			| {
+					event_id: string | null;
+					user_address: string;
+					float_id: string;
+					events: {
+						created_at: string | null;
+						creator_address: string;
+						id: string;
+					} | null;
+			  }[]
+			| null = await response.json();
 
 		return responseData;
 	} catch (error) {

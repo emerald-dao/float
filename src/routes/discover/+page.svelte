@@ -12,56 +12,67 @@
 
 	export let data;
 
-	const claimStore = writable<{ eventIds: string[]; userAddresses: string[] }>(
-		{ eventIds: [], userAddresses: [] },
-		(set) => {
-			const eventIds: string[] = [];
-			const userAddresses: string[] = [];
+	const claimStore = writable<ClaimData[]>([], (set) => {
+		const eventIds: string[] = [];
+		const userAddresses: string[] = [];
 
-			const subscription = supabase
-				.channel('claims')
-				.on(
-					'postgres_changes',
-					{
-						event: 'INSERT',
-						schema: 'public',
-						table: 'claims',
-						filter: `network=eq.${network}`
-					},
-					(payload) => {
-						const event_id = payload.new?.event_id;
-						const user_address = payload.new?.user_address;
+		const subscription = supabase
+			.channel('claims')
+			.on(
+				'postgres_changes',
+				{
+					event: 'INSERT',
+					schema: 'public',
+					table: 'claims',
+					filter: `network=eq.${network}`
+				},
+				async (payload) => {
+					const event_id = payload.new?.event_id;
+					const user_address = payload.new?.user_address;
+					const float_id = payload.new?.float_id;
 
-						eventIds.push(event_id);
-						userAddresses.push(user_address);
+					const blockchainEvent = await fetchEventData(event_id, user_address);
 
-						set({ eventIds, userAddresses });
-						fetchNewEventData();
+					if (blockchainEvent) {
+						latestClaims.push({
+							blockchainEvent,
+							event_id,
+							user_address,
+							float_id,
+							events: null
+						});
 					}
-				)
-				.subscribe();
+				}
+			)
+			.subscribe();
 
-			return () => supabase.removeChannel(subscription);
-		}
-	);
+		return () => supabase.removeChannel(subscription);
+	});
 
-	let latestClaims: {
-		event: Event;
-		user_address: any;
-	}[];
+	let latestClaims: ClaimData[];
+
+	interface ClaimData {
+		blockchainEvent: Event | undefined;
+		event_id: string | null;
+		user_address: string;
+		float_id: string;
+		events: {
+			created_at: string | null;
+			creator_address: string;
+			id: string;
+		} | null;
+	}
+	[];
 
 	onMount(() => {
 		latestClaims = data.latestFloatsClaimed;
 	});
 
-	async function fetchNewEventData() {
+	async function fetchEventData(eventId: string, creatorAddress: string) {
 		try {
-			if ($claimStore) {
-				const lastEventId = $claimStore.eventIds[$claimStore.eventIds.length - 1];
-				const lastUserAddress = $claimStore.userAddresses[$claimStore.userAddresses.length - 1];
-				const event = await getLiveEventFromBlockchain(lastEventId);
-				latestClaims = [{ event, user_address: lastUserAddress }, ...latestClaims];
-			}
+			const event = await getLiveEventFromBlockchain(eventId);
+
+			return event;
 		} catch (error) {
 			console.error('Error fetching data:', error);
 		}
@@ -95,16 +106,21 @@
 	<h3 class="w-medium align-center h5">Latest claims</h3>
 	{#if latestClaims && latestClaims.length > 0}
 		<div class="cards">
-			{#each latestClaims as eventClaimed, i (eventClaimed.event)}
-				<div in:slide={{ axis: 'x', duration: 4000 }}>
-					<div in:fly={{ x: -400, duration: 4000, opacity: 1 }}>
-						<Float
-							float={transformEventToFloat(eventClaimed.event, eventClaimed.user_address)}
-							minWidth="400px"
-							hasShadow={false}
-						/>
+			{#each latestClaims as eventClaimed (eventClaimed.float_id)}
+				{#if eventClaimed.blockchainEvent}
+					<div in:slide={{ axis: 'x', duration: 4000 }}>
+						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }}>
+							<Float
+								float={transformEventToFloat(
+									eventClaimed.blockchainEvent,
+									eventClaimed.user_address
+								)}
+								minWidth="400px"
+								hasShadow={false}
+							/>
+						</div>
 					</div>
-				</div>
+				{/if}
 			{/each}
 		</div>
 	{:else}

@@ -117,7 +117,7 @@ const createMedalEvent = async (
 	url: string,
 	logo: string,
 	backImage: string,
-	certificateImage: { gold: string; silver: string; bronze: string; participation: string; },
+	certificateImage: { gold: string; silver: string; bronze: string; participation: string },
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
@@ -134,10 +134,10 @@ const createMedalEvent = async (
 	secretPK: string
 ) => {
 	let certificateImagesArg = [
-		{ key: "gold", value: certificateImage["gold"] },
-		{ key: "silver", value: certificateImage["silver"] },
-		{ key: "bronze", value: certificateImage["bronze"] },
-		{ key: "participation", value: certificateImage["participation"] }
+		{ key: 'gold', value: certificateImage['gold'] },
+		{ key: 'silver', value: certificateImage['silver'] },
+		{ key: 'bronze', value: certificateImage['bronze'] },
+		{ key: 'participation', value: certificateImage['participation'] }
 	];
 
 	return await fcl.mutate({
@@ -180,12 +180,14 @@ export const createEventExecution = async (
 	url: string,
 	logo: string,
 	backImage: string,
-	certificateImage: string | { gold: string; silver: string; bronze: string; participation: string; },
+	certificateImage:
+		| string
+		| { gold: string; silver: string; bronze: string; participation: string },
 	transferrable: boolean,
 	claimable: boolean,
 	eventType: EventType,
 	certificateType: CertificateType,
-	timelock: { dateStart: string; dateEnding: string; } | null,
+	timelock: { dateStart: string; dateEnding: string } | null,
 	secret: string | null,
 	limited: number | null,
 	payment: number | null,
@@ -213,7 +215,12 @@ export const createEventExecution = async (
 					url,
 					logo,
 					backImage,
-					certificateImage as { gold: string; silver: string; bronze: string; participation: string; },
+					certificateImage as {
+						gold: string;
+						silver: string;
+						bronze: string;
+						participation: string;
+					},
 					transferrable,
 					claimable,
 					eventType,
@@ -258,7 +265,7 @@ export const createEventExecution = async (
 			),
 		actionAfterSucceed
 	);
-}
+};
 
 const burnFLOAT = async (floatId: string) => {
 	return await fcl.mutate({
@@ -311,10 +318,16 @@ export const claimFLOATExecution = (
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) => {
 	if (free) {
-		return executeTransaction(() => claimFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
+		return executeTransaction(
+			() => claimFLOAT(eventId, eventCreator, secretSig),
+			actionAfterSucceed
+		);
 	}
-	return executeTransaction(() => purchaseFLOAT(eventId, eventCreator, secretSig), actionAfterSucceed);
-}
+	return executeTransaction(
+		() => purchaseFLOAT(eventId, eventCreator, secretSig),
+		actionAfterSucceed
+	);
+};
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
@@ -448,7 +461,7 @@ export const getEvent = async (eventHost: string, eventId: string): Promise<Even
 };
 
 export const getEventsBatch = async (
-	events: { user_address: string; event_id: string }[]
+	events: { creator_address: string; id: string }[]
 ): Promise<Event[]> => {
 	try {
 		let eventsArg = [];
@@ -605,11 +618,7 @@ export const userHasClaimedEvent = async (
 	}
 };
 
-export const userCanMint = async (
-	eventId: string,
-	eventHost: string,
-	userAddress: string
-) => {
+export const userCanMint = async (eventId: string, eventHost: string, userAddress: string) => {
 	try {
 		return await fcl.query({
 			cadence: replaceWithProperValues(userCanMintScript),

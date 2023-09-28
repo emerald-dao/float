@@ -4,12 +4,33 @@ import { getLatestEventsClaimed } from '../_api/getLatestEventsClaimed';
 const getLatestEventsClaimedFromBlockchain = async () => {
 	let response = await getLatestEventsClaimed();
 
-	let events = await getEventsBatch(response.eventsData);
+	let eventsData = response?.map((event) => {
+		return {
+			creator_address: event.events?.creator_address as string,
+			id: event.events?.id as string
+		};
+	});
 
-	return {
-		events,
-		latestUsersToClaim: response.latestUsersToClaim
-	};
+	if (eventsData) {
+		let events = await getEventsBatch(eventsData);
+
+		if (response) {
+			let eventsDataWithBlockhainEvent = response.map((claim) => {
+				let blockchainEvent = events.find((blockchainEvent) => {
+					return blockchainEvent.eventId === claim.event_id;
+				});
+
+				return {
+					...claim,
+					blockchainEvent
+				};
+			});
+
+			return eventsDataWithBlockhainEvent;
+		}
+	}
+
+	return [];
 };
 
 export default getLatestEventsClaimedFromBlockchain;

@@ -12,7 +12,7 @@ const supabase = createClient<Database>(
 export async function GET() {
 	const { data: claimsData, error: claimsError } = await supabase
 		.from('claims')
-		.select('event_id, user_address, network')
+		.select('event_id, user_address, float_id, events (*)')
 		.eq('network', network)
 		.order('created_at', { ascending: false })
 		.limit(10);
@@ -20,33 +20,8 @@ export async function GET() {
 	if (claimsError) {
 		throw claimsError;
 	}
-	let latestClaims = claimsData.map((claim) => claim.event_id);
 
-	let latestUsersToClaim = claimsData.map((claim) => claim.user_address);
-
-	const eventsPromises = latestClaims.map(async (eventId) => {
-		const { data: eventData, error: eventsError } = await supabase
-			.from('events')
-			.select('id, creator_address, network')
-			.eq('id', [eventId])
-			.eq('network', network)
-			.single();
-
-		if (eventsError) {
-			throw eventsError;
-		}
-
-		return eventData;
-	});
-
-	const eventsData = await Promise.all(eventsPromises);
-
-	let data = {
-		eventsData,
-		latestUsersToClaim
-	};
-
-	const jsonResponse = new Response(JSON.stringify(data), {
+	const jsonResponse = new Response(JSON.stringify(claimsData), {
 		status: 200,
 		headers: {
 			'Content-Type': 'application/json'
