@@ -7,14 +7,17 @@
 	import { network } from '$flow/config';
 	import generateQRCode from '$lib/utilities/generateQRCode';
 
-	let eventId: string = network === 'mainnet' ? '1287289901' : network === 'testnet' ? '173143134' : '';
+	let eventId: string =
+		network === 'mainnet' ? '1287289901' : network === 'testnet' ? '173143134' : '';
 	let username: string =
 		network === 'mainnet' ? 'jacob' : network === 'testnet' ? '0xd7f69a06f10eae0e' : '';
+
 	let qrCodeDataUrl = '';
+	let eventUrl: string;
 
 	onMount(async () => {
-		let qr = `${$page.url.origin}/event/${username}/${eventId}`;
-		qrCodeDataUrl = await generateQRCode(qr);
+		eventUrl = `${$page.url.origin}/event/${username}/${eventId}`;
+		qrCodeDataUrl = await generateQRCode(eventUrl);
 	});
 </script>
 
@@ -25,7 +28,14 @@
 		title="Start collecting experiences"
 		description="Mint this FLOAT to start your collection!"
 	/>
-	<EventQrCard title="I visited FLOAT's Home Page" type="Website Visit" qrUrl={qrCodeDataUrl} />
+
+	<EventQrCard
+		title="I visited FLOAT's Home Page"
+		type="Website Visit"
+		qrUrl={qrCodeDataUrl}
+		{eventUrl}
+		clickable={true}
+	/>
 </section>
 
 <style lang="scss">

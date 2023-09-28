@@ -8,17 +8,23 @@
 	export let data;
 
 	let qrCodeDataUrl: string;
+	let eventUrl: string;
 
 	onMount(async () => {
-		let qr = `${$page.url.origin}/event/${$page.params.username}/${data.overview.eventId}`;
-		qrCodeDataUrl = await generateQRCode(qr);
+		eventUrl = `${$page.url.origin}/event/${$page.params.username}/${data.overview.eventId}`;
+		qrCodeDataUrl = await generateQRCode(eventUrl);
 	});
 </script>
 
 <section class="container center column-10">
 	<Blur color="tertiary" right="20%" top="30%" />
 	<Blur left="20%" bottom="20%" />
-	<EventQrCard title={data.overview.name} type={data.overview.eventType} qrUrl={qrCodeDataUrl} />
+	<EventQrCard
+		title={data.overview.name}
+		type={data.overview.eventType}
+		qrUrl={qrCodeDataUrl}
+		{eventUrl}
+	/>
 </section>
 
 <style lang="scss">

@@ -5,12 +5,12 @@
 	export let width = '80%';
 
 	$: if (
-		typeof float.eventImage !== 'string' &&
-		float.eventImage?.type &&
-		float.eventImage?.type.startsWith('image/') &&
+		typeof float.backImage !== 'string' &&
+		float.backImage?.type &&
+		float.backImage?.type.startsWith('image/') &&
 		floatImage
 	) {
-		displayImage(float.eventImage as File, floatImage);
+		displayImage(float.backImage as File, floatImage);
 	}
 
 	let floatImage: HTMLDivElement;
@@ -35,9 +35,9 @@
 	};
 </script>
 
-{#if float.eventImage && typeof float.eventImage === 'string'}
-	<img src={float.eventImage} alt="event-image" style={`width: ${width}`} />
-{:else if float.eventImage && typeof float.eventImage !== 'string'}
+{#if float.backImage && typeof float.backImage === 'string'}
+	<img src={float.backImage} alt="event-image" style={`width: ${width}`} />
+{:else if float.backImage && typeof float.backImage !== 'string'}
 	<div class="float-image" bind:this={floatImage} style={`width: ${width}`} />
 {:else}
 	<div class="image-placeholder" style={`width: ${width}`}>

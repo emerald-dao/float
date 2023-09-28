@@ -14,8 +14,8 @@
 
 <div class="main-wrapper" class:selected class:hover-background={clickable}>
 	<div class="row-3 details-wrapper">
-		{#if typeof float.eventImage === 'string'}
-			<img src={float.eventImage} width="60px" height="60px" alt="logo" />
+		{#if typeof float.backImage === 'string'}
+			<img src={float.backImage} width="60px" height="60px" alt="logo" />
 		{/if}
 		<div class="column-1">
 			<p class="event-name w-medium">{float.eventName}</p>
