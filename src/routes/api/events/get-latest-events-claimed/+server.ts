@@ -15,7 +15,7 @@ export async function GET() {
 		.select('event_id, user_address, network')
 		.eq('network', network)
 		.order('created_at', { ascending: false })
-		.limit(6);
+		.limit(10);
 
 	if (claimsError) {
 		throw claimsError;
