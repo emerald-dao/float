@@ -11,6 +11,7 @@
 	import { writable, type Writable } from 'svelte/store';
 	import StepButtons from './components/steps/atoms/StepButtons.svelte';
 	import type { PowerUpType } from './types/event-generator-data.interface';
+	import { user } from '$stores/flow/FlowStore';
 
 	setContext('steps', eventGeneratorSteps);
 	setContext('activeStep', eventGeneratorActiveStep);
@@ -25,6 +26,9 @@
 	$: powerUpsStep = $eventGeneratorActiveStep === 6;
 	$: reviewStep = $eventGeneratorActiveStep === 7;
 	$: activePowerUpComponent = POWER_UPS[$activePowerUp].component;
+	$: if ($user.addr) {
+		$eventGeneratorData.host = $user.addr;
+	}
 </script>
 
 <section class:review-step={reviewStep}>
