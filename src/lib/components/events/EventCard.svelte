@@ -31,5 +31,6 @@
 		text-decoration: none;
 		color: unset;
 		width: 100%;
+		display: flex;
 	}
 </style>
