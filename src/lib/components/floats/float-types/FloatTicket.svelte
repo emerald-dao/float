@@ -13,9 +13,10 @@
 
 	export let float: FLOAT;
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
+	export let hasBorder = false;
 </script>
 
-<div class="float-front">
+<div class="float-front" class:dashed-border={hasBorder}>
 	<FloatContent let:F>
 		<F.Header>
 			<FloatHeading certificateType="ticket" />
@@ -94,6 +95,17 @@
 		position: relative;
 		transition: transform 1.4s;
 		transform-style: preserve-3d;
+
+		&.dashed-border:before {
+			position: absolute;
+			content: '';
+			display: block;
+			bottom: 0;
+			top: 0;
+			right: 0;
+			width: 0;
+			border-left: 1px dashed var(--clr-border-primary);
+		}
 
 		.logo-and-name-wrapper {
 			display: flex;

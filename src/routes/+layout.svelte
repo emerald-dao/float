@@ -126,7 +126,7 @@
 	<div />
 {/if}
 
-<main>
+<main class:overflow-hidden={route === 'discover'}>
 	<slot />
 </main>
 
@@ -149,7 +149,10 @@
 	main {
 		display: flex;
 		flex-direction: column;
-		overflow-x: hidden;
+
+		&.overflow-hidden {
+			overflow: hidden;
+		}
 	}
 
 	.commands-wrapper {

@@ -6,12 +6,13 @@
 
 	export let float: FLOAT;
 	export let isForScreenshot = false; // When true, the float will be rendered without some details (e.g. Recipient and Float Serial )
+	export let hasBorder = false;
 
 	let level = float.extraMetadata.medalType as MedalType;
 	let color = level === 'participation' ? 'neutral' : (level as FloatColors);
 </script>
 
-<div class={`float-front ${color}`}>
+<div class={`float-front ${color}`} class:dashed-border={hasBorder}>
 	<FloatMedalAndCertificateFront {float} labelColor={color} {isForScreenshot} />
 </div>
 
@@ -27,6 +28,17 @@
 		padding: 5% 7%;
 		width: 100%;
 		height: 100%;
+
+		&.dashed-border:before {
+			position: absolute;
+			content: '';
+			display: block;
+			bottom: 0;
+			top: 0;
+			right: 0;
+			width: 0;
+			border-left: 1px dashed var(--clr-border-primary);
+		}
 
 		&.neutral {
 			background-color: var(--clr-surface-secondary);
