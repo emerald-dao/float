@@ -58,6 +58,11 @@ const contractData = {
 		emulator: '0xf8d6e0586b0a20c7',
 		testnet: '0x4d47bf3ce5e4393f',
 		mainnet: '0x2d4c3caffbeab845'
+	},
+	EmeraldIdentity: {
+		emulator: '0xf8d6e0586b0a20c7',
+		testnet: '0x4d47bf3ce5e4393f',
+		mainnet: '0x39e42c67cc851cfb'
 	}
 };
 
@@ -81,5 +86,6 @@ export const addresses: {
 	FLOAT: contractData.FLOAT[network],
 	FIND: contractData.FIND[network],
 	FiatToken: contractData.FiatToken[network],
-	NFTCatalog: contractData.NFTCatalog[network]
+	NFTCatalog: contractData.NFTCatalog[network],
+	EmeraldIdentity: contractData.EmeraldIdentity[network]
 };

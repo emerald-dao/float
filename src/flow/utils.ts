@@ -103,31 +103,73 @@ export const getFindProfile = async (address: string) => {
 	try {
 		return await fcl.query({
 			cadence: `
-        import FIND from ${addresses.FIND}
-        pub fun main(address: Address): Profile? {
-            if let name = FIND.reverseLookup(address) {
-              let profile = FIND.lookup(name)!
-              return Profile(_name: name, _address: address, _avatar: profile.getAvatar())
-            }
-            
-            return nil
-        }
+			import FIND from ${addresses.FIND}
+			import EmeraldIdentity from ${addresses.EmeraldIdentity}
+			import EmeraldIdentityDapper from ${addresses.EmeraldIdentity}
+			import EmeraldIdentityLilico from ${addresses.EmeraldIdentity}
+			pub fun main(address: Address): Profile? {
+				if let name = FIND.reverseLookup(address) {
+					if let profile = FIND.lookup(name) {
+						return Profile(_name: name, _address: address, _avatar: profile.getAvatar())
+					}
+				}
 
-        pub struct Profile {
-          pub let name: String
-          pub let address: Address
-          pub let avatar: String
+				if let discordId: String = EmeraldIdentity.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
 
-          init(_name: String, _address: Address, _avatar: String) {
-            self.name = _name
-            self.address = _address
-            self.avatar = _avatar
-          }
-        }
-        `,
+				if let discordId: String = EmeraldIdentityDapper.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
+
+				if let discordId: String = EmeraldIdentityLilico.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
+				
+				return nil
+			}
+
+			pub fun helper(discordId: String): MiniProfile? {
+				let emeraldIDs: [Address] = EmeraldIdentity.getEmeraldIDs(discordID: discordId).values
+					for emeraldIDAddress in emeraldIDs {
+						if let name = FIND.reverseLookup(emeraldIDAddress) {
+							if let profile = FIND.lookup(name) {
+								return MiniProfile(_name: name,  _avatar: profile.getAvatar())
+							}
+						}
+					}
+					return nil
+			}
+
+			pub struct MiniProfile {
+				pub let name: String
+				pub let avatar: String
+
+				init(_name: String, _avatar: String) {
+					self.name = _name
+					self.avatar = _avatar
+				}
+			}
+
+			pub struct Profile {
+				pub let name: String
+				pub let address: Address
+				pub let avatar: String
+
+				init(_name: String, _address: Address, _avatar: String) {
+					self.name = _name
+					self.address = _address
+					self.avatar = _avatar
+				}
+			}
+			`,
 			args: (arg, t) => [arg(address, t.Address)]
 		});
 	} catch (e) {
+		console.log(e)
 		return null;
 	}
 };
@@ -139,14 +181,54 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 		if (input.length === 18 && input.substring(0, 2) === '0x') {
 			cadence = `
 			import FIND from ${addresses.FIND}
+			import EmeraldIdentity from ${addresses.EmeraldIdentity}
+			import EmeraldIdentityDapper from ${addresses.EmeraldIdentity}
+			import EmeraldIdentityLilico from ${addresses.EmeraldIdentity}
 			pub fun main(address: Address): Profile? {
 				if let name = FIND.reverseLookup(address) {
 					if let profile = FIND.lookup(name) {
 						return Profile(_name: name, _address: address, _avatar: profile.getAvatar())
 					}
 				}
+
+				if let discordId: String = EmeraldIdentity.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
+
+				if let discordId: String = EmeraldIdentityDapper.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
+
+				if let discordId: String = EmeraldIdentityLilico.getDiscordFromAccount(account: address) {
+					let miniProfile: MiniProfile? = helper(discordId: discordId)
+					return miniProfile != nil ? Profile(_name: miniProfile!.name, _address: address, _avatar: miniProfile!.avatar) : nil
+				}
 				
 				return nil
+			}
+
+			pub fun helper(discordId: String): MiniProfile? {
+				let emeraldIDs: [Address] = EmeraldIdentity.getEmeraldIDs(discordID: discordId).values
+					for emeraldIDAddress in emeraldIDs {
+						if let name = FIND.reverseLookup(emeraldIDAddress) {
+							if let profile = FIND.lookup(name) {
+								return MiniProfile(_name: name,  _avatar: profile.getAvatar())
+							}
+						}
+					}
+					return nil
+			}
+
+			pub struct MiniProfile {
+				pub let name: String
+				pub let avatar: String
+
+				init(_name: String, _avatar: String) {
+					self.name = _name
+					self.avatar = _avatar
+				}
 			}
 
 			pub struct Profile {
@@ -192,6 +274,7 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 			args
 		});
 	} catch (e) {
+		console.log(e)
 		return null;
 	}
 };
