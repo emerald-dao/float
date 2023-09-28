@@ -8,7 +8,7 @@
 
 	onMount(() => {
 		if ($floats.length > 0) {
-			goto(`/admin/my-collection/${$floats[0].eventId}`);
+			goto(`/admin/my-collection/${$floats[0].id}`);
 		}
 	});
 </script>

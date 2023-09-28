@@ -20,15 +20,15 @@
 	let paginationMin: number;
 
 	onMount(() => {
-		if ($floats[0] && $floats[0].eventId) {
-			goto(`/admin/my-collection/${$floats[0].eventId}`);
+		if ($floats[0] && $floats[0].id) {
+			goto(`/admin/my-collection/${$floats[0].id}`);
 		}
 	});
 
 	$: searchEvent = $floats.map((example) => ({
 		...example,
 
-		searchTerms: `${example.eventName} ${example.eventId}`
+		searchTerms: `${example.eventName} ${example.id}`
 	}));
 
 	$: searchStore = createSearchStore(searchEvent);

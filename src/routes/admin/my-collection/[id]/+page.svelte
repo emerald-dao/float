@@ -7,7 +7,7 @@
 
 	const floats: Writable<FLOAT[]> = getContext('floats');
 
-	$: activeFloat = $floats.find((float) => float.eventId === $page.params.id);
+	$: activeFloat = $floats.find((float) => float.id === $page.params.id);
 
 	onMount(() => {
 		activeFloat = $floats[0];

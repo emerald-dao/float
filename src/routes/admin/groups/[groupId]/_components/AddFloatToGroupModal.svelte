@@ -51,7 +51,7 @@
 	$: searchEvent = floats.map((example) => ({
 		...example,
 
-		searchTerms: `${example.eventName} ${example.eventId}`
+		searchTerms: `${example.eventName} ${example.id}`
 	}));
 
 	$: searchStore = createSearchStore(searchEvent);

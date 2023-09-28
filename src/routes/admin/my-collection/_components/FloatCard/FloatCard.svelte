@@ -13,15 +13,15 @@
 	const dispatch = createEventDispatcher();
 
 	$: if ($page.params.id) {
-		selected = float.eventId === $page.params.id;
+		selected = float.id === $page.params.id;
 	}
 </script>
 
 {#if hasLink}
 	<a
-		class="info-wrapper {float.eventId === $page.params.id ? 'selected' : ''}"
-		class:selected={float.eventId === $page.params.id}
-		href={`/admin/my-collection/${float.eventId}`}
+		class="info-wrapper {float.id === $page.params.id ? 'selected' : ''}"
+		class:selected={float.id === $page.params.id}
+		href={`/admin/my-collection/${float.id}`}
 	>
 		<FloatCardContent {float} {selected} clickable={true} />
 	</a>
