@@ -8,6 +8,7 @@ import LimitedPowerUp from './powerUpsConfigs/Limited/LimitedPowerUp.svelte';
 import { writable } from 'svelte/store';
 
 export interface PowerUpGeneratorData {
+	type: string;
 	name: string;
 	icon: string;
 	description: string;
@@ -18,9 +19,10 @@ export const POWER_UPS: {
 	[key in PowerUpType]: PowerUpGeneratorData;
 } = {
 	payment: {
+		type: 'payment',
 		name: 'Payment',
 		icon: 'tabler:cash',
-		description: 'This FLOAT costs $FLOW to claim. Suitable for things like tickets.',
+		description: 'This FLOAT will cost $FLOW to claim. Suitable for things like tickets.',
 		component: PaymentPowerUp
 	},
 	timelock: {
@@ -34,21 +36,21 @@ export const POWER_UPS: {
 		type: 'secret',
 		name: 'Secret Code',
 		icon: 'tabler:key',
-		description: 'This FLOAT can only be claimed by entering a secret code.',
+		description: 'This FLOAT will only be claimed by entering a secret code.',
 		component: SecretCodePowerUp
 	},
 	limited: {
 		type: 'limited',
 		name: 'Supply',
 		icon: 'tabler:chart-bubble',
-		description: 'This FLOAT can only be claimed a limited number of times.',
+		description: 'Only a certain number of this FLOAT will exist. However, you will be able to airdrop/distribute beyond this limit as the Admin.',
 		component: LimitedPowerUp
 	},
 	minimumBalance: {
 		type: 'minimumBalance',
 		name: 'Min. Balance',
 		icon: 'tabler:coin',
-		description: 'This FLOAT can only be claimed by users with a minimum $FLOW balance.',
+		description: 'This FLOAT will only be claimable by users with a minimum $FLOW balance. It will not cost any $FLOW to claim, rather it is just a minimum hold amount.',
 		component: MinimumBalancePowerUp
 	}
 };

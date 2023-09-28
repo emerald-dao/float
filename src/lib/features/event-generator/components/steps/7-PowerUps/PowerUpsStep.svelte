@@ -36,6 +36,10 @@
 </script>
 
 <StepComponentWrapper fitContent={true}>
+	<span class="description small">
+		You can select as many power ups as you like. Each one adds a restriction or requirement to your
+		event.
+	</span>
 	<div>
 		{#each powerUps as { name, icon, type }}
 			<PowerUpToggle {name} {icon} {type} on:click={() => handleSelectPowerUp(type)} />

@@ -46,7 +46,7 @@
 <StepComponentWrapper>
 	<div>
 		<div class="column-1 event-type-wrapper">
-			<label for="event-type">Event type</label>
+			<label for="event-type">Event type *</label>
 			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
 				{#each EVENT_TYPES as eventType}
 					<option value={eventType}>
@@ -89,7 +89,7 @@
 			/>
 		</InputWrapper>
 		<div>
-			<label for="event-logo"> Event logo </label>
+			<label for="event-logo"> Event logo * </label>
 			<DropZone
 				bind:bindValue={$eventGeneratorData.logo}
 				name="event-logo"
