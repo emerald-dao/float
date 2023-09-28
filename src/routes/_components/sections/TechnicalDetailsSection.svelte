@@ -5,7 +5,7 @@
 		{
 			title: 'High-traffic performance',
 			description:
-				'We chose Flow because it can handle high-traffic applications, making it ideal for processing attendance data at large events. Also, it’s focus on mainstream adoption make it ideal for building smooth user experiences.'
+				'We chose Flow because it can handle high-traffic applications, making it ideal for processing attendance at large events. Its focus on mainstream adoption, including the use of Google Sign in, is ideal for building smooth user experiences.'
 		},
 		{
 			title: 'Truly portable proof of attendance',
@@ -15,7 +15,7 @@
 		{
 			title: 'Powerful Composability',
 			description:
-				'Because FLOAT is built on the blockchain, our proof of attendance NFTs are truly composable. This means they can be used for much more than just event attendance verification. Communities on Discord can use FLOATs to verify attendance and grant certain roles to members. Smart contracts like Toucans can restrict participation in funding rounds to FLOAT owners. With FLOAT, your NFTs can be used in ways limited only by your imagination!'
+				'Because FLOAT is built on the blockchain, our proof of attendance NFTs are truly composable. This means they can be used for much more than just event attendance verification. Communities on Discord can use FLOATs to grant certain roles to members. Funding applications like Toucans can restrict participation in funding rounds to FLOAT owners.'
 		}
 	];
 </script>
@@ -26,7 +26,7 @@
 			<div class="header-wrapper center column-2">
 				<h2 class="w-bold">Own your digital stuff</h2>
 				<p class="h5">
-					We use <strong class="primary">blockchain and NFT</strong> technology to create a
+					We use <strong class="primary">Flow blockchain</strong> technology to create a
 					<strong>secure</strong>
 					and
 					<strong>transparent</strong> record of event attendance that can't be tampered.

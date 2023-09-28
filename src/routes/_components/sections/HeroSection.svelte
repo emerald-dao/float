@@ -37,7 +37,7 @@
 		>
 		<div class="column center">
 			<span class="xsmall">FLOAT is 100% free</span>
-			<span class="xsmall">We only charge a tiny percentage on payed FLOATs. </span>
+			<span class="xsmall">We only charge a tiny percentage on paid FLOATs. </span>
 		</div>
 	</div>
 </section>

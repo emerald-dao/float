@@ -45,6 +45,17 @@
 
 <StepComponentWrapper>
 	<div>
+		<div class="column-1 event-type-wrapper">
+			<label for="event-type">Event type</label>
+			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
+				{#each EVENT_TYPES as eventType}
+					<option value={eventType}>
+						{EVENT_TYPE_DETAILS[eventType].eventTypeName} -
+						<i>{EVENT_TYPE_DETAILS[eventType].certificateType}</i>
+					</option>
+				{/each}
+			</select>
+		</div>
 		<InputWrapper
 			label="Event name"
 			name="event-name"
@@ -77,15 +88,7 @@
 				rows="3"
 			/>
 		</InputWrapper>
-		<div class="column-1">
-			<label for="event-type">Event type</label>
-			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
-				{#each EVENT_TYPES as eventType}
-					<option value={eventType}>{EVENT_TYPE_DETAILS[eventType].eventTypeName}</option>
-				{/each}
-			</select>
-		</div>
-		<div class="event-logo-wrapper">
+		<div>
 			<label for="event-logo"> Event logo </label>
 			<DropZone
 				bind:bindValue={$eventGeneratorData.logo}
@@ -107,8 +110,8 @@
 		font-size: var(--font-size-1);
 	}
 
-	.event-logo-wrapper {
-		margin-top: var(--space-6);
+	.event-type-wrapper {
+		margin-bottom: var(--space-6);
 	}
 
 	.description {

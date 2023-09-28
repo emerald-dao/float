@@ -38,7 +38,7 @@
 			<img class="creator-avatar" src="/new-avatar.png" alt="Creator avatar" />
 			<div class="profile-wrapper">
 				<div class="profile-name-wrapper">
-					<span class="profile-name"> Anonymus User </span>
+					<span class="profile-name"> Anonymous User </span>
 				</div>
 				<span class="wallet-address w-regular off">
 					{address}

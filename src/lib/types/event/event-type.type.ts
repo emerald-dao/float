@@ -4,6 +4,7 @@ export const EVENT_TYPES = [
 	'conference',
 	'productPresentation',
 	'course',
+	'bootcamp',
 	'hackathon',
 	'sportCompetition',
 	'gamingCompetition',
@@ -45,6 +46,11 @@ export const EVENT_TYPE_DETAILS: {
 		certificateType: 'certificate',
 		eventTypeName: 'Course',
 		icon: 'tabler:book'
+	},
+	bootcamp: {
+		certificateType: 'certificate',
+		eventTypeName: 'Bootcamp',
+		icon: 'tabler:device-laptop'
 	},
 	hackathon: {
 		certificateType: 'medal',

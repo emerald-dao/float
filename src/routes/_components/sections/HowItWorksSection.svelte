@@ -5,15 +5,15 @@
 		{
 			title: 'Create an event',
 			description:
-				'Create an event and mint a float for it. You can choose from a variety of event types.'
+				'Create a new FLOAT event with special properties. You can choose from a variety of event types.'
 		},
 		{
 			title: 'Attend the event',
-			description: 'Attend the event and get your float signed by the event organizer.'
+			description: "Attend the event and visit the event's claim page."
 		},
 		{
-			title: 'Collect your float',
-			description: 'Collect your float and add it to your collection.'
+			title: 'Collect your FLOAT',
+			description: 'Mint your unique FLOAT and add it to your collection.'
 		}
 	];
 </script>

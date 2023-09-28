@@ -17,20 +17,20 @@ export const emeraldTools = [
 		url: 'https://academy.ecdao.org/'
 	},
 	{
-		name: 'FLOAT',
-		url: 'https://floats.city/'
+		name: 'Toucans',
+		url: 'https://toucans.ecdao.org/'
 	},
 	{
 		name: 'Emerald Bot',
-		url: 'https://bot.ecdao.org/'
+		url: 'https://docs.ecdao.org/products/emerald-bot'
 	},
 	{
-		name: 'Geeft',
-		url: 'https://geeft.ecdao.org/'
+		name: 'Touchstone',
+		url: 'https://touchstone.city/'
 	},
 	{
-		name: 'Drizzle',
-		url: 'https://www.drizzle33.app/'
+		name: 'FLOAT',
+		url: 'https://floats.city/'
 	}
 ];
 

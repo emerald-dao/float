@@ -40,6 +40,12 @@
 			icon: 'tabler:book'
 		},
 		{
+			name: 'Bootcamp',
+			description: 'Host an in-person or online educational bootcamp.',
+			imageUrl: '/event-images/bootcamp.png',
+			icon: 'tabler:device-laptop'
+		},
+		{
 			name: 'Hackathon',
 			description:
 				'Host a hackathon event where programmers collaborate intensively on software projects.',
