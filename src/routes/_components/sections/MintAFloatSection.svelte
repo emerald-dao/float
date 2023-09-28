@@ -7,9 +7,9 @@
 	import { network } from '$flow/config';
 	import generateQRCode from '$lib/utilities/generateQRCode';
 
-	let eventId: string = network === 'mainnet' ? '' : network === 'testnet' ? '173143134' : '';
+	let eventId: string = network === 'mainnet' ? '1287289901' : network === 'testnet' ? '173143134' : '';
 	let username: string =
-		network === 'mainnet' ? '' : network === 'testnet' ? '0xd7f69a06f10eae0e' : '';
+		network === 'mainnet' ? 'jacob' : network === 'testnet' ? '0xd7f69a06f10eae0e' : '';
 	let qrCodeDataUrl = '';
 
 	onMount(async () => {
