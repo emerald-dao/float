@@ -56,14 +56,14 @@
 				class="link"
 				type="text"
 				disabled={true}
-				placeholder={`${$page.url.origin}/event/${$user.addr}/${id}`}
+				value={`${$page.url.origin}/event/${$user.addr}/${id}`}
 			/>
 		{:else if linkType === 'qr'}
 			<input
 				class="link"
 				type="text"
 				disabled={true}
-				placeholder={`${$page.url.origin}/event/${$user.addr}/${id}/qr`}
+				value={`${$page.url.origin}/event/${$user.addr}/${id}/qr`}
 			/>
 		{/if}
 		<div class="row-3">
@@ -115,7 +115,7 @@
 				padding: var(--space-1) var(--space-3);
 				overflow: hidden;
 				font-size: var(--font-size-0);
-				color: var(--clr-text-main);
+				color: var(--clr-text-off);
 			}
 
 			.row-3 {
