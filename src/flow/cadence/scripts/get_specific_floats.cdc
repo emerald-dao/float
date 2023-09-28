@@ -32,6 +32,7 @@ pub struct FLOATMetadata {
   pub let eventId: UInt64
   pub let serial: UInt64
   pub let visibilityMode: String
+  pub let backImage: String?
   pub let extraMetadata: {String: AnyStruct}
 
   init(_ float: &FLOAT.NFT, _ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
@@ -40,6 +41,11 @@ pub struct FLOATMetadata {
     self.eventId = event.eventId
     self.eventHost = event.host
     self.eventImage = "https://ipfs.io/ipfs/".concat(event.image)
+    if let backImage = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "backImage") {
+      self.backImage = "https://ipfs.io/ipfs/".concat(backImage)
+    } else {
+      self.backImage = nil
+    }
     self.eventName = event.name
     self.transferrable = event.transferrable
     self.totalSupply = event.totalSupply
