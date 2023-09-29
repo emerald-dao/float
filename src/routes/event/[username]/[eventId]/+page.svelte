@@ -9,6 +9,7 @@
 	import ClaimButtonStatus from '../../_components/ClaimButtonStatus.svelte';
 	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
+	import { user } from '$stores/flow/FlowStore';
 
 	export let data;
 
@@ -31,7 +32,7 @@
 		<div class="float-ticket-wrapper">
 			<Blur color="tertiary" right="15%" top="10%" />
 			<Blur left="15%" top="10%" />
-			<Float float={transformEventToFloat(data.event)} />
+			<Float float={transformEventToFloat(data.event, $user.addr)} />
 		</div>
 		<div class="side-wrapper floats-minted">
 			<h4 class="w-medium">{`${data.event.totalSupply}`}</h4>
