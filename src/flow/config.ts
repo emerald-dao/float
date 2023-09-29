@@ -48,7 +48,7 @@ fcl.config({
 // add WalletConnect for mobile apps.
 // Docs: https://developers.flow.com/tools/clients/fcl-js/wallet-connect
 if (network === 'testnet' || network === 'mainnet') {
-	const { FclWcServicePlugin, client } = await init({
+	init({
 		projectId: env.PUBLIC_WALLET_CONNECT_PROJECT_ID,
 		metadata: {
 			name: 'FLOAT',
@@ -60,7 +60,8 @@ if (network === 'testnet' || network === 'mainnet') {
 		wallets: [], // no idea
 		wcRequestHook: null, // no fucking idea
 		pairingModalOverride: null // ???????
+	}).then(({ FclWcServicePlugin }) => {
+		fcl.pluginRegistry.add(FclWcServicePlugin)
 	})
 
-	fcl.pluginRegistry.add(FclWcServicePlugin)
 }
