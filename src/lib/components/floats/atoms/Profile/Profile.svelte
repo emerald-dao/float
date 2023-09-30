@@ -109,6 +109,7 @@
 			.wallet-address {
 				font-family: var(--font-mono);
 				font-size: 0.67em;
+				text-align: left;
 			}
 		}
 
