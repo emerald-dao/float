@@ -102,7 +102,7 @@
 		{#if data.claims.length === 0}
 			<p>No claims yet</p>
 		{:else}
-			{#each data.claims as claim}
+			{#each data.claims as claim (claim.serial)}
 				<ClaimTicketCard {claim} />
 			{/each}
 		{/if}
