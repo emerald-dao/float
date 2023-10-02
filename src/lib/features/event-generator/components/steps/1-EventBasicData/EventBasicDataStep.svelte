@@ -94,7 +94,7 @@
 				bind:bindValue={$eventGeneratorData.logo}
 				name="event-logo"
 				maxAmountOfFiles={1}
-				accept={['image/png', 'image/jpeg', 'image/jpg']}
+				accept={['image/png', 'image/jpeg', 'image/jpg', 'image/gif']}
 			/>
 		</div>
 	</div>
