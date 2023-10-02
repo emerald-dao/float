@@ -2,7 +2,7 @@ import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 
-function transformEventToFloat(event: Event, userAddress?: string | null, serial?: string): FLOAT {
+function transformEventToFloat(event: Event, userAddress?: string | null, serial?: string | null): FLOAT {
 	const float: FLOAT = {
 		id: event.eventId,
 		dateReceived: `${Date.now() / 1000}`,

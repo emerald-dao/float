@@ -7,7 +7,7 @@ export const postClaim = async (
 	eventCreatorAddress: string,
 	blockId: string,
 	transactionId: string,
-	serial: number
+	serial: string
 ) => {
 	const res = await fetch(`/api/claims/${claimId}`, {
 		method: 'POST',
