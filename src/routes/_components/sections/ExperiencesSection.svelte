@@ -29,18 +29,14 @@
 							]
 						}
 				  ]
-				: network === 'testnet' 
+				: network === 'testnet'
 				? [
-					{
+						{
 							key: '0xd7f69a06f10eae0e',
-							value: [
-								'173212687',
-								'173205675',
-								'173205595',
-								'173143165'
-							]
+							value: ['173212687', '173205675', '173205595', '173143165']
 						}
-				] : [];
+				  ]
+				: [];
 		return await getMainPageFLOATs(floats);
 	}
 </script>
@@ -52,7 +48,7 @@
 			<Blur left="30%" top="20%" />
 			<SectionHeading
 				title="Life is about experiences. Collect them!"
-				description="Create your personal collection of all the events you assisted."
+				description="Create your personal collection of all the events you attended."
 			/>
 			<div class="floats-wrapper">
 				{#each multiplyArray(FLOATS, 30) as float, i}

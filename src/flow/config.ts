@@ -1,4 +1,5 @@
-import { config } from '@onflow/fcl';
+import * as fcl from '@onflow/fcl';
+import { init } from '@onflow/fcl-wc';
 import dappInfo from '$lib/config/config';
 import { env } from '$env/dynamic/public';
 
@@ -32,12 +33,35 @@ const fclConfigInfo = {
 	}
 };
 
-config({
+fcl.config({
 	'app.detail.title': dappInfo.title,
 	'app.detail.icon': dappInfo.icon,
 	'fcl.accountProof.resolver': resolver,
 	'flow.network': network,
 	'accessNode.api': fclConfigInfo[network].accessNode,
 	'discovery.wallet': fclConfigInfo[network].discoveryWallet,
-	"discovery.authn.include": fclConfigInfo[network].discoveryAuthInclude, // include Dapper Wallet and Ledger
+	// include Dapper Wallet and Ledger. 
+	// Docs: https://developers.flow.com/tools/clients/fcl-js/api#more-configuration
+	"discovery.authn.include": fclConfigInfo[network].discoveryAuthInclude,
 });
+
+// add WalletConnect for mobile apps.
+// Docs: https://developers.flow.com/tools/clients/fcl-js/wallet-connect
+if (network === 'testnet' || network === 'mainnet') {
+	init({
+		projectId: env.PUBLIC_WALLET_CONNECT_PROJECT_ID,
+		metadata: {
+			name: 'FLOAT',
+			description: 'A proof of attendance platform on the Flow blockchain.',
+			url: 'https://floats.city',
+			icons: ['https://floats.city/favicon.png'],
+		},
+		includeBaseWC: true, // makes WalletConnect show up itself
+		wallets: [], // no idea
+		wcRequestHook: null, // no fucking idea
+		pairingModalOverride: null // ???????
+	}).then(({ FclWcServicePlugin }) => {
+		fcl.pluginRegistry.add(FclWcServicePlugin)
+	})
+
+}

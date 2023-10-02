@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Profile from '$lib/components/floats/atoms/Profile/Profile.svelte';
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { FLOAT } from '$lib/types/float/float.interface';
@@ -20,10 +21,7 @@
 <section>
 	<div class="header-wrapper">
 		<div class="container-medium">
-			<div class="profile-wrapper">
-				<img src={userProfile.avatar} alt="user avatar" />
-				<p class="large">{userProfile.name}</p>
-			</div>
+			<Profile address={userProfile.address} />
 			<div class="row-3">
 				<FloatsAndEventsToggle bind:floatsOrEventsView />
 			</div>

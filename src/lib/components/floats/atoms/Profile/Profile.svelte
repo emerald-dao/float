@@ -2,11 +2,19 @@
 	import getProfile from '$lib/utilities/profiles/getProfile';
 	import Icon from '@iconify/svelte';
 	import EmptyProfile from './atoms/EmptyProfile.svelte';
+	import getRandomUserNumber from './userNames/getRandomUserNumber';
+	import RANDOM_USERS from './userNames/randomUsers';
 
 	export let address: string;
 	export let inverse = false;
 	export let isMedal = false;
 	export let size = '1em';
+
+	function handleError(e, walletAddress: string) {
+		// const profileNumber = getRandomUserNumber(walletAddress, RANDOM_USERS.length);
+		// e.target.src = RANDOM_USERS[profileNumber].avatar;
+		e.target.src = '/find-logo.jpeg';
+	}
 </script>
 
 <div style={`font-size: ${size}`}>
@@ -14,7 +22,12 @@
 		<EmptyProfile {inverse} />
 	{:then profile}
 		<div class="main-wrapper row align-center" class:inverse>
-			<img class="creator-avatar" src={profile.avatar} alt="Creator avatar" />
+			<img
+				class="creator-avatar"
+				src={profile.avatar}
+				on:error={(e) => handleError(e, profile.address)}
+				alt="Creator avatar"
+			/>
 			<div class="profile-wrapper">
 				<div class="profile-name-wrapper">
 					<span class="profile-name">
@@ -96,6 +109,7 @@
 			.wallet-address {
 				font-family: var(--font-mono);
 				font-size: 0.67em;
+				text-align: left;
 			}
 		}
 
