@@ -23,16 +23,16 @@ const claimFloat = async (eventId: string, eventCreator: string, claimCode: stri
 		const [floatClaimedEvent] = res.events.filter((event) =>
 			event.type.includes('FLOAT.FLOATClaimed')
 		);
-		const eventData = floatClaimedEvent.data;
-		const claimId = eventData.id;
+		const { id, serial } = floatClaimedEvent.data;
 
 		await postClaim(
-			claimId,
+			id,
 			userObject,
 			eventId,
 			eventCreator,
 			res.blockId,
-			floatClaimedEvent.transactionId
+			floatClaimedEvent.transactionId,
+			serial
 		);
 
 		return {

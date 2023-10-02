@@ -19,7 +19,7 @@ export async function POST({ request, params }) {
 		return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
 	}
 
-	const { user, eventId, eventCreatorAddress, blockId, transactionId } = data;
+	const { user, eventId, eventCreatorAddress, blockId, transactionId, serial } = data;
 
 	const { data: existingRow, error } = await supabase.from('events').select('id, network').eq('id', eventId).eq('network', network);
 
@@ -38,7 +38,8 @@ export async function POST({ request, params }) {
 				event_id: eventId,
 				block_id: blockId,
 				transaction_id: transactionId,
-				network
+				network,
+				serial
 			});
 
 		if (error) {
@@ -65,7 +66,8 @@ export async function POST({ request, params }) {
 					event_id: eventId,
 					block_id: blockId,
 					transaction_id: transactionId,
-					network
+					network,
+					serial
 				});
 
 			if (error) {
