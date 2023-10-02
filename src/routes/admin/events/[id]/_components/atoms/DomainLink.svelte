@@ -116,6 +116,9 @@
 				overflow: hidden;
 				font-size: var(--font-size-0);
 				color: var(--clr-text-main);
+				-webkit-text-fill-color: var(--clr-text-main);
+				opacity: 1;
+				-webkit-opacity: 1;
 			}
 
 			.row-3 {
