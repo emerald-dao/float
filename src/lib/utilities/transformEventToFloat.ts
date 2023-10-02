@@ -2,7 +2,7 @@ import { EVENT_TYPE_DETAILS } from '$lib/types/event/event-type.type';
 import type { Event } from '$lib/types/event/event.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
 
-function transformEventToFloat(event: Event, userAddress?: string | null): FLOAT {
+function transformEventToFloat(event: Event, userAddress?: string | null, serial?: string): FLOAT {
 	const float: FLOAT = {
 		id: event.eventId,
 		dateReceived: `${Date.now() / 1000}`,
@@ -13,7 +13,7 @@ function transformEventToFloat(event: Event, userAddress?: string | null): FLOAT
 		eventImage: event.image,
 		eventName: event.name,
 		originalRecipient: userAddress ?? '0x99bd48c8036e2876',
-		serial: '1',
+		serial: serial ?? '1',
 		totalSupply: event.totalSupply,
 		transferrable: event.transferrable,
 		eventType: event.eventType,

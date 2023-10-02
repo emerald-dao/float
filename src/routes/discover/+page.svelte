@@ -111,10 +111,10 @@
 					<div in:slide={{ axis: 'x', duration: 4000 }}>
 						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }} class="row">
 							<Float
-								float={transformEventToFloat(
-									eventClaimed.blockchainEvent,
-									eventClaimed.user_address
-								)}
+								float={{
+									...transformEventToFloat(eventClaimed.blockchainEvent, eventClaimed.user_address),
+									visibilityMode: 'certificate'
+								}}
 								minWidth="400px"
 								hasShadow={false}
 								hasBorder={true}
