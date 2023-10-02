@@ -6,62 +6,60 @@
 	const EVENT_TYPES = [
 		{
 			name: 'Discord Meeting',
-			description:
-				'Connect and collaborate with your community in a Discord meeting with voice and text chat.',
+			description: 'Host a town hall in Discord and distribute FLOATs to attendees.',
 			imageUrl: '/event-images/discord-meeting.png',
 			icon: 'tabler:headphones'
 		},
 		{
 			name: 'Twitter Space',
 			description:
-				'Host an interactive audio conversation on Twitter with your followers using Twitter Spaces.',
+				'Host an interactive audio conversation on Twitter and distribute FLOATs to followers.',
 			imageUrl: '/event-images/twitter-space.png',
 			icon: 'tabler:brand-twitter'
 		},
 		{
 			name: 'Gaming Competition',
 			description:
-				'Organize an exciting gaming competition where players compete against each other for victory.',
+				'Reward participants of a gaming competition with gold, silver, bronze, and participation medals.',
 			imageUrl: '/event-images/gaming-competition.png',
 			icon: 'tabler:device-gamepad'
 		},
 		{
 			name: 'Product Presentation',
 			description:
-				'Showcase your latest product to a global audience with a captivating and informative presentation.',
+				'Close out a presentation by allowing the audience to claim a proof of attendance FLOAT.',
 			imageUrl: '/event-images/product-presentation.png',
 			icon: 'tabler:package'
 		},
 		{
 			name: 'Course',
-			description:
-				'Offer an educational course to share your expertise and knowledge with eager learners.',
+			description: 'Distribute educational certificates/diplomas to completionists of your course.',
 			imageUrl: '/event-images/course.png',
 			icon: 'tabler:book'
 		},
 		{
 			name: 'Bootcamp',
-			description: 'Host an in-person or online educational bootcamp.',
+			description:
+				'Host an in-person or online educational bootcamp and give FLOATs to participants.',
 			imageUrl: '/event-images/bootcamp.png',
 			icon: 'tabler:device-laptop'
 		},
 		{
 			name: 'Hackathon',
 			description:
-				'Host a hackathon event where programmers collaborate intensively on software projects.',
+				'Host a hackathon and distribute gold, silver, bronze, and participation awards.',
 			imageUrl: '/event-images/hackathon.png',
 			icon: 'tabler:code'
 		},
 		{
 			name: 'Sport Competition',
-			description:
-				'Organize a sports competition that brings athletes together to showcase their skills and sportsmanship.',
+			description: 'Prove you attended the thrilling series-winning game with a FLOAT.',
 			imageUrl: '/event-images/sport-competition.png',
 			icon: 'tabler:play-football'
 		},
 		{
 			name: 'Conference',
-			description: 'Host a conference with live video and chat.',
+			description: 'Have your audience claim FLOATs for attending your event.',
 			imageUrl: '/event-images/conference-event.png',
 			icon: 'tabler:home'
 		}
