@@ -12,42 +12,52 @@
 
 	export let data;
 
-	const claimStore = writable<ClaimData[]>([], (set) => {
-		const eventIds: string[] = [];
-		const userAddresses: string[] = [];
+	// const claimStore = writable<ClaimData[]>([], (set) => {
+	// 	const eventIds: string[] = [];
+	// 	const userAddresses: string[] = [];
 
-		const subscription = supabase
-			.channel('claims')
-			.on(
-				'postgres_changes',
-				{
-					event: 'INSERT',
-					schema: 'public',
-					table: 'claims',
-					filter: `network=eq.${network}`
-				},
-				async (payload) => {
-					const event_id = payload.new?.event_id;
-					const user_address = payload.new?.user_address;
-					const float_id = payload.new?.float_id;
+	// 	const subscription = supabase
+	// 		.channel('claims')
+	// 		.on(
+	// 			'postgres_changes',
+	// 			{
+	// 				event: 'INSERT',
+	// 				schema: 'public',
+	// 				table: 'claims',
+	// 				filter: `network=eq.${network}`
+	// 			},
+	// 			async (payload) => {
+	// 				const event_id = payload.new?.event_id;
+	// 				const user_address = payload.new?.user_address;
+	// 				const float_id = payload.new?.float_id;
 
-					const blockchainEvent = await fetchEventData(event_id, user_address);
+	// 				const blockchainEvent = await fetchEventData(event_id, user_address);
 
-					if (blockchainEvent) {
-						latestClaims.push({
-							blockchainEvent,
-							event_id,
-							user_address,
-							float_id,
-							events: null
-						});
-					}
-				}
-			)
-			.subscribe();
+	// 				if (blockchainEvent) {
+	// 					latestClaims.push({
+	// 						blockchainEvent,
+	// 						event_id,
+	// 						user_address,
+	// 						float_id,
+	// 						events: null
+	// 					});
+	// 				}
+	// 			}
+	// 		)
+	// 		.subscribe();
 
-		return () => supabase.removeChannel(subscription);
-	});
+	// 	return () => supabase.removeChannel(subscription);
+	// });
+
+	// async function fetchEventData(eventId: string, creatorAddress: string) {
+	// 	try {
+	// 		const event = await getLiveEventFromBlockchain(eventId);
+
+	// 		return event;
+	// 	} catch (error) {
+	// 		console.error('Error fetching data:', error);
+	// 	}
+	// }
 
 	let latestClaims: ClaimData[];
 
@@ -56,6 +66,7 @@
 		event_id: string | null;
 		user_address: string;
 		float_id: string;
+		serial: string;
 		events: {
 			created_at: string | null;
 			creator_address: string;
@@ -67,16 +78,6 @@
 	onMount(() => {
 		latestClaims = data.latestFloatsClaimed;
 	});
-
-	async function fetchEventData(eventId: string, creatorAddress: string) {
-		try {
-			const event = await getLiveEventFromBlockchain(eventId);
-
-			return event;
-		} catch (error) {
-			console.error('Error fetching data:', error);
-		}
-	}
 </script>
 
 <section
@@ -112,7 +113,11 @@
 						<div in:fly={{ x: -400, duration: 4000, opacity: 1 }} class="row">
 							<Float
 								float={{
-									...transformEventToFloat(eventClaimed.blockchainEvent, eventClaimed.user_address),
+									...transformEventToFloat(
+										eventClaimed.blockchainEvent,
+										eventClaimed.user_address,
+										eventClaimed.serial
+									),
 									visibilityMode: 'certificate'
 								}}
 								minWidth="400px"

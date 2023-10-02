@@ -12,7 +12,7 @@ const supabase = createClient<Database>(
 export async function GET() {
 	const { data: claimsData, error: claimsError } = await supabase
 		.from('claims')
-		.select('event_id, user_address, float_id, events (*)')
+		.select('event_id, user_address, float_id, serial, events (*)')
 		.eq('network', network)
 		.order('created_at', { ascending: false })
 		.limit(10);
