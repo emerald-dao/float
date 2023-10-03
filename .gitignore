@@ -13,3 +13,4 @@ node_modules
 .vercel_build_output
 testnet-account.pkey
 mainnet-account.pkey
+package-lock.json

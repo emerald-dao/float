@@ -62,6 +62,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@blocto/fcl": "^1.4.0",
 		"@types/elliptic": "^6.4.14"
 	}
 }

@@ -3,7 +3,7 @@ import { signWithClaimCode } from '$flow/sign';
 import { user } from '$stores/flow/FlowStore';
 import { get } from 'svelte/store';
 import { postClaim } from '../_api/postClaim';
-import type { TransactionStatusObject } from '@onflow/fcl';
+import type { TransactionStatusObject } from '@blocto/fcl';
 import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
 
 const claimFloat = async (eventId: string, eventCreator: string, claimCode: string | undefined, free: boolean) => {
