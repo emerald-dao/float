@@ -125,7 +125,6 @@
 		.claims-wrapper {
 			display: flex;
 			flex-direction: column;
-			justify-content: center;
 			overflow-y: auto;
 			gap: var(--space-3);
 
