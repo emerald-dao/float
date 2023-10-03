@@ -42,7 +42,8 @@ fcl.config({
 	'discovery.wallet': fclConfigInfo[network].discoveryWallet,
 	// include Dapper Wallet and Ledger. 
 	// Docs: https://developers.flow.com/tools/clients/fcl-js/api#more-configuration
-	"discovery.authn.include": fclConfigInfo[network].discoveryAuthInclude,
+	'discovery.authn.include': fclConfigInfo[network].discoveryAuthInclude,
+	'app.detail.id': env.PUBLIC_BLOCTO_DAPP_ID // for blocto v2
 });
 
 // add WalletConnect for mobile apps.
@@ -51,10 +52,10 @@ if (network === 'testnet' || network === 'mainnet') {
 	init({
 		projectId: env.PUBLIC_WALLET_CONNECT_PROJECT_ID,
 		metadata: {
-			name: 'FLOAT',
-			description: 'A proof of attendance platform on the Flow blockchain.',
-			url: 'https://floats.city',
-			icons: ['https://floats.city/favicon.png'],
+			name: dappInfo.title,
+			description: dappInfo.description,
+			url: dappInfo.url,
+			icons: [dappInfo.icon],
 		},
 		includeBaseWC: true, // makes WalletConnect show up itself
 		wallets: [], // no idea
