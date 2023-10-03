@@ -9,7 +9,7 @@ import uploadToIPFS from '$lib/utilities/uploadToIPFS';
 import { eventGenerationInProgress } from '../stores/EventGenerationInProgress';
 import { postEvent } from '../api/postEvent';
 import { user } from '$stores/flow/FlowStore';
-import type { TransactionStatusObject } from '@onflow/fcl';
+import type { TransactionStatusObject } from '@blocto/fcl';
 import { goto } from '$app/navigation';
 import { eventGeneratorActiveStep } from '../stores/EventGeneratorSteps';
 

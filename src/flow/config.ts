@@ -1,4 +1,4 @@
-import * as fcl from '@onflow/fcl';
+import * as fcl from '@blocto/fcl';
 import { init } from '@onflow/fcl-wc';
 import dappInfo from '$lib/config/config';
 import { env } from '$env/dynamic/public';
