@@ -7,6 +7,7 @@
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { supabase } from '$lib/supabase/supabaseClient';
 	import { network } from '$flow/config';
+	import { unixTimestampToFormattedDate } from '$lib/utilities/dates/unixTimestampToFormattedDate';
 
 	export let float: FLOAT;
 
@@ -17,7 +18,8 @@
 	let qrCodeDataUrl: string;
 
 	onMount(async () => {
-		let qr = `${$page.url.origin}/event/${$page.params.username}/${float.eventId}`;
+		const eventHost = $page.params.username || float.eventHost;
+		let qr = `${$page.url.origin}/event/${eventHost}/${float.eventId}`;
 		qrCodeDataUrl = await generateQRCode(qr);
 	});
 
@@ -86,7 +88,7 @@
 					<span class="w-medium"
 						><Icon icon="tabler:calendar-event" color="var(--clr-primary-main)" />DATE</span
 					>
-					<p class="w-medium">12/12/2021</p>
+					<p class="w-medium">{unixTimestampToFormattedDate(float.dateReceived)}</p>
 				</div>
 			</div>
 			<div class="column">
@@ -172,6 +174,7 @@
 			overflow-wrap: break-word;
 			word-wrap: break-word;
 			font-family: var(--font-mono);
+			text-align: left;
 		}
 
 		img {
