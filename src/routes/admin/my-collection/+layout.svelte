@@ -9,10 +9,18 @@
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { getFLOATs } from '$flow/actions';
 	import createFetchStore from '../_stores/fetchStore';
+	import PinFloatIcon from './_components/atoms/PinFloatIcon.svelte';
 
 	let floats = createFetchStore<FLOAT[]>(() => getFLOATs($user.addr as string), []);
 
 	setContext('floats', floats);
+
+	let pinnedFloats = createFetchStore<string[]>(
+		() => fetch(`/api/pinned-floats/${$user.addr}`).then((res) => res.json()),
+		[]
+	);
+
+	setContext('pinnedFloats', pinnedFloats);
 
 	let loadingFloats = false;
 
@@ -55,7 +63,12 @@
 			{:else}
 				{#each $searchStore.filtered as float, i}
 					{#if i < paginationMax && i >= paginationMin}
-						<FloatCard {float} />
+						<div class="row-5 align-center">
+							<FloatCard {float} />
+							<div class="pin-icon-wrapper">
+								<PinFloatIcon {float} />
+							</div>
+						</div>
 					{/if}
 				{/each}
 			{/if}
@@ -144,6 +157,16 @@
 				@include mq(small) {
 					overflow-y: auto;
 				}
+
+				.pin-icon-wrapper {
+					display: none;
+
+					@include mq(small) {
+						display: flex;
+						justify-content: center;
+						align-items: center;
+					}
+				}
 			}
 
 			.pagination {
@@ -156,7 +179,7 @@
 				padding: var(--space-6) var(--space-6);
 
 				@include mq(small) {
-					padding: var(--space-6) var(--space-8);
+					padding: var(--space-6) var(--space-7);
 				}
 			}
 		}
