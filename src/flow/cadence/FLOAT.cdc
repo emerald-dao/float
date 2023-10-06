@@ -23,8 +23,9 @@ import MetadataViews from "./utility/MetadataViews.cdc"
 import FungibleToken from "./utility/FungibleToken.cdc"
 import FlowToken from "./utility/FlowToken.cdc"
 import FindViews from "./utility/FindViews.cdc"
+import ViewResolver from "./utility/ViewResolver.cdc"
 
-pub contract FLOAT: NonFungibleToken {
+pub contract FLOAT: NonFungibleToken, ViewResolver {
 
     /***********************************************/
     /******************** PATHS ********************/
@@ -195,41 +196,9 @@ pub contract FLOAT: NonFungibleToken {
                 case Type<MetadataViews.ExternalURL>():
                     return MetadataViews.ExternalURL("https://floats.city/".concat(self.owner!.address.toString()).concat("/float/").concat(self.id.toString()))
                 case Type<MetadataViews.NFTCollectionData>():
-                    return MetadataViews.NFTCollectionData(
-                        storagePath: FLOAT.FLOATCollectionStoragePath,
-                        publicPath: FLOAT.FLOATCollectionPublicPath,
-                        providerPath: /private/FLOATCollectionPrivatePath,
-                        publicCollection: Type<&Collection{CollectionPublic}>(),
-                        publicLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(),
-                        providerLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Provider, MetadataViews.ResolverCollection}>(),
-                        createEmptyCollectionFunction: (fun (): @NonFungibleToken.Collection {
-                            return <- FLOAT.createEmptyCollection()
-                        })
-                    )
+                    return FLOAT.resolveView(view)
                 case Type<MetadataViews.NFTCollectionDisplay>():
-                    let squareMedia = MetadataViews.Media(
-                        file: MetadataViews.HTTPFile(
-                           url: "https://i.imgur.com/uzt90wM.png"
-                        ),
-                        mediaType: "image"
-                    )
-                    let bannerMedia = MetadataViews.Media(
-                        file: MetadataViews.HTTPFile(
-                            url: "https://i.imgur.com/lEJuM70.png"
-                        ),
-                        mediaType: "image"
-                    )
-                    return MetadataViews.NFTCollectionDisplay(
-                        name: "FLOAT",
-                        description: "FLOAT is a proof of attendance platform on the Flow blockchain.",
-                        externalURL: MetadataViews.ExternalURL("https://floats.city/".concat(self.eventHost.toString()).concat("/event/").concat(self.eventId.toString())),
-                        squareImage: squareMedia,
-                        bannerImage: bannerMedia,
-                        socials: {
-                            "twitter": MetadataViews.ExternalURL("https://twitter.com/emerald_dao"),
-                            "discord": MetadataViews.ExternalURL("https://discord.gg/emeraldcity")
-                        }
-                    )
+                    return FLOAT.resolveView(view)
                 case Type<MetadataViews.Serial>():
                     return MetadataViews.Serial(
                         self.serial
@@ -1083,6 +1052,65 @@ pub contract FLOAT: NonFungibleToken {
             return nil
         }
         return dict[key]!! as! String
+    }
+
+    /// Function that returns all the Metadata Views implemented by a Non Fungible Token
+    ///
+    /// @return An array of Types defining the implemented views. This value will be used by
+    ///         developers to know which parameter to pass to the resolveView() method.
+    ///
+    pub fun getViews(): [Type] {
+        return [
+            Type<MetadataViews.NFTCollectionData>(),
+            Type<MetadataViews.NFTCollectionDisplay>()
+        ]
+    }
+
+    /// Function that resolves a metadata view for this contract.
+    ///
+    /// @param view: The Type of the desired view.
+    /// @return A structure representing the requested view.
+    ///
+    pub fun resolveView(_ view: Type): AnyStruct? {
+        switch view {
+            case Type<MetadataViews.NFTCollectionData>():
+                return MetadataViews.NFTCollectionData(
+                    storagePath: FLOAT.FLOATCollectionStoragePath,
+                    publicPath: FLOAT.FLOATCollectionPublicPath,
+                    providerPath: /private/FLOATCollectionPrivatePath,
+                    publicCollection: Type<&Collection{CollectionPublic}>(),
+                    publicLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Receiver, MetadataViews.ResolverCollection}>(),
+                    providerLinkedType: Type<&Collection{CollectionPublic, NonFungibleToken.CollectionPublic, NonFungibleToken.Provider, MetadataViews.ResolverCollection}>(),
+                    createEmptyCollectionFunction: (fun (): @NonFungibleToken.Collection {
+                        return <- FLOAT.createEmptyCollection()
+                    })
+                )
+            case Type<MetadataViews.NFTCollectionDisplay>():
+                let squareMedia: MetadataViews.Media = MetadataViews.Media(
+                    file: MetadataViews.HTTPFile(
+                        url: "https://i.imgur.com/v0Njnnk.png"
+                    ),
+                    mediaType: "image"
+                )
+                let bannerMedia: MetadataViews.Media = MetadataViews.Media(
+                    file: MetadataViews.HTTPFile(
+                        url: "https://i.imgur.com/ETeVZZU.jpg"
+                    ),
+                    mediaType: "image"
+                )
+                return MetadataViews.NFTCollectionDisplay(
+                    name: "FLOAT",
+                    description: "FLOAT is a proof of attendance platform on the Flow blockchain.",
+                    externalURL: MetadataViews.ExternalURL("https://floats.city"),
+                    squareImage: squareMedia,
+                    bannerImage: bannerMedia,
+                    socials: {
+                        "twitter": MetadataViews.ExternalURL("https://twitter.com/emerald_dao"),
+                        "discord": MetadataViews.ExternalURL("https://discord.gg/emeraldcity")
+                    }
+                )
+        }
+        return nil
     }
 
     init() {
