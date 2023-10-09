@@ -19,42 +19,44 @@
 	}
 </script>
 
-<section class="pinned-float-section-wrapper">
-	<div class="column align-center">
+<section>
+	<div class="container-small">
 		<h4>Pinned FLOATs</h4>
-	</div>
-	<Blur color="tertiary" right="22%" top="15%" />
-	<Blur left="22%" bottom="20%" />
-	<div class="carousel-wrapper">
-		{#if browser}
-			<Carousel {autoplay} autoplayDuration={5000} duration={800} {arrows}>
-				{#each pinnedFloats as float}
-					<div class="float-wrapper column align-center">
-						<Float {float} />
-					</div>
-				{/each}
-			</Carousel>
-		{/if}
+		<Blur color="tertiary" right="22%" top="15%" />
+		<Blur left="22%" bottom="20%" />
+		<div class="carousel-wrapper">
+			{#if browser}
+				<Carousel {autoplay} autoplayDuration={5000} duration={800} {arrows}>
+					{#each pinnedFloats as float}
+						<div class="float-wrapper column align-center">
+							<Float {float} />
+						</div>
+					{/each}
+				</Carousel>
+			{/if}
+		</div>
 	</div>
 </section>
 
 <style lang="scss">
-	.pinned-float-section-wrapper {
+	section {
 		position: relative;
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-10);
-		align-items: center;
 		border-bottom: 1px dashed var(--clr-border-primary);
-		overflow: hidden;
+		width: calc(100vw - 1em);
 
-		.carousel-wrapper {
-			width: 100%;
-			padding: var(--space-12) var(--space-14);
-			overflow: hidden;
+		.container-small {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: var(--space-2);
+			overflow: visible;
 
-			.float-wrapper {
-				padding: var(--space-8);
+			.carousel-wrapper {
+				width: 100%;
+
+				.float-wrapper {
+					padding: var(--space-8) var(--space-5);
+				}
 			}
 		}
 	}

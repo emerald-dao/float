@@ -126,7 +126,7 @@
 	<div />
 {/if}
 
-<main class:overflow-hidden={route === 'discover' || route === 'u'}>
+<main class:overflow-hidden={route === 'discover'}>
 	<slot />
 </main>
 

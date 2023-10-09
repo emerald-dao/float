@@ -8,9 +8,7 @@
 
 <UserHeroSection userProfile={data.userProfile} userFloats={data.floats} userEvents={data.events} />
 {#if data.pinnedFloats && data.pinnedFloats.length > 0}
-	<div class="pinned-wrapper">
-		<PinnedFloats pinnedFloats={data.pinnedFloats} />
-	</div>
+	<PinnedFloats pinnedFloats={data.pinnedFloats} />
 {/if}
 <UserActivity
 	floats={data.floats}
@@ -18,12 +16,3 @@
 	groups={data.groups}
 	events={data.events}
 />
-
-<style lang="scss">
-	.pinned-wrapper {
-		display: none;
-		@include mq(small) {
-			display: block;
-		}
-	}
-</style>
