@@ -3,7 +3,6 @@
 	import type { GroupWithFloatsIds } from '$lib/features/groups/types/group.interface';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import type { FLOAT } from '$lib/types/float/float.interface';
-	import type { Profile } from '$lib/types/user/profile.interface';
 	import CardAndTicketToggle from './atoms/CardAndTicketToggle.svelte';
 	import FloatsAndEventsToggle from './atoms/FloatsAndEventsToggle.svelte';
 	import UserEventsCollection from './sections/UserEventsCollection.svelte';
@@ -64,6 +63,7 @@
 			z-index: 999;
 			margin-top: var(--space-6);
 			background-color: var(--clr-background-primary);
+			padding-block: var(--space-1);
 		}
 
 		.container-medium {
@@ -77,23 +77,6 @@
 			.row-3 {
 				align-items: center;
 				justify-content: center;
-			}
-		}
-
-		.profile-wrapper {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			gap: var(--space-4);
-
-			img {
-				width: 47px;
-				height: 47px;
-				border-radius: 50%;
-			}
-
-			p {
-				color: var(--clr-heading-main);
 			}
 		}
 
