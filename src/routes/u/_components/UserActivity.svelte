@@ -80,23 +80,6 @@
 			}
 		}
 
-		.profile-wrapper {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			gap: var(--space-4);
-
-			img {
-				width: 47px;
-				height: 47px;
-				border-radius: 50%;
-			}
-
-			p {
-				color: var(--clr-heading-main);
-			}
-		}
-
 		.right-wrapper {
 			text-align: right;
 			display: flex;
