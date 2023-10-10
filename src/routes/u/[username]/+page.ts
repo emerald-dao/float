@@ -25,7 +25,7 @@ export async function load({ params, fetch }) {
 				...event,
 				status: {
 					verifiersStatus: verifiersStatus,
-					generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+					generalStatus: getEventGeneralStatus(verifiersStatus)
 				}
 			};
 
@@ -35,13 +35,20 @@ export async function load({ params, fetch }) {
 		return eventsWithStatus;
 	};
 
-	const getPinnedFloats = async (address: string) => {
+	const getPinnedFloats = async (
+		address: string
+	): Promise<
+		| {
+				float_id: string;
+				network: string;
+		  }[]
+		| null
+	> => {
 		try {
 			const resPinnedFloatsIds = await fetch(`/api/pinned-floats/${address}`);
 			const pinnedFloatsIds = await resPinnedFloatsIds.json();
-			const pinnedFloats = await getSpecificFLOATs(address, pinnedFloatsIds);
 
-			return pinnedFloats;
+			return pinnedFloatsIds;
 		} catch (error) {
 			console.error('Error capturing pinned floats:', error);
 

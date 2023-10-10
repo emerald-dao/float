@@ -141,14 +141,17 @@ export interface Database {
       pinned_floats: {
         Row: {
           float_id: string
+          network: string | null
           user_address: string
         }
         Insert: {
           float_id: string
+          network?: string | null
           user_address: string
         }
         Update: {
           float_id?: string
+          network?: string | null
           user_address?: string
         }
         Relationships: []

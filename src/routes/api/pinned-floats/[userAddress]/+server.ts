@@ -14,14 +14,12 @@ export async function GET({ params }) {
 
 	const { data, error } = await supabase
 		.from('pinned_floats')
-		.select('float_id')
+		.select('float_id, network')
 		.eq('user_address', userAddress);
 
 	if (error) {
 		throw err(400, "Couldn't fetch groups");
 	}
 
-	let pinnedFloatsIds = data.map((e) => e.float_id);
-
-	return new Response(JSON.stringify(pinnedFloatsIds));
+	return new Response(JSON.stringify(data));
 }

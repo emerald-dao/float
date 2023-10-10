@@ -4,6 +4,7 @@
 	import Icon from '@iconify/svelte';
 	import { getContext } from 'svelte';
 	import type createFetchStore from '../../../_stores/fetchStore';
+	import { network } from '$flow/config';
 
 	export let float: FLOAT;
 
@@ -29,7 +30,6 @@
 		}}
 	>
 		<input type="hidden" name="floatId" value={float.id} />
-		<input type="hidden" name="userAddress" value={float.originalRecipient} />
 		<button>
 			<Icon icon="tabler:star-filled" width="18" color="#f2d052" />
 		</button>
@@ -52,6 +52,7 @@
 	>
 		<input type="hidden" name="floatId" value={float.id} />
 		<input type="hidden" name="userAddress" value={float.originalRecipient} />
+		<input type="hidden" name="network" value={network} />
 		<button>
 			<Icon icon="tabler:star" width="18" />
 		</button>

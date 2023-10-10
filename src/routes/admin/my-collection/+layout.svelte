@@ -3,9 +3,8 @@
 	import { fly } from 'svelte/transition';
 	import FloatCard from './_components/FloatCard/FloatCard.svelte';
 	import { createSearchStore, searchHandler } from '$stores/searchBar';
-	import { onDestroy, onMount, setContext } from 'svelte';
+	import { onDestroy, setContext } from 'svelte';
 	import Pagination from '$lib/components/atoms/Pagination.svelte';
-	import { goto } from '$app/navigation';
 	import type { FLOAT } from '$lib/types/float/float.interface';
 	import { getFLOATs } from '$flow/actions';
 	import createFetchStore from '../_stores/fetchStore';
@@ -16,7 +15,14 @@
 	setContext('floats', floats);
 
 	let pinnedFloats = createFetchStore<string[]>(
-		() => fetch(`/api/pinned-floats/${$user.addr}`).then((res) => res.json()),
+		() =>
+			fetch(`/api/pinned-floats/${$user.addr}`).then((res) =>
+				res
+					.json()
+					.then((data) =>
+						data.map((pinnedFloat: { float_id: string; network: string }) => pinnedFloat.float_id)
+					)
+			),
 		[]
 	);
 
