@@ -1,11 +1,11 @@
 <script lang="ts">
-	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import { user } from '$stores/flow/FlowStore';
-	import { Button } from '@emerald-dao/component-library';
+	import { logIn, unauthenticate, userHasClaimedEvent } from '$flow/actions';
+	import type { EventWithStatus } from '$lib/types/event/event.interface';
+	import { Button, FlowConnect } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
 	import validateSecretCode from '../_actions/validateSecretCode';
-	import { logIn, userHasClaimedEvent } from '$flow/actions';
 	import { get } from 'svelte/store';
 	import claimFloat from '../_actions/claimFloat';
 	import { page } from '$app/stores';
@@ -14,6 +14,7 @@
 	export let event: EventWithStatus;
 	export let secretCode: string;
 	export let free: boolean;
+	export let embed: boolean = false;
 
 	let floatAlreadyClaimed: boolean;
 
@@ -54,100 +55,116 @@
 </script>
 
 <div class="button-wrapper">
-	{#if event.status.generalStatus === 'available' && event.claimable}
-		{#if !$user.loggedIn}
+	{#if embed && !$user.loggedIn}
+		<div class="embed-wrapper">
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-					<Icon icon="tabler:wallet" />
 					<span>Connect to claim the event</span>
 				</div>
 			</div>
-		{:else if floatAlreadyClaimed && !event.multipleClaim}
+			<FlowConnect {logIn} {unauthenticate} user={$user} />
+		</div>
+	{:else}
+		{#if event.status.generalStatus === 'available' && event.claimable}
+			{#if !$user.loggedIn}
+				<div class="secret-code-message">
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:wallet" />
+						<span>Connect to claim the event</span>
+					</div>
+				</div>
+			{:else if floatAlreadyClaimed && !event.multipleClaim}
+				<div class="secret-code-message">
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:lock" />
+						<span>You already own this FLOAT</span>
+					</div>
+				</div>
+			{:else if secretCode}
+				<div
+					class="secret-code-message"
+					class:success={secretCodeValidation === true}
+					class:alert={!secretCodeValidation}
+				>
+					{#if secretCodeValidation === false}
+						<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+							<Icon icon="tabler:lock" />
+							<span>Code is incorrect</span>
+						</div>
+					{:else if secretCodeValidation === true}
+						<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+							<Icon icon="tabler:lock-open" />
+							<span>Unlocked</span>
+						</div>
+					{:else}
+						<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+							<Icon icon="tabler:lock" />
+							<span>Locked by a secret code</span>
+						</div>
+					{/if}
+				</div>
+				<div class="input-wrapper">
+					<input
+						type="password"
+						placeholder="Insert secret code"
+						max="60"
+						bind:value={inputValue}
+					/>
+					<button
+						class="input-button row-1 align-center"
+						on:click={handleChange}
+						disabled={inputValue.length < 1}
+					>
+						Send
+						<Icon icon="tabler:arrow-right" />
+					</button>
+				</div>
+			{/if}
+			{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
+				<div class="secret-code-message">
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon="tabler:info-circle" />
+						<span>You already own this FLOAT</span>
+					</div>
+				</div>
+			{/if}
+		{:else}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
 					<Icon icon="tabler:lock" />
-					<span>You already own this FLOAT</span>
-				</div>
-			</div>
-		{:else if secretCode}
-			<div
-				class="secret-code-message"
-				class:success={secretCodeValidation === true}
-				class:alert={!secretCodeValidation}
-			>
-				{#if secretCodeValidation === false}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock" />
-						<span>Code is incorrect</span>
-					</div>
-				{:else if secretCodeValidation === true}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock-open" />
-						<span>Unlocked</span>
-					</div>
-				{:else}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock" />
-						<span>Locked by a secret code</span>
-					</div>
-				{/if}
-			</div>
-			<div class="input-wrapper">
-				<input type="password" placeholder="Insert secret code" max="60" bind:value={inputValue} />
-				<button
-					class="input-button row-1 align-center"
-					on:click={handleChange}
-					disabled={inputValue.length < 1}
-				>
-					Send
-					<Icon icon="tabler:arrow-right" />
-				</button>
-			</div>
-		{/if}
-		{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
-			<div class="secret-code-message">
-				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-					<Icon icon="tabler:info-circle" />
-					<span>You already own this FLOAT</span>
+					{#if !event.claimable}
+						<span>This event is non-claimable</span>
+					{:else if event.status.generalStatus === 'expired'}
+						<span>The event has {event.status.generalStatus}</span>
+					{:else}
+						<span>The event is {event.status.generalStatus}</span>
+					{/if}
 				</div>
 			</div>
 		{/if}
-	{:else}
-		<div class="secret-code-message">
-			<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-				<Icon icon="tabler:lock" />
-				{#if !event.claimable}
-					<span>This event is non-claimable</span>
-				{:else if event.status.generalStatus === 'expired'}
-					<span>The event has {event.status.generalStatus}</span>
+		<div class="button-background">
+			{#if event.status.generalStatus === 'available'}
+				{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim) || !event.claimable}
+					<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
+				{:else if secretCode}
+					<Button
+						size="large"
+						width="full-width"
+						state={secretCodeValidation ? 'active' : 'disabled'}
+						on:click={() => handleClaimFloat()}
+					>
+						Claim FLOAT
+					</Button>
 				{:else}
-					<span>The event is {event.status.generalStatus}</span>
+					<Button size="large" width="full-width" on:click={() => handleClaimFloat()}>
+						Claim FLOAT
+					</Button>
 				{/if}
-			</div>
+			{:else}
+				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
+			{/if}
 		</div>
 	{/if}
-	<div class="button-background">
-		{#if event.status.generalStatus === 'available'}
-			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim) || !event.claimable}
-				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
-			{:else if secretCode}
-				<Button
-					size="large"
-					width="full-width"
-					state={secretCodeValidation ? 'active' : 'disabled'}
-					on:click={() => handleClaimFloat()}
-				>
-					Claim FLOAT
-				</Button>
-			{:else}
-				<Button size="large" width="full-width" on:click={() => handleClaimFloat()}>
-					Claim FLOAT
-				</Button>
-			{/if}
-		{:else}
-			<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
-		{/if}
-	</div>
 </div>
 
 <style lang="scss">
@@ -165,6 +182,14 @@
 			position: relative;
 			width: 230px;
 			background-color: transparent;
+			gap: var(--space-3);
+		}
+
+		.embed-wrapper {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
 			gap: var(--space-3);
 		}
 
