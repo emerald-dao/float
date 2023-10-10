@@ -8,16 +8,22 @@
 
 	export let float: FLOAT;
 
+	let isLoading = false;
+
 	let pinnedFloatsIds: ReturnType<typeof createFetchStore<string[]>> = getContext('pinnedFloats');
 
 	$: isFloatPinned = $pinnedFloatsIds.includes(float.id);
 </script>
 
-{#if isFloatPinned}
+{#if isLoading}
+	<Icon icon="svg-spinners:180-ring-with-bg" width="18" />
+{:else if isFloatPinned}
 	<form
 		method="POST"
 		action={`/admin/my-collection/${float.id}?/unpinFloat`}
 		use:enhance={() => {
+			isLoading = true;
+
 			return async ({ result }) => {
 				if (result.type === 'success') {
 					await applyAction(result);
@@ -26,6 +32,8 @@
 						pinnedFloatsIds.invalidate();
 					}
 				}
+
+				isLoading = false;
 			};
 		}}
 	>
@@ -39,6 +47,8 @@
 		method="POST"
 		action={`/admin/my-collection/${float.id}?/pinFloat`}
 		use:enhance={() => {
+			isLoading = true;
+
 			return async ({ result }) => {
 				if (result.type === 'success') {
 					await applyAction(result);
@@ -47,6 +57,8 @@
 						pinnedFloatsIds.invalidate();
 					}
 				}
+
+				isLoading = false;
 			};
 		}}
 	>
