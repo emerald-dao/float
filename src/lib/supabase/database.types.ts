@@ -40,6 +40,7 @@ export interface Database {
           created_at: string | null
           event_id: string | null
           float_id: string
+          network: string | null
           transaction_id: string | null
           user_address: string
         }
@@ -48,6 +49,7 @@ export interface Database {
           created_at?: string | null
           event_id?: string | null
           float_id: string
+          network?: string | null
           transaction_id?: string | null
           user_address: string
         }
@@ -56,6 +58,7 @@ export interface Database {
           created_at?: string | null
           event_id?: string | null
           float_id?: string
+          network?: string | null
           transaction_id?: string | null
           user_address?: string
         }
@@ -73,16 +76,19 @@ export interface Database {
           created_at: string | null
           creator_address: string
           id: string
+          network: string | null
         }
         Insert: {
           created_at?: string | null
           creator_address: string
           id: string
+          network?: string | null
         }
         Update: {
           created_at?: string | null
           creator_address?: string
           id?: string
+          network?: string | null
         }
         Relationships: []
       }
@@ -128,6 +134,24 @@ export interface Database {
           description?: string | null
           id?: number
           name?: string
+          user_address?: string
+        }
+        Relationships: []
+      }
+      pinned_floats: {
+        Row: {
+          float_id: string
+          network: string | null
+          user_address: string
+        }
+        Insert: {
+          float_id: string
+          network?: string | null
+          user_address: string
+        }
+        Update: {
+          float_id?: string
+          network?: string | null
           user_address?: string
         }
         Relationships: []

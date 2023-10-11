@@ -1,4 +1,4 @@
-import { getEvents, getFLOATs } from '$flow/actions.js';
+import { getEvents, getFLOATs, getSpecificFLOATs } from '$flow/actions.js';
 import { getEventGeneralStatus } from '$lib/features/event-status-management/functions/helpers/getEventGeneralStatus.js';
 import { getVerifiersState } from '$lib/features/event-status-management/functions/helpers/getVerifiersState.js';
 import type { EventWithStatus } from '$lib/types/event/event.interface.js';
@@ -25,7 +25,7 @@ export async function load({ params, fetch }) {
 				...event,
 				status: {
 					verifiersStatus: verifiersStatus,
-					generalStatus: getEventGeneralStatus(verifiersStatus, event.claimable)
+					generalStatus: getEventGeneralStatus(verifiersStatus)
 				}
 			};
 
@@ -35,11 +35,32 @@ export async function load({ params, fetch }) {
 		return eventsWithStatus;
 	};
 
+	const getPinnedFloats = async (
+		address: string
+	): Promise<
+		| {
+				float_id: string;
+				network: string;
+		  }[]
+		| null
+	> => {
+		try {
+			const resPinnedFloatsIds = await fetch(`/api/pinned-floats/${address}`);
+			const pinnedFloatsIds = await resPinnedFloatsIds.json();
+
+			return pinnedFloatsIds;
+		} catch (error) {
+			console.error('Error capturing pinned floats:', error);
+
+			return null;
+		}
+	};
+
 	return {
 		userProfile: profile,
 		floats: await getFLOATs(profile.address),
 		events: await getEventsWithStatus(profile.address),
-		groups: await getGroups(profile.address)
-		// pinnedFloats: ['187900113', '196985252']
+		groups: await getGroups(profile.address),
+		pinnedFloats: await getPinnedFloats(profile.address)
 	};
 }
