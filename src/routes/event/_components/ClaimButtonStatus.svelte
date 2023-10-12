@@ -15,6 +15,12 @@
 	export let secretCode: string;
 	export let free: boolean;
 
+	let redirectUrl: string | null;
+	if (typeof window !== 'undefined') {
+		const urlSearchParams = new URLSearchParams(window.location.search);
+		redirectUrl = urlSearchParams.get('redirect');
+	}
+
 	let floatAlreadyClaimed: boolean;
 
 	$: if ($user.addr) {
@@ -50,6 +56,14 @@
 		invalidate('app:event');
 
 		checkIfUserHasClaimedEvent();
+
+		if (redirectUrl !== null) {
+			const nonNullRedirectUrl: string = redirectUrl;
+
+			setTimeout(() => {
+				window.location.href = nonNullRedirectUrl;
+			}, 3000);
+		}
 	};
 </script>
 
