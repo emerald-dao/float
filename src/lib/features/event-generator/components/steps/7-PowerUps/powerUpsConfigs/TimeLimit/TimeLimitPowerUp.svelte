@@ -65,7 +65,7 @@
 				errors={res.getErrors('start-date')}
 			>
 				<input
-					type="date"
+					type="datetime-local"
 					name="start-date"
 					disabled={!isActive}
 					bind:value={startDate}
@@ -81,7 +81,7 @@
 				errors={res.getErrors('end-date')}
 			>
 				<input
-					type="date"
+					type="datetime-local"
 					name="end-date"
 					disabled={!isActive}
 					bind:value={endDate}
