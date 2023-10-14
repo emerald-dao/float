@@ -10,7 +10,7 @@
 	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 	import { user } from '$stores/flow/FlowStore';
-	import Countdown from '$lib/components/Countdown.svelte';
+	import { secondsToDhms } from '$lib/utilities/dates/secondsToDhms';
 
 	export let data;
 
@@ -21,6 +21,7 @@
 		? Number(data.event.verifiers.timelock.dateEnding)
 		: null;
 	$: currentUnixTime = +new Date() / 1000;
+	setInterval(() => (currentUnixTime = +new Date() / 1000), 1000);
 
 	let secretCode = data.event.verifiers.secret?.secret ?? '';
 </script>
@@ -63,7 +64,7 @@
 		{#if startDate > currentUnixTime}
 			<!-- Has not started yet -->
 			<div>
-				<Countdown unix={startDate} />
+				<p class="large">{secondsToDhms(startDate - currentUnixTime)}</p>
 				<p class="small">Starting in</p>
 			</div>
 		{:else}
@@ -84,7 +85,7 @@
 			{:else if currentUnixTime < endDate}
 				<!-- Has not ended -->
 				<div>
-					<Countdown unix={endDate} />
+					<p class="large">{secondsToDhms(endDate - currentUnixTime)}</p>
 					<p class="small">Ends in</p>
 				</div>
 			{/if}
