@@ -40,17 +40,15 @@
 		}
 	});
 
-	let timezoneOffset = new Date().getTimezoneOffset();
-
 	$: if (startDate) {
 		$eventGeneratorData.powerups.timelock.data.dateStart = Math.floor(
-			new Date(startDate).getTime() / 1000 + timezoneOffset * 60
+			new Date(startDate).getTime() / 1000
 		).toString();
 	}
 
 	$: if (endDate) {
 		$eventGeneratorData.powerups.timelock.data.dateEnding = Math.floor(
-			new Date(endDate).getTime() / 1000 + timezoneOffset * 60
+			new Date(endDate).getTime() / 1000
 		).toString();
 	}
 </script>
