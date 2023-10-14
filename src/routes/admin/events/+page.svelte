@@ -10,7 +10,7 @@
 	let eventsWithStatus: Writable<EventWithStatus[]> = getContext('events');
 
 	let viewMode: 'grid' | 'list' = 'grid';
-	let showInactive = false;
+	let showInactive = true;
 
 	const setDefaultViewMode = () => {
 		const screenWidth = window.innerWidth;
