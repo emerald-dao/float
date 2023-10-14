@@ -10,15 +10,17 @@
 	import PowerUpCards from '$lib/features/event-status-management/power-ups-cards/PowerUpCards.svelte';
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 	import { user } from '$stores/flow/FlowStore';
+	import Countdown from '$lib/components/Countdown.svelte';
 
 	export let data;
 
 	let startDate = data.event.verifiers.timelock?.dateStart
-		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateStart)
-		: unixTimestampToFormattedDate(data.event.dateCreated);
+		? Number(data.event.verifiers.timelock.dateStart)
+		: Number(data.event.dateCreated);
 	let endDate = data.event.verifiers.timelock?.dateEnding
-		? unixTimestampToFormattedDate(data.event.verifiers.timelock?.dateEnding)
+		? Number(data.event.verifiers.timelock.dateEnding)
 		: null;
+	$: currentUnixTime = +new Date() / 1000;
 
 	let secretCode = data.event.verifiers.secret?.secret ?? '';
 </script>
@@ -57,21 +59,37 @@
 				timelockStatus={data.event.status.verifiersStatus.timelockStatus}
 			/>
 		</div>
-		{#if startDate && endDate}
+
+		{#if startDate > currentUnixTime}
+			<!-- Has not started yet -->
 			<div>
-				<p class="large">{startDate}</p>
-				<p class="small">Start Date</p>
-			</div>
-			<div>
-				<p class="large">{endDate}</p>
-				<p class="small">End Date</p>
+				<Countdown unix={startDate} />
+				<p class="small">Starting in</p>
 			</div>
 		{:else}
+			<!-- Has started -->
 			<div>
-				<p class="large">{startDate}</p>
+				<p class="large">{unixTimestampToFormattedDate(startDate.toString())}</p>
 				<p class="small">Start Date</p>
 			</div>
 		{/if}
+
+		{#if endDate}
+			{#if startDate > currentUnixTime || currentUnixTime >= endDate}
+				<!-- Has not started or event is over -->
+				<div>
+					<p class="large">{unixTimestampToFormattedDate(endDate.toString())}</p>
+					<p class="small">End Date</p>
+				</div>
+			{:else if currentUnixTime < endDate}
+				<!-- Has not ended -->
+				<div>
+					<Countdown unix={endDate} />
+					<p class="small">Ends in</p>
+				</div>
+			{/if}
+		{/if}
+
 		<div>
 			{#if !data.event.price}
 				<p class="large">Free</p>
