@@ -46,6 +46,10 @@
 		justify-content: center;
 		overflow: hidden;
 
+		img {
+			object-fit: cover;
+		}
+
 		@include mq(medium) {
 			display: grid;
 			grid-template-columns: 2fr 3fr;

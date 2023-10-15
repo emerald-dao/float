@@ -45,7 +45,8 @@
 		<div style={`background-image: url(${float.eventImage})`} class="background-image" />
 	{:else}
 		<div class="content">
-			<p>Insert an image</p>
+			<p class="medium">Insert an image</p>
+			<span class="xsmall">Recommended size: 1920x1080</span>
 		</div>
 	{/if}
 	<FloatMoreInfoSidebar {float} />
@@ -106,5 +107,16 @@
 				var(--clr-surface-secondary) 80%,
 				transparent 0
 			);
+	}
+
+	.content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: var(--space-1);
+
+		span {
+			font-style: italic;
+		}
 	}
 </style>
