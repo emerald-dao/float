@@ -42,8 +42,8 @@ fcl.config({
 	'fcl.accountProof.resolver': resolver,
 	'flow.network': network,
 	'accessNode.api': fclConfigInfo[network].accessNode,
-	'discovery.authn.endpoint': fclConfigInfo[network].discoveryAuthnEndpoint,
 	'discovery.wallet': fclConfigInfo[network].discoveryWallet,
+	'discovery.authn.endpoint': fclConfigInfo[network].discoveryAuthnEndpoint,
 	// include Dapper Wallet and Ledger. 
 	// Docs: https://developers.flow.com/tools/clients/fcl-js/api#more-configuration
 	'discovery.authn.include': fclConfigInfo[network].discoveryAuthInclude,
