@@ -30,6 +30,10 @@
 	const userOverallLevel = getUserOverallLevel(userFloats.length, userEvents.length);
 
 	let flip: boolean = false;
+
+	function handleImgError(e) {
+		e.target.src = '/new-avatar.png';
+	}
 </script>
 
 <section class="container">
@@ -57,7 +61,7 @@
 			class:inverse-flip={flip}
 		>
 			<div class="image-front">
-				<img src={userProfile.avatar} alt="float" />
+				<img src={userProfile.avatar} on:error={(e) => handleImgError(e)} alt="float" />
 			</div>
 			<div class="image-back" class:opacity40={userOverallLevel === 0}>
 				<img

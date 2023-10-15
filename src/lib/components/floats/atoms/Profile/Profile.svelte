@@ -2,18 +2,14 @@
 	import getProfile from '$lib/utilities/profiles/getProfile';
 	import Icon from '@iconify/svelte';
 	import EmptyProfile from './atoms/EmptyProfile.svelte';
-	import getRandomUserNumber from './userNames/getRandomUserNumber';
-	import RANDOM_USERS from './userNames/randomUsers';
 
 	export let address: string;
 	export let inverse = false;
 	export let isMedal = false;
 	export let size = '1em';
 
-	function handleError(e, walletAddress: string) {
-		// const profileNumber = getRandomUserNumber(walletAddress, RANDOM_USERS.length);
-		// e.target.src = RANDOM_USERS[profileNumber].avatar;
-		e.target.src = '/find-logo.jpeg';
+	function handleImgError(e) {
+		e.target.src = '/new-avatar.png';
 	}
 </script>
 
@@ -25,7 +21,7 @@
 			<img
 				class="creator-avatar"
 				src={profile.avatar}
-				on:error={(e) => handleError(e, profile.address)}
+				on:error={(e) => handleImgError(e)}
 				alt="Creator avatar"
 			/>
 			<div class="profile-wrapper">
