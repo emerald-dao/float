@@ -82,12 +82,10 @@
 	<Header
 		{logIn}
 		{unauthenticate}
-		{getFindProfile}
 		user={$user}
 		{navElements}
 		logoText="FLOAT"
-		userAvatar={$profile?.avatar}
-		userName={$profile?.name}
+		profile={$profile}
 		width="full"
 		bind:avatarDropDownNavigation
 		{network}
