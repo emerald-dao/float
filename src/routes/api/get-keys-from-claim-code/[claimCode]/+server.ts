@@ -2,6 +2,7 @@ import { env } from '$env/dynamic/private';
 import { json } from '@sveltejs/kit';
 import scrypt from "scrypt-async";
 import elliptic from "elliptic";
+import { Buffer } from 'buffer';
 
 // called directly when creating an event, or as a dependency when claiming
 function getKeysFromClaimCode(claimCode: string) {
@@ -27,6 +28,7 @@ function getKeysFromClaimCode(claimCode: string) {
 }
 
 export async function GET({ params }) {
-    const { publicKey, privateKey } = getKeysFromClaimCode(params.claimCode);
+    const claimCodeAsString = Buffer.from(params.claimCode, 'hex').toString();
+    const { publicKey, privateKey } = getKeysFromClaimCode(claimCodeAsString);
     return json({ publicKey, privateKey })
 }
