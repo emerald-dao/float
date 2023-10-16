@@ -225,6 +225,8 @@
 					width: 100%;
 					display: flex;
 					padding-block: var(--space-10);
+					justify-content: center;
+					align-items: center;
 				}
 
 				.card-wrapper {
