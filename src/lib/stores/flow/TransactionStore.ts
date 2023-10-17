@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { TransactionStatusObject } from '@blocto/fcl';
+import type { TransactionStatusObject } from '@onflow/fcl';
 
 function createTransaction(transaction: TransactionStatusObject) {
   const { subscribe, set } = writable({

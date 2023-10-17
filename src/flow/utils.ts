@@ -1,7 +1,7 @@
-import * as fcl from '@blocto/fcl';
+import * as fcl from '@onflow/fcl';
 import { transactionStore } from '$stores/flow/TransactionStore';
 import { addresses } from '$stores/flow/FlowStore';
-import type { TransactionStatusObject } from '@blocto/fcl';
+import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$lib/stores/custom/steps/step.interface';
 import type { User } from '@emerald-dao/component-library/models/user.interface';
 import { network } from './config';
