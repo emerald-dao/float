@@ -1,5 +1,5 @@
 import { browser } from '$app/environment';
-import * as fcl from '@blocto/fcl';
+import * as fcl from '@onflow/fcl';
 import './config';
 import { addresses, user } from '$stores/flow/FlowStore';
 import { executeTransaction, replaceWithProperValues } from './utils';
@@ -10,7 +10,7 @@ import type { CertificateType, EventType } from '$lib/types/event/event-type.typ
 import type { Timelock } from '$lib/types/event/verifiers.interface';
 import { signWithClaimCode } from './sign';
 import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
-import type { TransactionStatusObject } from '@blocto/fcl';
+import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
 
 // Transactions

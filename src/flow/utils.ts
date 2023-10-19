@@ -1,7 +1,7 @@
-import * as fcl from '@blocto/fcl';
+import * as fcl from '@onflow/fcl';
 import { transactionStore } from '$stores/flow/TransactionStore';
 import { addresses } from '$stores/flow/FlowStore';
-import type { TransactionStatusObject } from '@blocto/fcl';
+import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$lib/stores/custom/steps/step.interface';
 import type { User } from '@emerald-dao/component-library/models/user.interface';
 import { network } from './config';
@@ -41,7 +41,7 @@ export const executeTransaction: (
 		// We connect our TransactionStore to the transaction to get the status
 		fcl.tx(transactionId).subscribe(async (res: TransactionStatusObject) => {
 			console.log(res);
-			transactionStore.subscribeTransaction(res);
+			transactionStore.subscribeTransaction(res, transactionId);
 		});
 
 		// We wait for the transaction to be sealed to get the result
@@ -84,7 +84,7 @@ export const executeTransaction: (
 			statusString: '',
 			errorMessage: e as string,
 			statusCode: 1
-		});
+		}, '');
 
 		setTimeout(() => {
 			transactionStore.resetTransaction();
