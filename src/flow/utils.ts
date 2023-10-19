@@ -41,7 +41,7 @@ export const executeTransaction: (
 		// We connect our TransactionStore to the transaction to get the status
 		fcl.tx(transactionId).subscribe(async (res: TransactionStatusObject) => {
 			console.log(res);
-			transactionStore.subscribeTransaction(res);
+			transactionStore.subscribeTransaction(res, transactionId);
 		});
 
 		// We wait for the transaction to be sealed to get the result
@@ -84,7 +84,7 @@ export const executeTransaction: (
 			statusString: '',
 			errorMessage: e as string,
 			statusCode: 1
-		});
+		}, '');
 
 		setTimeout(() => {
 			transactionStore.resetTransaction();

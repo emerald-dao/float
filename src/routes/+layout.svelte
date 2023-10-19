@@ -75,6 +75,8 @@
 <TransactionModal
 	transactionInProgress={$transactionStore.progress}
 	transactionStatus={$transactionStore.transaction}
+	transactionId={$transactionStore.transactionId}
+	{network}
 	on:close={() => transactionStore.resetTransaction()}
 />
 
