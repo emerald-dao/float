@@ -21,10 +21,8 @@
 			<p class="small">Serial</p>
 		</div>
 	</div>
-	<div class="ticket-wrapper">
-		<div in:fly={{ duration: 400, x: 180 }}>
-			<Float {float} />
-		</div>
+	<div class="ticket-wrapper" in:fly={{ duration: 400, x: 180 }}>
+		<Float {float} />
 	</div>
 	<div class="details-wrapper">
 		<div>
@@ -62,6 +60,9 @@
 		.ticket-wrapper {
 			width: 100%;
 			overflow: visible;
+			display: flex;
+			justify-content: center;
+			align-items: center;
 		}
 
 		.details-wrapper {
