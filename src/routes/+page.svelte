@@ -4,7 +4,7 @@
 		EventTypesSection,
 		ExperiencesSection,
 		HeroSection,
-		HowItWorksSection,
+		UseCasesSection,
 		MintAFloatSection,
 		TechnicalDetailsSection
 	} from './_components/sections';
@@ -25,7 +25,7 @@
 <div class="hide-in-mobile">
 	<ExperiencesSection />
 </div>
-<HowItWorksSection />
+<UseCasesSection />
 <TechnicalDetailsSection />
 <MintAFloatSection />
 
