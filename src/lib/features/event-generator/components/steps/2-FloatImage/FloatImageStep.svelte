@@ -13,6 +13,7 @@
 		bind:bindValue={$eventGeneratorData.image}
 		name="float-image"
 		maxAmountOfFiles={1}
+		maxFileSizeInMB={20}
 		accept={['image/png', 'image/jpeg', 'image/jpg']}
 	/>
 </StepComponentWrapper>
