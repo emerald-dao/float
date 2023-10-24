@@ -1,9 +1,14 @@
 <script lang="ts">
 	import Float from '$lib/components/floats/Float.svelte';
+	import type { EventType } from '$lib/types/event/event-type.type';
 
 	export let title: string;
 	export let description: string;
 	export let logo: string;
+	export let eventType: EventType;
+	export let backImage: string;
+	export let name: string;
+	export let visibilityMode: 'certificate' | 'picture' = 'certificate';
 
 	let hover = false;
 </script>
@@ -22,21 +27,22 @@
 		<Float
 			float={{
 				id: '0x0000000000',
-				eventId: '0x0000000000',
+				eventId: '123',
 				dateReceived: '2021-09-01T00:00:00.000Z',
 				eventDescription: 'Flow Hackathon',
 				eventHost: 'Flow',
-				eventImage: 'https://pbs.twimg.com/profile_images/1363521327467156480/8XZdZv2I_400x400.jpg',
-				backImage: 'https://pbs.twimg.com/profile_images/1363521327467156480/8XZdZv2I_400x400.jpg',
-				eventName: 'Flow Hackathon',
+				eventImage: logo,
+				backImage,
+				eventName: name || title,
 				originalRecipient: '0x0000000000',
 				serial: '0',
 				totalSupply: null,
 				transferrable: false,
-				eventType: 'hackathon',
+				eventType,
 				extraMetadata: {
 					medalType: 'gold'
-				}
+				},
+				visibilityMode
 			}}
 		/>
 	</div>
@@ -50,6 +56,12 @@
 		overflow: hidden;
 		position: relative;
 		height: 300px;
+
+		.float-wrapper {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
 
 		&:hover {
 			gap: var(--space-5);
