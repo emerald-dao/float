@@ -55,7 +55,7 @@
 	img,
 	.image-placeholder {
 		aspect-ratio: 1 / 1;
-		border-radius: 50%;
+		border-radius: 10px;
 	}
 
 	.image-placeholder {
