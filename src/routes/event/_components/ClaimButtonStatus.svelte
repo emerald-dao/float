@@ -113,7 +113,7 @@
 					on:click={handleChange}
 					disabled={inputValue.length < 1}
 				>
-					Send
+					Check
 					<Icon icon="tabler:arrow-right" />
 				</button>
 			</div>
