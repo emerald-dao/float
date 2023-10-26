@@ -166,10 +166,6 @@
 				color: var(--clr-alert-main);
 			}
 
-			&.warning {
-				color: var(--clr-alert-off);
-			}
-
 			&.loading {
 				color: var(--clr-tertiary-main);
 			}
