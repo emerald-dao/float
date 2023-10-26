@@ -4,7 +4,7 @@
 	import Papa from 'papaparse';
 	import { Button, DropZone } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
-	import { hasFLOATCollectionSetUp } from '$flow/actions';
+	import { hasFLOATCollectionSetUp, hasFLOATCollectionSetUpBatch } from '$flow/actions';
 	import { resolveAddressOrFindName } from '$lib/features/bulk-distribute-floats/functions/resolveAddressOrFindName';
 
 	export let certificateType: CertificateType;
@@ -15,6 +15,7 @@
 
 	let validCsv: boolean | 'loading' | undefined;
 	let invalidCsvMessage: string;
+	let omittedCsvRows: ParsedCsvRow[] = [];
 
 	interface ParsedCsvRow {
 		address: string;
@@ -28,7 +29,6 @@
 				download: true,
 				header: true, // gives us an array of objects
 				dynamicTyping: true,
-
 				complete: async ({ data }) => {
 					if (await checkValidCsv(data)) {
 						validCsv = true;
@@ -48,6 +48,7 @@
 					} else {
 						validCsv = false;
 						csvFiles = [];
+						omittedCsvRows = [];
 					}
 				}
 			});
@@ -55,23 +56,36 @@
 
 		const checkValidCsv = async (csvData: unknown[]): Promise<boolean> => {
 			for (let i = 0; i < csvData.length; i++) {
-				if (typeof csvData[i] !== 'object' && !csvData[i]?.hasOwnProperty('address')) {
+				if (typeof csvData[i] !== 'object' || !csvData[i]?.hasOwnProperty('address')) {
 					invalidCsvMessage = 'Wrong CSV format';
 					return false;
 				} else {
 					const address = await resolveAddressOrFindName((csvData[i] as ParsedCsvRow).address);
-
 					let addressIsValid = await hasFLOATCollectionSetUp(address);
 
 					if (!addressIsValid) {
-						invalidCsvMessage = `Address ${(csvData[i] as ParsedCsvRow).address} is not valid`;
-						return false;
+						omittedCsvRows.push(csvData[i] as ParsedCsvRow);
+						csvData.splice(i, 1);
 					}
 				}
 			}
 
 			return true;
 		};
+	};
+
+	const downloadCSV = async (omittedCsvRows: ParsedCsvRow[]) => {
+		let csvContent =
+			'data:text/csv;charset=utf-8,' + omittedCsvRows.map((row) => row.address).join('\n');
+		var encodedUri = encodeURI(csvContent);
+
+		var downloadLink = document.createElement('a');
+		downloadLink.href = encodedUri;
+		downloadLink.download = 'omitted.csv';
+
+		document.body.appendChild(downloadLink);
+		downloadLink.click();
+		document.body.removeChild(downloadLink);
 	};
 
 	const emptyCsv = () => {
@@ -102,6 +116,14 @@
 				<Icon icon="tabler:check" />
 				CSV is valid
 			</p>
+			{#if omittedCsvRows.length > 0}
+				<p class="csv-state-message alert xsmall align-center">
+					<Icon icon="tabler:alert-triangle-filled" />
+					<span on:click|preventDefault={() => downloadCSV(omittedCsvRows)} class="mouse-pointer"
+						>Click here</span
+					> to view addresses that were omitted because they do not have a FLOAT Collection set up.
+				</p>
+			{/if}
 		{:else if validCsv === false}
 			<p class="csv-state-message alert xsmall align-center">
 				<Icon icon="tabler:x" />
@@ -148,5 +170,10 @@
 				color: var(--clr-tertiary-main);
 			}
 		}
+	}
+
+	.mouse-pointer {
+		cursor: pointer;
+		text-decoration: underline;
 	}
 </style>
