@@ -36,6 +36,7 @@ import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
+import hasFLOATCollectionSetupBatchScript from './cadence/scripts/has_float_collection_setup_batch.cdc?raw';
 import validateSecretCodeForClaimScript from './cadence/scripts/validate_secret_code.cdc?raw';
 import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?raw';
 import userCanMintScript from './cadence/scripts/user_can_mint.cdc?raw';
@@ -570,6 +571,21 @@ export const hasFLOATCollectionSetUp = async (address: string) => {
 	} catch (e) {
 		console.log(e);
 		return false;
+	}
+};
+
+export const hasFLOATCollectionSetUpBatch: (addresses: string[]) => Promise<{ allPass: boolean, addressesNotSetup: string[] }> = async (addresses) => {
+	try {
+		return (await fcl.query({
+			cadence: replaceWithProperValues(hasFLOATCollectionSetupBatchScript),
+			args: (arg, t) => [arg(addresses, t.Array(t.Address))]
+		}));
+	} catch (e) {
+		console.log(e);
+		return {
+			allPass: false,
+			addressesNotSetup: []
+		};
 	}
 };
 
