@@ -23,6 +23,8 @@
 	}
 
 	const parseAndSaveCsv = () => {
+		// prevents this function from running twice for some reason
+		if (validCsv === 'loading') return;
 		validCsv = 'loading';
 		if (csvFiles.length > 0) {
 			let parsedCSV = Papa.parse(csvFiles[0], {
