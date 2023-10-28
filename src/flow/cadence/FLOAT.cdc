@@ -938,7 +938,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
 
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
-                let identifier = verifier.getType().identifier
+                let identifier: String = verifier.getType().identifier
                 if typedVerifiers[identifier] == nil {
                     typedVerifiers[identifier] = [verifier]
                 } else {
@@ -961,7 +961,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                 _url: url,
                 _verifiers: typedVerifiers
             )
-            let eventId = FLOATEvent.eventId
+            let eventId: UInt64 = FLOATEvent.eventId
             self.events[eventId] <-! FLOATEvent
 
             return eventId

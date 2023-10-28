@@ -24,6 +24,7 @@
 	setInterval(() => (currentUnixTime = +new Date() / 1000), 1000);
 
 	let secretCode = data.event.verifiers.secret?.secret ?? '';
+	let requireEmail = data.event.verifiers.requireEmail != undefined;
 </script>
 
 <section class="container-medium">
@@ -109,6 +110,7 @@
 	<ClaimButtonStatus
 		event={data.event}
 		{secretCode}
+		{requireEmail}
 		free={data.event.price !== null || Number(data.event.price) === 0}
 	/>
 </section>
