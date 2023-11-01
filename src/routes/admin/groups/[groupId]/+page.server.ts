@@ -1,9 +1,5 @@
-import { PRIVATE_SUPABASE_SERVICE_ROLE } from '$env/static/private';
-import { PUBLIC_SUPABASE_API_URL } from '$env/static/public';
-import { createClient } from '@supabase/supabase-js';
+import { serviceSupabase } from '$lib/server/supabaseClient';
 import { redirect } from '@sveltejs/kit';
-
-const supabase = createClient(PUBLIC_SUPABASE_API_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
 export const actions = {
 	addFloatsToGroup: async ({ request }) => {
@@ -15,7 +11,7 @@ export const actions = {
 		const floatIds: string[] = floatIdsString.split(',');
 
 		for (let i = 0; i < floatIds.length; i++) {
-			const { error } = await supabase
+			const { error } = await serviceSupabase
 				.from('floats_groups')
 				.insert({ float_id: floatIds[i], group_id: groupId });
 
@@ -30,7 +26,7 @@ export const actions = {
 
 		const groupId = data.get('groupId') as string;
 
-		const { error } = await supabase.from('groups').delete().eq('id', groupId);
+		const { error } = await serviceSupabase.from('groups').delete().eq('id', groupId);
 
 		if (error) {
 			console.log(error);
@@ -45,7 +41,7 @@ export const actions = {
 		const groupId = data.get('groupId') as string;
 		const floatId = data.get('floatId') as string;
 
-		const { error } = await supabase
+		const { error } = await serviceSupabase
 			.from('floats_groups')
 			.delete()
 			.eq('float_id', floatId)

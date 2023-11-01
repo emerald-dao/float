@@ -13,7 +13,7 @@
 		<Icon icon="tabler:x" />
 	</div>
 	<div class="data-wrapper">
-		<h4 class="w-medium">About This Event</h4>
+		<h4 class="w-medium">About this event</h4>
 		<p class="small">
 			{description}
 		</p>

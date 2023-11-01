@@ -1,14 +1,6 @@
-import { createClient } from '@supabase/supabase-js';
-import { env as PrivateEnv } from '$env/dynamic/private';
-import { env as PublicEnv } from '$env/dynamic/public';
 import { verifyAccountOwnership } from '$flow/utils.js';
-import type { Database } from '$lib/supabase/database.types.js';
 import { network } from '$flow/config';
-
-const supabase = createClient<Database>(
-	PublicEnv.PUBLIC_SUPABASE_API_URL,
-	PrivateEnv.PRIVATE_SUPABASE_SERVICE_ROLE
-);
+import { serviceSupabase } from '$lib/server/supabaseClient';
 
 export async function POST({ request, params }) {
 	const data = await request.json();
@@ -21,7 +13,7 @@ export async function POST({ request, params }) {
 		return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
 	}
 
-	const { error } = await supabase.from('events').insert({
+	const { error } = await serviceSupabase.from('events').insert({
 		id: params.eventId,
 		creator_address: user.addr,
 		network
@@ -37,7 +29,7 @@ export async function POST({ request, params }) {
 }
 
 export async function GET({ params }) {
-	const { data, error } = await supabase
+	const { data, error } = await serviceSupabase
 		.from('events')
 		.select('id , creator_address, network')
 		.eq('network', network)
