@@ -1,16 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import { env as PrivateEnv } from '$env/dynamic/private';
-import { env as PublicEnv } from '$env/dynamic/public';
-import type { Database } from '$lib/supabase/database.types.js';
 import { network } from '$flow/config';
-
-const supabase = createClient<Database>(
-	PublicEnv.PUBLIC_SUPABASE_API_URL,
-	PrivateEnv.PRIVATE_SUPABASE_SERVICE_ROLE
-);
+import { serviceSupabase } from '$lib/server/supabaseClient';
 
 export async function GET() {
-	const { data: claimsData, error: claimsError } = await supabase
+	const { data: claimsData, error: claimsError } = await serviceSupabase
 		.from('claims')
 		.select('event_id, network')
 		.eq('network', network)
@@ -39,7 +31,7 @@ export async function GET() {
 		mostFrequentEventIds = sortedEventIds.slice(0, 6);
 	}
 
-	const { data: eventsData, error: eventsError } = await supabase
+	const { data: eventsData, error: eventsError } = await serviceSupabase
 		.from('events')
 		.select('id , creator_address, network')
 		.eq('network', network)
