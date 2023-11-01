@@ -3,7 +3,7 @@
 </script>
 
 <div class="logo-wrapper" style={`font-size: ${size}`}>
-	<img src="/halloween-float-logo.svg" alt="FLOAT logo" />
+	<img src="/float-logo.svg" alt="FLOAT logo" />
 	<span class="w-medium">FLOAT</span>
 </div>
 
