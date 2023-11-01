@@ -9,7 +9,7 @@ const rightPaddedHexBuffer = (value, pad) => {
     return Buffer.from(value.padEnd(pad * 2, 0), 'hex');
 };
 
-export const USER_DOMAIN_TAG = rightPaddedHexBuffer(
+const USER_DOMAIN_TAG = rightPaddedHexBuffer(
     Buffer.from('FLOW-V0.0-user').toString('hex'),
     32
 ).toString('hex');
@@ -17,7 +17,7 @@ export const USER_DOMAIN_TAG = rightPaddedHexBuffer(
 export const sign = (message, privateKey) => {
     var ec_p256 = new elliptic.ec('p256');
     const key = ec_p256.keyFromPrivate(Buffer.from(privateKey, 'hex'));
-    const sig = key.sign(hash(message)); // hashMsgHex -> hash
+    const sig = key.sign(hash(USER_DOMAIN_TAG + message)); // hashMsgHex -> hash
     const n = 32;
     const r = sig.r.toArrayLike(Buffer, 'be', n);
     const s = sig.s.toArrayLike(Buffer, 'be', n);
@@ -39,7 +39,7 @@ export async function signWithClaimCode(claimCode: string, claimeeAddress: strin
     const { privateKey } = await fetchKeysFromClaimCode(claimCode);
     // let messageToSign = '0x' + get(user).addr.substring(2).replace(/^0+/, '');
     const data = Buffer.from(claimeeAddress).toString('hex');
-    const sig = sign(USER_DOMAIN_TAG + data, privateKey);
+    const sig = sign(data, privateKey);
     return sig;
 }
 
