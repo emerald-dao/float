@@ -2,7 +2,7 @@ import elliptic from "elliptic";
 import { SHA3 } from "sha3";
 import { Buffer } from 'buffer';
 import { fetchKeysFromClaimCode } from "$lib/utilities/api/fetchKeysFromClaimCode";
-import { saveEmail, saveEmailAndSign } from "$lib/utilities/api/saveEmail";
+import { saveEmail } from "$lib/utilities/api/saveEmail";
 import { signUserProvidedEmail } from "$lib/utilities/api/signUserProvidedEmail";
 
 const rightPaddedHexBuffer = (value, pad) => {

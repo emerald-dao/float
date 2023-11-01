@@ -44,6 +44,7 @@ import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?r
 import userCanMintScript from './cadence/scripts/user_can_mint.cdc?raw';
 import validateAddressExistanceScript from './cadence/scripts/validate_address_existance.cdc?raw';
 import validateFindExistanceScript from './cadence/scripts/validate_find_existance.cdc?raw';
+import userCreatedEventScript from './cadence/scripts/user_created_event.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -674,6 +675,21 @@ export const userCanMint = async (eventId: string, eventHost: string, userAddres
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),
 				arg(userAddress, t.Address)
+			]
+		});
+	} catch (e) {
+		console.log(e);
+		return false;
+	}
+};
+
+export const userCreatedEvent = async (eventId: string, userAddress: string) => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(userCreatedEventScript),
+			args: (arg, t) => [
+				arg(userAddress, t.Address),
+				arg(eventId, t.UInt64)
 			]
 		});
 	} catch (e) {
