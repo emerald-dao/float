@@ -1,9 +1,5 @@
-import { PRIVATE_SUPABASE_SERVICE_ROLE } from '$env/static/private';
-import { PUBLIC_SUPABASE_API_URL } from '$env/static/public';
-import { createClient } from '@supabase/supabase-js';
+import { serviceSupabase } from '$lib/server/supabaseClient';
 import { redirect } from '@sveltejs/kit';
-
-const supabase = createClient(PUBLIC_SUPABASE_API_URL, PRIVATE_SUPABASE_SERVICE_ROLE);
 
 export const actions = {
 	default: async ({ request, params }) => {
@@ -13,13 +9,13 @@ export const actions = {
 		const groupDescription = formData.get('description') as string | undefined;
 		const userAddress = formData.get('user_address') as string;
 
-		const { data: user } = await supabase.from('users').select('id').eq('address', userAddress);
+		const { data: user } = await serviceSupabase.from('users').select('id').eq('address', userAddress);
 
 		if (!user) {
-			await supabase.from('users').insert({ address: userAddress });
+			await serviceSupabase.from('users').insert({ address: userAddress });
 		}
 
-		const { data, error } = await supabase
+		const { data, error } = await serviceSupabase
 			.from('groups')
 			.insert({ name: groupName, description: groupDescription, user_address: userAddress })
 			.select();

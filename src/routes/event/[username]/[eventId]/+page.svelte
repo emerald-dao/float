@@ -11,6 +11,7 @@
 	import ClaimTicketCard from '../../../admin/events/atoms/ClaimTicketCard.svelte';
 	import { user } from '$stores/flow/FlowStore';
 	import { secondsToDhms } from '$lib/utilities/dates/secondsToDhms';
+	import SeeMoreSidebar from '../../_components/SeeMoreSidebar.svelte';
 
 	export let data;
 
@@ -25,7 +26,24 @@
 
 	let secretCode = data.event.verifiers.secret?.secret ?? '';
 	let requireEmail = data.event.verifiers.requireEmail != undefined;
+
+	let seeMore = false;
 </script>
+
+{#if data.event.description}
+	<div class="hide-on-mobile">
+		<div class="description-button" on:click={() => (seeMore = !seeMore)} on:keydown>
+			<Icon icon="tabler:arrow-left" />
+			<p class="xsmall w-medium">About this event</p>
+		</div>
+		{#if seeMore}
+			<SeeMoreSidebar
+				description={data.event.description}
+				on:closeModal={() => (seeMore = !seeMore)}
+			/>
+		{/if}
+	</div>
+{/if}
 
 <section class="container-medium">
 	<div class="main-wrapper">
@@ -230,5 +248,19 @@
 		.claims-cards-wrapper {
 			width: 100%;
 		}
+	}
+
+	.description-button {
+		position: fixed;
+		right: 0;
+		top: 20vh;
+		display: flex;
+		align-items: center;
+		padding: var(--space-2) var(--space-4);
+		border-right-width: 0px;
+		border-radius: var(--radius-1) 0px 0px var(--radius-1);
+		cursor: pointer;
+		background-color: var(--clr-surface-secondary);
+		gap: var(--space-1);
 	}
 </style>

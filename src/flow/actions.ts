@@ -34,6 +34,7 @@ import getEventsBatchScript from './cadence/scripts/get_events_batch.cdc?raw';
 import getFLOATsScript from './cadence/scripts/get_floats.cdc?raw';
 import getSpecificFLOATsScript from './cadence/scripts/get_specific_floats.cdc?raw';
 import getLatestEventClaimsScript from './cadence/scripts/get_latest_claimed_in_event.cdc?raw';
+import getEventClaimsScript from './cadence/scripts/get_event_claims.cdc?raw';
 import getStatsScript from './cadence/scripts/get_stats.cdc?raw';
 import getMainPageFLOATsScript from './cadence/scripts/get_main_page_floats.cdc?raw';
 import hasFLOATCollectionSetupScript from './cadence/scripts/has_float_collection_setup.cdc?raw';
@@ -512,6 +513,24 @@ export const getLatestEventClaims = async (
 	} catch (e) {
 		console.log('Error in getLatestEventClaims', e);
 		throw new Error('Error in getLatestEventClaims');
+	}
+};
+
+export const getEventClaims = async (
+	eventHost: string,
+	eventId: string
+): Promise<Claim[]> => {
+	try {
+		return await fcl.query({
+			cadence: replaceWithProperValues(getEventClaimsScript),
+			args: (arg, t) => [
+				arg(eventHost, t.Address),
+				arg(eventId, t.UInt64)
+			]
+		});
+	} catch (e) {
+		console.log('Error in getEventClaims', e);
+		throw new Error('Error in getEventClaims');
 	}
 };
 
