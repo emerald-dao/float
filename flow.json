@@ -17,13 +17,17 @@
     "FLOAT": {
       "source": "./src/flow/cadence/FLOAT.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "testnet": "4d47bf3ce5e4393f",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "FLOATVerifiers": {
       "source": "./src/flow/cadence/FLOATVerifiers.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "testnet": "4d47bf3ce5e4393f",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "GrantedAccountAccess": {
@@ -154,7 +158,7 @@
     },
     "testnet": {
       "testnet-account": [
-        "FLOAT"
+        "FLOATVerifiers"
       ]
     }
   }

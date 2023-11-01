@@ -10,9 +10,11 @@
 	import claimFloat from '../_actions/claimFloat';
 	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
+	import validateEmail from '../_actions/validateEmail';
 
 	export let event: EventWithStatus;
 	export let secretCode: string;
+	export let requireEmail: boolean;
 	export let free: boolean;
 
 	let redirectUrl: string | null;
@@ -35,23 +37,40 @@
 		);
 	}
 
-	let inputValue = '';
+	let secretCodeInputValue = '';
 	let secretCodeValidation: boolean;
 
-	const handleChange = async () => {
+	let requireEmailInputValue = '';
+	let requireEmailValidation: boolean;
+
+	let powerUpErrorMessage = '';
+
+	const handleClaimFloat = async () => {
 		if (!$user.loggedIn) {
 			await logIn();
 		}
-		secretCodeValidation = await validateSecretCode(
-			event.eventId,
-			event.host,
-			inputValue,
-			get(user).addr as string
-		);
-	};
-
-	const handleClaimFloat = async () => {
-		await claimFloat(event.eventId, event.host, inputValue, free);
+		// check if secret code is correct first
+		if (secretCode) {
+			secretCodeValidation = await validateSecretCode(
+				event.eventId,
+				event.host,
+				secretCodeInputValue,
+				get(user).addr as string
+			);
+			if (secretCodeValidation === false) {
+				powerUpErrorMessage = 'Code is incorrect';
+				return;
+			}
+		}
+		if (requireEmail) {
+			requireEmailValidation = validateEmail(requireEmailInputValue);
+			if (requireEmailValidation === false) {
+				powerUpErrorMessage = 'Email is formatted incorrectly';
+				return;
+			}
+		}
+		powerUpErrorMessage = 'Unlocked';
+		await claimFloat(event.eventId, event.host, secretCodeInputValue, requireEmailInputValue, free);
 
 		invalidate('app:event');
 
@@ -69,6 +88,14 @@
 
 <div class="button-wrapper">
 	{#if event.status.generalStatus === 'available' && event.claimable}
+		{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
+			<div class="secret-code-message">
+				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+					<Icon icon="tabler:info-circle" />
+					<span>You already own this FLOAT</span>
+				</div>
+			</div>
+		{/if}
 		{#if !$user.loggedIn}
 			<div class="secret-code-message">
 				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
@@ -83,48 +110,34 @@
 					<span>You already own this FLOAT</span>
 				</div>
 			</div>
-		{:else if secretCode}
-			<div
-				class="secret-code-message"
-				class:success={secretCodeValidation === true}
-				class:alert={!secretCodeValidation}
-			>
-				{#if secretCodeValidation === false}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock" />
-						<span>Code is incorrect</span>
-					</div>
-				{:else if secretCodeValidation === true}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock-open" />
-						<span>Unlocked</span>
-					</div>
-				{:else}
-					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-						<Icon icon="tabler:lock" />
-						<span>Locked by a secret code</span>
-					</div>
-				{/if}
-			</div>
-			<div class="input-wrapper">
-				<input type="password" placeholder="Insert secret code" max="60" bind:value={inputValue} />
-				<button
-					class="input-button row-1 align-center"
-					on:click={handleChange}
-					disabled={inputValue.length < 1}
+		{:else if secretCode || requireEmail}
+			{#if powerUpErrorMessage}
+				<div
+					class="secret-code-message"
+					class:alert={powerUpErrorMessage !== 'Unlocked'}
+					class:success={powerUpErrorMessage === 'Unlocked'}
 				>
-					Check
-					<Icon icon="tabler:arrow-right" />
-				</button>
-			</div>
-		{/if}
-		{#if $user.loggedIn && floatAlreadyClaimed && event.multipleClaim}
-			<div class="secret-code-message">
-				<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
-					<Icon icon="tabler:info-circle" />
-					<span>You already own this FLOAT</span>
+					<div class="row-1 align-center justify-center" in:fly={{ duration: 300, y: -10 }}>
+						<Icon icon={powerUpErrorMessage !== 'Unlocked' ? 'tabler:lock' : 'tabler:lock-open'} />
+						<span>{powerUpErrorMessage}</span>
+					</div>
 				</div>
-			</div>
+			{/if}
+			{#if secretCode}
+				<div class="input-wrapper">
+					<input
+						type="password"
+						placeholder="Insert secret code"
+						max="60"
+						bind:value={secretCodeInputValue}
+					/>
+				</div>
+			{/if}
+			{#if requireEmail}
+				<div class="input-wrapper">
+					<input placeholder="Insert email" max="60" bind:value={requireEmailInputValue} />
+				</div>
+			{/if}
 		{/if}
 	{:else}
 		<div class="secret-code-message">
@@ -144,11 +157,14 @@
 		{#if event.status.generalStatus === 'available'}
 			{#if !$user.loggedIn || (floatAlreadyClaimed && !event.multipleClaim) || !event.claimable}
 				<Button size="large" width="full-width" state="disabled">Claim FLOAT</Button>
-			{:else if secretCode}
+			{:else if secretCode || requireEmail}
 				<Button
 					size="large"
 					width="full-width"
-					state={secretCodeValidation ? 'active' : 'disabled'}
+					state={(!secretCode || secretCodeInputValue.length > 0) &&
+					(!requireEmail || requireEmailInputValue.length > 0)
+						? 'active'
+						: 'disabled'}
 					on:click={() => handleClaimFloat()}
 				>
 					Claim FLOAT
