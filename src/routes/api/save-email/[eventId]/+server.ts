@@ -1,32 +1,23 @@
-import { createClient } from '@supabase/supabase-js';
-import { env as PrivateEnv } from '$env/dynamic/private';
-import { env as PublicEnv } from '$env/dynamic/public';
-import { verifyAccountOwnership } from '$flow/utils.js';
-import type { Database } from '$lib/supabase/database.types.js';
+import { verifyAccountOwnership } from '$flow/utils';
+import { serviceSupabase } from '$lib/server/supabaseClient';
 import { Buffer } from 'buffer';
-import { network } from '$flow/config';
-
-const supabase = createClient<Database>(
-  PublicEnv.PUBLIC_SUPABASE_API_URL,
-  PrivateEnv.PRIVATE_SUPABASE_SERVICE_ROLE
-);
 
 export async function POST({ request, params }) {
   const data = await request.json();
 
   // Make sure a valid user was passed in
-  // const verifyAccount = await verifyAccountOwnership(data.user);
-  // if (!verifyAccount) {
-  //   return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
-  // }
+  const verifyAccount = await verifyAccountOwnership(data.user);
+  if (!verifyAccount) {
+    return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
+  }
 
   const email = Buffer.from(data.email, 'hex').toString();
 
-  const { error } = await supabase
+  const { error } = await serviceSupabase
     .from('email')
     .upsert({
       event_id: params.eventId,
-      user_address: data.userAddress,
+      user_address: data.user.addr,
       email
     }, { onConflict: 'event_id,user_address' });
 

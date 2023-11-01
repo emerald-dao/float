@@ -7,6 +7,9 @@ import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
 
 const claimFloat = async (eventId: string, eventCreator: string, claimCode: string | undefined, email: string | undefined, free: boolean) => {
+	if (!get(user).loggedIn) {
+		await logIn();
+	}
 	const userObject = get(user);
 
 	if (userObject.addr == null) {
@@ -45,16 +48,10 @@ const claimFloat = async (eventId: string, eventCreator: string, claimCode: stri
 	let emailSig = null;
 
 	if (claimCode) {
-		if (!get(user).loggedIn) {
-			await logIn();
-		}
 		secretSig = await signWithClaimCode(claimCode, userObject.addr);
 	}
 
 	if (email) {
-		if (!get(user).loggedIn) {
-			await logIn();
-		}
 		emailSig = await submitEmailAndGetSig(email, userObject.addr, eventId);
 	}
 
