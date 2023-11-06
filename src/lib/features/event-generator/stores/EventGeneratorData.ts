@@ -43,9 +43,6 @@ export const EMPTY_GENERATOR_DATA = {
 		minimumBalance: {
 			active: false,
 			data: 0
-		},
-		requireEmail: {
-			active: false
 		}
 	}
 };

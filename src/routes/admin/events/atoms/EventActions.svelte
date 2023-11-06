@@ -9,7 +9,6 @@
 	import { getContext } from 'svelte';
 	import type createFetchStore from '../../_stores/fetchStore';
 	import EventDataTitle from '../_components/EventDataTitle.svelte';
-	import DownloadEmailsButton from '../_components/DownloadEmailsButton.svelte';
 	import DownloadClaimersButton from '../_components/DownloadClaimersButton.svelte';
 
 	export let event: EventWithStatus;
@@ -59,9 +58,6 @@
 		<EventDataTitle icon="tabler:bolt">Actions</EventDataTitle>
 		<DistributeFloatsModal {event} />
 		<DownloadClaimersButton eventHost={event.host} eventId={event.eventId} />
-		{#if event.verifiers.requireEmail != undefined}
-			<DownloadEmailsButton eventId={event.eventId} />
-		{/if}
 	</div>
 	<div class="toggles-wrapper">
 		<EventDataTitle icon="tabler:toggle-right">Switchs</EventDataTitle>

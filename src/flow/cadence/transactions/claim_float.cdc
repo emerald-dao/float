@@ -2,7 +2,7 @@ import FLOAT from "../FLOAT.cdc"
 import NonFungibleToken from "../utility/NonFungibleToken.cdc"
 import MetadataViews from "../utility/MetadataViews.cdc"
 
-transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String?) {
+transaction(eventId: UInt64, host: Address, secret: String?) {
  
   let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
   let Collection: &FLOAT.Collection
@@ -37,11 +37,8 @@ transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String
     let params: {String: AnyStruct} = {}
 
     // If the FLOAT has a secret phrase on it
-    if let unwrappedSecret = secretSig {
+    if let unwrappedSecret = secret {
       params["secretSig"] = unwrappedSecret
-    }
-    if let unwrappedEmailSig = emailSig {
-      params["emailSig"] = unwrappedEmailSig
     }
  
     self.FLOATEvent.claim(recipient: self.Collection, params: params)

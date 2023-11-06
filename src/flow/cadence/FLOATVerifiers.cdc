@@ -23,7 +23,6 @@
 import FLOAT from "./FLOAT.cdc"
 import FungibleToken from "./utility/FungibleToken.cdc"
 import FlowToken from "./utility/FlowToken.cdc"
-import Crypto
 
 pub contract FLOATVerifiers {
 
@@ -140,7 +139,6 @@ pub contract FLOATVerifiers {
             let data: [UInt8] = (params["claimee"]! as! Address).toString().utf8
             let sig: [UInt8] = (params["secretSig"]! as! String).decodeHex()
             let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
-            // validates that the "sig" was what was produced by signing "data" using the private key paired to "publicKey"
             let valid = publicKey.verify(signature: sig, signedData: data, domainSeparationTag: "FLOW-V0.0-user", hashAlgorithm: HashAlgorithm.SHA3_256)
             
             assert(
@@ -177,34 +175,4 @@ pub contract FLOATVerifiers {
             self.amount = _amount
         }
     }
-
-    //
-    // Email
-    //
-    // Requires an admin to sign off that a user
-    // address provided their email
-    pub struct Email: FLOAT.IVerifier {
-        pub let publicKey: String
-
-        pub fun verify(_ params: {String: AnyStruct}) {
-            let event = params["event"]! as! &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
-            let claimeeAddressAsString: String = (params["claimee"]! as! Address).toString()
-            let messageString: String = claimeeAddressAsString.concat(" provided email for eventId ").concat(event.eventId.toString())
-            let data: [UInt8] = messageString.utf8
-            let sig: [UInt8] = (params["emailSig"]! as! String).decodeHex()
-            let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
-            // validates that the "sig" was what was produced by signing "data" using the private key paired to "publicKey"
-            let valid = publicKey.verify(signature: sig, signedData: data, domainSeparationTag: "FLOW-V0.0-user", hashAlgorithm: HashAlgorithm.SHA3_256)
-            
-            assert(
-                valid, 
-                message: "You did not input the correct secret phrase."
-            )
-        }
-
-        init(_publicKey: String) {
-            self.publicKey = _publicKey
-        }
-    }
-    
 }

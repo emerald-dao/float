@@ -12,7 +12,6 @@ import { signWithClaimCode } from './sign';
 import { fetchKeysFromClaimCode } from '$lib/utilities/api/fetchKeysFromClaimCode';
 import type { TransactionStatusObject } from '@onflow/fcl';
 import type { ActionExecutionResult } from '$stores/custom/steps/step.interface';
-import { env } from '$env/dynamic/public';
 
 // Transactions
 import createEventTx from './cadence/transactions/create_event.cdc?raw';
@@ -44,7 +43,6 @@ import userHasClaimedEventScript from './cadence/scripts/has_claimed_event.cdc?r
 import userCanMintScript from './cadence/scripts/user_can_mint.cdc?raw';
 import validateAddressExistanceScript from './cadence/scripts/validate_address_existance.cdc?raw';
 import validateFindExistanceScript from './cadence/scripts/validate_find_existance.cdc?raw';
-import userCreatedEventScript from './cadence/scripts/user_created_event.cdc?raw';
 
 if (browser) {
 	// set Svelte $user store to currentUser,
@@ -75,7 +73,6 @@ const createEvent = async (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
-	requireEmail: boolean,
 	visibilityMode: 'certificate' | 'picture',
 	multipleClaim: boolean,
 	startDate: number,
@@ -106,8 +103,6 @@ const createEvent = async (
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
 			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
-			arg(requireEmail, t.Bool),
-			arg(env.PUBLIC_EMAIL_VERIFIER_PUBLIC_KEY, t.String),
 			arg(visibilityMode, t.String),
 			arg(multipleClaim, t.Bool)
 		],
@@ -134,7 +129,6 @@ const createMedalEvent = async (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
-	requireEmail: boolean,
 	visibilityMode: 'certificate' | 'picture',
 	multipleClaim: boolean,
 	startDate: number,
@@ -172,8 +166,6 @@ const createMedalEvent = async (
 			arg(payment != null ? payment.toFixed(1) : '0.0', t.UFix64),
 			arg(minimumBalance != null, t.Bool),
 			arg(minimumBalance != null ? minimumBalance.toFixed(1) : '0.0', t.UFix64),
-			arg(requireEmail, t.Bool),
-			arg(env.PUBLIC_EMAIL_VERIFIER_PUBLIC_KEY, t.String),
 			arg(visibilityMode, t.String),
 			arg(multipleClaim, t.Bool)
 		],
@@ -202,7 +194,6 @@ export const createEventExecution = async (
 	limited: number | null,
 	payment: number | null,
 	minimumBalance: number | null,
-	requireEmail: boolean,
 	visibilityMode: 'certificate' | 'picture',
 	multipleClaim: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
@@ -241,7 +232,6 @@ export const createEventExecution = async (
 					limited,
 					payment,
 					minimumBalance,
-					requireEmail,
 					visibilityMode,
 					multipleClaim,
 					startDate,
@@ -269,7 +259,6 @@ export const createEventExecution = async (
 				limited,
 				payment,
 				minimumBalance,
-				requireEmail,
 				visibilityMode,
 				multipleClaim,
 				startDate,
@@ -293,14 +282,13 @@ const burnFLOAT = async (floatId: string) => {
 
 export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
 
-const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null, emailSig: string | null) => {
+const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(claimFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
-			arg(secretSig, t.Optional(t.String)),
-			arg(emailSig, t.Optional(t.String))
+			arg(secretSig, t.Optional(t.String))
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -309,14 +297,13 @@ const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: stri
 	});
 };
 
-const purchaseFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null, emailSig: string | null) => {
+const purchaseFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null) => {
 	return await fcl.mutate({
 		cadence: replaceWithProperValues(purchaseFLOATTx),
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
-			arg(secretSig, t.Optional(t.String)),
-			arg(emailSig, t.Optional(t.String))
+			arg(secretSig, t.Optional(t.String))
 		],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -329,18 +316,17 @@ export const claimFLOATExecution = (
 	eventId: string,
 	eventCreator: string,
 	secretSig: string | null,
-	emailSig: string | null,
 	free: boolean,
 	actionAfterSucceed: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
 ) => {
 	if (free) {
 		return executeTransaction(
-			() => claimFLOAT(eventId, eventCreator, secretSig, emailSig),
+			() => claimFLOAT(eventId, eventCreator, secretSig),
 			actionAfterSucceed
 		);
 	}
 	return executeTransaction(
-		() => purchaseFLOAT(eventId, eventCreator, secretSig, emailSig),
+		() => purchaseFLOAT(eventId, eventCreator, secretSig),
 		actionAfterSucceed
 	);
 };
@@ -675,21 +661,6 @@ export const userCanMint = async (eventId: string, eventHost: string, userAddres
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),
 				arg(userAddress, t.Address)
-			]
-		});
-	} catch (e) {
-		console.log(e);
-		return false;
-	}
-};
-
-export const userCreatedEvent = async (eventId: string, userAddress: string) => {
-	try {
-		return await fcl.query({
-			cadence: replaceWithProperValues(userCreatedEventScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address),
-				arg(eventId, t.UInt64)
 			]
 		});
 	} catch (e) {
