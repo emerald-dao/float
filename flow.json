@@ -33,7 +33,8 @@
     "GrantedAccountAccess": {
       "source": "./src/flow/cadence/GrantedAccountAccess.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "FUSD": {
