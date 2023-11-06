@@ -17,19 +17,22 @@
     "FLOAT": {
       "source": "./src/flow/cadence/FLOAT.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "FLOATVerifiers": {
       "source": "./src/flow/cadence/FLOATVerifiers.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "GrantedAccountAccess": {
       "source": "./src/flow/cadence/GrantedAccountAccess.cdc",
       "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
+        "emulator": "f8d6e0586b0a20c7",
+        "mainnet": "2d4c3caffbeab845"
       }
     },
     "FUSD": {
