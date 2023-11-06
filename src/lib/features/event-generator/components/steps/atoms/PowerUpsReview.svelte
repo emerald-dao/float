@@ -3,6 +3,7 @@
 	import LimitedCard from '$lib/features/event-status-management/power-ups-cards/cards/LimitedCard.svelte';
 	import MinimumBalanceCard from '$lib/features/event-status-management/power-ups-cards/cards/MinimumBalanceCard.svelte';
 	import PaymentCard from '$lib/features/event-status-management/power-ups-cards/cards/PaymentCard.svelte';
+	import RequireEmailCard from '$lib/features/event-status-management/power-ups-cards/cards/RequireEmailCard.svelte';
 	import SecretCodeCard from '$lib/features/event-status-management/power-ups-cards/cards/SecretCodeCard.svelte';
 	import TimelockCard from '$lib/features/event-status-management/power-ups-cards/cards/TimelockCard.svelte';
 </script>
@@ -25,6 +26,9 @@
 	{/if}
 	{#if $eventGeneratorData.powerups.payment.active && Number($eventGeneratorData.powerups.payment.data) > 0}
 		<PaymentCard price={$eventGeneratorData.powerups.payment.data.toString()} />
+	{/if}
+	{#if $eventGeneratorData.powerups.requireEmail.active}
+		<RequireEmailCard />
 	{/if}
 </div>
 
