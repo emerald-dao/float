@@ -17,8 +17,6 @@
 	};
 
 	$: powerUpActive = $eventGeneratorData.powerups[powerUpType].active === true;
-
-	const slotExists = $$props.$$slots !== undefined;
 </script>
 
 <div class="main-wrapper">
@@ -49,15 +47,13 @@
 			{powerUpData.description}
 		</span>
 	</div>
-	{#if slotExists}
-		<div
-			class="card-primary column-5"
-			in:fly={{ y: 60, duration: 800 }}
-			class:inavtive={!powerUpActive}
-		>
-			<slot />
-		</div>
-	{/if}
+	<div
+		class="card-primary column-5"
+		in:fly={{ y: 60, duration: 800 }}
+		class:inavtive={!powerUpActive}
+	>
+		<slot />
+	</div>
 </div>
 
 <style lang="scss">

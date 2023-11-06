@@ -88,13 +88,7 @@ pub struct FLOATEventMetadata {
             "type": "limited",
             "capacity": castedL.capacity
           }
-        }
-      }
-      if let requireEmail = verifiers[Type<FLOATVerifiers.Email>().identifier] {
-        if requireEmail.length > 0 {
-          self.verifiers["requireEmail"] = {
-            "type": "requireEmail"
-          }
+          self.verifiers["limited"] = limited[0]
         }
       }
       self.eventType = FLOAT.extraMetadataToStrOpt(extraMetadata, "eventType") ?? "other"

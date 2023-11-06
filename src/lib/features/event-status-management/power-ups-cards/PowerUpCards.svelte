@@ -5,7 +5,6 @@
 	import PaymentCard from './cards/PaymentCard.svelte';
 	import SecretCodeCard from './cards/SecretCodeCard.svelte';
 	import type { EventVerifiers } from '$lib/types/event/event.interface';
-	import RequireEmailCard from './cards/RequireEmailCard.svelte';
 
 	export let powerUps: EventVerifiers;
 	export let price: string | null = null;
@@ -28,9 +27,6 @@
 	{/if}
 	{#if price && Number(price) > 0}
 		<PaymentCard {price} />
-	{/if}
-	{#if powerUps.requireEmail}
-		<RequireEmailCard />
 	{/if}
 </div>
 

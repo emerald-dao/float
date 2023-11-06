@@ -5,7 +5,6 @@
 	import { Button, DropZone } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { hasFLOATCollectionSetUp, hasFLOATCollectionSetUpBatch } from '$flow/actions';
-	import { resolveAddressOrFindName } from '$lib/features/bulk-distribute-floats/functions/resolveAddressOrFindName';
 
 	export let certificateType: CertificateType;
 	export let csvDist: DistributionElement<typeof certificateType>[];
@@ -32,9 +31,10 @@
 				header: true, // gives us an array of objects
 				dynamicTyping: true,
 				complete: async ({ data }) => {
-					if (await checkValidCsv(data)) {
+					const { success, filteredRows } = await checkValidCsv(data);
+					if (success) {
 						validCsv = true;
-						csvDist = data.map((row, i) => {
+						csvDist = filteredRows.map((row, i) => {
 							if (certificateType === 'medal') {
 								return {
 									address: (row as ParsedCsvRow).address,
@@ -56,23 +56,35 @@
 			});
 		}
 
-		const checkValidCsv = async (csvData: unknown[]): Promise<boolean> => {
+		const checkValidCsv = async (
+			csvData: unknown[]
+		): Promise<{ success: boolean; filteredRows: ParsedCsvRow[] }> => {
+			let addresses: string[] = [];
 			for (let i = 0; i < csvData.length; i++) {
 				if (typeof csvData[i] !== 'object' || !csvData[i]?.hasOwnProperty('address')) {
 					invalidCsvMessage = 'Wrong CSV format';
-					return false;
-				} else {
-					const address = await resolveAddressOrFindName((csvData[i] as ParsedCsvRow).address);
-					let addressIsValid = await hasFLOATCollectionSetUp(address);
+					return {
+						success: false,
+						filteredRows: []
+					};
+				}
+				addresses.push((csvData[i] as ParsedCsvRow).address);
+			}
 
-					if (!addressIsValid) {
-						omittedCsvRows.push(csvData[i] as ParsedCsvRow);
-						csvData.splice(i, 1);
-					}
+			const { addressesNotSetup } = await hasFLOATCollectionSetUpBatch(addresses);
+			let filteredRows: ParsedCsvRow[] = [];
+			for (let j = 0; j < csvData.length; j++) {
+				if (addressesNotSetup.includes((csvData[j] as ParsedCsvRow).address)) {
+					omittedCsvRows.push(csvData[j] as ParsedCsvRow);
+				} else {
+					filteredRows.push(csvData[j] as ParsedCsvRow);
 				}
 			}
 
-			return true;
+			return {
+				success: true,
+				filteredRows
+			};
 		};
 	};
 
