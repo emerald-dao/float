@@ -4,7 +4,7 @@ import MetadataViews from "../utility/MetadataViews.cdc"
 import FlowToken from "../utility/FlowToken.cdc"
 import FungibleToken from "../utility/FungibleToken.cdc"
 
-transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String?) {
+transaction(eventId: UInt64, host: Address, secret: String?) {
  
   let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
   let Collection: &FLOAT.Collection
@@ -43,11 +43,8 @@ transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String
     let params: {String: AnyStruct} = {}
 
     // If the FLOAT has a secret phrase on it
-    if let unwrappedSecret = secretSig {
+    if let unwrappedSecret = secret {
       params["secretSig"] = unwrappedSecret
-    }
-    if let unwrappedEmailSig = emailSig {
-      params["emailSig"] = unwrappedEmailSig
     }
  
     // If the FLOAT costs something
