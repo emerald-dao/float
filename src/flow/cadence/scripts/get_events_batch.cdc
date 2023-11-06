@@ -88,7 +88,6 @@ pub struct FLOATEventMetadata {
             "type": "limited",
             "capacity": castedL.capacity
           }
-          self.verifiers["limited"] = limited[0]
         }
       }
       if let requireEmail = verifiers[Type<FLOATVerifiers.Email>().identifier] {
