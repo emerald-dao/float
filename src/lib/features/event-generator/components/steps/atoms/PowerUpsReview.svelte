@@ -5,6 +5,7 @@
 	import PaymentCard from '$lib/features/event-status-management/power-ups-cards/cards/PaymentCard.svelte';
 	import SecretCodeCard from '$lib/features/event-status-management/power-ups-cards/cards/SecretCodeCard.svelte';
 	import TimelockCard from '$lib/features/event-status-management/power-ups-cards/cards/TimelockCard.svelte';
+	import RequireEmailCard from '$lib/features/event-status-management/power-ups-cards/cards/RequireEmailCard.svelte';
 </script>
 
 <div class="powerups-cards-wrapper">
@@ -25,6 +26,9 @@
 	{/if}
 	{#if $eventGeneratorData.powerups.payment.active && Number($eventGeneratorData.powerups.payment.data) > 0}
 		<PaymentCard price={$eventGeneratorData.powerups.payment.data.toString()} />
+	{/if}
+	{#if $eventGeneratorData.powerups.requireEmail.active}
+		<RequireEmailCard />
 	{/if}
 </div>
 

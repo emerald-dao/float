@@ -91,6 +91,13 @@ pub struct FLOATEventMetadata {
           self.verifiers["limited"] = limited[0]
         }
       }
+      if let requireEmail = verifiers[Type<FLOATVerifiers.Email>().identifier] {
+        if requireEmail.length > 0 {
+          self.verifiers["requireEmail"] = {
+            "type": "requireEmail"
+          }
+        }
+      }
       self.eventType = FLOAT.extraMetadataToStrOpt(extraMetadata, "eventType") ?? "other"
       self.visibilityMode = FLOAT.extraMetadataToStrOpt(extraMetadata, "visibilityMode") ?? "certificate"
       self.multipleClaim = (extraMetadata["allowMultipleClaim"] as! Bool?) ?? false
