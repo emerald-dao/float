@@ -13,14 +13,14 @@ export interface BaseEventGeneratorData {
 	logo: [File] | [];
 	image: [File] | [];
 	ticketImage:
-	| File
-	| {
-		gold: File;
-		silver: File;
-		bronze: File;
-		participation: File;
-	}
-	| null;
+		| File
+		| {
+				gold: File;
+				silver: File;
+				bronze: File;
+				participation: File;
+		  }
+		| null;
 	totalSupply: string;
 	transferrable: boolean;
 	multipleClaim: boolean;
@@ -56,8 +56,7 @@ export const POWER_UPS_TYPES = [
 	'timelock',
 	'secret',
 	'limited',
-	'minimumBalance',
-	'requireEmail'
+	'minimumBalance'
 ] as const;
 
 export type PowerUpType = (typeof POWER_UPS_TYPES)[number];
@@ -70,7 +69,6 @@ type TimeLockPowerUpData = {
 type SecretCodePowerUpData = string;
 type LimitedPowerUpData = number;
 type MinimumBalance = number;
-type RequireEmail = boolean;
 
 export type PowerUpData<T extends PowerUpType> = T extends 'payment'
 	? PaymentPowerUpData
@@ -82,6 +80,4 @@ export type PowerUpData<T extends PowerUpType> = T extends 'payment'
 	? LimitedPowerUpData
 	: T extends 'minimumBalance'
 	? MinimumBalance
-	: T extends 'requireEmail'
-	? RequireEmail
 	: never;

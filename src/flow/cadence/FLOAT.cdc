@@ -222,24 +222,11 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                     if let eventRef: &FLOATEvent{FLOATEventPublic} = self.getEventRef() {
                         let eventExtraMetadata: {String: AnyStruct} = eventRef.getExtraMetadata()
                         
-                        // certificate type doesn't apply if it's a picture FLOAT
-                        if FLOAT.extraMetadataToStrOpt(eventExtraMetadata, "visibilityMode") == "certificate" {
-                            let certificateType: MetadataViews.Trait = MetadataViews.Trait(name: "certificateType", value: eventExtraMetadata["certificateType"], displayType: nil, rarity: nil)
-                            traitsView.addTrait(certificateType)
-                        }
-                        
-                        let serial: MetadataViews.Trait = MetadataViews.Trait(name: "serial", value: self.serial, displayType: nil, rarity: nil)
-                        traitsView.addTrait(serial)
-                        let originalRecipient: MetadataViews.Trait = MetadataViews.Trait(name: "originalRecipient", value: self.originalRecipient, displayType: nil, rarity: nil)
-                        traitsView.addTrait(originalRecipient)
-                        let eventCreator: MetadataViews.Trait = MetadataViews.Trait(name: "eventCreator", value: self.eventHost, displayType: nil, rarity: nil)
-                        traitsView.addTrait(eventCreator)
+                        let certificateType: MetadataViews.Trait = MetadataViews.Trait(name: "certificateType", value: eventExtraMetadata["certificateType"], displayType: nil, rarity: nil)
+                        traitsView.addTrait(certificateType)
+
                         let eventType: MetadataViews.Trait = MetadataViews.Trait(name: "eventType", value: eventExtraMetadata["eventType"], displayType: nil, rarity: nil)
                         traitsView.addTrait(eventType)
-                        let dateReceived: MetadataViews.Trait = MetadataViews.Trait(name: "dateMinted", value: self.dateReceived, displayType: "Date", rarity: nil)
-                        traitsView.addTrait(dateReceived)
-                        let eventId: MetadataViews.Trait = MetadataViews.Trait(name: "eventId", value: self.eventId, displayType: nil, rarity: nil)
-                        traitsView.addTrait(eventId)
                     }
 
                     return traitsView
@@ -951,7 +938,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
 
             let typedVerifiers: {String: [{IVerifier}]} = {}
             for verifier in verifiers {
-                let identifier: String = verifier.getType().identifier
+                let identifier = verifier.getType().identifier
                 if typedVerifiers[identifier] == nil {
                     typedVerifiers[identifier] = [verifier]
                 } else {
@@ -974,7 +961,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                 _url: url,
                 _verifiers: typedVerifiers
             )
-            let eventId: UInt64 = FLOATEvent.eventId
+            let eventId = FLOATEvent.eventId
             self.events[eventId] <-! FLOATEvent
 
             return eventId
