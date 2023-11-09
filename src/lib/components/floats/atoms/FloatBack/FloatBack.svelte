@@ -34,10 +34,6 @@
 			};
 		}
 	};
-
-	function handleImgError(e) {
-		e.target.src = '/float-logo.png';
-	}
 </script>
 
 <div id="float-back" class="center" class:ticket={isTicket}>
