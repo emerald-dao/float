@@ -30,7 +30,7 @@
 			reader.readAsDataURL(file); // base 64 format
 
 			reader.onload = () => {
-				element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+				element.style.backgroundImage = `url('${reader.result}'), url('/ec-back-image.jpeg')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
 			};
 		}
 	};
@@ -38,11 +38,17 @@
 
 <div id="float-back" class="center" class:ticket={isTicket}>
 	{#if float.backImage && typeof float.backImage === 'string'}
-		<div style={`background-image: url(${float.backImage})`} class="background-image" />
+		<div
+			style={`background-image: url(${float.backImage}), url('/ec-back-image.jpeg')`}
+			class="background-image"
+		/>
 	{:else if float.backImage && typeof float.backImage !== 'string'}
 		<div bind:this={backgroundImage} class="background-image" />
 	{:else if float.eventImage && typeof float.eventImage === 'string'}
-		<div style={`background-image: url(${float.eventImage})`} class="background-image" />
+		<div
+			style={`background-image: url(${float.eventImage}), url('/ec-back-image.jpeg')`}
+			class="background-image"
+		/>
 	{:else}
 		<div class="content">
 			<p class="medium">Insert an image</p>

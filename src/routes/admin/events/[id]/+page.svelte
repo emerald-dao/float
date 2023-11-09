@@ -12,6 +12,10 @@
 	const eventsWithStatus: Writable<EventWithStatus[]> = getContext('events');
 
 	$: event = $eventsWithStatus.find((event) => event.eventId === $page.params.id);
+
+	function handleImgError(e) {
+		e.target.src = '/float-logo.png';
+	}
 </script>
 
 {#if event}
@@ -19,7 +23,13 @@
 		<div class="left-wrapper">
 			<div class="header-wrapper">
 				<div class="row-4 align-center">
-					<img src={event.image} alt="logo" height="70" width="70" />
+					<img
+						src={event.image}
+						on:error={(e) => handleImgError(e)}
+						alt="logo"
+						height="70"
+						width="70"
+					/>
 					<div class="column-1">
 						<h1 class="w-medium h4">{event.name}</h1>
 						<FloatEventType eventType={event.eventType} fontSize="1em" />
@@ -35,7 +45,7 @@
 	</div>
 {:else}
 	<p class="center">
-		<em> Upsss.. we couldn't find this event </em>
+		<em> Error: we couldn't find this event </em>
 	</p>
 {/if}
 
