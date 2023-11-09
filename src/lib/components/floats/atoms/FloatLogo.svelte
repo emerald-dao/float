@@ -26,17 +26,26 @@
 			reader.readAsDataURL(file); // base 64 format
 
 			reader.onload = () => {
-				element.style.backgroundImage = `url('${reader.result}')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
+				element.style.backgroundImage = `url('${reader.result}'), url('/float-logo.png')`; /* asynchronous call. This function runs once reader is done reading file. reader.result is the base 64 format */
 				element.style.backgroundSize = 'cover';
 				element.style.backgroundPosition = 'center';
 				element.style.backgroundColor = 'var(--clr-surface-secondary)';
 			};
 		}
 	};
+
+	function handleImgError(e) {
+		e.target.src = '/float-logo.png';
+	}
 </script>
 
 {#if float.eventImage && typeof float.eventImage === 'string'}
-	<img src={float.eventImage} alt="event-logo" style={`width: ${width}`} />
+	<img
+		src={float.eventImage}
+		on:error={(e) => handleImgError(e)}
+		alt="event-logo"
+		style={`width: ${width}`}
+	/>
 {:else if float.eventImage && typeof float.eventImage !== 'string'}
 	<div class="float-logo" bind:this={floatLogo} style={`width: ${width}`} />
 {:else}
