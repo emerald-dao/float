@@ -63,5 +63,8 @@
 		"@blocto/fcl": "^1.4.0",
 		"@types/elliptic": "^6.4.14"
 	},
+	"overrides": {
+		"@onflow/util-actor": "1.2.0"
+	},
 	"type": "module"
 }
