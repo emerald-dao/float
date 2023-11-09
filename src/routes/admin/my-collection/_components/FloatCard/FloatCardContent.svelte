@@ -9,12 +9,22 @@
 
 	let month = unixTimestampToFormattedDate(float.dateReceived, 'month');
 	let year = unixTimestampToFormattedDate(float.dateReceived, 'year');
+
+	function handleImgError(e) {
+		e.target.src = '/float-logo.png';
+	}
 </script>
 
 <div class="main-wrapper" class:selected class:hover-background={clickable}>
 	<div class="row-3 details-wrapper">
 		{#if typeof float.eventImage === 'string'}
-			<img src={float.eventImage} width="60px" height="60px" alt="logo" />
+			<img
+				src={float.eventImage}
+				on:error={(e) => handleImgError(e)}
+				width="60px"
+				height="60px"
+				alt="logo"
+			/>
 		{/if}
 		<div class="column-1">
 			<p class="event-name w-medium">{float.eventName}</p>

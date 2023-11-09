@@ -11,12 +11,22 @@
 	export let displayedInAdmin = true;
 
 	let verifiersList = Object.keys(event.verifiers) as PowerUpType[];
+
+	function handleImgError(e) {
+		e.target.src = '/float-logo.png';
+	}
 </script>
 
 <div class={`main-wrapper ${display}`}>
 	<div class={`general-info-wrapper `}>
 		<div class="title-wrapper row-3">
-			<img src={event.image} width="55px" height="55px" alt="logo" />
+			<img
+				src={event.image}
+				on:error={(e) => handleImgError(e)}
+				width="55px"
+				height="55px"
+				alt="logo"
+			/>
 			<div class="name-wrapper">
 				<p class="w-medium">{event.name}</p>
 				<FloatEventType eventType={event.eventType} fontSize="0.8em" />
