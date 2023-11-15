@@ -125,6 +125,10 @@
 				</div>
 			{/if}
 			{#if secretCode}
+				<p class="warning-message xsmall align-center">
+					<Icon icon="tabler:alert-triangle-filled" />
+					Warning: The creator of this event will be able to see your email if you claim this FLOAT.
+				</p>
 				<InputWithIcon icon="tabler:lock">
 					<input
 						name="secret"
@@ -194,6 +198,7 @@
 		bottom: 0;
 		width: 100%;
 		z-index: 30;
+		background-color: var(--clr-surface-secondary);
 		border-top-left-radius: var(--radius-4);
 		border-top-right-radius: var(--radius-4);
 
@@ -237,6 +242,16 @@
 			@include mq(small) {
 				background: none;
 			}
+		}
+	}
+
+	.warning-message {
+		color: var(--clr-alert-main);
+		background-color: var(--clr-surface-secondary);
+		padding: var(--space-2);
+		@include mq(small) {
+			max-width: 280px;
+			background-color: transparent;
 		}
 	}
 </style>

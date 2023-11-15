@@ -15,10 +15,13 @@
 	.input-wrapper {
 		width: 100%;
 		border: 1px var(--clr-border-primary) solid;
-		border-radius: var(--radius-1);
 		display: flex;
 		flex-direction: row;
 		transition: 0.2s;
+
+		@include mq(small) {
+			border-radius: var(--radius-1);
+		}
 
 		.icon-wrapper-left {
 			color: var(--clr-text-off);
