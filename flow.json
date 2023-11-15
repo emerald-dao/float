@@ -30,6 +30,14 @@
         "mainnet": "2d4c3caffbeab845"
       }
     },
+    "FLOATEventSeries": {
+      "source": "./src/flow/cadence/utility/FLOATEventSeries.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7",
+        "testnet": "78ba14dd1c817ec7",
+        "mainnet": "1dd5caae66e2c440"
+      }
+    },
     "GrantedAccountAccess": {
       "source": "./src/flow/cadence/GrantedAccountAccess.cdc",
       "aliases": {
@@ -154,6 +162,7 @@
         "FindViews",
         "FIND",
         "FLOAT",
+        "FLOATEventSeries",
         "FLOATVerifiers"
       ]
     },
