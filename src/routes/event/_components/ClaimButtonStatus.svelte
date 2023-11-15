@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import { user } from '$stores/flow/FlowStore';
-	import { Button } from '@emerald-dao/component-library';
+	import { Button, InputWrapper } from '@emerald-dao/component-library';
 	import Icon from '@iconify/svelte';
 	import { fly } from 'svelte/transition';
 	import validateSecretCode from '../_actions/validateSecretCode';
@@ -11,6 +11,7 @@
 	import { page } from '$app/stores';
 	import { invalidate } from '$app/navigation';
 	import validateEmail from '../_actions/validateEmail';
+	import InputWithIcon from '$lib/components/atoms/InputWithIcon.svelte';
 
 	export let event: EventWithStatus;
 	export let secretCode: string;
@@ -124,19 +125,26 @@
 				</div>
 			{/if}
 			{#if secretCode}
-				<div class="input-wrapper">
+				<InputWithIcon icon="tabler:lock">
 					<input
+						name="secret"
 						type="password"
-						placeholder="Insert secret code"
 						max="60"
+						placeholder="Insert secret"
 						bind:value={secretCodeInputValue}
 					/>
-				</div>
+				</InputWithIcon>
 			{/if}
 			{#if requireEmail}
-				<div class="input-wrapper">
-					<input placeholder="Insert email" max="60" bind:value={requireEmailInputValue} />
-				</div>
+				<InputWithIcon icon="tabler:at">
+					<input
+						name="email"
+						type="text"
+						max="60"
+						placeholder="Insert email"
+						bind:value={requireEmailInputValue}
+					/>
+				</InputWithIcon>
 			{/if}
 		{/if}
 	{:else}
@@ -196,34 +204,6 @@
 			width: 230px;
 			background-color: transparent;
 			gap: var(--space-3);
-		}
-
-		.input-wrapper {
-			position: relative;
-
-			input {
-				border-radius: 0%;
-				background: var(--clr-surface-primary);
-				z-index: 30;
-
-				@include mq(small) {
-					border-radius: var(--radius-1);
-					padding-right: var(--space-13);
-					box-sizing: border-box;
-				}
-			}
-
-			.input-button {
-				position: absolute;
-				right: 2px;
-				top: 50%;
-				transform: translateY(-50%);
-				background: none;
-				border: none;
-				cursor: pointer;
-				z-index: 1;
-				font-size: var(--font-size-1);
-			}
 		}
 
 		.secret-code-message {
