@@ -5,6 +5,7 @@ import TimeLimitPowerUp from './powerUpsConfigs/TimeLimit/TimeLimitPowerUp.svelt
 import SecretCodePowerUp from './powerUpsConfigs/SecretCode/SecretCodePowerUp.svelte';
 import MinimumBalancePowerUp from './powerUpsConfigs/MinimumBalance/MinimumBalancePowerUp.svelte';
 import LimitedPowerUp from './powerUpsConfigs/Limited/LimitedPowerUp.svelte';
+import RequireEmailPowerUp from './powerUpsConfigs/RequireEmail/RequireEmailPowerUp.svelte';
 import { writable } from 'svelte/store';
 
 export interface PowerUpGeneratorData {
@@ -55,6 +56,13 @@ export const POWER_UPS: {
 		description:
 			'This FLOAT will only be claimable by users with a minimum $FLOW balance. It will not cost any $FLOW to claim, rather it is just a minimum hold amount.',
 		component: MinimumBalancePowerUp
+	},
+	requireEmail: {
+		type: 'requireEmail',
+		name: 'Email',
+		icon: 'tabler:at',
+		description: 'A user must provide their email address before they can claim your FLOAT.',
+		component: RequireEmailPowerUp
 	}
 };
 

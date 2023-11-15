@@ -23,6 +23,8 @@
 import FLOAT from "./FLOAT.cdc"
 import FungibleToken from "./utility/FungibleToken.cdc"
 import FlowToken from "./utility/FlowToken.cdc"
+import Crypto
+import FLOATEventSeries from "./utility/FLOATEventSeries.cdc"
 
 pub contract FLOATVerifiers {
 
@@ -139,6 +141,7 @@ pub contract FLOATVerifiers {
             let data: [UInt8] = (params["claimee"]! as! Address).toString().utf8
             let sig: [UInt8] = (params["secretSig"]! as! String).decodeHex()
             let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
+            // validates that the "sig" was what was produced by signing "data" using the private key paired to "publicKey"
             let valid = publicKey.verify(signature: sig, signedData: data, domainSeparationTag: "FLOW-V0.0-user", hashAlgorithm: HashAlgorithm.SHA3_256)
             
             assert(
@@ -175,4 +178,74 @@ pub contract FLOATVerifiers {
             self.amount = _amount
         }
     }
+
+    //
+    // ChallengeAchievementPoint
+    // 
+    // Specifies a FLOAT Challenge to limit who accomplished 
+    // a number of achievement point can claim the FLOAT
+    pub struct ChallengeAchievementPoint: FLOAT.IVerifier {
+        pub let challengeIdentifier: FLOATEventSeries.EventSeriesIdentifier
+        pub let challengeThresholdPoints: UInt64
+
+        pub fun verify(_ params: {String: AnyStruct}) {
+            let claimee: Address = params["claimee"]! as! Address
+            if let achievementBoard = getAccount(claimee)
+                .getCapability(FLOATEventSeries.FLOATAchievementBoardPublicPath)
+                .borrow<&FLOATEventSeries.AchievementBoard{FLOATEventSeries.AchievementBoardPublic}>()
+            {
+                // build goal status by different ways
+                if let record = achievementBoard.borrowAchievementRecordRef(
+                    host: self.challengeIdentifier.host,
+                    seriesId: self.challengeIdentifier.id
+                ) {
+                    assert(
+                        record.score >= self.challengeThresholdPoints,
+                        message: "You do not meet the minimum required Achievement Point for Challenge#".concat(self.challengeIdentifier.id.toString())
+                    )
+                } else {
+                    panic("You do not have Challenge Achievement Record for Challenge#".concat(self.challengeIdentifier.id.toString()))
+                }
+            } else {
+                panic("You do not have Challenge Achievement Board")
+            }
+        }
+
+        init(_challengeHost: Address, _challengeId: UInt64, thresholdPoints: UInt64) {
+            self.challengeThresholdPoints = thresholdPoints
+            self.challengeIdentifier = FLOATEventSeries.EventSeriesIdentifier(_challengeHost, _challengeId)
+            // ensure challenge exists
+            self.challengeIdentifier.getEventSeriesPublic()
+        }
+    }
+
+    //
+    // Email
+    //
+    // Requires an admin to sign off that a user
+    // address provided their email
+    pub struct Email: FLOAT.IVerifier {
+        pub let publicKey: String
+
+        pub fun verify(_ params: {String: AnyStruct}) {
+            let event = params["event"]! as! &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
+            let claimeeAddressAsString: String = (params["claimee"]! as! Address).toString()
+            let messageString: String = claimeeAddressAsString.concat(" provided email for eventId ").concat(event.eventId.toString())
+            let data: [UInt8] = messageString.utf8
+            let sig: [UInt8] = (params["emailSig"]! as! String).decodeHex()
+            let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
+            // validates that the "sig" was what was produced by signing "data" using the private key paired to "publicKey"
+            let valid = publicKey.verify(signature: sig, signedData: data, domainSeparationTag: "FLOW-V0.0-user", hashAlgorithm: HashAlgorithm.SHA3_256)
+            
+            assert(
+                valid, 
+                message: "You did not input the correct secret phrase."
+            )
+        }
+
+        init(_publicKey: String) {
+            self.publicKey = _publicKey
+        }
+    }
+    
 }

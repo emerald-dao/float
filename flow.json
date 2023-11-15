@@ -18,6 +18,7 @@
       "source": "./src/flow/cadence/FLOAT.cdc",
       "aliases": {
         "emulator": "f8d6e0586b0a20c7",
+        "testnet": "4d47bf3ce5e4393f",
         "mainnet": "2d4c3caffbeab845"
       }
     },
@@ -25,7 +26,16 @@
       "source": "./src/flow/cadence/FLOATVerifiers.cdc",
       "aliases": {
         "emulator": "f8d6e0586b0a20c7",
+        "testnet": "4d47bf3ce5e4393f",
         "mainnet": "2d4c3caffbeab845"
+      }
+    },
+    "FLOATEventSeries": {
+      "source": "./src/flow/cadence/utility/FLOATEventSeries.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7",
+        "testnet": "78ba14dd1c817ec7",
+        "mainnet": "1dd5caae66e2c440"
       }
     },
     "GrantedAccountAccess": {
@@ -152,6 +162,7 @@
         "FindViews",
         "FIND",
         "FLOAT",
+        "FLOATEventSeries",
         "FLOATVerifiers"
       ]
     },

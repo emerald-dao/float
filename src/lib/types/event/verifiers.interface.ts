@@ -21,6 +21,10 @@ export interface MinimumBalance {
 	type: 'minimumBalance';
 }
 
+export interface RequireEmail {
+	type: 'requireEmail'
+}
+
 export type VerifierData<T extends PowerUpType> = T extends 'timelock'
 	? Timelock
 	: T extends 'secret'
@@ -29,4 +33,6 @@ export type VerifierData<T extends PowerUpType> = T extends 'timelock'
 	? Limited
 	: T extends 'minimumBalance'
 	? MinimumBalance
+	: T extends 'requireEmail'
+	? RequireEmail
 	: never;

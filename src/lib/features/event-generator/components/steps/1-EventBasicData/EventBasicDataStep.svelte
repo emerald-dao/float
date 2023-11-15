@@ -45,8 +45,8 @@
 
 <StepComponentWrapper>
 	<div>
-		<div class="column-1 event-type-wrapper">
-			<label for="event-type">Event type *</label>
+		<div class="column-1">
+			<label for="event-type">Event Type</label>
 			<select name="event-type" id="event-type" on:change={handleEventTypeChange}>
 				{#each EVENT_TYPES as eventType}
 					<option value={eventType}>
@@ -56,12 +56,17 @@
 				{/each}
 			</select>
 		</div>
+		<p class="xsmall margin-bottom">
+			<i>
+				If you want your FLOAT to display as an image (instead of a ticket), you can select that
+				later on.
+			</i>
+		</p>
 		<InputWrapper
-			label="Event name"
+			label="Event Name"
 			name="event-name"
 			errors={res.getErrors('event-name')}
 			isValid={res.isValid('event-name')}
-			required={true}
 		>
 			<input
 				type="text"
@@ -73,11 +78,10 @@
 			/>
 		</InputWrapper>
 		<InputWrapper
-			label="Event description"
+			label="Event Description"
 			name="event-description"
 			errors={res.getErrors('event-description')}
 			isValid={res.isValid('event-description')}
-			required={false}
 		>
 			<textarea
 				class="description"
@@ -89,7 +93,7 @@
 			/>
 		</InputWrapper>
 		<div>
-			<label for="event-logo"> Event logo * </label>
+			<label for="event-logo">Event Logo</label>
 			<DropZone
 				bind:bindValue={$eventGeneratorData.logo}
 				name="event-logo"
@@ -111,7 +115,7 @@
 		font-size: var(--font-size-1);
 	}
 
-	.event-type-wrapper {
+	.margin-bottom {
 		margin-bottom: var(--space-6);
 	}
 

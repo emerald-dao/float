@@ -26,6 +26,8 @@ transaction(
   flowTokenCost: UFix64,
   minimumBalanceToggle: Bool,
   minimumBalance: UFix64,
+  requireEmail: Bool,
+  emailVerifierPublicKey: String,
   visibilityMode: String, // "certificate" or "picture"
   allowMultipleClaim: Bool
 ) {
@@ -58,6 +60,7 @@ transaction(
     var SecretV2: FLOATVerifiers.SecretV2? = nil
     var Limited: FLOATVerifiers.Limited? = nil
     var MinimumBalance: FLOATVerifiers.MinimumBalance? = nil
+    var Email: FLOATVerifiers.Email? = nil
 
     var verifiers: [{FLOAT.IVerifier}] = []
     if timelockToggle {
@@ -75,6 +78,10 @@ transaction(
     if minimumBalanceToggle {
       MinimumBalance = FLOATVerifiers.MinimumBalance(_amount: minimumBalance)
       verifiers.append(MinimumBalance!)
+    }
+    if requireEmail {
+      Email = FLOATVerifiers.Email(_publicKey: emailVerifierPublicKey)
+      verifiers.append(Email!)
     }
 
     let extraMetadata: {String: AnyStruct} = {}
