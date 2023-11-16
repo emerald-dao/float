@@ -44,12 +44,12 @@ export async function signWithClaimCode(claimCode: string, claimeeAddress: strin
 }
 
 // called when a user is claiming
-export async function submitEmailAndGetSig(email: string, claimeeAddress: string, eventId: string) {
+export async function submitEmailAndGetSig(email: string, claimeeAddress: string, eventId: string, eventCreatorAddress: string) {
     if (!email) {
         return null;
     }
 
-    await saveEmail(email, claimeeAddress, eventId);
+    await saveEmail(email, eventId, eventCreatorAddress);
     const { sig } = await signUserProvidedEmail(claimeeAddress, eventId);
     return sig;
 }
