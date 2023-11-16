@@ -52,7 +52,7 @@ const claimFloat = async (eventId: string, eventCreator: string, claimCode: stri
 	}
 
 	if (email) {
-		emailSig = await submitEmailAndGetSig(email, userObject.addr, eventId);
+		emailSig = await submitEmailAndGetSig(email, userObject.addr, eventId, eventCreator);
 	}
 
 	return await claimFLOATExecution(eventId, eventCreator, secretSig, emailSig, free, actionAfterClaimFloat);
