@@ -286,7 +286,12 @@ export const verifyAccountOwnership = async (userObject: User) => {
 	const accountProofService = userObject.services.find(
 		(services) => services.type === 'account-proof'
 	);
-	const fclCryptoContract = network === 'emulator' ? '0xf8d6e0586b0a20c7' : null;
+
+	const fclCryptoContract = {
+		emulator: "0xf8d6e0586b0a20c7",
+		testnet: "0x5b250a8a85b44a67",
+		mainnet: "0xdb6b70764af4ff68"
+	}[network];
 	return await fcl.AppUtils.verifyAccountProof('FLOAT', accountProofService.data, {
 		fclCryptoContract
 	});
