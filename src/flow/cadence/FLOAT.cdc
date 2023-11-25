@@ -652,7 +652,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                     return true
                 }
             }
-            return false
+            return !self.userHasClaimed(address: address)
         }
 
         // Type: Getter
