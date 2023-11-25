@@ -31,7 +31,7 @@ export const POWER_UPS: {
 		name: 'Timelock',
 		icon: 'tabler:clock',
 		description:
-			'This FLOAT will only be available for a limited time. Events start and end at 12:00am of the selected date, in the timezone where the event was created.',
+			'This FLOAT will only be available for a limited time.',
 		component: TimeLimitPowerUp
 	},
 	secret: {
