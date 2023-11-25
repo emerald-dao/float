@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { user } from '$stores/flow/FlowStore';
 	import type { EventWithStatus } from '$lib/types/event/event.interface';
 	import EventCardContent from './EventCardContent.svelte';
 
