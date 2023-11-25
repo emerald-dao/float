@@ -20,6 +20,7 @@ import createMedalEventTx from './cadence/transactions/create_event_medal.cdc?ra
 import burnFLOATTx from './cadence/transactions/burn_float.cdc?raw';
 import claimFLOATTx from './cadence/transactions/claim_float.cdc?raw';
 import purchaseFLOATTx from './cadence/transactions/purchase_float.cdc?raw';
+import setupCollectionTx from './cadence/transactions/setup_collection.cdc?raw';
 import deleteEventTx from './cadence/transactions/delete_event.cdc?raw';
 import toggleClaimingTx from './cadence/transactions/toggle_claimable.cdc?raw';
 import toggleTransferringTx from './cadence/transactions/toggle_transferrable.cdc?raw';
@@ -292,6 +293,19 @@ const burnFLOAT = async (floatId: string) => {
 };
 
 export const burnFLOATExecution = (floatId: string) => executeTransaction(() => burnFLOAT(floatId));
+
+const setupCollection = async () => {
+	return await fcl.mutate({
+		cadence: replaceWithProperValues(setupCollectionTx),
+		args: (arg, t) => [],
+		proposer: fcl.authz,
+		payer: fcl.authz,
+		authorizations: [fcl.authz],
+		limit: 9999
+	});
+};
+
+export const setupCollectionExecution = () => executeTransaction(() => setupCollection());
 
 const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null, emailSig: string | null) => {
 	return await fcl.mutate({
