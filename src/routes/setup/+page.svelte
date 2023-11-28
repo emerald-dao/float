@@ -18,7 +18,7 @@
 <section class="container-small center">
 	{#if $user.loggedIn}
 		{#await checkSetup() then blank}
-			{#if isSetup}
+			{#if !isSetup}
 				<Button on:click={setupCollection}>Setup Collection</Button>
 			{:else}
 				<p>Your collection is set up.</p>
