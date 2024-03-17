@@ -322,8 +322,8 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                 self.events[eventId]!.insert(key: id, true)
             }
 
-            emit Deposit(id: id, to: self.owner!.address)
-            emit FLOATTransferred(id: id, eventHost: nft.eventHost, eventId: nft.eventId, newOwner: self.owner!.address, serial: nft.serial)
+            emit Deposit(id: id, to: self.owner?.address)
+            emit FLOATTransferred(id: id, eventHost: nft.eventHost, eventId: nft.eventId, newOwner: self.owner?.address, serial: nft.serial)
             self.ownedNFTs[id] <-! nft
         }
 
@@ -346,7 +346,7 @@ pub contract FLOAT: NonFungibleToken, ViewResolver {
                 )
             }
 
-            emit Withdraw(id: withdrawID, from: self.owner!.address) 
+            emit Withdraw(id: withdrawID, from: self.owner?.address) 
             emit FLOATTransferred(id: withdrawID, eventHost: nft.eventHost, eventId: nft.eventId, newOwner: nil, serial: nft.serial)
             return <- nft
         }

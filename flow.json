@@ -150,6 +150,13 @@
         "type": "file",
         "location": "testnet-account.pkey"
       }
+    },
+    "mainnet-account": {
+      "address": "2d4c3caffbeab845",
+      "key": {
+        "type": "file",
+        "location": "mainnet-account.pkey"
+      }
     }
   },
   "deployments": {
@@ -166,8 +173,8 @@
         "FLOATVerifiers"
       ]
     },
-    "testnet": {
-      "testnet-account": [
+    "mainnet": {
+      "mainnet-account": [
         "FLOAT"
       ]
     }
