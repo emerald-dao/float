@@ -1,25 +1,22 @@
-import FLOAT from "./FLOAT.cdc"
+import "FLOAT"
+import "NonFungibleToken"
 
-pub contract FLOATIncinerator {
+access(all) contract FLOATIncinerator {
 
-  pub let IncineratorStoragePath: StoragePath
-  pub let IncineratorPublicPath: PublicPath
+  access(all) entitlement Owner
 
-  pub var flameStrength: UInt64
-  pub var totalIncinerated: UInt64
+  access(all) let IncineratorStoragePath: StoragePath
+  access(all) let IncineratorPublicPath: PublicPath
 
-  pub resource interface IncineratorPublic {
-    pub var individualIncinerated: UInt64
-    pub var contributedStrength: UInt64
-    pub fun getExtraMetadata(): {String: String}
-  }
+  access(all) var flameStrength: UInt64
+  access(all) var totalIncinerated: UInt64
 
-  pub resource Incinerator: IncineratorPublic {
-    pub var individualIncinerated: UInt64
-    pub var contributedStrength: UInt64
+  access(all) resource Incinerator {
+    access(all) var individualIncinerated: UInt64
+    access(all) var contributedStrength: UInt64
     access(self) var extraMetadata: {String: String}
 
-    pub fun burn(collection: &FLOAT.Collection, ids: [UInt64]) {
+    access(Owner) fun burn(collection: auth(NonFungibleToken.Owner) &FLOAT.Collection, ids: [UInt64]) {
       let length = ids.length
       
       for id in ids {
@@ -34,7 +31,7 @@ pub contract FLOATIncinerator {
       FLOATIncinerator.totalIncinerated = FLOATIncinerator.totalIncinerated + UInt64(length)
     }
 
-    pub fun getExtraMetadata(): {String: String} {
+    access(all) fun getExtraMetadata(): {String: String} {
       return self.extraMetadata
     }
 
@@ -45,11 +42,11 @@ pub contract FLOATIncinerator {
     }
   }
 
-  pub fun createIncinerator(): @Incinerator {
+  access(all) fun createIncinerator(): @Incinerator {
     return <- create Incinerator()
   }
 
-  pub fun calculateScore(dateReceived: UFix64, serial: UInt64): UInt64 {
+  access(all) fun calculateScore(dateReceived: UFix64, serial: UInt64): UInt64 {
     // Serial
     var serialScore: UInt64 = 0
     if (serial < 10) {

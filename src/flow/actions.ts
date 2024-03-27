@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import * as fcl from '@onflow/fcl';
 import './config';
 import { addresses, user } from '$stores/flow/FlowStore';
-import { executeTransaction, replaceWithProperValues } from './utils';
+import { executeTransaction } from './utils';
 import type { Event } from '$lib/types/event/event.interface';
 import type { Claim } from '$lib/types/event/event-claim.interface';
 import type { FLOAT } from '$lib/types/float/float.interface';
@@ -84,7 +84,7 @@ const createEvent = async (
 	secretPK: string
 ) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(createEventTx),
+		cadence: createEventTx,
 		args: (arg, t) => [
 			arg(name, t.String),
 			arg(description, t.String),
@@ -150,7 +150,7 @@ const createMedalEvent = async (
 	];
 
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(createMedalEventTx),
+		cadence: createMedalEventTx,
 		args: (arg, t) => [
 			arg(name, t.String),
 			arg(description, t.String),
@@ -283,7 +283,7 @@ export const createEventExecution = async (
 
 const burnFLOAT = async (floatId: string) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(burnFLOATTx),
+		cadence: burnFLOATTx,
 		args: (arg, t) => [arg(floatId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -296,7 +296,7 @@ export const burnFLOATExecution = (floatId: string) => executeTransaction(() => 
 
 const setupCollection = async () => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(setupCollectionTx),
+		cadence: setupCollectionTx,
 		args: (arg, t) => [],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -307,9 +307,14 @@ const setupCollection = async () => {
 
 export const setupCollectionExecution = () => executeTransaction(() => setupCollection());
 
-const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null, emailSig: string | null) => {
+const claimFLOAT = async (
+	eventId: string,
+	eventCreator: string,
+	secretSig: string | null,
+	emailSig: string | null
+) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(claimFLOATTx),
+		cadence: claimFLOATTx,
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
@@ -323,9 +328,14 @@ const claimFLOAT = async (eventId: string, eventCreator: string, secretSig: stri
 	});
 };
 
-const purchaseFLOAT = async (eventId: string, eventCreator: string, secretSig: string | null, emailSig: string | null) => {
+const purchaseFLOAT = async (
+	eventId: string,
+	eventCreator: string,
+	secretSig: string | null,
+	emailSig: string | null
+) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(purchaseFLOATTx),
+		cadence: purchaseFLOATTx,
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(eventCreator, t.Address),
@@ -361,7 +371,7 @@ export const claimFLOATExecution = (
 
 const deleteEvent = async (eventId: string) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(deleteEventTx),
+		cadence: deleteEventTx,
 		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -375,7 +385,7 @@ export const deleteEventExecution = (eventId: string) =>
 
 const toggleClaiming = async (eventId: string) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(toggleClaimingTx),
+		cadence: toggleClaimingTx,
 		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -389,7 +399,7 @@ export const toggleClaimingExecution = (eventId: string) =>
 
 const toggleTransferring = async (eventId: string) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(toggleTransferringTx),
+		cadence: toggleTransferringTx,
 		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -403,7 +413,7 @@ export const toggleTransferringExecution = (eventId: string) =>
 
 const toggleVisibilityMode = async (eventId: string) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(toggleVisibilityModeTx),
+		cadence: toggleVisibilityModeTx,
 		args: (arg, t) => [arg(eventId, t.UInt64)],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -417,7 +427,7 @@ export const toggleVisibilityModeExecution = (eventId: string) =>
 
 const distributeFLOATs = async (eventId: string, addresses: string[]) => {
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(distributeFLOATsTx),
+		cadence: distributeFLOATsTx,
 		args: (arg, t) => [arg(eventId, t.UInt64), arg(addresses, t.Array(t.Address))],
 		proposer: fcl.authz,
 		payer: fcl.authz,
@@ -439,7 +449,7 @@ const distributeMedalFLOATs = async (
 	});
 
 	return await fcl.mutate({
-		cadence: replaceWithProperValues(distributeMedalFLOATsTx),
+		cadence: distributeMedalFLOATsTx,
 		args: (arg, t) => [
 			arg(eventId, t.UInt64),
 			arg(addresses, t.Array(t.Address)),
@@ -463,7 +473,7 @@ export const distributeMedalFLOATsExecution = (
 export const getEvents = async (userAddress: string): Promise<Event[]> => {
 	try {
 		let events = await fcl.query({
-			cadence: replaceWithProperValues(getEventsScript),
+			cadence: getEventsScript,
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
 		let sortedEvents = events.sort((a: Event, b: Event) => {
@@ -481,7 +491,7 @@ export const getEvents = async (userAddress: string): Promise<Event[]> => {
 export const getEvent = async (eventHost: string, eventId: string): Promise<Event> => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(getEventScript),
+			cadence: getEventScript,
 			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
 		});
 	} catch (e) {
@@ -501,7 +511,7 @@ export const getEventsBatch = async (
 			addressesArg.push(event.creator_address);
 		});
 		return await fcl.query({
-			cadence: replaceWithProperValues(getEventsBatchScript),
+			cadence: getEventsBatchScript,
 			args: (arg, t) => [arg(eventsArg, t.Array(t.UInt64)), arg(addressesArg, t.Array(t.Address))]
 		});
 	} catch (e) {
@@ -517,7 +527,7 @@ export const getLatestEventClaims = async (
 ): Promise<Claim[]> => {
 	try {
 		const result = await fcl.query({
-			cadence: replaceWithProperValues(getLatestEventClaimsScript),
+			cadence: getLatestEventClaimsScript,
 			args: (arg, t) => [
 				arg(eventHost, t.Address),
 				arg(eventId, t.UInt64),
@@ -531,17 +541,11 @@ export const getLatestEventClaims = async (
 	}
 };
 
-export const getEventClaims = async (
-	eventHost: string,
-	eventId: string
-): Promise<Claim[]> => {
+export const getEventClaims = async (eventHost: string, eventId: string): Promise<Claim[]> => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(getEventClaimsScript),
-			args: (arg, t) => [
-				arg(eventHost, t.Address),
-				arg(eventId, t.UInt64)
-			]
+			cadence: getEventClaimsScript,
+			args: (arg, t) => [arg(eventHost, t.Address), arg(eventId, t.UInt64)]
 		});
 	} catch (e) {
 		console.log('Error in getEventClaims', e);
@@ -552,7 +556,7 @@ export const getEventClaims = async (
 export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 	try {
 		let floats = await fcl.query({
-			cadence: replaceWithProperValues(getFLOATsScript),
+			cadence: getFLOATsScript,
 			args: (arg, t) => [arg(userAddress, t.Address)]
 		});
 		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
@@ -570,7 +574,7 @@ export const getFLOATs = async (userAddress: string): Promise<FLOAT[]> => {
 export const getSpecificFLOATs = async (userAddress: string, ids: string[]): Promise<FLOAT[]> => {
 	try {
 		let floats = await fcl.query({
-			cadence: replaceWithProperValues(getSpecificFLOATsScript),
+			cadence: getSpecificFLOATsScript,
 			args: (arg, t) => [arg(userAddress, t.Address), arg(ids, t.Array(t.UInt64))]
 		});
 		let sortedFloats = floats.sort((a: FLOAT, b: FLOAT) => {
@@ -588,7 +592,7 @@ export const getSpecificFLOATs = async (userAddress: string, ids: string[]): Pro
 export const getStats = async () => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(getStatsScript),
+			cadence: getStatsScript,
 			args: (arg, t) => []
 		});
 	} catch (e) {
@@ -600,7 +604,7 @@ export const getStats = async () => {
 export const getMainPageFLOATs = async (floats: { key: string; value: string[] }[]) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(getMainPageFLOATsScript),
+			cadence: getMainPageFLOATsScript,
 			args: (arg, t) => [arg(floats, t.Dictionary({ key: t.Address, value: t.Array(t.UInt64) }))]
 		});
 	} catch (e) {
@@ -612,7 +616,7 @@ export const getMainPageFLOATs = async (floats: { key: string; value: string[] }
 export const hasFLOATCollectionSetUp = async (address: string) => {
 	try {
 		return (await fcl.query({
-			cadence: replaceWithProperValues(hasFLOATCollectionSetupScript),
+			cadence: hasFLOATCollectionSetupScript,
 			args: (arg, t) => [arg(address, t.Address)]
 		})) as boolean;
 	} catch (e) {
@@ -621,12 +625,14 @@ export const hasFLOATCollectionSetUp = async (address: string) => {
 	}
 };
 
-export const hasFLOATCollectionSetUpBatch: (addresses: string[]) => Promise<{ allPass: boolean, addressesNotSetup: string[] }> = async (addresses) => {
+export const hasFLOATCollectionSetUpBatch: (
+	addresses: string[]
+) => Promise<{ allPass: boolean; addressesNotSetup: string[] }> = async (addresses) => {
 	try {
-		return (await fcl.query({
-			cadence: replaceWithProperValues(hasFLOATCollectionSetupBatchScript),
+		return await fcl.query({
+			cadence: hasFLOATCollectionSetupBatchScript,
 			args: (arg, t) => [arg(addresses, t.Array(t.Address))]
-		}));
+		});
 	} catch (e) {
 		console.log(e);
 		return {
@@ -644,7 +650,7 @@ export const validateSecretCodeForClaim = async (
 ) => {
 	try {
 		const secretSig = await signWithClaimCode(secretCode, claimeeAddress);
-		let cadence = replaceWithProperValues(validateSecretCodeForClaimScript);
+		let cadence = validateSecretCodeForClaimScript;
 		cadence = cadence.replaceAll('${verifiersIdentifier}', `A.${addresses.FLOAT.substring(2)}`);
 		return await fcl.query({
 			cadence,
@@ -668,7 +674,7 @@ export const userHasClaimedEvent = async (
 ) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(userHasClaimedEventScript),
+			cadence: userHasClaimedEventScript,
 			args: (arg, t) => [
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),
@@ -684,7 +690,7 @@ export const userHasClaimedEvent = async (
 export const userCanMint = async (eventId: string, eventHost: string, userAddress: string) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(userCanMintScript),
+			cadence: userCanMintScript,
 			args: (arg, t) => [
 				arg(eventId, t.UInt64),
 				arg(eventHost, t.Address),
@@ -700,11 +706,8 @@ export const userCanMint = async (eventId: string, eventHost: string, userAddres
 export const userCreatedEvent = async (eventId: string, userAddress: string) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(userCreatedEventScript),
-			args: (arg, t) => [
-				arg(userAddress, t.Address),
-				arg(eventId, t.UInt64)
-			]
+			cadence: userCreatedEventScript,
+			args: (arg, t) => [arg(userAddress, t.Address), arg(eventId, t.UInt64)]
 		});
 	} catch (e) {
 		console.log(e);
@@ -715,7 +718,7 @@ export const userCreatedEvent = async (eventId: string, userAddress: string) => 
 export const validateAddressExistance = async (address: string) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(validateAddressExistanceScript),
+			cadence: validateAddressExistanceScript,
 			args: (arg, t) => [arg(address, t.Address)]
 		});
 	} catch (e) {
@@ -727,7 +730,7 @@ export const validateAddressExistance = async (address: string) => {
 export const validateFindExistance = async (findName: string) => {
 	try {
 		return await fcl.query({
-			cadence: replaceWithProperValues(validateFindExistanceScript),
+			cadence: validateFindExistanceScript,
 			args: (arg, t) => [arg(findName, t.String)]
 		});
 	} catch (e) {

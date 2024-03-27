@@ -11,30 +11,30 @@
 // multiple addresses to your DiscordID, and you cannot configure
 // multiple DiscordIDs to your address. 1-1.
 
-pub contract EmeraldIdentityDapper {
+access(all) contract EmeraldIdentityDapper {
 
     //
     // Paths
     //
-    pub let AdministratorStoragePath: StoragePath
-    pub let AdministratorPrivatePath: PrivatePath
+    access(all) let AdministratorStoragePath: StoragePath
+    access(all) let AdministratorPrivatePath: PrivatePath
 
     //
     // Events
     //
-    pub event EmeraldIDCreated(account: Address, discordID: String)
-    pub event EmeraldIDRemoved(account: Address, discordID: String)
+    access(all) event EmeraldIDCreated(account: Address, discordID: String)
+    access(all) event EmeraldIDRemoved(account: Address, discordID: String)
     
     //
     // Administrator
     //
-    pub resource Administrator {
+    access(all) resource Administrator {
         // 1-to-1
         access(account) var accountToDiscord: {Address: String}
         // 1-to-1
         access(account) var discordToAccount: {String: Address}
 
-        pub fun createEmeraldID(account: Address, discordID: String) {
+        access(all) fun createEmeraldID(account: Address, discordID: String) {
             pre {
                 EmeraldIdentityDapper.getAccountFromDiscord(discordID: discordID) == nil:
                     "The old discordID must remove their EmeraldID first."
@@ -48,12 +48,12 @@ pub contract EmeraldIdentityDapper {
             emit EmeraldIDCreated(account: account, discordID: discordID)
         }
 
-        pub fun removeByAccount(account: Address) {
+        access(all) fun removeByAccount(account: Address) {
             let discordID = EmeraldIdentityDapper.getDiscordFromAccount(account: account) ?? panic("This EmeraldID does not exist!")
             self.remove(account: account, discordID: discordID)
         }
 
-        pub fun removeByDiscord(discordID: String) {
+        access(all) fun removeByDiscord(discordID: String) {
             let account = EmeraldIdentityDapper.getAccountFromDiscord(discordID: discordID) ?? panic("This EmeraldID does not exist!")
             self.remove(account: account, discordID: discordID)
         }
@@ -65,9 +65,9 @@ pub contract EmeraldIdentityDapper {
             emit EmeraldIDRemoved(account: account, discordID: discordID)
         }
 
-        pub fun createAdministrator(): Capability<&Administrator> {
-            return EmeraldIdentityDapper.account.getCapability<&Administrator>(EmeraldIdentityDapper.AdministratorPrivatePath)
-        }
+        // access(all) fun createAdministrator(): Capability<&Administrator> {
+        //     return EmeraldIdentityDapper.account.getCapability<&Administrator>(EmeraldIdentityDapper.AdministratorPrivatePath)
+        // }
 
         init() {
             self.accountToDiscord = {}
@@ -77,13 +77,13 @@ pub contract EmeraldIdentityDapper {
 
     /*** USE THE BELOW FUNCTIONS FOR SECURE VERIFICATION OF ID ***/ 
 
-    pub fun getDiscordFromAccount(account: Address): String?  {
-        let admin = EmeraldIdentityDapper.account.borrow<&Administrator>(from: EmeraldIdentityDapper.AdministratorStoragePath)!
+    access(all) view fun getDiscordFromAccount(account: Address): String?  {
+        let admin = EmeraldIdentityDapper.account.storage.borrow<&Administrator>(from: EmeraldIdentityDapper.AdministratorStoragePath)!
         return admin.accountToDiscord[account]
     }
 
-    pub fun getAccountFromDiscord(discordID: String): Address? {
-        let admin = EmeraldIdentityDapper.account.borrow<&Administrator>(from: EmeraldIdentityDapper.AdministratorStoragePath)!
+    access(all) view fun getAccountFromDiscord(discordID: String): Address? {
+        let admin = EmeraldIdentityDapper.account.storage.borrow<&Administrator>(from: EmeraldIdentityDapper.AdministratorStoragePath)!
         return admin.discordToAccount[discordID]
     }
 
@@ -91,7 +91,6 @@ pub contract EmeraldIdentityDapper {
         self.AdministratorStoragePath = /storage/EmeraldIDDapperAdministrator
         self.AdministratorPrivatePath = /private/EmeraldIDDapperAdministrator
 
-        self.account.save(<- create Administrator(), to: EmeraldIdentityDapper.AdministratorStoragePath)
-        self.account.link<&Administrator>(EmeraldIdentityDapper.AdministratorPrivatePath, target: EmeraldIdentityDapper.AdministratorStoragePath)
+        self.account.storage.save(<- create Administrator(), to: EmeraldIdentityDapper.AdministratorStoragePath)
     }
 }

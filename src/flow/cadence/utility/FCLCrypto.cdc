@@ -1,6 +1,6 @@
-pub contract FCLCrypto {
+access(all) contract FCLCrypto {
 
-    pub fun verifyUserSignatures(
+    access(all) fun verifyUserSignatures(
         address: Address,
         message: String,
         keyIndices: [Int],
@@ -15,7 +15,7 @@ pub contract FCLCrypto {
         )
     }
 
-    pub fun verifyAccountProofSignatures(
+    access(all) fun verifyAccountProofSignatures(
         address: Address,
         message: String,
         keyIndices: [Int],

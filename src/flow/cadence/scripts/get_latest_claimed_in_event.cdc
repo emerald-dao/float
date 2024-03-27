@@ -1,18 +1,17 @@
-import FLOAT from "../FLOAT.cdc"
+import "FLOAT"
 
-pub fun main(account: Address, eventId: UInt64, amount: UInt64): [FLOAT.TokenIdentifier] {
+access(all) fun main(account: Address, eventId: UInt64, amount: UInt64): [FLOAT.TokenIdentifier] {
   let answer: [FLOAT.TokenIdentifier] = []
-  let floatEventCollection = getAccount(account).getCapability(FLOAT.FLOATEventsPublicPath)
-                              .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+  let floatEventCollection = getAccount(account).capabilities.borrow<&FLOAT.FLOATEvents>(FLOAT.FLOATEventsPublicPath)
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-  let event = floatEventCollection.borrowPublicEventRef(eventId: eventId)!
-  let claims: [FLOAT.TokenIdentifier] = event.getClaims().values
+  let eventRef = floatEventCollection.borrowPublicEventRef(eventId: eventId)!
+  let claims: [FLOAT.TokenIdentifier] = eventRef.getClaims().values
 
-  if event.totalSupply == 0 {
+  if eventRef.totalSupply == 0 {
     return []
   }
 
-  let latestSerial: UInt64 = event.totalSupply - 1
+  let latestSerial: UInt64 = eventRef.totalSupply - 1
   for claim in claims {
     if claim.serial + amount > latestSerial {
         answer.append(claim)

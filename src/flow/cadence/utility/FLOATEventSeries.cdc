@@ -5,58 +5,58 @@
 import NonFungibleToken from "./NonFungibleToken.cdc"
 import MetadataViews from "./MetadataViews.cdc"
 import FungibleToken from "./FungibleToken.cdc"
-import FLOAT from "../FLOAT.cdc"
+import "FLOAT"
 
-pub contract FLOATEventSeries {
+access(all) contract FLOATEventSeries {
 
     /**    ___  ____ ___ _  _ ____
        *   |__] |__|  |  |__| [__
         *  |    |  |  |  |  | ___]
          *************************/
     
-    pub let FLOATEventSeriesGlobalStoragePath: StoragePath
-    pub let FLOATEventSeriesGlobalPublicPath: PublicPath
+    access(all) let FLOATEventSeriesGlobalStoragePath: StoragePath
+    access(all) let FLOATEventSeriesGlobalPublicPath: PublicPath
 
-    pub let FLOATEventSeriesBuilderStoragePath: StoragePath
-    pub let FLOATEventSeriesBuilderPublicPath: PublicPath
+    access(all) let FLOATEventSeriesBuilderStoragePath: StoragePath
+    access(all) let FLOATEventSeriesBuilderPublicPath: PublicPath
 
-    pub let FLOATAchievementBoardStoragePath: StoragePath
-    pub let FLOATAchievementBoardPublicPath: PublicPath
+    access(all) let FLOATAchievementBoardStoragePath: StoragePath
+    access(all) let FLOATAchievementBoardPublicPath: PublicPath
 
     /**    ____ _  _ ____ _  _ ___ ____
        *   |___ |  | |___ |\ |  |  [__
         *  |___  \/  |___ | \|  |  ___]
          ******************************/
     
-    pub event ContractInitialized()
-    pub event ContractTokenDefintionUpdated(identifier: String, path: PublicPath, isNFT: Bool)
+    access(all) event ContractInitialized()
+    access(all) event ContractTokenDefintionUpdated(identifier: String, path: PublicPath, isNFT: Bool)
 
-    pub event FLOATEventSeriesCreated(seriesId: UInt64, host: Address, name: String, description: String, image: String)
-    pub event FLOATEventSeriesRevoked(seriesId: UInt64, host: Address)
-    pub event FLOATEventSeriesRecovered(seriesId: UInt64, host: Address)
-    pub event FLOATEventSeriesBasicsUpdated(seriesId: UInt64, host: Address, name: String, description: String, image: String)
-    pub event FLOATEventSeriesSlotUpdated(seriesId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
-    pub event FLOATEventSeriesGoalAdded(seriesId: UInt64, host: Address, goalTitle: String, points: UInt64)
+    access(all) event FLOATEventSeriesCreated(seriesId: UInt64, host: Address, name: String, description: String, image: String)
+    access(all) event FLOATEventSeriesRevoked(seriesId: UInt64, host: Address)
+    access(all) event FLOATEventSeriesRecovered(seriesId: UInt64, host: Address)
+    access(all) event FLOATEventSeriesBasicsUpdated(seriesId: UInt64, host: Address, name: String, description: String, image: String)
+    access(all) event FLOATEventSeriesSlotUpdated(seriesId: UInt64, host: Address, index: Int, eventHost: Address, eventId: UInt64)
+    access(all) event FLOATEventSeriesGoalAdded(seriesId: UInt64, host: Address, goalTitle: String, points: UInt64)
 
-    pub event FLOATEventSeriesTreasuryTokenDeposit(seriesId: UInt64, host: Address, identifier: String, amount: UFix64)
-    pub event FLOATEventSeriesTreasuryTokenWithdraw(seriesId: UInt64, host: Address, identifier: String, amount: UFix64)
-    pub event FLOATEventSeriesTreasuryNFTDeposit(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
-    pub event FLOATEventSeriesTreasuryNFTWithdraw(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
-    pub event FLOATEventSeriesTreasuryUpdateDropReceiver(seriesId: UInt64, host: Address, receiver: Address)
-    pub event FLOATEventSeriesTreasuryDropped(seriesId: UInt64, host: Address?, receiver: Address)
-    pub event FLOATEventSeriesTreasuryStrategyAdded(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int)
-    pub event FLOATEventSeriesTreasuryStrategyNextStage(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
-    pub event FLOATEventSeriesTreasuryClaimed(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
+    access(all) event FLOATEventSeriesTreasuryTokenDeposit(seriesId: UInt64, host: Address, identifier: String, amount: UFix64)
+    access(all) event FLOATEventSeriesTreasuryTokenWithdraw(seriesId: UInt64, host: Address, identifier: String, amount: UFix64)
+    access(all) event FLOATEventSeriesTreasuryNFTDeposit(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
+    access(all) event FLOATEventSeriesTreasuryNFTWithdraw(seriesId: UInt64, host: Address, identifier: String, ids: [UInt64])
+    access(all) event FLOATEventSeriesTreasuryUpdateDropReceiver(seriesId: UInt64, host: Address, receiver: Address)
+    access(all) event FLOATEventSeriesTreasuryDropped(seriesId: UInt64, host: Address?, receiver: Address)
+    access(all) event FLOATEventSeriesTreasuryStrategyAdded(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int)
+    access(all) event FLOATEventSeriesTreasuryStrategyNextStage(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, stage: UInt8)
+    access(all) event FLOATEventSeriesTreasuryClaimed(seriesId: UInt64, host: Address, strategyIdentifier: String, index: Int, claimer: Address)
 
-    pub event FLOATEventSeriesGlobalAddedToList(seriesId: UInt64, host: Address)
-    pub event FLOATEventSeriesGlobalTreasuryStrategyUpdated(seriesId: UInt64, host: Address)
+    access(all) event FLOATEventSeriesGlobalAddedToList(seriesId: UInt64, host: Address)
+    access(all) event FLOATEventSeriesGlobalTreasuryStrategyUpdated(seriesId: UInt64, host: Address)
 
-    pub event FLOATEventSeriesBuilderCreated(sequence: UInt64)
+    access(all) event FLOATEventSeriesBuilderCreated(sequence: UInt64)
 
-    pub event FLOATAchievementRecordInitialized(seriesId: UInt64, host: Address, owner: Address)
-    pub event FLOATAchievementGoalAccomplished(seriesId: UInt64, host: Address, owner: Address, goalIdx: Int)
+    access(all) event FLOATAchievementRecordInitialized(seriesId: UInt64, host: Address, owner: Address)
+    access(all) event FLOATAchievementGoalAccomplished(seriesId: UInt64, host: Address, owner: Address, goalIdx: Int)
 
-    pub event FLOATAchievementBoardCreated(sequence: UInt64)
+    access(all) event FLOATAchievementBoardCreated(sequence: UInt64)
 
     /**    ____ ___ ____ ___ ____
        *   [__   |  |__|  |  |___
@@ -64,11 +64,11 @@ pub contract FLOATEventSeries {
          ************************/
     
     // total event series amount
-    pub var totalEventSeries: UInt64
+    access(all) var totalEventSeries: UInt64
     // total event series builder amount
-    pub var totalEventSeriesBuilder: UInt64
+    access(all) var totalEventSeriesBuilder: UInt64
     // total achievement board amount
-    pub var totalAchievementBoards: UInt64
+    access(all) var totalAchievementBoards: UInt64
 
     // a registory of FT or NFT
     access(account) var tokenDefinitions: {Type: TokenDefinition}
@@ -79,10 +79,10 @@ pub contract FLOATEventSeries {
          ***********************************************************/
 
     // the Token define struct of FT or NFT
-    pub struct TokenDefinition {
-        pub let type: Type
-        pub let path: PublicPath
-        pub let isNFT: Bool
+    access(all) struct TokenDefinition {
+        access(all) let type: Type
+        access(all) let path: PublicPath
+        access(all) let isNFT: Bool
 
         init(type: Type, path: PublicPath, isNFT: Bool) {
             self.type = type
@@ -100,14 +100,14 @@ pub contract FLOATEventSeries {
         emit ContractTokenDefintionUpdated(identifier: token.identifier, path: path, isNFT: isNFT)
     }
 
-    pub fun getTokenDefinition(_ token: Type): TokenDefinition? {
+    access(all) fun getTokenDefinition(_ token: Type): TokenDefinition? {
         return self.tokenDefinitions[token]
     }
 
     // a helper to get token recipient
-    pub struct TokenRecipient {
-        pub let address: Address
-        pub let identifier: Type
+    access(all) struct TokenRecipient {
+        access(all) let address: Address
+        access(all) let identifier: Type
 
         init(_ address: Address, _ identifier: Type) {
             self.address = address
@@ -158,11 +158,11 @@ pub contract FLOATEventSeries {
     // ---- data For Curators ----
     
     // identifier of an Event
-    pub struct EventIdentifier {
+    access(all) struct EventIdentifier {
         // event owner address
-        pub let host: Address
+        access(all) let host: Address
         // event id
-        pub let eventId: UInt64
+        access(all) let eventId: UInt64
 
         init(_ address: Address, _ eventId: UInt64) {
             self.host = address
@@ -170,7 +170,7 @@ pub contract FLOATEventSeries {
         }
 
         // get the reference of the given event
-        pub fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} {
+        access(all) fun getEventPublic(): &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic} {
             let ownerEvents = getAccount(self.host)
                 .getCapability(FLOAT.FLOATEventsPublicPath)
                 .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
@@ -180,17 +180,17 @@ pub contract FLOATEventSeries {
         }
 
         // convert identifier to string
-        pub fun toString(): String {
+        access(all) fun toString(): String {
             return self.host.toString().concat("#").concat(self.eventId.toString())
         }
     }
 
     // identifier of an EventSeries
-    pub struct EventSeriesIdentifier {
+    access(all) struct EventSeriesIdentifier {
         // series owner address
-        pub let host: Address
+        access(all) let host: Address
         // series id
-        pub let id: UInt64
+        access(all) let id: UInt64
 
         init(_ address: Address, _ id: UInt64) {
             self.host = address
@@ -198,7 +198,7 @@ pub contract FLOATEventSeries {
         }
 
         // get the reference of the given series
-        pub fun getEventSeriesPublic(): &FLOATEventSeries.EventSeries{EventSeriesPublic} {
+        access(all) fun getEventSeriesPublic(): &FLOATEventSeries.EventSeries{EventSeriesPublic} {
             let ref = getAccount(self.host)
                 .getCapability(FLOATEventSeries.FLOATEventSeriesBuilderPublicPath)
                 .borrow<&EventSeriesBuilder{EventSeriesBuilderPublic}>()
@@ -208,34 +208,34 @@ pub contract FLOATEventSeries {
         }
 
         // convert identifier to string
-        pub fun toString(): String {
+        access(all) fun toString(): String {
             return self.host.toString().concat("#").concat(self.id.toString())
         }
     }
 
     // a readable interface of Event slot
-    pub struct interface EventSlot {
+    access(all) struct interface EventSlot {
         // get the event identifier
-        pub fun getIdentifier(): EventIdentifier?
+        access(all) fun getIdentifier(): EventIdentifier?
         // if the event is required for achievement
-        pub fun isEventRequired(): Bool
+        access(all) fun isEventRequired(): Bool
         // set the event identifier
         access(account) fun setIdentifier(_ identifier: EventIdentifier)
     }
 
     // set a required event slot of some specific event
-    pub struct RequiredEventSlot: EventSlot {
-        pub let identifier: EventIdentifier
+    access(all) struct RequiredEventSlot: EventSlot {
+        access(all) let identifier: EventIdentifier
 
         init(_ identifier: EventIdentifier) {
             self.identifier = identifier
         }
 
-        pub fun getIdentifier(): EventIdentifier? {
+        access(all) fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
 
-        pub fun isEventRequired(): Bool {
+        access(all) fun isEventRequired(): Bool {
             return true
         }
 
@@ -245,16 +245,16 @@ pub contract FLOATEventSeries {
     }
     
     // set an optional event slot of some specific event
-    pub struct OptionalEventSlot: EventSlot {
-        pub var identifier: EventIdentifier?
+    access(all) struct OptionalEventSlot: EventSlot {
+        access(all) var identifier: EventIdentifier?
 
         init(_ identifier: EventIdentifier?) {
             self.identifier = identifier
         }
-        pub fun getIdentifier(): EventIdentifier? {
+        access(all) fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
-        pub fun isEventRequired(): Bool {
+        access(all) fun isEventRequired(): Bool {
             return false
         }
         access(account) fun setIdentifier (_ identifier: EventIdentifier) {
@@ -263,18 +263,18 @@ pub contract FLOATEventSeries {
     }
 
     // set an event slot for unknown events
-    pub struct EmptyEventSlot: EventSlot {
-        pub let isRequired: Bool
-        pub var identifier: EventIdentifier?
+    access(all) struct EmptyEventSlot: EventSlot {
+        access(all) let isRequired: Bool
+        access(all) var identifier: EventIdentifier?
 
         init(_ isRequired: Bool) {
             self.isRequired = isRequired
             self.identifier = nil
         }
-        pub fun getIdentifier(): EventIdentifier? {
+        access(all) fun getIdentifier(): EventIdentifier? {
             return self.identifier
         }
-        pub fun isEventRequired(): Bool {
+        access(all) fun isEventRequired(): Bool {
             return self.isRequired
         }
         access(account) fun setIdentifier (_ identifier: EventIdentifier) {
@@ -283,55 +283,55 @@ pub contract FLOATEventSeries {
     }
 
     // An interface that every "achievement goal" must implement
-    pub struct interface IAchievementGoal {
+    access(all) struct interface IAchievementGoal {
         // achievement title
-        pub let title: String
+        access(all) let title: String
 
         // how many points will be obtain when reach this goal
-        pub fun getPoints(): UInt64 {
+        access(all) fun getPoints(): UInt64 {
             post {
                 result > 0: "Point should be greater than zero."
             }
         }
 
         // Fetch detail of the goal
-        pub fun getGoalDetail(): {String: AnyStruct}
+        access(all) fun getGoalDetail(): {String: AnyStruct}
 
         // Check if user fits some criteria.
         access(account) fun verify(_ eventSeries: &FLOATEventSeries.EventSeries{EventSeriesPublic}, user: Address): Bool
     }
 
     // Declare an enum to describe status
-    pub enum StrategyState: UInt8 {
-        pub case preparing
-        pub case opening
-        pub case claimable
-        pub case closed
+    access(all) enum StrategyState: UInt8 {
+        access(all) case preparing
+        access(all) case opening
+        access(all) case claimable
+        access(all) case closed
     }
 
-    pub enum StrategyDeliveryType: UInt8 {
-        pub case ftIdenticalAmount
-        pub case ftRandomAmount
-        pub case nft
+    access(all) enum StrategyDeliveryType: UInt8 {
+        access(all) case ftIdenticalAmount
+        access(all) case ftRandomAmount
+        access(all) case nft
     }
 
     // delivery information
-    pub struct interface StrategyDelivery {
+    access(all) struct interface StrategyDelivery {
         // which delivery type
-        pub let type: StrategyDeliveryType
+        access(all) let type: StrategyDeliveryType
         // is delivery nft?
-        pub let isNFT: Bool
+        access(all) let isNFT: Bool
         // which token is this strategy to deliver
-        pub let deliveryTokenType: Type
+        access(all) let deliveryTokenType: Type
         // how many claimable shares
-        pub let maxClaimableShares: UInt64
+        access(all) let maxClaimableShares: UInt64
         // how many shares has been delivered
-        pub var claimedShares: UInt64
+        access(all) var claimedShares: UInt64
         // ---- readonly methods ----
         // get total amount (For FT) of the delivery
-        pub fun getTotalAmount(): UFix64
+        access(all) fun getTotalAmount(): UFix64
         // get rest amount (For FT) of the delivery
-        pub fun getRestAmount(): UFix64
+        access(all) fun getRestAmount(): UFix64
         // ---- writable methods ----
         access(contract) fun deliverFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}): UFix64 {
             pre {
@@ -354,16 +354,16 @@ pub contract FLOATEventSeries {
     }
 
     // StrategyDeliveryType.ftIdenticalAmount
-    pub struct StrategyDeliveryFTWithIdenticalAmount: StrategyDelivery {
+    access(all) struct StrategyDeliveryFTWithIdenticalAmount: StrategyDelivery {
         // interface implement
-        pub let type: StrategyDeliveryType
-        pub let isNFT: Bool
-        pub let deliveryTokenType: Type
-        pub let maxClaimableShares: UInt64
-        pub var claimedShares: UInt64
+        access(all) let type: StrategyDeliveryType
+        access(all) let isNFT: Bool
+        access(all) let deliveryTokenType: Type
+        access(all) let maxClaimableShares: UInt64
+        access(all) var claimedShares: UInt64
         // local implement
-        pub let oneShareAmount: UFix64
-        pub var restAmount: UFix64
+        access(all) let oneShareAmount: UFix64
+        access(all) var restAmount: UFix64
 
         init(
             _ tokenType: Type,
@@ -379,10 +379,10 @@ pub contract FLOATEventSeries {
             self.restAmount = self.getTotalAmount()
         }
         // interface implement
-        pub fun getTotalAmount(): UFix64 {
+        access(all) fun getTotalAmount(): UFix64 {
             return self.oneShareAmount.saturatingMultiply(UFix64(self.maxClaimableShares))
         }
-        pub fun getRestAmount(): UFix64 {
+        access(all) fun getRestAmount(): UFix64 {
             return self.restAmount
         }
 
@@ -417,16 +417,16 @@ pub contract FLOATEventSeries {
     }
 
     // StrategyDeliveryType.ftRandomAmount
-    pub struct StrategyDeliveryFTWithRandomAmount: StrategyDelivery {
+    access(all) struct StrategyDeliveryFTWithRandomAmount: StrategyDelivery {
         // interface implement
-        pub let type: StrategyDeliveryType
-        pub let isNFT: Bool
-        pub let deliveryTokenType: Type
-        pub let maxClaimableShares: UInt64
-        pub var claimedShares: UInt64
+        access(all) let type: StrategyDeliveryType
+        access(all) let isNFT: Bool
+        access(all) let deliveryTokenType: Type
+        access(all) let maxClaimableShares: UInt64
+        access(all) var claimedShares: UInt64
         // local implement
-        pub let totalAmount: UFix64
-        pub var restAmount: UFix64
+        access(all) let totalAmount: UFix64
+        access(all) var restAmount: UFix64
 
         init(
             _ tokenType: Type,
@@ -442,10 +442,10 @@ pub contract FLOATEventSeries {
             self.restAmount = totalAmount
         }
         // interface implement
-        pub fun getTotalAmount(): UFix64 {
+        access(all) fun getTotalAmount(): UFix64 {
             return self.totalAmount
         }
-        pub fun getRestAmount(): UFix64 {
+        access(all) fun getRestAmount(): UFix64 {
             return self.restAmount
         }
 
@@ -487,13 +487,13 @@ pub contract FLOATEventSeries {
     }
 
     // StrategyDeliveryType.nft
-    pub struct StrategyDeliverNFT: StrategyDelivery {
+    access(all) struct StrategyDeliverNFT: StrategyDelivery {
         // interface implement
-        pub let type: StrategyDeliveryType
-        pub let isNFT: Bool
-        pub let deliveryTokenType: Type
-        pub let maxClaimableShares: UInt64
-        pub var claimedShares: UInt64
+        access(all) let type: StrategyDeliveryType
+        access(all) let isNFT: Bool
+        access(all) let deliveryTokenType: Type
+        access(all) let maxClaimableShares: UInt64
+        access(all) var claimedShares: UInt64
 
         init(
             _ tokenType: Type,
@@ -506,8 +506,8 @@ pub contract FLOATEventSeries {
             self.claimedShares = 0
         }
         // interface implement
-        pub fun getTotalAmount(): UFix64 { return 0.0 }
-        pub fun getRestAmount(): UFix64 { return 0.0 }
+        access(all) fun getTotalAmount(): UFix64 { return 0.0 }
+        access(all) fun getRestAmount(): UFix64 { return 0.0 }
 
         // ---- writable methods ----
         access(contract) fun deliverFT(treasury: &Treasury, recipient: &{FungibleToken.Receiver}): UFix64 {
@@ -535,16 +535,16 @@ pub contract FLOATEventSeries {
         }
     }
 
-    pub struct StrategyInformation {
+    access(all) struct StrategyInformation {
         // when claimed, if score will be consumed
-        pub let consumable: Bool
+        access(all) let consumable: Bool
         // minimium threshold of achievement score
-        pub let threshold: UInt64
+        access(all) let threshold: UInt64
         // delivery information
-        pub let delivery: {StrategyDelivery}
+        access(all) let delivery: {StrategyDelivery}
 
         // current strategy stage
-        pub var currentState: StrategyState
+        access(all) var currentState: StrategyState
 
         init(
             _ consumable: Bool,
@@ -569,10 +569,10 @@ pub contract FLOATEventSeries {
     }
 
     // return value for getStrategies
-    pub struct StrategyDetail {
-        pub let strategyIdentifier: String
-        pub let strategyData: AnyStruct
-        pub let status: StrategyInformation
+    access(all) struct StrategyDetail {
+        access(all) let strategyIdentifier: String
+        access(all) let strategyData: AnyStruct
+        access(all) let status: StrategyInformation
 
         init(id: String, data: AnyStruct, status: StrategyInformation) {
             self.strategyIdentifier = id
@@ -581,11 +581,11 @@ pub contract FLOATEventSeries {
         }
     }
 
-    pub struct StrategyQueryResultWithUser {
-        pub let index: Int
-        pub let detail: StrategyDetail
-        pub let userAddress: Address?
-        pub let userInfo: {String: Bool}
+    access(all) struct StrategyQueryResultWithUser {
+        access(all) let index: Int
+        access(all) let detail: StrategyDetail
+        access(all) let userAddress: Address?
+        access(all) let userInfo: {String: Bool}
 
         init (
             index: Int,
@@ -606,7 +606,7 @@ pub contract FLOATEventSeries {
     }
 
     // the general strategy controller
-    pub resource StrategyController {
+    access(all) resource StrategyController {
         // basic info
         access(self) let info: StrategyInformation
         access(self) let claimed: [Address]
@@ -621,32 +621,32 @@ pub contract FLOATEventSeries {
         }
 
         // get a copy of strategy information
-        pub fun getInfo(): StrategyInformation {
+        access(all) fun getInfo(): StrategyInformation {
             return self.info
         }
 
         // get current state of the strategy
-        pub fun getCurrentState(): StrategyState {
+        access(all) fun getCurrentState(): StrategyState {
             return self.info.currentState
         }
 
         // get total shares of the strategy
-        pub fun getTotalShares(): UInt64 {
+        access(all) fun getTotalShares(): UInt64 {
             return self.info.delivery.maxClaimableShares
         }
 
         // get claimed shares of the strategy
-        pub fun getClaimedShares(): UInt64 {
+        access(all) fun getClaimedShares(): UInt64 {
             return self.info.delivery.claimedShares
         }
 
         // get claimed addresses
-        pub fun getClaimedAddresses(): [Address] {
+        access(all) fun getClaimedAddresses(): [Address] {
             return self.claimed
         }
 
         // if user has claimed
-        pub fun hasClaimed(address: Address): Bool {
+        access(all) fun hasClaimed(address: Address): Bool {
             return self.claimed.contains(address)
         }
 
@@ -720,7 +720,7 @@ pub contract FLOATEventSeries {
     }
 
     // An interface that every "strategy" must implement.
-    pub resource interface ITreasuryStrategy {
+    access(all) resource interface ITreasuryStrategy {
         // strategy general controler
         access(account) let controller: @StrategyController
 
@@ -734,7 +734,7 @@ pub contract FLOATEventSeries {
         }
 
         // Fetch detail of the strategy
-        pub fun getStrategyDetail(): AnyStruct
+        access(all) fun getStrategyDetail(): AnyStruct
 
         // invoked when state changed
         access(account) fun onStateChanged(state: StrategyState)
@@ -762,9 +762,9 @@ pub contract FLOATEventSeries {
 
     // Treasury Collection
     //
-    pub resource TreasuryCollection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
+    access(all) resource TreasuryCollection: NonFungibleToken.Provider, NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic {
         // Dictionary to hold the NFTs in the Collection
-        pub var depositedNFTs: @{UInt64: NonFungibleToken.NFT}
+        access(all) var depositedNFTs: @{UInt64: NonFungibleToken.NFT}
 
         init() {
             self.depositedNFTs <- {}
@@ -774,25 +774,25 @@ pub contract FLOATEventSeries {
         }
 
         // withdraw removes an NFT from the collection and moves it to the caller
-        pub fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
+        access(all) fun withdraw(withdrawID: UInt64): @NonFungibleToken.NFT {
             let token <- self.depositedNFTs.remove(key: withdrawID) ?? panic("missing NFT")
             return <- token
         }
         // deposit takes a NFT and adds it to the collections dictionary
         // and adds the ID to the id array
-        pub fun deposit(token: @NonFungibleToken.NFT) {
+        access(all) fun deposit(token: @NonFungibleToken.NFT) {
             let id: UInt64 = token.id
             self.depositedNFTs[id] <-! token
         }
 
         // getIDs returns an array of the IDs that are in the collection
-        pub fun getIDs(): [UInt64] {
+        access(all) fun getIDs(): [UInt64] {
             return self.depositedNFTs.keys
         }
 
         // Returns a borrowed reference to an NFT in the collection
         // so that the caller can read data and call methods from it
-        pub fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
+        access(all) fun borrowNFT(id: UInt64): &NonFungibleToken.NFT {
             return (&self.depositedNFTs[id] as &NonFungibleToken.NFT?)!
         }
     }
@@ -803,21 +803,21 @@ pub contract FLOATEventSeries {
     }
 
     // Treasury public interface
-    pub resource interface TreasuryPublic {
+    access(all) resource interface TreasuryPublic {
         // get token types from treasury
-        pub fun getTreasuryAssets(isNFT: Bool): [Type]
+        access(all) fun getTreasuryAssets(isNFT: Bool): [Type]
         // get token balance from the token identifier
-        pub fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}?
+        access(all) fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}?
         // get nft collection public 
-        pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
+        access(all) fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}?
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser]
+        access(all) fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser]
         // Refresh strategy status
-        pub fun refreshUserStatus(user: &Achievement{AchievementPublic})
+        access(all) fun refreshUserStatus(user: &Achievement{AchievementPublic})
         // For the public to get strategy information
-        pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail
+        access(all) fun getStrategyDetail(strategyIndex: Int): StrategyDetail
         // For the public to claim rewards
-        pub fun claim(strategyIndex: Int, user: &Achievement{AchievementPublic})
+        access(all) fun claim(strategyIndex: Int, user: &Achievement{AchievementPublic})
 
         // borrow strategy reference
         access(contract) fun borrowStrategyRef(idx: Int): &{ITreasuryStrategy}
@@ -826,9 +826,9 @@ pub contract FLOATEventSeries {
     }
 
     // Treasury resource of each EventSeries (Optional)
-    pub resource Treasury: TreasuryPublic {
+    access(all) resource Treasury: TreasuryPublic {
         // Treasury seriesID
-        pub let seriesId: UInt64
+        access(all) let seriesId: UInt64
         // generic tokens will be dropped to this address, when treasury destroy
         access(self) var receiver: Address
         // all treasury strategies
@@ -861,7 +861,7 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun getTreasuryAssets(isNFT: Bool): [Type] {
+        access(all) fun getTreasuryAssets(isNFT: Bool): [Type] {
             if isNFT {
                 return self.genericNFTPool.keys
             } else {
@@ -869,16 +869,16 @@ pub contract FLOATEventSeries {
             }
         }
 
-        pub fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}? {
+        access(all) fun getTreasuryTokenBalance(type: Type): &{FungibleToken.Balance}? {
             return &self.genericFTPool[type] as &{FungibleToken.Balance}?
         }
 
-        pub fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}? {
+        access(all) fun getTreasuryNFTCollection(type: Type): &{NonFungibleToken.CollectionPublic}? {
             return &self.genericNFTPool[type] as &{NonFungibleToken.CollectionPublic}?
         }
 
         // get all strategy information
-        pub fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser] {
+        access(all) fun getStrategies(states: [StrategyState]?, _ user: &Achievement{AchievementPublic}?): [StrategyQueryResultWithUser] {
             // ensure achievement record should be same
             if user != nil {
                 let achievementIdentifier = user!.target.toString()
@@ -927,7 +927,7 @@ pub contract FLOATEventSeries {
         }
         
         // For the public to get strategy information
-        pub fun getStrategyDetail(strategyIndex: Int): StrategyDetail {
+        access(all) fun getStrategyDetail(strategyIndex: Int): StrategyDetail {
             pre {
                 self.strategies[strategyIndex] != nil: "strategy does not exist."
             }
@@ -940,7 +940,7 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun refreshUserStatus(user: &Achievement{AchievementPublic}) {
+        access(all) fun refreshUserStatus(user: &Achievement{AchievementPublic}) {
             // ensure achievement record should be same
             let achievementIdentifier = user.target.toString()
             let seriesIdentifier = self.getParentIdentifier().toString()
@@ -954,7 +954,7 @@ pub contract FLOATEventSeries {
         }
 
         // execute claiming
-        pub fun claim(
+        access(all) fun claim(
             strategyIndex: Int,
             user: &Achievement{AchievementPublic}
         ) {
@@ -995,7 +995,7 @@ pub contract FLOATEventSeries {
         // --- Setters - Private Interfaces ---
 
         // update DropReceiver
-        pub fun updateDropReceiver(receiver: Address) {
+        access(all) fun updateDropReceiver(receiver: Address) {
             self.receiver = receiver
 
             emit FLOATEventSeriesTreasuryUpdateDropReceiver(
@@ -1006,7 +1006,7 @@ pub contract FLOATEventSeries {
         }
 
         // drop all treasury, if no strategy alive
-        pub fun dropTreasury() {
+        access(all) fun dropTreasury() {
             pre {
                 self.strategies.length == self.getStrategies(states: [StrategyState.closed], nil).length
                     : "All strategies should be closed"
@@ -1039,7 +1039,7 @@ pub contract FLOATEventSeries {
         }
 
         // deposit ft to treasury
-        pub fun depositFungibleToken(from: @FungibleToken.Vault) {
+        access(all) fun depositFungibleToken(from: @FungibleToken.Vault) {
             let fromType = from.getType()
             let tokenInfo = FLOATEventSeries.getTokenDefinition(fromType)
                 ?? panic("This token is not defined.")
@@ -1063,7 +1063,7 @@ pub contract FLOATEventSeries {
         }
 
         // deposit nft to treasury
-        pub fun depositNonFungibleTokens(nfts: @[NonFungibleToken.NFT]) {
+        access(all) fun depositNonFungibleTokens(nfts: @[NonFungibleToken.NFT]) {
             assert(nfts.length > 0, message: "Empty collection.")
 
             let nftType = (&nfts[0] as &NonFungibleToken.NFT).getType()
@@ -1099,7 +1099,7 @@ pub contract FLOATEventSeries {
         }
 
         // add a new strategy
-        pub fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool) {
+        access(all) fun addStrategy(strategy: @{ITreasuryStrategy}, autoStart: Bool) {
             let id = strategy.getType().identifier
 
             // get rest required values
@@ -1159,7 +1159,7 @@ pub contract FLOATEventSeries {
         }
 
         // go next strategy stage
-        pub fun nextStrategyStage(idx: Int, _ forceClose: Bool): StrategyState {
+        access(all) fun nextStrategyStage(idx: Int, _ forceClose: Bool): StrategyState {
             let strategy = self.borrowStrategyRef(idx: idx)
             var nextState: StrategyState = StrategyState.opening
 
@@ -1250,45 +1250,45 @@ pub contract FLOATEventSeries {
     }
 
     // A public interface to read EventSeries
-    pub resource interface EventSeriesPublic {
+    access(all) resource interface EventSeriesPublic {
         // ---- Members ----
-        pub let sequence: UInt64
+        access(all) let sequence: UInt64
         // event basic display info
-        pub var name: String
-        pub var description: String
-        pub var image: String
+        access(all) var name: String
+        access(all) var description: String
+        access(all) var image: String
 
         // ---- Methods ----
         // get series id
-        pub fun getID(): UInt64
+        access(all) fun getID(): UInt64
         // get series identifier
-        pub fun getIdentifier(): EventSeriesIdentifier
+        access(all) fun getIdentifier(): EventSeriesIdentifier
         // get last slot index
-        pub fun getLastSlotIdx(): Int
+        access(all) fun getLastSlotIdx(): Int
         // get all slots data
-        pub fun getSlots(): [{EventSlot}]
+        access(all) fun getSlots(): [{EventSlot}]
         // get a event slot by index
-        pub fun getSlot(idx: Int): {EventSlot}
+        access(all) fun getSlot(idx: Int): {EventSlot}
         // get all goals data
-        pub fun getGoals(): [{IAchievementGoal}]
+        access(all) fun getGoals(): [{IAchievementGoal}]
         // get an achievement goal by index
-        pub fun getGoal(idx: Int): {IAchievementGoal}
+        access(all) fun getGoal(idx: Int): {IAchievementGoal}
         // get extra information of event series
-        pub fun getExtra(): {String: AnyStruct}
+        access(all) fun getExtra(): {String: AnyStruct}
         // check if goals of this user reached
-        pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool]
+        access(all) fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool]
         // borrow the treasury public reference
-        pub fun borrowTreasuryPublic(): &Treasury{TreasuryPublic}
+        access(all) fun borrowTreasuryPublic(): &Treasury{TreasuryPublic}
     }
 
     // The event series defination
-    pub resource EventSeries: EventSeriesPublic, MetadataViews.Resolver {
-        pub let sequence: UInt64
-        pub let host: Address
+    access(all) resource EventSeries: EventSeriesPublic, MetadataViews.Resolver {
+        access(all) let sequence: UInt64
+        access(all) let host: Address
         // --- basics ---
-        pub var name: String
-        pub var description: String
-        pub var image: String
+        access(all) var name: String
+        access(all) var description: String
+        access(all) var image: String
 
         access(self) var extra: {String: AnyStruct}
         // --- data ---
@@ -1340,14 +1340,14 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun getViews(): [Type] {
+        access(all) fun getViews(): [Type] {
             return [
                 Type<MetadataViews.Display>(),
                 Type<EventSeriesIdentifier>()
             ]
         }
 
-        pub fun resolveView(_ view: Type): AnyStruct? {
+        access(all) fun resolveView(_ view: Type): AnyStruct? {
             switch view {
                 case Type<MetadataViews.Display>():
                     return MetadataViews.Display(
@@ -1361,50 +1361,50 @@ pub contract FLOATEventSeries {
             return nil
         }
 
-        pub fun getID(): UInt64 {
+        access(all) fun getID(): UInt64 {
             return self.uuid
         }
         
-        pub fun getIdentifier(): EventSeriesIdentifier {
+        access(all) fun getIdentifier(): EventSeriesIdentifier {
             return EventSeriesIdentifier(self.owner!.address, self.uuid)
         }
 
-        pub fun getLastSlotIdx(): Int {
+        access(all) fun getLastSlotIdx(): Int {
             return self.slots.length
         }
 
-        pub fun getSlots(): [{EventSlot}] {
+        access(all) fun getSlots(): [{EventSlot}] {
             return self.slots
         }
 
-        pub fun getSlot(idx: Int): {EventSlot} {
+        access(all) fun getSlot(idx: Int): {EventSlot} {
             pre {
                 idx >= 0 && idx < self.slots.length: "Slot does not exist."
             }
             return self.slots[idx]
         }
 
-        pub fun getGoals(): [{IAchievementGoal}] {
+        access(all) fun getGoals(): [{IAchievementGoal}] {
             return self.goals
         }
 
-        pub fun getGoal(idx: Int): {IAchievementGoal} {
+        access(all) fun getGoal(idx: Int): {IAchievementGoal} {
             pre {
                 idx >= 0 && idx < self.goals.length: "Goal does not exist."
             }
             return self.goals[idx]
         }
 
-        pub fun getExtra(): {String: AnyStruct} {
+        access(all) fun getExtra(): {String: AnyStruct} {
             return self.extra
         }
 
-        pub fun borrowTreasuryPublic(): &Treasury{TreasuryPublic} {
+        access(all) fun borrowTreasuryPublic(): &Treasury{TreasuryPublic} {
             return &self.treasury as &Treasury{TreasuryPublic}
         }
 
         // check if goals of this user reached
-        pub fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool] {
+        access(all) fun checkGoalsReached(user: Address, idxs: [Int]?): [Bool] {
             let ret: [Bool] = []
             var checkingGoals: [{IAchievementGoal}] = []
             if let includeIndexes = idxs {
@@ -1425,11 +1425,11 @@ pub contract FLOATEventSeries {
         // --- Setters - Private Interfaces ---
 
         // borrow the treasury private reference
-        pub fun borrowTreasury(): &Treasury {
+        access(all) fun borrowTreasury(): &Treasury {
             return &self.treasury as &Treasury
         }
 
-        pub fun updateBasics(name: String, description: String, image: String) {
+        access(all) fun updateBasics(name: String, description: String, image: String) {
             self.name = name
             self.description = description
             self.image = image
@@ -1443,7 +1443,7 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun updateSlotData(idx: Int, identifier: EventIdentifier) {
+        access(all) fun updateSlotData(idx: Int, identifier: EventIdentifier) {
             pre {
                 idx < self.slots.length: "The idx is out of Slots size."
             }
@@ -1464,7 +1464,7 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun addAchievementGoal(goal: {IAchievementGoal}) {
+        access(all) fun addAchievementGoal(goal: {IAchievementGoal}) {
             self.goals.append(goal)
 
             let global = FLOATEventSeries.borrowEventSeriesGlobal()
@@ -1479,7 +1479,7 @@ pub contract FLOATEventSeries {
         }
 
         // sync eventseries related certificate FLOATs
-        pub fun syncCertificates(events: [EventIdentifier]) {
+        access(all) fun syncCertificates(events: [EventIdentifier]) {
             pre {
                 events.length > 0: "Length of events should not be zero."
             }
@@ -1514,23 +1514,23 @@ pub contract FLOATEventSeries {
     }
 
     // A public interface to read EventSeriesBuilder
-    pub resource interface EventSeriesBuilderPublic {
+    access(all) resource interface EventSeriesBuilderPublic {
         // ---- Members ----
-        pub let sequence: UInt64
+        access(all) let sequence: UInt64
         // ---- Methods ----
         // get all ids including revoked
-        pub fun getEventSeriesIDs(): [UInt64]
+        access(all) fun getEventSeriesIDs(): [UInt64]
         // check if some id is revoked
-        pub fun isRevoked(seriesId: UInt64): Bool
+        access(all) fun isRevoked(seriesId: UInt64): Bool
         // borrow the public interface of EventSeries
-        pub fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}?
+        access(all) fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}?
         // internal full reference borrowing
         access(account) fun borrowEventSeriesBuilderFullRef(): &EventSeriesBuilder
     }
 
     // the event series resource collection
-    pub resource EventSeriesBuilder: EventSeriesBuilderPublic, MetadataViews.ResolverCollection {
-        pub let sequence: UInt64
+    access(all) resource EventSeriesBuilder: EventSeriesBuilderPublic, MetadataViews.ResolverCollection {
+        access(all) let sequence: UInt64
 
         access(self) var series: @{UInt64: EventSeries}
         access(self) var revoked: @{UInt64: EventSeries}
@@ -1553,29 +1553,29 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
         
-        pub fun getIDs(): [UInt64] {
+        access(all) fun getIDs(): [UInt64] {
             return self.series.keys
         }
 
-        pub fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
+        access(all) fun borrowViewResolver(id: UInt64): &{MetadataViews.Resolver} {
             return (&self.series[id] as &{MetadataViews.Resolver}?) ?? panic("Failed to borrow ViewResolver.")
         }
 
-        pub fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}? {
+        access(all) fun borrowEventSeriesPublic(seriesId: UInt64): &EventSeries{EventSeriesPublic}? {
             return &self.series[seriesId] as &EventSeries{EventSeriesPublic}?
         }
 
-        pub fun getEventSeriesIDs(): [UInt64] {
+        access(all) fun getEventSeriesIDs(): [UInt64] {
             return self.series.keys.concat(self.revoked.keys)
         }
 
-        pub fun isRevoked(seriesId: UInt64): Bool {
+        access(all) fun isRevoked(seriesId: UInt64): Bool {
             return self.revoked[seriesId] != nil
         }
         
         // Maps the eventId to the name of that
         // event series. Just a kind helper.
-        pub fun getAllEventSeries(_ revoked: Bool): {UInt64: String} {
+        access(all) fun getAllEventSeries(_ revoked: Bool): {UInt64: String} {
             let answer: {UInt64: String} = {}
             let keys = revoked ? self.revoked.keys : self.series.keys
             for id in keys {
@@ -1590,7 +1590,7 @@ pub contract FLOATEventSeries {
 
         // --- Setters - Private Interfaces ---
 
-        pub fun createEventSeries(
+        access(all) fun createEventSeries(
             name: String,
             description: String,
             image: String,
@@ -1623,7 +1623,7 @@ pub contract FLOATEventSeries {
             return seriesId
         }
 
-        pub fun revokeEventSeries(seriesId: UInt64) {
+        access(all) fun revokeEventSeries(seriesId: UInt64) {
             // drop treasury first
             let seriesRef = (&self.series[seriesId] as &EventSeries?) ?? panic("The event series does not exist")
             let treasury = seriesRef.borrowTreasury()
@@ -1639,14 +1639,14 @@ pub contract FLOATEventSeries {
             emit FLOATEventSeriesRevoked(seriesId: seriesId, host: host)
         }
 
-        pub fun recoverEventSeries(seriesId: UInt64) {
+        access(all) fun recoverEventSeries(seriesId: UInt64) {
             let one <- self.revoked.remove(key: seriesId) ?? panic("The event series does not exist")
             self.series[seriesId] <-! one
 
             emit FLOATEventSeriesRecovered(seriesId: seriesId, host: self.owner!.address)
         }
 
-        pub fun registerToken(path: PublicPath, isNFT: Bool) {
+        access(all) fun registerToken(path: PublicPath, isNFT: Bool) {
             // register token from owner's capability
             let tokenCap = self.owner!.getCapability(path)
             if isNFT {
@@ -1663,7 +1663,7 @@ pub contract FLOATEventSeries {
         }
 
         // create the controller resource
-        pub fun createStrategyController(
+        access(all) fun createStrategyController(
             consumable: Bool,
             threshold: UInt64,
             delivery: {StrategyDelivery}
@@ -1675,7 +1675,7 @@ pub contract FLOATEventSeries {
             )
         }
 
-        pub fun borrowEventSeries(seriesId: UInt64): &EventSeries? {
+        access(all) fun borrowEventSeries(seriesId: UInt64): &EventSeries? {
             return &self.series[seriesId] as &EventSeries?
         }
 
@@ -1691,11 +1691,11 @@ pub contract FLOATEventSeries {
 
     // ---- Shared global resources ----
     
-    pub resource interface EventSeriesGlobalPublic {
+    access(all) resource interface EventSeriesGlobalPublic {
         // get series identifier
-        pub fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier]
+        access(all) fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier]
         // get series amount
-        pub fun getTotalAmount(isTreasuryAvailable: Bool): Int
+        access(all) fun getTotalAmount(isTreasuryAvailable: Bool): Int
         // add a event series with goal to global
         access(contract) fun seriesUpdateGoals(_ host: Address, seriesId: UInt64)
         // update event series by its treasury strategy
@@ -1704,7 +1704,7 @@ pub contract FLOATEventSeries {
         access(contract) fun seriesRevoked(_ host: Address, seriesId: UInt64)
     }
 
-    pub resource EventSeriesGlobal: EventSeriesGlobalPublic {
+    access(all) resource EventSeriesGlobal: EventSeriesGlobalPublic {
         access(self) var seriesList: [String]
         access(self) var seriesWithTreasuryAvailableList: [String]
         access(self) var seriesMapping: {String: EventSeriesIdentifier}
@@ -1717,7 +1717,7 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier] {
+        access(all) fun querySeries(page: UInt64, limit: UInt64, isTreasuryAvailable: Bool): [EventSeriesIdentifier] {
             let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
             if arr.length == 0 {
                 return []
@@ -1737,7 +1737,7 @@ pub contract FLOATEventSeries {
             return ret
         }
 
-        pub fun getTotalAmount(isTreasuryAvailable: Bool): Int {
+        access(all) fun getTotalAmount(isTreasuryAvailable: Bool): Int {
             let arr = isTreasuryAvailable ? self.seriesWithTreasuryAvailableList : self.seriesList
             return arr.length
         }
@@ -1819,34 +1819,34 @@ pub contract FLOATEventSeries {
     // ---- data For Endusers ----
 
     // Achievement public interface
-    pub resource interface AchievementPublic {
+    access(all) resource interface AchievementPublic {
         // get achievement record owner
-        pub fun getOwner(): Address
+        access(all) fun getOwner(): Address
         // get achievement record target
-        pub let target: EventSeriesIdentifier
+        access(all) let target: EventSeriesIdentifier
         // get total score
-        pub var score: UInt64
+        access(all) var score: UInt64
         // get current comsumable score
-        pub var consumableScore: UInt64
+        access(all) var consumableScore: UInt64
         // get all finished goals
-        pub var finishedGoals: [Int]
+        access(all) var finishedGoals: [Int]
         // check if goal can be accomplished
-        pub fun isGoalReady(goalIdx: Int): Bool
+        access(all) fun isGoalReady(goalIdx: Int): Bool
 
         // Update treasury claimed information
         access(contract) fun treasuryClaimed(strategy: &{ITreasuryStrategy})
     }
 
     // Users' Achevement of one EventSeries
-    pub resource Achievement: AchievementPublic {
+    access(all) resource Achievement: AchievementPublic {
         // target to event identifier
-        pub let target: EventSeriesIdentifier
+        access(all) let target: EventSeriesIdentifier
         // current achievement score
-        pub var score: UInt64
+        access(all) var score: UInt64
         // current consumable achievement score
-        pub var consumableScore: UInt64
+        access(all) var consumableScore: UInt64
         // all finished goals 
-        pub var finishedGoals: [Int]
+        access(all) var finishedGoals: [Int]
 
         init(
             host: Address,
@@ -1862,12 +1862,12 @@ pub contract FLOATEventSeries {
         // --- Getters - Public Interfaces ---
 
         // get achievement record owner
-        pub fun getOwner(): Address {
+        access(all) fun getOwner(): Address {
             return self.owner!.address
         }
 
         // check if goal can be accomplished
-        pub fun isGoalReady(goalIdx: Int): Bool {
+        access(all) fun isGoalReady(goalIdx: Int): Bool {
             // fetch the event series reference
             let eventSeriesRef = self.target.getEventSeriesPublic()
             let goal = eventSeriesRef.getGoal(idx: goalIdx)
@@ -1878,7 +1878,7 @@ pub contract FLOATEventSeries {
         // --- Setters - Private Interfaces ---
 
         // Achieve the goal and add to score
-        pub fun accomplishGoal(goalIdx: Int) {
+        access(all) fun accomplishGoal(goalIdx: Int) {
             pre {
                 !self.finishedGoals.contains(goalIdx): "The goal is already accomplished."
             }
@@ -1932,14 +1932,14 @@ pub contract FLOATEventSeries {
     }
 
     // A public interface to read AchievementBoard
-    pub resource interface AchievementBoardPublic {
+    access(all) resource interface AchievementBoardPublic {
         // get the achievement reference by event series identifier
-        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}?
+        access(all) fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}?
     }
 
     // Users' Achievement board
-    pub resource AchievementBoard: AchievementBoardPublic {
-        pub let sequence: UInt64
+    access(all) resource AchievementBoard: AchievementBoardPublic {
+        access(all) let sequence: UInt64
         // all achievement resources
         access(account) var achievements: @{String: Achievement}
 
@@ -1960,7 +1960,7 @@ pub contract FLOATEventSeries {
 
         // --- Getters - Public Interfaces ---
 
-        pub fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}? {
+        access(all) fun borrowAchievementRecordRef(host: Address, seriesId: UInt64): &Achievement{AchievementPublic}? {
             let target = EventSeriesIdentifier(host, seriesId)
             let key = target.toString()
             return &self.achievements[key] as &Achievement{AchievementPublic}?
@@ -1969,7 +1969,7 @@ pub contract FLOATEventSeries {
         // --- Setters - Private Interfaces ---
 
         // create achievement by host and id
-        pub fun createAchievementRecord(host: Address, seriesId: UInt64): EventSeriesIdentifier {
+        access(all) fun createAchievementRecord(host: Address, seriesId: UInt64): EventSeriesIdentifier {
             let identifier = EventSeriesIdentifier(host, seriesId)
             let key = identifier.toString()
 
@@ -1989,7 +1989,7 @@ pub contract FLOATEventSeries {
             return identifier
         }
 
-        pub fun borrowAchievementRecordWritable(host: Address, seriesId: UInt64): &Achievement? {
+        access(all) fun borrowAchievementRecordWritable(host: Address, seriesId: UInt64): &Achievement? {
             let target = EventSeriesIdentifier(host, seriesId)
             let key = target.toString()
             return &self.achievements[key] as &Achievement?
@@ -1998,16 +1998,16 @@ pub contract FLOATEventSeries {
 
     // ---- contract methods ----
 
-    pub fun createEventSeriesBuilder(): @EventSeriesBuilder {
+    access(all) fun createEventSeriesBuilder(): @EventSeriesBuilder {
         return <- create EventSeriesBuilder()
     }
 
-    pub fun createAchievementBoard(): @AchievementBoard {
+    access(all) fun createAchievementBoard(): @AchievementBoard {
         return <- create AchievementBoard()
     }
 
     // borrow the reference of the EventSeriesGlobal
-    pub fun borrowEventSeriesGlobal(): &EventSeriesGlobal{EventSeriesGlobalPublic} {
+    access(all) fun borrowEventSeriesGlobal(): &EventSeriesGlobal{EventSeriesGlobalPublic} {
         return self.account.borrow<&EventSeriesGlobal{EventSeriesGlobalPublic}>(from: self.FLOATEventSeriesGlobalStoragePath)
             ?? panic("Failed to borrow EventSeriesGlobal")
     }

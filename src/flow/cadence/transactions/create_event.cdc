@@ -1,8 +1,8 @@
-import FLOAT from "../FLOAT.cdc"
-import FLOATVerifiers from "../FLOATVerifiers.cdc"
-import NonFungibleToken from "../utility/NonFungibleToken.cdc"
-import MetadataViews from "../utility/MetadataViews.cdc"
-import FlowToken from "../utility/FlowToken.cdc"
+import "FLOAT"
+import "FLOATVerifiers"
+import "NonFungibleToken"
+import "MetadataViews"
+import "FlowToken"
 
 transaction(
   name: String, 
@@ -32,26 +32,26 @@ transaction(
   allowMultipleClaim: Bool
 ) {
 
-  let FLOATEvents: &FLOAT.FLOATEvents
+  let FLOATEvents: auth(FLOAT.EventsOwner) &FLOAT.FLOATEvents
 
-  prepare(acct: AuthAccount) {
+  prepare(account: auth(Storage, Capabilities) &Account) {
     // SETUP COLLECTION
-    if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
-        acct.unlink(FLOAT.FLOATCollectionPublicPath)
-        acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-        acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
-                (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+    if account.storage.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+      account.capabilities.unpublish(FLOAT.FLOATCollectionPublicPath)
+      account.storage.save(<- FLOAT.createEmptyCollection(nftType: Type<@FLOAT.NFT>()), to: FLOAT.FLOATCollectionStoragePath)
+      let collectionCap = account.capabilities.storage.issue<&FLOAT.Collection>(FLOAT.FLOATCollectionStoragePath)
+      account.capabilities.publish(collectionCap, at: FLOAT.FLOATCollectionPublicPath)
     }
 
     // SETUP FLOATEVENTS
-    if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
-      acct.unlink(FLOAT.FLOATEventsPublicPath)
-      acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-      acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
-                (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+    if account.storage.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+      account.capabilities.unpublish(FLOAT.FLOATEventsPublicPath)
+      account.storage.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+      let eventsCap = account.capabilities.storage.issue<&FLOAT.FLOATEvents>(FLOAT.FLOATEventsStoragePath)
+      account.capabilities.publish(eventsCap, at: FLOAT.FLOATEventsPublicPath)
     }
 
-    self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+    self.FLOATEvents = account.storage.borrow<auth(FLOAT.EventsOwner) &FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                       ?? panic("Could not borrow the FLOATEvents from the signer.")
   }
 

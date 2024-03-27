@@ -1,6 +1,6 @@
-import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../utility/NonFungibleToken.cdc"
+import "FLOAT"
+import "NonFungibleToken"
 
-pub fun main(user: Address): Bool {
-  return getAccount(user).getCapability<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>(FLOAT.FLOATCollectionPublicPath).borrow() != nil
+access(all) fun main(user: Address): Bool {
+  return getAccount(user).capabilities.borrow<&FLOAT.Collection>(FLOAT.FLOATCollectionPublicPath) != nil
 }

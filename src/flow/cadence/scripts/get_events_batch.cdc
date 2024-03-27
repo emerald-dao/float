@@ -1,57 +1,57 @@
-import FLOAT from "../FLOAT.cdc"
-import FLOATVerifiers from "../FLOATVerifiers.cdc"
-import FlowToken from "../utility/FlowToken.cdc"
+import "FLOAT"
+import "FLOATVerifiers"
+import "FlowToken"
 
-pub fun main(events: [UInt64], addresses: [Address]): [FLOATEventMetadata] {
+access(all) fun main(events: [UInt64], addresses: [Address]): [FLOATEventMetadata] {
   let returnVal: [FLOATEventMetadata] = []
 
   for i, eventId in events {
-    let authAccount = getAuthAccount(addresses[i])
-    let floatEventCollection = authAccount.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+    let authAccount = getAuthAccount<auth(Storage) &Account>(addresses[i])
+    let floatEventCollection = authAccount.storage.borrow<auth(FLOAT.EventsOwner) &FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                               ?? panic("Could not borrow the FLOAT Events Collection from the account.")
-    let event = floatEventCollection.borrowEventRef(eventId: eventId) ?? panic("This event does not exist in the account")
-    let metadata = FLOATEventMetadata(event)
+    let eventRef = floatEventCollection.borrowEventRef(eventId: eventId) ?? panic("This event does not exist in the account")
+    let metadata = FLOATEventMetadata(eventRef)
     returnVal.append(metadata)
   }
   return returnVal
 }
 
-pub struct FLOATEventMetadata {
-  pub let claimable: Bool
-  pub let dateCreated: UFix64
-  pub let description: String 
-  pub let eventId: UInt64
-  pub let host: Address
-  pub let backImage: String?
-  pub let image: String 
-  pub let name: String
-  pub let totalSupply: UInt64
-  pub let transferrable: Bool
-  pub let url: String
-  pub let verifiers: {String: AnyStruct}
-  pub let eventType: String
-  pub let price: UFix64?
-  pub let visibilityMode: String
-  pub let multipleClaim: Bool
+access(all) struct FLOATEventMetadata {
+  access(all) let claimable: Bool
+  access(all) let dateCreated: UFix64
+  access(all) let description: String 
+  access(all) let eventId: UInt64
+  access(all) let host: Address
+  access(all) let backImage: String?
+  access(all) let image: String 
+  access(all) let name: String
+  access(all) let totalSupply: UInt64
+  access(all) let transferrable: Bool
+  access(all) let url: String
+  access(all) let verifiers: {String: AnyStruct}
+  access(all) let eventType: String
+  access(all) let price: UFix64?
+  access(all) let visibilityMode: String
+  access(all) let multipleClaim: Bool
 
-  init(_ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
-      self.claimable = event.claimable
-      self.dateCreated = event.dateCreated
-      self.description = event.description
-      self.eventId = event.eventId
-      let extraMetadata = event.getExtraMetadata()
-      self.host = event.host
+  init(_ eventRef: &FLOAT.FLOATEvent) {
+      self.claimable = eventRef.claimable
+      self.dateCreated = eventRef.dateCreated
+      self.description = eventRef.description
+      self.eventId = eventRef.eventId
+      let extraMetadata = eventRef.getExtraMetadata()
+      self.host = eventRef.host
       if let backImage = FLOAT.extraMetadataToStrOpt(extraMetadata, "backImage") {
         self.backImage = "https://nftstorage.link/ipfs/".concat(backImage)
       } else {
         self.backImage = nil
       }
-      self.image = "https://nftstorage.link/ipfs/".concat(event.image)
-      self.name = event.name
-      self.transferrable = event.transferrable
-      self.totalSupply = event.totalSupply
-      self.url = event.url
-      let verifiers = event.getVerifiers()
+      self.image = "https://nftstorage.link/ipfs/".concat(eventRef.image)
+      self.name = eventRef.name
+      self.transferrable = eventRef.transferrable
+      self.totalSupply = eventRef.totalSupply
+      self.url = eventRef.url
+      let verifiers = eventRef.getVerifiers()
       self.verifiers = {}
       if let timelock = verifiers[Type<FLOATVerifiers.Timelock>().identifier] {
         if timelock.length > 0 {
@@ -101,7 +101,7 @@ pub struct FLOATEventMetadata {
       self.visibilityMode = FLOAT.extraMetadataToStrOpt(extraMetadata, "visibilityMode") ?? "certificate"
       self.multipleClaim = (extraMetadata["allowMultipleClaim"] as! Bool?) ?? false
 
-      if let prices = event.getPrices() {
+      if let prices = eventRef.getPrices() {
         let flowTokenVaultIdentifier = Type<@FlowToken.Vault>().identifier
         self.price = prices[flowTokenVaultIdentifier]?.price
       } else {

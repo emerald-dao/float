@@ -6,27 +6,6 @@ import type { ActionExecutionResult } from '$lib/stores/custom/steps/step.interf
 import type { User } from '@emerald-dao/component-library/models/user.interface';
 import { network } from './config';
 
-export function replaceWithProperValues(script: string, contractName = '', contractAddress = '') {
-	return (
-		script
-			// For Tx/Scripts
-			.replace('"../ExampleToken.cdc"', contractAddress)
-			.replace('"../utility/NonFungibleToken.cdc"', addresses.NonFungibleToken)
-			.replace('"../utility/MetadataViews.cdc"', addresses.MetadataViews)
-			.replace('"../utility/FlowToken.cdc"', addresses.FlowToken)
-			.replace('"../utility/FiatToken.cdc"', addresses.FiatToken)
-			.replace('"../utility/FungibleToken.cdc"', addresses.FungibleToken)
-			.replace('"../utility/FIND.cdc"', addresses.FIND)
-			.replace('"../utility/FLOAT.cdc"', addresses.FLOAT)
-			.replace('"../FLOAT.cdc"', addresses.FLOAT)
-			.replace('"../FLOATVerifiers.cdc"', addresses.FLOAT)
-			.replace('"../utility/NFTCatalog.cdc"', addresses.NFTCatalog)
-			// For All
-			.replaceAll('ExampleToken', contractName)
-			.replaceAll('0x5643fd47a29770e7', addresses.ECTreasury)
-	);
-}
-
 export const executeTransaction: (
 	transaction: () => Promise<string>,
 	actionAfterSucceed?: (res: TransactionStatusObject) => Promise<ActionExecutionResult>
@@ -77,14 +56,17 @@ export const executeTransaction: (
 			} as ActionExecutionResult;
 		}
 	} catch (e) {
-		transactionStore.subscribeTransaction({
-			blockId: '',
-			events: [],
-			status: 4,
-			statusString: '',
-			errorMessage: e as string,
-			statusCode: 1
-		}, '');
+		transactionStore.subscribeTransaction(
+			{
+				blockId: '',
+				events: [],
+				status: 4,
+				statusString: '',
+				errorMessage: e as string,
+				statusCode: 1
+			},
+			''
+		);
 
 		setTimeout(() => {
 			transactionStore.resetTransaction();
@@ -107,7 +89,7 @@ export const getFindProfile = async (address: string) => {
 			import EmeraldIdentity from ${addresses.EmeraldIdentity}
 			import EmeraldIdentityDapper from ${addresses.EmeraldIdentity}
 			import EmeraldIdentityLilico from ${addresses.EmeraldIdentity}
-			pub fun main(address: Address): Profile? {
+			access(all) fun main(address: Address): Profile? {
 				if let name = FIND.reverseLookup(address) {
 					if let profile = FIND.lookup(name) {
 						return Profile(_name: name, _address: address, _avatar: profile.getAvatar())
@@ -132,7 +114,7 @@ export const getFindProfile = async (address: string) => {
 				return nil
 			}
 
-			pub fun helper(discordId: String): MiniProfile? {
+			access(all) fun helper(discordId: String): MiniProfile? {
 				let emeraldIDs: [Address] = EmeraldIdentity.getEmeraldIDs(discordID: discordId).values
 					for emeraldIDAddress in emeraldIDs {
 						if let name = FIND.reverseLookup(emeraldIDAddress) {
@@ -144,9 +126,9 @@ export const getFindProfile = async (address: string) => {
 					return nil
 			}
 
-			pub struct MiniProfile {
-				pub let name: String
-				pub let avatar: String
+			access(all) struct MiniProfile {
+				access(all) let name: String
+				access(all) let avatar: String
 
 				init(_name: String, _avatar: String) {
 					self.name = _name
@@ -154,10 +136,10 @@ export const getFindProfile = async (address: string) => {
 				}
 			}
 
-			pub struct Profile {
-				pub let name: String
-				pub let address: Address
-				pub let avatar: String
+			access(all) struct Profile {
+				access(all) let name: String
+				access(all) let address: Address
+				access(all) let avatar: String
 
 				init(_name: String, _address: Address, _avatar: String) {
 					self.name = _name
@@ -169,7 +151,7 @@ export const getFindProfile = async (address: string) => {
 			args: (arg, t) => [arg(address, t.Address)]
 		});
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 		return null;
 	}
 };
@@ -184,7 +166,7 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 			import EmeraldIdentity from ${addresses.EmeraldIdentity}
 			import EmeraldIdentityDapper from ${addresses.EmeraldIdentity}
 			import EmeraldIdentityLilico from ${addresses.EmeraldIdentity}
-			pub fun main(address: Address): Profile? {
+			access(all) fun main(address: Address): Profile? {
 				if let name = FIND.reverseLookup(address) {
 					if let profile = FIND.lookup(name) {
 						return Profile(_name: name, _address: address, _avatar: profile.getAvatar())
@@ -209,7 +191,7 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 				return nil
 			}
 
-			pub fun helper(discordId: String): MiniProfile? {
+			access(all) fun helper(discordId: String): MiniProfile? {
 				let emeraldIDs: [Address] = EmeraldIdentity.getEmeraldIDs(discordID: discordId).values
 					for emeraldIDAddress in emeraldIDs {
 						if let name = FIND.reverseLookup(emeraldIDAddress) {
@@ -221,9 +203,9 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 					return nil
 			}
 
-			pub struct MiniProfile {
-				pub let name: String
-				pub let avatar: String
+			access(all) struct MiniProfile {
+				access(all) let name: String
+				access(all) let avatar: String
 
 				init(_name: String, _avatar: String) {
 					self.name = _name
@@ -231,10 +213,10 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 				}
 			}
 
-			pub struct Profile {
-				pub let name: String
-				pub let address: Address
-				pub let avatar: String
+			access(all) struct Profile {
+				access(all) let name: String
+				access(all) let address: Address
+				access(all) let avatar: String
 
 				init(_name: String, _address: Address, _avatar: String) {
 					self.name = _name
@@ -247,7 +229,7 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 		} else {
 			cadence = `
 			import FIND from ${addresses.FIND}
-			pub fun main(name: String): Profile? {
+			access(all) fun main(name: String): Profile? {
 				if let profile = FIND.lookup(name) {
 					return Profile(_name: name, _address: profile.getAddress(), _avatar: profile.getAvatar())
 				}
@@ -255,10 +237,10 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 				return nil
 			}
 
-			pub struct Profile {
-				pub let name: String
-				pub let address: Address
-				pub let avatar: String
+			access(all) struct Profile {
+				access(all) let name: String
+				access(all) let address: Address
+				access(all) let avatar: String
 
 				init(_name: String, _address: Address, _avatar: String) {
 					self.name = _name
@@ -274,7 +256,7 @@ export const getFindProfileFromAddressOrName = async (input: string) => {
 			args
 		});
 	} catch (e) {
-		console.log(e)
+		console.log(e);
 		return null;
 	}
 };
@@ -288,9 +270,9 @@ export const verifyAccountOwnership = async (userObject: User) => {
 	);
 
 	const fclCryptoContract = {
-		emulator: "0xf8d6e0586b0a20c7",
-		testnet: "0x5b250a8a85b44a67",
-		mainnet: "0xdb6b70764af4ff68"
+		emulator: '0xf8d6e0586b0a20c7',
+		testnet: '0x5b250a8a85b44a67',
+		mainnet: '0xdb6b70764af4ff68'
 	}[network];
 	return await fcl.AppUtils.verifyAccountProof('FLOAT', accountProofService.data, {
 		fclCryptoContract

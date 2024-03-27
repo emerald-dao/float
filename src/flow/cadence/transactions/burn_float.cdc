@@ -1,18 +1,20 @@
-import FLOATIncinerator from "../FLOATIncinerator.cdc"
-import FLOAT from "../FLOAT.cdc"
+import "FLOATIncinerator"
+import "FLOAT"
+import "NonFungibleToken"
 
 transaction(id: UInt64) {
-  let Collection: &FLOAT.Collection
-  let Incinerator: &FLOATIncinerator.Incinerator
-  prepare(signer: AuthAccount) {
-    self.Collection = signer.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+  let Collection: auth(NonFungibleToken.Owner) &FLOAT.Collection
+  let Incinerator: auth(FLOATIncinerator.Owner) &FLOATIncinerator.Incinerator
+  prepare(signer: auth(Storage, Capabilities) &Account) {
+    self.Collection = signer.storage.borrow<auth(NonFungibleToken.Owner) &FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                         ?? panic("Could not get the Collection from the signer.")
   
-    if signer.borrow<&FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath) == nil {
-      signer.save(<- FLOATIncinerator.createIncinerator(), to: FLOATIncinerator.IncineratorStoragePath)
-      signer.link<&FLOATIncinerator.Incinerator{FLOATIncinerator.IncineratorPublic}>(FLOATIncinerator.IncineratorPublicPath, target: FLOATIncinerator.IncineratorStoragePath)
+    if signer.storage.borrow<&FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath) == nil {
+      signer.storage.save(<- FLOATIncinerator.createIncinerator(), to: FLOATIncinerator.IncineratorStoragePath)
+      let cap = signer.capabilities.storage.issue<&FLOATIncinerator.Incinerator>(FLOATIncinerator.IncineratorStoragePath)
+      signer.capabilities.publish(cap, at: FLOATIncinerator.IncineratorPublicPath)
     }
-    self.Incinerator = signer.borrow<&FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath)!
+    self.Incinerator = signer.storage.borrow<auth(FLOATIncinerator.Owner) &FLOATIncinerator.Incinerator>(from: FLOATIncinerator.IncineratorStoragePath)!
   }
 
   execute {

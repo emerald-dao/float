@@ -1,10 +1,10 @@
-import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../utility/NonFungibleToken.cdc"
+import "FLOAT"
+import "NonFungibleToken"
 
-pub fun main(users: [Address]): Result {
+access(all) fun main(users: [Address]): Result {
   let addressesNotSetup: [Address] = []
   for user in users {
-    let setupCorrectly: Bool = getAccount(user).getCapability<&FLOAT.Collection{NonFungibleToken.CollectionPublic}>(FLOAT.FLOATCollectionPublicPath).borrow() != nil
+    let setupCorrectly: Bool = getAccount(user).capabilities.borrow<&FLOAT.Collection>(FLOAT.FLOATCollectionPublicPath) != nil
     if !setupCorrectly {
       addressesNotSetup.append(user)
     }
@@ -12,9 +12,9 @@ pub fun main(users: [Address]): Result {
   return Result(addressesNotSetup.length == 0, addressesNotSetup)
 }
 
-pub struct Result {
-  pub let allPass: Bool
-  pub let addressesNotSetup: [Address]
+access(all) struct Result {
+  access(all) let allPass: Bool
+  access(all) let addressesNotSetup: [Address]
 
   init(_ ap: Bool, _ ans: [Address]) {
     self.allPass = ap

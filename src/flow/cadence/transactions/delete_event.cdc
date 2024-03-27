@@ -1,11 +1,11 @@
-import FLOAT from "../FLOAT.cdc"
+import "FLOAT"
 
 transaction(eventId: UInt64) {
 
-  let FLOATEvents: &FLOAT.FLOATEvents
+  let FLOATEvents: auth(FLOAT.EventsOwner) &FLOAT.FLOATEvents
 
-  prepare(acct: AuthAccount) {
-    self.FLOATEvents = acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
+  prepare(account: auth(Storage) &Account) {
+    self.FLOATEvents = account.storage.borrow<auth(FLOAT.EventsOwner) &FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath)
                       ?? panic("Could not borrow the FLOATEvents from the signer.")
   }
 

@@ -1,33 +1,33 @@
 import FungibleToken from "./FungibleToken.cdc"
 
-pub contract FUSD: FungibleToken {
+access(all) contract FUSD: FungibleToken {
 
     // Event that is emitted when the contract is created
-    pub event TokensInitialized(initialSupply: UFix64)
+    access(all) event TokensInitialized(initialSupply: UFix64)
 
     // Event that is emitted when tokens are withdrawn from a Vault
-    pub event TokensWithdrawn(amount: UFix64, from: Address?)
+    access(all) event TokensWithdrawn(amount: UFix64, from: Address?)
 
     // Event that is emitted when tokens are deposited to a Vault
-    pub event TokensDeposited(amount: UFix64, to: Address?)
+    access(all) event TokensDeposited(amount: UFix64, to: Address?)
 
     // Event that is emitted when new tokens are minted
-    pub event TokensMinted(amount: UFix64)
+    access(all) event TokensMinted(amount: UFix64)
 
     // The storage path for the admin resource
-    pub let AdminStoragePath: StoragePath
+    access(all) let AdminStoragePath: StoragePath
 
     // The storage Path for minters' MinterProxy
-    pub let MinterProxyStoragePath: StoragePath
+    access(all) let MinterProxyStoragePath: StoragePath
 
     // The public path for minters' MinterProxy capability
-    pub let MinterProxyPublicPath: PublicPath
+    access(all) let MinterProxyPublicPath: PublicPath
 
     // Event that is emitted when a new minter resource is created
-    pub event MinterCreated()
+    access(all) event MinterCreated()
 
     // Total supply of fusd in existence
-    pub var totalSupply: UFix64
+    access(all) var totalSupply: UFix64
 
     // Vault
     //
@@ -41,10 +41,10 @@ pub contract FUSD: FungibleToken {
     // out of thin air. A special Minter resource needs to be defined to mint
     // new tokens.
     //
-    pub resource Vault: FungibleToken.Provider, FungibleToken.Receiver, FungibleToken.Balance {
+    access(all) resource Vault: FungibleToken.Provider, FungibleToken.Receiver, FungibleToken.Balance {
 
         // holds the balance of a users tokens
-        pub var balance: UFix64
+        access(all) var balance: UFix64
 
         // initialize the balance at resource creation time
         init(balance: UFix64) {
@@ -60,7 +60,7 @@ pub contract FUSD: FungibleToken {
         // created Vault to the context that called so it can be deposited
         // elsewhere.
         //
-        pub fun withdraw(amount: UFix64): @FungibleToken.Vault {
+        access(all) fun withdraw(amount: UFix64): @FungibleToken.Vault {
             self.balance = self.balance - amount
             emit TokensWithdrawn(amount: amount, from: self.owner?.address)
             return <-create Vault(balance: amount)
@@ -73,7 +73,7 @@ pub contract FUSD: FungibleToken {
         // It is allowed to destroy the sent Vault because the Vault
         // was a temporary holder of the tokens. The Vault's balance has
         // been consumed and therefore can be destroyed.
-        pub fun deposit(from: @FungibleToken.Vault) {
+        access(all) fun deposit(from: @FungibleToken.Vault) {
             let vault <- from as! @FUSD.Vault
             self.balance = self.balance + vault.balance
             emit TokensDeposited(amount: vault.balance, to: self.owner?.address)
@@ -93,7 +93,7 @@ pub contract FUSD: FungibleToken {
     // and store the returned Vault in their storage in order to allow their
     // account to be able to receive deposits of this token type.
     //
-    pub fun createEmptyVault(): @FUSD.Vault {
+    access(all) fun createEmptyVault(): @FUSD.Vault {
         return <-create Vault(balance: 0.0)
     }
 
@@ -102,14 +102,14 @@ pub contract FUSD: FungibleToken {
     // Resource object that can mint new tokens.
     // The admin stores this and passes it to the minter account as a capability wrapper resource.
     //
-    pub resource Minter {
+    access(all) resource Minter {
 
         // mintTokens
         //
         // Function that mints new tokens, adds them to the total supply,
         // and returns them to the calling context.
         //
-        pub fun mintTokens(amount: UFix64): @FUSD.Vault {
+        access(all) fun mintTokens(amount: UFix64): @FUSD.Vault {
             pre {
                 amount > 0.0: "Amount minted must be greater than zero"
             }
@@ -120,8 +120,8 @@ pub contract FUSD: FungibleToken {
 
     }
 
-    pub resource interface MinterProxyPublic {
-        pub fun setMinterCapability(cap: Capability<&Minter>)
+    access(all) resource interface MinterProxyPublic {
+        access(all) fun setMinterCapability(cap: Capability<&Minter>)
     }
 
     // MinterProxy
@@ -130,18 +130,18 @@ pub contract FUSD: FungibleToken {
     // The resource that this capability represents can be deleted by the admin
     // in order to unilaterally revoke minting capability if needed.
 
-    pub resource MinterProxy: MinterProxyPublic {
+    access(all) resource MinterProxy: MinterProxyPublic {
 
         // access(self) so nobody else can copy the capability and use it.
         access(self) var minterCapability: Capability<&Minter>?
 
         // Anyone can call this, but only the admin can create Minter capabilities,
         // so the type system constrains this to being called by the admin.
-        pub fun setMinterCapability(cap: Capability<&Minter>) {
+        access(all) fun setMinterCapability(cap: Capability<&Minter>) {
             self.minterCapability = cap
         }
 
-        pub fun mintTokens(amount: UFix64): @FUSD.Vault {
+        access(all) fun mintTokens(amount: UFix64): @FUSD.Vault {
             return <- self.minterCapability!
             .borrow()!
             .mintTokens(amount:amount)
@@ -159,7 +159,7 @@ pub contract FUSD: FungibleToken {
     // Anyone can call this, but the MinterProxy cannot mint without a Minter capability,
     // and only the admin can provide that.
     //
-    pub fun createMinterProxy(): @MinterProxy {
+    access(all) fun createMinterProxy(): @MinterProxy {
         return <- create MinterProxy()
     }
 
@@ -172,7 +172,7 @@ pub contract FUSD: FungibleToken {
     // Ideally we would create this structure in a single function, generate the paths from the address
     // and cache all of this information to enable easy revocation but String/Path comversion isn't yet supported.
     //
-    pub resource Administrator {
+    access(all) resource Administrator {
 
         // createNewMinter
         //
@@ -184,7 +184,7 @@ pub contract FUSD: FungibleToken {
         // then the admin account running:
         // transactions/flowArcaddeToken/admin/deposit_minter_capability.cdc
         //
-        pub fun createNewMinter(): @Minter {
+        access(all) fun createNewMinter(): @Minter {
             emit MinterCreated()
             return <- create Minter()
         }

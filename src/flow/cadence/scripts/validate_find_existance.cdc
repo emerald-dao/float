@@ -1,5 +1,5 @@
-import FIND from "../utility/FIND.cdc"
+import "FIND"
 
-pub fun main(name: String): Bool {
+access(all) fun main(name: String): Bool {
   return FIND.lookup(name) != nil
 }

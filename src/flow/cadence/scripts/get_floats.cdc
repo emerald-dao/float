@@ -1,7 +1,6 @@
-import FLOAT from "../FLOAT.cdc"
-pub fun main(account: Address): [FLOATMetadata] {
-  let floatCollection = getAccount(account).getCapability(FLOAT.FLOATCollectionPublicPath)
-                        .borrow<&FLOAT.Collection{FLOAT.CollectionPublic}>()
+import "FLOAT"
+access(all) fun main(account: Address): [FLOATMetadata] {
+  let floatCollection = getAccount(account).capabilities.borrow<&FLOAT.Collection>(FLOAT.FLOATCollectionPublicPath)
                         ?? panic("Could not borrow the Collection from the account.")
   let ids = floatCollection.getIDs()
   var returnVal: [FLOATMetadata] = []
@@ -10,50 +9,50 @@ pub fun main(account: Address): [FLOATMetadata] {
     let eventId = nft.eventId
     let eventHost = nft.eventHost
 
-    if let event = nft.getEventRef() {
-      returnVal.append(FLOATMetadata(nft, event))
+    if let eventRef = nft.getEventRef() {
+      returnVal.append(FLOATMetadata(nft, eventRef))
     }
   }
 
   return returnVal
 }
 
-pub struct FLOATMetadata {
-  pub let dateReceived: UFix64
-  pub let eventDescription: String 
-  pub let id: UInt64
-  pub let eventHost: Address
-  pub let eventImage: String 
-  pub let eventName: String
-  pub let totalSupply: UInt64
-  pub let transferrable: Bool
-  pub let eventType: String
-  pub let originalRecipient: Address
-  pub let eventId: UInt64
-  pub let serial: UInt64
-  pub let visibilityMode: String
-  pub let backImage: String?
-  pub let extraMetadata: {String: AnyStruct}
+access(all) struct FLOATMetadata {
+  access(all) let dateReceived: UFix64
+  access(all) let eventDescription: String 
+  access(all) let id: UInt64
+  access(all) let eventHost: Address
+  access(all) let eventImage: String 
+  access(all) let eventName: String
+  access(all) let totalSupply: UInt64
+  access(all) let transferrable: Bool
+  access(all) let eventType: String
+  access(all) let originalRecipient: Address
+  access(all) let eventId: UInt64
+  access(all) let serial: UInt64
+  access(all) let visibilityMode: String
+  access(all) let backImage: String?
+  access(all) let extraMetadata: {String: AnyStruct}
 
-  init(_ float: &FLOAT.NFT, _ event: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}) {
+  init(_ float: &FLOAT.NFT, _ eventRef: &FLOAT.FLOATEvent) {
     self.dateReceived = float.dateReceived
-    self.eventDescription = event.description
-    self.eventId = event.eventId
-    self.eventHost = event.host
-    self.eventImage = "https://nftstorage.link/ipfs/".concat(event.image)
-    if let backImage = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "backImage") {
+    self.eventDescription = eventRef.description
+    self.eventId = eventRef.eventId
+    self.eventHost = eventRef.host
+    self.eventImage = "https://nftstorage.link/ipfs/".concat(eventRef.image)
+    if let backImage = FLOAT.extraMetadataToStrOpt(eventRef.getExtraMetadata(), "backImage") {
       self.backImage = "https://nftstorage.link/ipfs/".concat(backImage)
     } else {
       self.backImage = nil
     }
-    self.eventName = event.name
-    self.transferrable = event.transferrable
-    self.totalSupply = event.totalSupply
-    self.eventType = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "eventType") ?? "other"
+    self.eventName = eventRef.name
+    self.transferrable = eventRef.transferrable
+    self.totalSupply = eventRef.totalSupply
+    self.eventType = FLOAT.extraMetadataToStrOpt(eventRef.getExtraMetadata(), "eventType") ?? "other"
     self.originalRecipient = float.originalRecipient
     self.id = float.id
     self.serial = float.serial
-    self.extraMetadata = event.getExtraFloatMetadata(serial: self.serial)
-    self.visibilityMode = FLOAT.extraMetadataToStrOpt(event.getExtraMetadata(), "visibilityMode") ?? "certificate"
+    self.extraMetadata = eventRef.getExtraFloatMetadata(serial: self.serial)
+    self.visibilityMode = FLOAT.extraMetadataToStrOpt(eventRef.getExtraMetadata(), "visibilityMode") ?? "certificate"
   }
 }

@@ -1,5 +1,5 @@
-import FungibleToken from "../utility/FungibleToken.cdc"
+import "FungibleToken"
 
-pub fun main(address: Address): Bool {
-  return getAccount(address).getCapability(/public/flowTokenBalance).borrow<&{FungibleToken.Balance}>() != nil
+access(all) fun main(address: Address): Bool {
+  return getAccount(address).capabilities.borrow<&{FungibleToken.Balance}>(/public/flowTokenBalance) != nil
 }

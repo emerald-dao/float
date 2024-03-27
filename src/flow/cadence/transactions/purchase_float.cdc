@@ -1,41 +1,40 @@
-import FLOAT from "../FLOAT.cdc"
-import NonFungibleToken from "../utility/NonFungibleToken.cdc"
-import MetadataViews from "../utility/MetadataViews.cdc"
-import FlowToken from "../utility/FlowToken.cdc"
-import FungibleToken from "../utility/FungibleToken.cdc"
+import "FLOAT"
+import "NonFungibleToken"
+import "MetadataViews"
+import "FlowToken"
+import "FungibleToken"
 
 transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String?) {
  
-  let FLOATEvent: &FLOAT.FLOATEvent{FLOAT.FLOATEventPublic}
+  let FLOATEvent: &FLOAT.FLOATEvent
   let Collection: &FLOAT.Collection
-  let FlowTokenVault: &FlowToken.Vault
+  let FlowTokenVault: auth(FungibleToken.Withdraw) &FlowToken.Vault
 
-  prepare(acct: AuthAccount) {
+  prepare(account: auth(Storage, Capabilities) &Account) {
     // SETUP COLLECTION
-    if acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
-        acct.unlink(FLOAT.FLOATCollectionPublicPath)
-        acct.save(<- FLOAT.createEmptyCollection(), to: FLOAT.FLOATCollectionStoragePath)
-        acct.link<&FLOAT.Collection{NonFungibleToken.Receiver, NonFungibleToken.CollectionPublic, MetadataViews.ResolverCollection, FLOAT.CollectionPublic}>
-                (FLOAT.FLOATCollectionPublicPath, target: FLOAT.FLOATCollectionStoragePath)
+    if account.storage.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath) == nil {
+      account.capabilities.unpublish(FLOAT.FLOATCollectionPublicPath)
+      account.storage.save(<- FLOAT.createEmptyCollection(nftType: Type<@FLOAT.NFT>()), to: FLOAT.FLOATCollectionStoragePath)
+      let collectionCap = account.capabilities.storage.issue<&FLOAT.Collection>(FLOAT.FLOATCollectionStoragePath)
+      account.capabilities.publish(collectionCap, at: FLOAT.FLOATCollectionPublicPath)
     }
 
     // SETUP FLOATEVENTS
-    if acct.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
-      acct.unlink(FLOAT.FLOATEventsPublicPath)
-      acct.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
-      acct.link<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic, MetadataViews.ResolverCollection}>
-                (FLOAT.FLOATEventsPublicPath, target: FLOAT.FLOATEventsStoragePath)
+    if account.storage.borrow<&FLOAT.FLOATEvents>(from: FLOAT.FLOATEventsStoragePath) == nil {
+      account.capabilities.unpublish(FLOAT.FLOATEventsPublicPath)
+      account.storage.save(<- FLOAT.createEmptyFLOATEventCollection(), to: FLOAT.FLOATEventsStoragePath)
+      let eventsCap = account.capabilities.storage.issue<&FLOAT.FLOATEvents>(FLOAT.FLOATEventsStoragePath)
+      account.capabilities.publish(eventsCap, at: FLOAT.FLOATEventsPublicPath)
     }
 
-    let FLOATEvents: &FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic} = getAccount(host).getCapability(FLOAT.FLOATEventsPublicPath)
-                        .borrow<&FLOAT.FLOATEvents{FLOAT.FLOATEventsPublic}>()
+    let FLOATEvents: &FLOAT.FLOATEvents = getAccount(host).capabilities.borrow<&FLOAT.FLOATEvents>(FLOAT.FLOATEventsPublicPath)
                         ?? panic("Could not borrow the public FLOATEvents from the host.")
     self.FLOATEvent = FLOATEvents.borrowPublicEventRef(eventId: eventId) ?? panic("This event does not exist.")
 
-    self.Collection = acct.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
+    self.Collection = account.storage.borrow<&FLOAT.Collection>(from: FLOAT.FLOATCollectionStoragePath)
                         ?? panic("Could not get the Collection from the signer.")
     
-    self.FlowTokenVault = acct.borrow<&FlowToken.Vault>(from: /storage/flowTokenVault)
+    self.FlowTokenVault = account.storage.borrow<auth(FungibleToken.Withdraw) &FlowToken.Vault>(from: /storage/flowTokenVault)
                             ?? panic("Could not borrow the FlowToken.Vault from the signer.")
   }
 
@@ -52,7 +51,8 @@ transaction(eventId: UInt64, host: Address, secretSig: String?, emailSig: String
  
     // If the FLOAT costs something
     let prices: {String: FLOAT.TokenInfo} = self.FLOATEvent.getPrices() ?? panic("This FLOAT is free.")
-    let payment: @FungibleToken.Vault <- self.FlowTokenVault.withdraw(amount: prices[self.FlowTokenVault.getType().identifier]!.price)
+    let price: UFix64 = prices[self.FlowTokenVault.getType().identifier]!.price
+    let payment: @{FungibleToken.Vault} <- self.FlowTokenVault.withdraw(amount: price)
     self.FLOATEvent.purchase(recipient: self.Collection, params: params, payment: <- payment)
     log("Purchased the FLOAT.")
   }

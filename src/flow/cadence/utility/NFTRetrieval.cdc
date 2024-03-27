@@ -6,9 +6,9 @@ import NFTCatalog from "./NFTCatalog.cdc"
 // A helper contract to get NFT's in a users account
 // leveraging the NFTCatalog Smart Contract
 
-pub contract NFTRetrieval {
+access(all) contract NFTRetrieval {
     
-    pub fun getRecommendedViewsTypes(version: String) : [Type] {
+    access(all) fun getRecommendedViewsTypes(version: String) : [Type] {
         switch version {
             case "v1":
                 return [
@@ -24,7 +24,7 @@ pub contract NFTRetrieval {
         return []
     }
 
-    pub fun getNFTIDsFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [UInt64] {
+    access(all) fun getNFTIDsFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [UInt64] {
         pre {
             NFTCatalog.getCatalog()[collectionIdentifier] != nil : "Invalid collection identifier"
         }
@@ -54,7 +54,7 @@ pub contract NFTRetrieval {
         return []
     }
 
-    pub fun getNFTCountFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : UInt64 {
+    access(all) fun getNFTCountFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : UInt64 {
         pre {
             NFTCatalog.getCatalog()[collectionIdentifier] != nil : "Invalid collection identifier"
         }
@@ -81,7 +81,7 @@ pub contract NFTRetrieval {
         return 0 
     }
 
-    pub fun getNFTViewsFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [MetadataViews.NFTView] {
+    access(all) fun getNFTViewsFromCap(collectionIdentifier: String, collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [MetadataViews.NFTView] {
         pre {
             NFTCatalog.getCatalog()[collectionIdentifier] != nil : "Invalid collection identifier"
         }
@@ -109,7 +109,7 @@ pub contract NFTRetrieval {
         return items
     }
 
-    pub fun getNFTViewsFromIDs(collectionIdentifier : String, ids: [UInt64], collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [MetadataViews.NFTView] {
+    access(all) fun getNFTViewsFromIDs(collectionIdentifier : String, ids: [UInt64], collectionCap : Capability<&AnyResource{MetadataViews.ResolverCollection}>) : [MetadataViews.NFTView] {
         pre {
             NFTCatalog.getCatalog()[collectionIdentifier] != nil : "Invalid collection identifier"
         }
@@ -158,13 +158,13 @@ pub contract NFTRetrieval {
     }
 
     //LEGACY - DO NOT USE
-    pub struct BaseNFTViewsV1 {
-        pub let id: UInt64
-        pub let display: MetadataViews.Display?
-        pub let externalURL: MetadataViews.ExternalURL?
-        pub let collectionData: MetadataViews.NFTCollectionData?
-        pub let collectionDisplay: MetadataViews.NFTCollectionDisplay?
-        pub let royalties: MetadataViews.Royalties?
+    access(all) struct BaseNFTViewsV1 {
+        access(all) let id: UInt64
+        access(all) let display: MetadataViews.Display?
+        access(all) let externalURL: MetadataViews.ExternalURL?
+        access(all) let collectionData: MetadataViews.NFTCollectionData?
+        access(all) let collectionDisplay: MetadataViews.NFTCollectionDisplay?
+        access(all) let royalties: MetadataViews.Royalties?
 
         init(
             id : UInt64,

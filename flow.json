@@ -125,6 +125,24 @@
         "testnet": "631e88ae7f1d7c20"
       }
     },
+    "Burner": {
+      "source": "./src/flow/cadence/utility/Burner.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7"
+      }
+    },
+    "FungibleTokenMetadataViews": {
+      "source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7"
+      }
+    },
+    "FLOATIncinerator": {
+      "source": "./src/flow/cadence/FLOATIncinerator.cdc",
+      "aliases": {
+        "emulator": "f8d6e0586b0a20c7"
+      }
+    },
     "ViewResolver": {
       "source": "./src/flow/cadence/utility/ViewResolver.cdc",
       "aliases": {
@@ -162,14 +180,11 @@
   "deployments": {
     "emulator": {
       "emulator-account": [
+        "Burner",
         "EmeraldIdentity",
         "EmeraldIdentityDapper",
         "EmeraldIdentityLilico",
-        "FCLCrypto",
-        "FindViews",
-        "FIND",
         "FLOAT",
-        "FLOATEventSeries",
         "FLOATVerifiers"
       ]
     },
