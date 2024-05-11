@@ -195,7 +195,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
 						MetadataViews.Royalty(
-							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver) ?? panic("Beneficiary does not have receiver."),
+							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver),
 							cut: 0.05, // 5% royalty on secondary sales
 							description: "Emerald City DAO receives a 5% royalty from secondary sales because this NFT was created using FLOAT (https://floats.city/), a proof of attendance platform created by Emerald City DAO."
 						)
@@ -268,8 +268,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
 
             // Stores a capability to the FLOATEvents of its creator
             self.eventsCap = getAccount(_eventHost).capabilities.get<&FLOATEvents>(FLOAT.FLOATEventsPublicPath)
-                    ?? panic("The associated event does not exist.")
-            
+
             emit FLOATMinted(
                 id: self.id, 
                 eventHost: _eventHost, 
@@ -372,14 +371,17 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // from `ownedNFTs` (not possible after June 2022 spork), 
         // but this makes sure the returned
         // ids are all actually owned by this account.
-        access(all) fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
-            let answer: [UInt64] = []
+        access(all) view fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
+            let ownedNFTRef = &self.ownedNFTs as &{UInt64: {NonFungibleToken.NFT}}
+            var answer: [UInt64] = []
             if let idsInEvent = self.events[eventId]?.keys {
-                for id in idsInEvent {
-                    if self.ownedNFTs[id] != nil {
-                        answer.append(id)
+                answer = idsInEvent.filter(view fun(_ id: UInt64): Bool {
+                    if ownedNFTRef[id] != nil {
+                        return true
+                    } else {
+                        return false
                     }
-                }
+                })
             }
             return answer
         }
@@ -409,7 +411,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
            }
         }
 
-        access(all) fun borrowFLOAT(id: UInt64): &NFT? {
+        access(all) view fun borrowFLOAT(id: UInt64): &NFT? {
             if let nft = &self.ownedNFTs[id] as &{NonFungibleToken.NFT}? {
                 return nft as! &NFT
             }
@@ -442,7 +444,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // A function every verifier must implement. 
         // Will have `assert`s in it to make sure
         // the user fits some criteria.
-        access(account) fun verify(_ params: {String: AnyStruct})
+        access(all) fun verify(_ params: {String: AnyStruct})
     }
 
     // A public interface to read the FLOATEvent
@@ -461,16 +463,16 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         access(all) fun claim(recipient: &Collection, params: {String: AnyStruct})
         access(all) fun purchase(recipient: &Collection, params: {String: AnyStruct}, payment: @{FungibleToken.Vault})
 
-        access(all) fun getExtraMetadata(): {String: AnyStruct}
-        access(all) fun getSpecificExtraMetadata(key: String): AnyStruct?
-        access(all) fun getVerifiers(): {String: [{IVerifier}]}
-        access(all) fun getPrices(): {String: TokenInfo}?
-        access(all) fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
-        access(all) fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
-        access(all) fun getClaims(): {UInt64: TokenIdentifier}
-        access(all) fun getSerialsUserClaimed(address: Address): [UInt64]
-        access(all) fun userHasClaimed(address: Address): Bool
-        access(all) fun userCanMint(address: Address): Bool
+        access(all) view fun getExtraMetadata(): {String: AnyStruct}
+        access(all) view fun getSpecificExtraMetadata(key: String): AnyStruct?
+        access(all) view fun getVerifiers(): {String: [{IVerifier}]}
+        access(all) view fun getPrices(): {String: TokenInfo}?
+        access(all) view fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
+        access(all) view fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
+        access(all) view fun getClaims(): {UInt64: TokenIdentifier}
+        access(all) view fun getSerialsUserClaimed(address: Address): [UInt64]
+        access(all) view fun userHasClaimed(address: Address): Bool
+        access(all) view fun userCanMint(address: Address): Bool
     }
 
     //
@@ -1049,10 +1051,10 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // `dict[key] == nil` means:
         //    1. the key doesn't exist
         //    2. the value for the key is nil
-        if dict[key] == nil || dict[key]!!.getType() != Type<String>() {
+        if dict[key] == nil || dict[key]!.getType() != Type<String>() {
             return nil
         }
-        return dict[key]!! as! String
+        return dict[key]! as! String
     }
 
     /// Function that returns all the Metadata Views implemented by a Non Fungible Token
@@ -1164,4 +1166,3 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         FLOATEvents.createEvent(claimable: true, description: "Test description for a Discord meeting. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Discord Meeting", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "ticket", visibilityMode: "picture", extraMetadata: extraMetadata)
     }
 }
- 

@@ -2,7 +2,7 @@
 
 access(all) contract ArrayUtils {
 
-    access(all) fun rangeFunc(_ start: Int, _ end: Int, _ f : ((Int):Void) ) {
+    access(all) fun rangeFunc(_ start: Int, _ end: Int, _ f : (fun(Int): Void) ) {
         var current = start
         while current < end{
             f(current)
@@ -18,13 +18,13 @@ access(all) contract ArrayUtils {
         return res
     }
 
-    access(all) fun transform(_ array: &[AnyStruct], _ f : ((AnyStruct): AnyStruct)){
+    access(all) fun transform(_ array: auth(Mutate) &[AnyStruct], _ f : (fun(AnyStruct): AnyStruct)){
         for i in self.range(0, array.length){
             array[i] = f(array[i])
         }
     }
 
-    access(all) fun iterate(_ array: [AnyStruct], _ f : ((AnyStruct): Bool)){
+    access(all) fun iterate(_ array: [AnyStruct], _ f : (fun(AnyStruct): Bool)){
         for item in array{
             if !f(item){
                 break
@@ -32,7 +32,7 @@ access(all) contract ArrayUtils {
         }
     }
 
-    access(all) fun map(_ array: [AnyStruct], _ f : ((AnyStruct): AnyStruct)) : [AnyStruct] {
+    access(all) fun map(_ array: [AnyStruct], _ f : (fun(AnyStruct): AnyStruct)) : [AnyStruct] {
         var res : [AnyStruct] = []
         for item in array{
             res.append(f(item))
@@ -40,7 +40,7 @@ access(all) contract ArrayUtils {
         return res
     }
 
-    access(all) fun mapStrings(_ array: [String], _ f: ((String) : String) ) : [String] {
+    access(all) fun mapStrings(_ array: [String], _ f: (fun(String): String) ) : [String] {
         var res : [String] = []
         for item in array{
             res.append(f(item))
@@ -48,7 +48,7 @@ access(all) contract ArrayUtils {
         return res
     }
 
-    access(all) fun reduce(_ array: [AnyStruct], _ initial: AnyStruct, _ f : ((AnyStruct, AnyStruct): AnyStruct)) : AnyStruct{
+    access(all) fun reduce(_ array: [AnyStruct], _ initial: AnyStruct, _ f : (fun(AnyStruct, AnyStruct): AnyStruct)) : AnyStruct{
         var res: AnyStruct = f(initial, array[0])
         for i in self.range(1, array.length){
             res =  f(res, array[i])
