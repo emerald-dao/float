@@ -37,7 +37,7 @@ access(all) contract FCLCrypto {
         )
     }
 
-    priv fun verifySignatures(
+    access(self) fun verifySignatures(
         address: Address,
         message: String,
         keyIndices: [Int],
@@ -92,9 +92,9 @@ access(all) contract FCLCrypto {
         return totalWeight >= 1000.0
     }
 
-    priv let domainSeparationTagFlowUser: String
-    priv let domainSeparationTagFCLUser: String
-    priv let domainSeparationTagAccountProof: String
+    access(self) let domainSeparationTagFlowUser: String
+    access(self) let domainSeparationTagFCLUser: String
+    access(self) let domainSeparationTagAccountProof: String
 
     init() {
         self.domainSeparationTagFlowUser = "FLOW-V0.0-user"

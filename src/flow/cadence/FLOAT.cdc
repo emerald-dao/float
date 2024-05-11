@@ -195,7 +195,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
 						MetadataViews.Royalty(
-							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver) ?? panic("Beneficiary does not have receiver."),
+							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver),
 							cut: 0.05, // 5% royalty on secondary sales
 							description: "Emerald City DAO receives a 5% royalty from secondary sales because this NFT was created using FLOAT (https://floats.city/), a proof of attendance platform created by Emerald City DAO."
 						)
@@ -268,8 +268,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
 
             // Stores a capability to the FLOATEvents of its creator
             self.eventsCap = getAccount(_eventHost).capabilities.get<&FLOATEvents>(FLOAT.FLOATEventsPublicPath)
-                    ?? panic("The associated event does not exist.")
-            
+
             emit FLOATMinted(
                 id: self.id, 
                 eventHost: _eventHost, 
@@ -442,7 +441,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // A function every verifier must implement. 
         // Will have `assert`s in it to make sure
         // the user fits some criteria.
-        access(account) fun verify(_ params: {String: AnyStruct})
+        access(all) fun verify(_ params: {String: AnyStruct})
     }
 
     // A public interface to read the FLOATEvent
@@ -1049,10 +1048,10 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // `dict[key] == nil` means:
         //    1. the key doesn't exist
         //    2. the value for the key is nil
-        if dict[key] == nil || dict[key]!!.getType() != Type<String>() {
+        if dict[key] == nil || dict[key]!.getType() != Type<String>() {
             return nil
         }
-        return dict[key]!! as! String
+        return dict[key]! as! String
     }
 
     /// Function that returns all the Metadata Views implemented by a Non Fungible Token
