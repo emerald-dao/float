@@ -371,14 +371,17 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // from `ownedNFTs` (not possible after June 2022 spork), 
         // but this makes sure the returned
         // ids are all actually owned by this account.
-        access(all) fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
-            let answer: [UInt64] = []
+        access(all) view fun ownedIdsFromEvent(eventId: UInt64): [UInt64] {
+            let ownedNFTRef = &self.ownedNFTs as &{UInt64: {NonFungibleToken.NFT}}
+            var answer: [UInt64] = []
             if let idsInEvent = self.events[eventId]?.keys {
-                for id in idsInEvent {
-                    if self.ownedNFTs[id] != nil {
-                        answer.append(id)
+                answer = idsInEvent.filter(view fun(_ id: UInt64): Bool {
+                    if ownedNFTRef[id] != nil {
+                        return true
+                    } else {
+                        return false
                     }
-                }
+                })
             }
             return answer
         }
@@ -408,7 +411,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
            }
         }
 
-        access(all) fun borrowFLOAT(id: UInt64): &NFT? {
+        access(all) view fun borrowFLOAT(id: UInt64): &NFT? {
             if let nft = &self.ownedNFTs[id] as &{NonFungibleToken.NFT}? {
                 return nft as! &NFT
             }
@@ -460,16 +463,16 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         access(all) fun claim(recipient: &Collection, params: {String: AnyStruct})
         access(all) fun purchase(recipient: &Collection, params: {String: AnyStruct}, payment: @{FungibleToken.Vault})
 
-        access(all) fun getExtraMetadata(): {String: AnyStruct}
-        access(all) fun getSpecificExtraMetadata(key: String): AnyStruct?
-        access(all) fun getVerifiers(): {String: [{IVerifier}]}
-        access(all) fun getPrices(): {String: TokenInfo}?
-        access(all) fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
-        access(all) fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
-        access(all) fun getClaims(): {UInt64: TokenIdentifier}
-        access(all) fun getSerialsUserClaimed(address: Address): [UInt64]
-        access(all) fun userHasClaimed(address: Address): Bool
-        access(all) fun userCanMint(address: Address): Bool
+        access(all) view fun getExtraMetadata(): {String: AnyStruct}
+        access(all) view fun getSpecificExtraMetadata(key: String): AnyStruct?
+        access(all) view fun getVerifiers(): {String: [{IVerifier}]}
+        access(all) view fun getPrices(): {String: TokenInfo}?
+        access(all) view fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
+        access(all) view fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
+        access(all) view fun getClaims(): {UInt64: TokenIdentifier}
+        access(all) view fun getSerialsUserClaimed(address: Address): [UInt64]
+        access(all) view fun userHasClaimed(address: Address): Bool
+        access(all) view fun userCanMint(address: Address): Bool
     }
 
     //
@@ -1163,4 +1166,3 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         FLOATEvents.createEvent(claimable: true, description: "Test description for a Discord meeting. This is soooo fun! Woohoo!", image: "bafybeifpsnwb2vkz4p6nxhgsbwgyslmlfd7jyicx5ukbj3tp7qsz7myzrq", name: "Discord Meeting", transferrable: true, url: "", verifiers: verifiers, allowMultipleClaim: false, certificateType: "ticket", visibilityMode: "picture", extraMetadata: extraMetadata)
     }
 }
- 
