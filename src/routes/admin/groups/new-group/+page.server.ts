@@ -9,16 +9,20 @@ export const actions = {
 		const groupDescription = formData.get('description') as string | undefined;
 		const userAddress = formData.get('user_address') as string;
 
-		const { data: user } = await serviceSupabase.from('users').select('id').eq('address', userAddress);
+		const { data: user } = await serviceSupabase
+			.from('users')
+			.select('id')
+			.eq('address', userAddress);
 
 		if (!user) {
 			await serviceSupabase.from('users').insert({ address: userAddress });
 		}
 
 		const { data, error } = await serviceSupabase
-			.from('groups')
-			.insert({ name: groupName, description: groupDescription, user_address: userAddress })
-			.select();
+			.from('float_groups')
+			.insert({ name: groupName, description: groupDescription, user_address: userAddress });
+
+		console.log(error);
 
 		if (error) {
 			return {

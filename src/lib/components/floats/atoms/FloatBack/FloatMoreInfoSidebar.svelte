@@ -28,7 +28,7 @@
 			dbCallMade = true;
 
 			const { data, error } = await supabase
-				.from('claims')
+				.from('float_claims')
 				.select('transaction_id, block_id, network')
 				.eq('float_id', float.id)
 				.eq('network', network)

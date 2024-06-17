@@ -17,13 +17,13 @@
 	// 	const userAddresses: string[] = [];
 
 	// 	const subscription = supabase
-	// 		.channel('claims')
+	// 		.channel('float_claims')
 	// 		.on(
 	// 			'postgres_changes',
 	// 			{
 	// 				event: 'INSERT',
 	// 				schema: 'public',
-	// 				table: 'claims',
+	// 				table: 'float_claims',
 	// 				filter: `network=eq.${network}`
 	// 			},
 	// 			async (payload) => {
@@ -67,7 +67,7 @@
 		user_address: string;
 		float_id: string;
 		serial: string;
-		events: {
+		float_events: {
 			created_at: string | null;
 			creator_address: string;
 			id: string;

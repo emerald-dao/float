@@ -5,7 +5,7 @@ export async function GET({ params }) {
 	const { userAddress } = params;
 
 	const { data, error } = await serviceSupabase
-		.from('pinned_floats')
+		.from('float_pinned_floats')
 		.select('float_id, network')
 		.eq('user_address', userAddress);
 

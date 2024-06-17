@@ -12,7 +12,7 @@ export const actions = {
 
 		for (let i = 0; i < floatIds.length; i++) {
 			const { error } = await serviceSupabase
-				.from('floats_groups')
+				.from('float_floats_groups')
 				.insert({ float_id: floatIds[i], group_id: groupId });
 
 			if (error) {
@@ -26,7 +26,7 @@ export const actions = {
 
 		const groupId = data.get('groupId') as string;
 
-		const { error } = await serviceSupabase.from('groups').delete().eq('id', groupId);
+		const { error } = await serviceSupabase.from('float_groups').delete().eq('id', groupId);
 
 		if (error) {
 			console.log(error);
@@ -42,7 +42,7 @@ export const actions = {
 		const floatId = data.get('floatId') as string;
 
 		const { error } = await serviceSupabase
-			.from('floats_groups')
+			.from('float_floats_groups')
 			.delete()
 			.eq('float_id', floatId)
 			.eq('group_id', groupId);

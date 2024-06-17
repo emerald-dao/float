@@ -13,7 +13,11 @@ export async function POST({ request, params }) {
 
 	const { user, eventId, eventCreatorAddress, blockId, transactionId, serial } = data;
 
-	const { data: existingRow, error } = await serviceSupabase.from('events').select('id, network').eq('id', eventId).eq('network', network);
+	const { data: existingRow, error } = await serviceSupabase
+		.from('float_events')
+		.select('id, network')
+		.eq('id', eventId)
+		.eq('network', network);
 
 	if (error) {
 		return new Response(JSON.stringify({ error: 'Error checking for existing event' }), {
@@ -22,17 +26,15 @@ export async function POST({ request, params }) {
 	}
 
 	if (existingRow.length > 0) {
-		const { error } = await serviceSupabase
-			.from('claims')
-			.insert({
-				float_id: params.claimId,
-				user_address: user.addr,
-				event_id: eventId,
-				block_id: blockId,
-				transaction_id: transactionId,
-				network,
-				serial
-			});
+		const { error } = await serviceSupabase.from('float_claims').insert({
+			float_id: params.claimId,
+			user_address: user.addr,
+			event_id: eventId,
+			block_id: blockId,
+			transaction_id: transactionId,
+			network,
+			serial
+		});
 
 		if (error) {
 			return new Response(JSON.stringify({ error: 'Error adding claim' }), { status: 401 });
@@ -42,7 +44,7 @@ export async function POST({ request, params }) {
 	} else {
 		// If the primary key value doesn't exist, create a new row in the first table
 		const { error } = await serviceSupabase
-			.from('events')
+			.from('float_events')
 			.insert({ id: eventId, creator_address: eventCreatorAddress, network });
 
 		if (error) {
@@ -50,17 +52,15 @@ export async function POST({ request, params }) {
 		} else {
 			console.log('Event added');
 
-			const { error } = await serviceSupabase
-				.from('claims')
-				.insert({
-					float_id: params.claimId,
-					user_address: user.addr,
-					event_id: eventId,
-					block_id: blockId,
-					transaction_id: transactionId,
-					network,
-					serial
-				});
+			const { error } = await serviceSupabase.from('float_claims').insert({
+				float_id: params.claimId,
+				user_address: user.addr,
+				event_id: eventId,
+				block_id: blockId,
+				transaction_id: transactionId,
+				network,
+				serial
+			});
 
 			if (error) {
 				return new Response(JSON.stringify({ error: 'Error adding claim' }), { status: 401 });

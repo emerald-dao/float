@@ -3,7 +3,7 @@ import { serviceSupabase } from '$lib/server/supabaseClient';
 
 export async function GET() {
 	const { data: claimsData, error: claimsError } = await serviceSupabase
-		.from('claims')
+		.from('float_claims')
 		.select('event_id, network')
 		.eq('network', network)
 		.order('created_at', { ascending: false })
@@ -32,7 +32,7 @@ export async function GET() {
 	}
 
 	const { data: eventsData, error: eventsError } = await serviceSupabase
-		.from('events')
+		.from('float_events')
 		.select('id , creator_address, network')
 		.eq('network', network)
 		.in('id', mostFrequentEventIds);
