@@ -1,197 +1,198 @@
 {
-  "contracts": {
-    "FCLCrypto": {
-      "source": "./src/flow/cadence/utility/FCLCrypto.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
-      }
-    },
-    "FIND": {
-      "source": "./src/flow/cadence/utility/FIND.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "097bafa4e0b48eef",
-        "testnet": "35717efbbce11c74"
-      }
-    },
-    "FLOAT": {
-      "source": "./src/flow/cadence/FLOAT.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "4d47bf3ce5e4393f",
-        "mainnet": "2d4c3caffbeab845"
-      }
-    },
-    "FLOATVerifiers": {
-      "source": "./src/flow/cadence/FLOATVerifiers.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "4d47bf3ce5e4393f",
-        "mainnet": "2d4c3caffbeab845"
-      }
-    },
-    "FLOATEventSeries": {
-      "source": "./src/flow/cadence/utility/FLOATEventSeries.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "testnet": "78ba14dd1c817ec7",
-        "mainnet": "1dd5caae66e2c440"
-      }
-    },
-    "GrantedAccountAccess": {
-      "source": "./src/flow/cadence/GrantedAccountAccess.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "2d4c3caffbeab845"
-      }
-    },
-    "FUSD": {
-      "source": "./src/flow/cadence/utility/FUSD.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "3c5959b568896393",
-        "testnet": "e223d8a629e49c68"
-      }
-    },
-    "FindViews": {
-      "source": "./src/flow/cadence/utility/FindViews.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "097bafa4e0b48eef",
-        "testnet": "35717efbbce11c74"
-      }
-    },
-    "FlowToken": {
-      "source": "./src/flow/cadence/utility/FlowToken.cdc",
-      "aliases": {
-        "emulator": "0ae53cb6e3f42a79",
-        "mainnet": "1654653399040a61",
-        "testnet": "7e60df042a9c0868"
-      }
-    },
-    "FungibleToken": {
-      "source": "./src/flow/cadence/utility/FungibleToken.cdc",
-      "aliases": {
-        "emulator": "ee82856bf20e2aa6",
-        "mainnet": "f233dcee88fe0abe",
-        "testnet": "9a0766d93b6608b7"
-      }
-    },
-    "EmeraldIdentity": {
-      "source": "./src/flow/cadence/utility/EmeraldIdentity.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "39e42c67cc851cfb",
-        "testnet": "4d47bf3ce5e4393f"
-      }
-    },
-    "EmeraldIdentityDapper": {
-      "source": "./src/flow/cadence/utility/EmeraldIdentityDapper.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "39e42c67cc851cfb",
-        "testnet": "4d47bf3ce5e4393f"
-      }
-    },
-    "EmeraldIdentityLilico": {
-      "source": "./src/flow/cadence/utility/EmeraldIdentityLilico.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "39e42c67cc851cfb",
-        "testnet": "4d47bf3ce5e4393f"
-      }
-    },
-    "MetadataViews": {
-      "source": "./src/flow/cadence/utility/MetadataViews.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "1d7e57aa55817448",
-        "testnet": "631e88ae7f1d7c20"
-      }
-    },
-    "NFTCatalog": {
-      "source": "./src/flow/cadence/utility/NFTCatalog.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "49a7cda3a1eecc29",
-        "testnet": "324c34e1c517e4db"
-      }
-    },
-    "NonFungibleToken": {
-      "source": "./src/flow/cadence/utility/NonFungibleToken.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "1d7e57aa55817448",
-        "testnet": "631e88ae7f1d7c20"
-      }
-    },
-    "Burner": {
-      "source": "./src/flow/cadence/utility/Burner.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
-      }
-    },
-    "FungibleTokenMetadataViews": {
-      "source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
-      }
-    },
-    "FLOATIncinerator": {
-      "source": "./src/flow/cadence/FLOATIncinerator.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7"
-      }
-    },
-    "ViewResolver": {
-      "source": "./src/flow/cadence/utility/ViewResolver.cdc",
-      "aliases": {
-        "emulator": "f8d6e0586b0a20c7",
-        "mainnet": "1d7e57aa55817448",
-        "testnet": "631e88ae7f1d7c20"
-      }
-    }
-  },
-  "networks": {
-    "emulator": "127.0.0.1:3569",
-    "mainnet": "access.mainnet.nodes.onflow.org:9000",
-    "testnet": "access.devnet.nodes.onflow.org:9000"
-  },
-  "accounts": {
-    "emulator-account": {
-      "address": "f8d6e0586b0a20c7",
-      "key": "fc49a771829ff480841164af13b18a68cd697b6e79c80af7f8470a9e651dfac5"
-    },
-    "testnet-account": {
-      "address": "4d47bf3ce5e4393f",
-      "key": {
-        "type": "file",
-        "location": "testnet-account.pkey"
-      }
-    },
-    "mainnet-account": {
-      "address": "2d4c3caffbeab845",
-      "key": {
-        "type": "file",
-        "location": "mainnet-account.pkey"
-      }
-    }
-  },
-  "deployments": {
-    "emulator": {
-      "emulator-account": [
-        "Burner",
-        "EmeraldIdentity",
-        "EmeraldIdentityDapper",
-        "EmeraldIdentityLilico",
-        "FLOAT",
-        "FLOATVerifiers"
-      ]
-    },
-    "mainnet": {
-      "mainnet-account": [
-        "FLOAT"
-      ]
-    }
-  }
+	"contracts": {
+		"FCLCrypto": {
+			"source": "./src/flow/cadence/utility/FCLCrypto.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"FIND": {
+			"source": "./src/flow/cadence/utility/FIND.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "097bafa4e0b48eef",
+				"testnet": "35717efbbce11c74"
+			}
+		},
+		"FLOAT": {
+			"source": "./src/flow/cadence/FLOAT.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "4d47bf3ce5e4393f",
+				"mainnet": "2d4c3caffbeab845"
+			}
+		},
+		"FLOATVerifiers": {
+			"source": "./src/flow/cadence/FLOATVerifiers.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "4d47bf3ce5e4393f",
+				"mainnet": "2d4c3caffbeab845"
+			}
+		},
+		"FLOATEventSeries": {
+			"source": "./src/flow/cadence/utility/FLOATEventSeries.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"testnet": "78ba14dd1c817ec7",
+				"mainnet": "1dd5caae66e2c440"
+			}
+		},
+		"GrantedAccountAccess": {
+			"source": "./src/flow/cadence/GrantedAccountAccess.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "2d4c3caffbeab845"
+			}
+		},
+		"FUSD": {
+			"source": "./src/flow/cadence/utility/FUSD.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "3c5959b568896393",
+				"testnet": "e223d8a629e49c68"
+			}
+		},
+		"FindViews": {
+			"source": "./src/flow/cadence/utility/FindViews.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "097bafa4e0b48eef",
+				"testnet": "35717efbbce11c74"
+			}
+		},
+		"FlowToken": {
+			"source": "./src/flow/cadence/utility/FlowToken.cdc",
+			"aliases": {
+				"emulator": "0ae53cb6e3f42a79",
+				"mainnet": "1654653399040a61",
+				"testnet": "7e60df042a9c0868"
+			}
+		},
+		"FungibleToken": {
+			"source": "./src/flow/cadence/utility/FungibleToken.cdc",
+			"aliases": {
+				"emulator": "ee82856bf20e2aa6",
+				"mainnet": "f233dcee88fe0abe",
+				"testnet": "9a0766d93b6608b7"
+			}
+		},
+		"EmeraldIdentity": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentity.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
+		"EmeraldIdentityDapper": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentityDapper.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
+		"EmeraldIdentityLilico": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentityLilico.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
+		"MetadataViews": {
+			"source": "./src/flow/cadence/utility/MetadataViews.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"NFTCatalog": {
+			"source": "./src/flow/cadence/utility/NFTCatalog.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "49a7cda3a1eecc29",
+				"testnet": "324c34e1c517e4db"
+			}
+		},
+		"NonFungibleToken": {
+			"source": "./src/flow/cadence/utility/NonFungibleToken.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		},
+		"Burner": {
+			"source": "./src/flow/cadence/utility/Burner.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"FungibleTokenMetadataViews": {
+			"source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"FLOATIncinerator": {
+			"source": "./src/flow/cadence/FLOATIncinerator.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"ViewResolver": {
+			"source": "./src/flow/cadence/utility/ViewResolver.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "1d7e57aa55817448",
+				"testnet": "631e88ae7f1d7c20"
+			}
+		}
+	},
+	"networks": {
+		"emulator": "127.0.0.1:3569",
+		"mainnet": "access.mainnet.nodes.onflow.org:9000",
+		"testnet": "access.devnet.nodes.onflow.org:9000"
+	},
+	"accounts": {
+		"emulator-account": {
+			"address": "f8d6e0586b0a20c7",
+			"key": "fc49a771829ff480841164af13b18a68cd697b6e79c80af7f8470a9e651dfac5"
+		},
+		"testnet-account": {
+			"address": "857dc34d5e1631d3",
+			"key": {
+				"type": "file",
+				"location": "testnet-account.pkey"
+			}
+		},
+		"mainnet-account": {
+			"address": "2d4c3caffbeab845",
+			"key": {
+				"type": "file",
+				"location": "mainnet-account.pkey"
+			}
+		}
+	},
+	"deployments": {
+		"emulator": {
+			"emulator-account": [
+				"Burner",
+				"EmeraldIdentity",
+				"EmeraldIdentityDapper",
+				"EmeraldIdentityLilico",
+				"FLOAT",
+				"FLOATVerifiers"
+			]
+		},
+		"mainnet": {
+			"mainnet-account": ["FLOAT"]
+		},
+		"testnet": {
+			"testnet-account": ["FLOAT", "FLOATVerifiers"]
+		}
+	}
 }

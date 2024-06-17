@@ -41,7 +41,7 @@ access(all) contract FLOATVerifiers {
         access(all) let dateStart: UFix64
         access(all) let dateEnding: UFix64
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             assert(
                 getCurrentBlock().timestamp >= self.dateStart,
                 message: "This FLOAT Event has not started yet."
@@ -67,7 +67,7 @@ access(all) contract FLOATVerifiers {
         // The secret code, set by the owner of this event.
         access(self) let secretPhrase: String
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let secretPhrase = params["secretPhrase"]! as! String
             assert(
                 self.secretPhrase == secretPhrase, 
@@ -90,7 +90,7 @@ access(all) contract FLOATVerifiers {
     access(all) struct Limited: FLOAT.IVerifier {
         access(all) var capacity: UInt64
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let floatEvent = params["event"]! as! &FLOAT.FLOATEvent
             let currentCapacity = floatEvent.totalSupply
             assert(
@@ -113,7 +113,7 @@ access(all) contract FLOATVerifiers {
     access(all) struct MultipleSecret: FLOAT.IVerifier {
         access(self) let secrets: {String: Bool}
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let secretPhrase = params["secretPhrase"]! as! String
             assert(
                 self.secrets[secretPhrase] != nil, 
@@ -137,7 +137,7 @@ access(all) contract FLOATVerifiers {
     access(all) struct SecretV2: FLOAT.IVerifier {
         access(all) let publicKey: String
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let data: [UInt8] = (params["claimee"]! as! Address).toString().utf8
             let sig: [UInt8] = (params["secretSig"]! as! String).decodeHex()
             let publicKey = PublicKey(publicKey: self.publicKey.decodeHex(), signatureAlgorithm: SignatureAlgorithm.ECDSA_P256)
@@ -162,7 +162,7 @@ access(all) contract FLOATVerifiers {
     access(all) struct MinimumBalance: FLOAT.IVerifier {
         access(all) let amount: UFix64
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let claimee: Address = params["claimee"]! as! Address
             let flowVault = getAccount(claimee).capabilities.borrow<&FlowToken.Vault>(/public/flowTokenBalance)
                                 ?? panic("Could not borrow the Flow Token Vault")
@@ -187,7 +187,7 @@ access(all) contract FLOATVerifiers {
     //     access(all) let challengeIdentifier: FLOATEventSeries.EventSeriesIdentifier
     //     access(all) let challengeThresholdPoints: UInt64
 
-    //     access(all) fun verify(_ params: {String: AnyStruct}) {
+    //     access(account) fun verify(_ params: {String: AnyStruct}) {
     //         let claimee: Address = params["claimee"]! as! Address
     //         if let achievementBoard = getAccount(claimee)
     //             .getCapability(FLOATEventSeries.FLOATAchievementBoardPublicPath)
@@ -226,7 +226,7 @@ access(all) contract FLOATVerifiers {
     access(all) struct Email: FLOAT.IVerifier {
         access(all) let publicKey: String
 
-        access(all) fun verify(_ params: {String: AnyStruct}) {
+        access(account) fun verify(_ params: {String: AnyStruct}) {
             let floatEvent = params["event"]! as! &FLOAT.FLOATEvent
             let claimeeAddressAsString: String = (params["claimee"]! as! Address).toString()
             let messageString: String = claimeeAddressAsString.concat(" provided email for eventId ").concat(floatEvent.eventId.toString())

@@ -29,6 +29,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
 
     access(all) entitlement EventOwner
     access(all) entitlement EventsOwner
+    access(all) entitlement CollectionOwner
 
     /***********************************************/
     /******************** PATHS ********************/
@@ -195,7 +196,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
                 case Type<MetadataViews.Royalties>():
                     return MetadataViews.Royalties([
 						MetadataViews.Royalty(
-							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver) ?? panic("Beneficiary does not have receiver."),
+							receiver: getAccount(0x5643fd47a29770e7).capabilities.get<&{FungibleToken.Receiver}>(/public/flowTokenReceiver),
 							cut: 0.05, // 5% royalty on secondary sales
 							description: "Emerald City DAO receives a 5% royalty from secondary sales because this NFT was created using FLOAT (https://floats.city/), a proof of attendance platform created by Emerald City DAO."
 						)
@@ -268,7 +269,6 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
 
             // Stores a capability to the FLOATEvents of its creator
             self.eventsCap = getAccount(_eventHost).capabilities.get<&FLOATEvents>(FLOAT.FLOATEventsPublicPath)
-                    ?? panic("The associated event does not exist.")
             
             emit FLOATMinted(
                 id: self.id, 
@@ -293,11 +293,13 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         // }
     }
 
+    access(all) resource interface CollectionPublic {}
+
     // A Collection that holds all of the users FLOATs.
     // Withdrawing is not allowed. You can only transfer.
-    access(all) resource Collection: NonFungibleToken.Collection {
+    access(all) resource Collection: NonFungibleToken.Collection, CollectionPublic {
         // Maps a FLOAT id to the FLOAT itself
-        access(self) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
+        access(all) var ownedNFTs: @{UInt64: {NonFungibleToken.NFT}}
         // Maps an eventId to the ids of FLOATs that
         // this user owns from that event. It's possible
         // for it to be out of sync until June 2022 spork, 
@@ -323,7 +325,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
             self.ownedNFTs[id] <-! nft
         }
 
-        access(NonFungibleToken.Withdraw | NonFungibleToken.Owner) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
+        access(NonFungibleToken.Withdraw) fun withdraw(withdrawID: UInt64): @{NonFungibleToken.NFT} {
             let token <- self.ownedNFTs.remove(key: withdrawID) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
 
@@ -347,7 +349,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
             return <- nft
         }
 
-        access(NonFungibleToken.Owner) fun delete(id: UInt64) {
+        access(CollectionOwner) fun delete(id: UInt64) {
             let token <- self.ownedNFTs.remove(key: id) ?? panic("You do not own this FLOAT in your collection")
             let nft <- token as! @NFT
 
@@ -445,38 +447,12 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
         access(account) fun verify(_ params: {String: AnyStruct})
     }
 
-    // A public interface to read the FLOATEvent
-    access(all) resource interface FLOATEventPublic {
-        access(all) var claimable: Bool
-        access(all) let dateCreated: UFix64
-        access(all) let description: String 
-        access(all) let eventId: UInt64
-        access(all) let host: Address
-        access(all) let image: String 
-        access(all) let name: String
-        access(all) var totalSupply: UInt64
-        access(all) var transferrable: Bool
-        access(all) let url: String
-
-        access(all) fun claim(recipient: &Collection, params: {String: AnyStruct})
-        access(all) fun purchase(recipient: &Collection, params: {String: AnyStruct}, payment: @{FungibleToken.Vault})
-
-        access(all) fun getExtraMetadata(): {String: AnyStruct}
-        access(all) fun getSpecificExtraMetadata(key: String): AnyStruct?
-        access(all) fun getVerifiers(): {String: [{IVerifier}]}
-        access(all) fun getPrices(): {String: TokenInfo}?
-        access(all) fun getExtraFloatMetadata(serial: UInt64): {String: AnyStruct}
-        access(all) fun getSpecificExtraFloatMetadata(serial: UInt64, key: String): AnyStruct?
-        access(all) fun getClaims(): {UInt64: TokenIdentifier}
-        access(all) fun getSerialsUserClaimed(address: Address): [UInt64]
-        access(all) fun userHasClaimed(address: Address): Bool
-        access(all) fun userCanMint(address: Address): Bool
-    }
+    access(all) resource interface FLOATEventPublic {}
 
     //
     // FLOATEvent
     //
-    access(all) resource FLOATEvent {
+    access(all) resource FLOATEvent: FLOATEventPublic, ViewResolver.Resolver {
         // Whether or not users can claim from our event (can be toggled
         // at any time)
         access(all) var claimable: Bool
@@ -896,8 +872,10 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
     // FLOATEvents
     //
 
+    access(all) resource interface FLOATEventsPublic {}
+
     // A "Collection" of FLOAT Events
-    access(all) resource FLOATEvents {
+    access(all) resource FLOATEvents: FLOATEventsPublic, ViewResolver.ResolverCollection {
         // All the FLOAT Events this collection stores
         access(self) var events: @{UInt64: FLOATEvent}
         // DEPRECATED
@@ -993,7 +971,7 @@ access(all) contract FLOAT: NonFungibleToken, ViewResolver {
             return &self.events[eventId] as &FLOATEvent?
         }
 
-        access(all) fun getIDs(): [UInt64] {
+        access(all) view fun getIDs(): [UInt64] {
             return self.events.keys
         }
 

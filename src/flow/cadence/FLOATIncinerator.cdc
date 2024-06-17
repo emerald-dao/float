@@ -16,7 +16,7 @@ access(all) contract FLOATIncinerator {
     access(all) var contributedStrength: UInt64
     access(self) var extraMetadata: {String: String}
 
-    access(Owner) fun burn(collection: auth(NonFungibleToken.Owner) &FLOAT.Collection, ids: [UInt64]) {
+    access(Owner) fun burn(collection: auth(FLOAT.CollectionOwner) &FLOAT.Collection, ids: [UInt64]) {
       let length = ids.length
       
       for id in ids {
