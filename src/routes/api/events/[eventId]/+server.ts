@@ -13,7 +13,7 @@ export async function POST({ request, params }) {
 		return new Response(JSON.stringify({ error: 'Error verifying user' }), { status: 401 });
 	}
 
-	const { error } = await serviceSupabase.from('events').insert({
+	const { error } = await serviceSupabase.from('float_events').insert({
 		id: params.eventId,
 		creator_address: user.addr,
 		network
@@ -30,7 +30,7 @@ export async function POST({ request, params }) {
 
 export async function GET({ params }) {
 	const { data, error } = await serviceSupabase
-		.from('events')
+		.from('float_events')
 		.select('id , creator_address, network')
 		.eq('network', network)
 		.in('id', [params.eventId]);

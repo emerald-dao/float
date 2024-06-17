@@ -1,5 +1,5 @@
 create policy "Enable read access for all users"
-on "public"."claims"
+on "public"."float_claims"
 as permissive
 for select
 to public

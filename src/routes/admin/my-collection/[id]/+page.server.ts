@@ -9,7 +9,7 @@ export const actions = {
 		const network = data.get('network') as string;
 
 		const { error } = await serviceSupabase
-			.from('pinned_floats')
+			.from('float_pinned_floats')
 			.insert({ float_id: floatId, user_address: userAddress, network: network });
 
 		if (error) {
@@ -22,7 +22,10 @@ export const actions = {
 
 		const floatId = data.get('floatId') as string;
 
-		const { error } = await serviceSupabase.from('pinned_floats').delete().eq('float_id', floatId);
+		const { error } = await serviceSupabase
+			.from('float_pinned_floats')
+			.delete()
+			.eq('float_id', floatId);
 
 		if (error) {
 			console.log(error);

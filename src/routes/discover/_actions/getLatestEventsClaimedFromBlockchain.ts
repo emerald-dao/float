@@ -6,8 +6,8 @@ const getLatestEventsClaimedFromBlockchain = async () => {
 
 	let eventsData = response?.map((event) => {
 		return {
-			creator_address: event.events?.creator_address as string,
-			id: event.events?.id as string
+			creator_address: event.float_events?.creator_address as string,
+			id: event.float_events?.id as string
 		};
 	});
 

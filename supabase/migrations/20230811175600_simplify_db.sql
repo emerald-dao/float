@@ -1,8 +1,8 @@
 drop policy "Enable read access for all users" on "public"."users";
 
-alter table "public"."floats_groups" drop constraint "floats_groups_float_id_fkey";
+alter table "public"."float_floats_groups" drop constraint "floats_groups_float_id_fkey";
 
-alter table "public"."groups" drop constraint "groups_user_address_fkey";
+alter table "public"."float_groups" drop constraint "groups_user_address_fkey";
 
 alter table "public"."floats" drop constraint "events_pkey";
 

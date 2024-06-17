@@ -1,16 +1,16 @@
 insert into
-groups (id, user_address, name, description)
+float_groups (id, user_address, name, description)
 values
 (1, '0x99bd48c8036e2876', 'Wonderful Group', 'This is a wonderful group'),
 (2, '0x99bd48c8036e2876', 'Another Group', 'This is another group');
 
 insert into
-floats_groups (float_id, group_id)
+float_floats_groups (float_id, group_id)
 values
 ('187900113', 1), ('196985252', 1), ('242885523', 2);
 
 insert into
-events (id, creator_address)
+float_events (id, creator_address)
 values
 ('1232913873', '0x5af9ffa987753610'),
 ('510073937', '0x18869786f65b39e5'),
@@ -18,7 +18,7 @@ values
 ('187813244', '0x99bd48c8036e2876');
 
 insert into
-claims (float_id, event_id, user_address)
+float_claims (float_id, event_id, user_address)
 values
 ('456789876543243241', '1232913873', '0x5af9ffa987753610'),
 ('456789876543243242', '1232913873', '0x5af9ffa987753610'),
@@ -64,7 +64,7 @@ values
 ('456789876543243282', '1228963693', '0x5af9ffa987753610');
 
 insert into
-pinned_floats (float_id, user_address)
+float_pinned_floats (float_id, user_address)
 values
 ('456789876543243278', '0xdfbad4846d532a94'),
 ('456789876543243279', '0xdfbad4846d532a94'),

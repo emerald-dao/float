@@ -3,8 +3,8 @@ import { serviceSupabase } from '$lib/server/supabaseClient';
 
 export async function GET() {
 	const { data: claimsData, error: claimsError } = await serviceSupabase
-		.from('claims')
-		.select('event_id, user_address, float_id, serial, events (*)')
+		.from('float_claims')
+		.select('event_id, user_address, float_id, serial, float_events (*)')
 		.eq('network', network)
 		.order('created_at', { ascending: false })
 		.limit(10);

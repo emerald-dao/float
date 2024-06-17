@@ -9,8 +9,8 @@ export async function GET({ url, params }) {
 
 	if (withFloatsIds) {
 		const { data, error } = await supabase
-			.from('groups')
-			.select(`*, floats_groups (float_id)`)
+			.from('float_groups')
+			.select(`*, float_floats_groups (float_id)`)
 			.eq('user_address', userAddress)
 			.eq('id', groupId)
 			.single();
@@ -21,13 +21,13 @@ export async function GET({ url, params }) {
 
 		const shapedData: GroupWithFloatsIds = {
 			...data,
-			floatsIds: data.floats_groups.map((float) => float.float_id)
+			floatsIds: data.float_floats_groups.map((float) => float.float_id)
 		};
 
 		return new Response(JSON.stringify(shapedData));
 	} else {
 		const { data, error } = await supabase
-			.from('groups')
+			.from('float_groups')
 			.select('*')
 			.eq('user_address', userAddress)
 			.eq('id', groupId)
