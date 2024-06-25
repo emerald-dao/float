@@ -42,11 +42,11 @@ pub struct FLOATEventMetadata {
       let extraMetadata = event.getExtraMetadata()
       self.host = event.host
       if let backImage = FLOAT.extraMetadataToStrOpt(extraMetadata, "backImage") {
-        self.backImage = "https://nftstorage.link/ipfs/".concat(backImage)
+        self.backImage = "https://ipfs.io/ipfs/".concat(backImage)
       } else {
         self.backImage = nil
       }
-      self.image = "https://nftstorage.link/ipfs/".concat(event.image)
+      self.image = "https://ipfs.io/ipfs/".concat(event.image)
       self.name = event.name
       self.transferrable = event.transferrable
       self.totalSupply = event.totalSupply
