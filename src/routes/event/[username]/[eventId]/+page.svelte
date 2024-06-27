@@ -28,6 +28,8 @@
 	let requireEmail = data.event.verifiers.requireEmail != undefined;
 
 	let seeMore = false;
+
+	console.log(data);
 </script>
 
 {#if data.event.description}
@@ -129,7 +131,7 @@
 		event={data.event}
 		{secretCode}
 		{requireEmail}
-		free={data.event.price !== null || Number(data.event.price) === 0}
+		free={data.event.price == null || Number(data.event.price) === 0}
 	/>
 </section>
 <section class="container-small claims-wrapper">
