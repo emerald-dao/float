@@ -1,5 +1,35 @@
 {
 	"contracts": {
+		"Burner": {
+			"source": "./src/flow/cadence/utility/Burner.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"EmeraldIdentity": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentity.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
+		"EmeraldIdentityDapper": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentityDapper.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
+		"EmeraldIdentityLilico": {
+			"source": "./src/flow/cadence/utility/EmeraldIdentityLilico.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7",
+				"mainnet": "39e42c67cc851cfb",
+				"testnet": "4d47bf3ce5e4393f"
+			}
+		},
 		"FCLCrypto": {
 			"source": "./src/flow/cadence/utility/FCLCrypto.cdc",
 			"aliases": {
@@ -18,31 +48,30 @@
 			"source": "./src/flow/cadence/FLOAT.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
-				"testnet": "4d47bf3ce5e4393f",
-				"mainnet": "2d4c3caffbeab845"
-			}
-		},
-		"FLOATVerifiers": {
-			"source": "./src/flow/cadence/FLOATVerifiers.cdc",
-			"aliases": {
-				"emulator": "f8d6e0586b0a20c7",
-				"testnet": "4d47bf3ce5e4393f",
-				"mainnet": "2d4c3caffbeab845"
+				"mainnet": "2d4c3caffbeab845",
+				"testnet": "857dc34d5e1631d3"
 			}
 		},
 		"FLOATEventSeries": {
 			"source": "./src/flow/cadence/utility/FLOATEventSeries.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
-				"testnet": "78ba14dd1c817ec7",
-				"mainnet": "1dd5caae66e2c440"
+				"mainnet": "1dd5caae66e2c440",
+				"testnet": "78ba14dd1c817ec7"
 			}
 		},
-		"GrantedAccountAccess": {
-			"source": "./src/flow/cadence/GrantedAccountAccess.cdc",
+		"FLOATIncinerator": {
+			"source": "./src/flow/cadence/FLOATIncinerator.cdc",
+			"aliases": {
+				"emulator": "f8d6e0586b0a20c7"
+			}
+		},
+		"FLOATVerifiers": {
+			"source": "./src/flow/cadence/FLOATVerifiers.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
-				"mainnet": "2d4c3caffbeab845"
+				"mainnet": "2d4c3caffbeab845",
+				"testnet": "857dc34d5e1631d3"
 			}
 		},
 		"FUSD": {
@@ -77,28 +106,17 @@
 				"testnet": "9a0766d93b6608b7"
 			}
 		},
-		"EmeraldIdentity": {
-			"source": "./src/flow/cadence/utility/EmeraldIdentity.cdc",
+		"FungibleTokenMetadataViews": {
+			"source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
 			"aliases": {
-				"emulator": "f8d6e0586b0a20c7",
-				"mainnet": "39e42c67cc851cfb",
-				"testnet": "4d47bf3ce5e4393f"
+				"emulator": "f8d6e0586b0a20c7"
 			}
 		},
-		"EmeraldIdentityDapper": {
-			"source": "./src/flow/cadence/utility/EmeraldIdentityDapper.cdc",
+		"GrantedAccountAccess": {
+			"source": "./src/flow/cadence/GrantedAccountAccess.cdc",
 			"aliases": {
 				"emulator": "f8d6e0586b0a20c7",
-				"mainnet": "39e42c67cc851cfb",
-				"testnet": "4d47bf3ce5e4393f"
-			}
-		},
-		"EmeraldIdentityLilico": {
-			"source": "./src/flow/cadence/utility/EmeraldIdentityLilico.cdc",
-			"aliases": {
-				"emulator": "f8d6e0586b0a20c7",
-				"mainnet": "39e42c67cc851cfb",
-				"testnet": "4d47bf3ce5e4393f"
+				"mainnet": "2d4c3caffbeab845"
 			}
 		},
 		"MetadataViews": {
@@ -125,24 +143,6 @@
 				"testnet": "631e88ae7f1d7c20"
 			}
 		},
-		"Burner": {
-			"source": "./src/flow/cadence/utility/Burner.cdc",
-			"aliases": {
-				"emulator": "f8d6e0586b0a20c7"
-			}
-		},
-		"FungibleTokenMetadataViews": {
-			"source": "./src/flow/cadence/utility/FungibleTokenMetadataViews.cdc",
-			"aliases": {
-				"emulator": "f8d6e0586b0a20c7"
-			}
-		},
-		"FLOATIncinerator": {
-			"source": "./src/flow/cadence/FLOATIncinerator.cdc",
-			"aliases": {
-				"emulator": "f8d6e0586b0a20c7"
-			}
-		},
 		"ViewResolver": {
 			"source": "./src/flow/cadence/utility/ViewResolver.cdc",
 			"aliases": {
@@ -162,6 +162,13 @@
 			"address": "f8d6e0586b0a20c7",
 			"key": "fc49a771829ff480841164af13b18a68cd697b6e79c80af7f8470a9e651dfac5"
 		},
+		"mainnet-account": {
+			"address": "2d4c3caffbeab845",
+			"key": {
+				"type": "file",
+				"location": "mainnet-account.pkey"
+			}
+		},
 		"testnet-account": {
 			"address": "857dc34d5e1631d3",
 			"key": {
@@ -169,11 +176,11 @@
 				"location": "testnet-account.pkey"
 			}
 		},
-		"mainnet-account": {
-			"address": "2d4c3caffbeab845",
+		"testnet-account-float-verifiers": {
+			"address": "0c9da961bcee66a5",
 			"key": {
 				"type": "file",
-				"location": "mainnet-account.pkey"
+				"location": "testnet-account-float-verifiers.pkey"
 			}
 		}
 	},
